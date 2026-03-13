@@ -219,6 +219,33 @@
     color: var(--text-muted);
     text-align: center;
   }
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    padding-top: 16px;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    width: 100%;
+    justify-content: center;
+  }
+  .stat {
+    text-align: center;
+    min-width: 70px;
+  }
+  .stat-num {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1;
+    display: block;
+  }
+  .stat-lbl {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    display: block;
+  }
   .badge {
     display: inline-flex;
     align-items: center;
@@ -239,201 +266,100 @@
     box-shadow: 0 0 0 3px rgba(45,212,191,0.22);
   }
 
-  /* BENTO GRID */
-  .bento {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 16px;
-    margin-top: 8px;
+  /* DIVIDER + SECTIONS (below hero) */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 4px;
+    margin: 6px 0 10px;
+    max-width: 880px;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+  }
+  .divider-text {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(150,170,210,0.35);
+    white-space: nowrap;
   }
 
-  /* CARD BASE */
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: 18px;
-    padding: 24px 22px;
+  .sections {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 6px;
+  }
+  .sec {
+    padding: 24px 26px;
+    border-right: 1px solid rgba(255,255,255,0.06);
     position: relative;
     overflow: hidden;
-    transition: border-color 0.22s ease, transform 0.22s ease, background-color 0.22s ease;
-    box-shadow:
-      0 1px 3px rgba(0,0,0,0.4),
-      0 0 0 0.5px rgba(255,255,255,0.04) inset;
-    cursor: default;
+    cursor: pointer;
     text-decoration: none;
     color: inherit;
+    background: transparent;
+    transition: background 0.2s;
   }
-  .card::before {
-    content: '';
+  .sec:last-child {
+    border-right: none;
+  }
+  .sec:hover {
+    background: rgba(255,255,255,0.025);
+  }
+  .sec-accent {
     position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top left, rgba(45,212,191,0.06) 0, transparent 55%);
-    opacity: 0.8;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
   }
-  .card:hover {
-    border-color: var(--border-strong);
-    background-color: var(--card-bg-soft);
-    transform: translateY(-2px);
+  .sec-1 .sec-accent {
+    background: linear-gradient(90deg, rgba(56,189,248,0.6), transparent);
   }
-  .card > * {
-    position: relative;
-    z-index: 1;
+  .sec-2 .sec-accent {
+    background: linear-gradient(90deg, rgba(45,212,191,0.6), transparent);
   }
-
-  .card a {
-    color: var(--accent);
-    text-decoration: none;
+  .sec-3 .sec-accent {
+    background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent);
   }
-  .card a:hover {
-    text-decoration: underline;
-  }
-
-  .card-tag {
+  .sec-num {
     font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .card-tag::before {
-    content: '';
-    width: 16px;
-    height: 1px;
-    background: var(--border-subtle);
-  }
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--text-primary);
-    line-height: 1.25;
-    margin-bottom: 8px;
-  }
-  .card-body {
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--text-secondary);
-    line-height: 1.75;
-  }
-
-  /* CARD: PHOTOGRAPHY */
-  .card-photo {
-    grid-column: 1 / 3;
-    grid-row: 1;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 14px;
-    overflow: hidden;
-    background-color: #181520;
-  }
-  .card-photo::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, transparent 50%, rgba(10,14,22,0.7) 100%),
-      url('photography/photos/me majichal.jpg') no-repeat center right;
-    background-size: auto 120%, cover;
-    opacity: 0.32;
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-
-  /* CARD: AI CAREER */
-  .card-ai {
-    grid-column: 3;
-    grid-row: 1;
-    min-height: 200px;
-    background-color: #141b24;
-  }
-
-  /* CARD: LEARNBYAMIR */
-  .card-learn {
-    grid-column: 1 / 4;
-    grid-row: 2;
-    min-height: 260px;
-  }
-  .learn-brand {
-    font-family: var(--font-display);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-  .course-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 18px;
-  }
-  .course-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background-color: rgba(10,12,18,0.6);
-    border: 1px solid rgba(148,163,184,0.22);
-    border-left: 2px solid rgba(45,212,191,0.3);
-    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
-  }
-  .course-item:hover {
-    background-color: rgba(15,23,42,0.9);
-    border-color: var(--border-strong);
-    transform: translateY(-1px);
-  }
-  .course-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-    background-color: rgba(31,41,55,0.9);
-  }
-  .ci-1 { border: 1px solid rgba(45,212,191,0.4); }
-  .ci-2 { border: 1px solid rgba(129,140,248,0.4); }
-  .ci-3 { border: 1px solid rgba(251,191,36,0.4); }
-  .course-info { flex: 1; }
-  .course-name {
-    font-size: 12px;
     font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-  }
-  .course-meta {
-    font-size: 10px;
-    color: var(--text-muted);
-  }
-  .course-badge {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(148,163,184,0.3);
+    color: rgba(150,170,210,0.35);
+    margin-bottom: 10px;
   }
-  .cb-free {
-    border-color: rgba(45,212,191,0.5);
-    color: var(--accent);
+  .sec-icon {
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
   }
-  .cb-new {
-    border-color: rgba(129,140,248,0.5);
-    color: rgba(191,219,254,0.9);
+  .sec-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .sec-body {
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(190,205,240,0.55);
+  }
+  .sec-arrow {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    color: rgba(45,212,191,0.5);
   }
 
   /* CARD: CONTACT */
@@ -552,72 +478,40 @@
     </aside>
   </section>
 
-  <!-- MAIN SECTIONS -->
-  <section class="bento">
+  <!-- DIVIDER + MAIN SECTIONS -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-text">This site has three parts</div>
+    <div class="divider-line"></div>
+  </div>
 
-    <!-- Photography -->
-    <a class="card card-photo" id="photography" href="photography/">
-      <div class="card-tag">Photography</div>
-      <div class="card-title">Photo stories &amp; nights under the stars</div>
-      <div class="card-body">
-        A growing portfolio where I pair images with short stories — from winter hikes and night skies,
-        to quiet city corners in Québec and everyday details that are easy to miss.
-      </div>
+  <section class="sections">
+    <a class="sec sec-1" href="photography/">
+      <div class="sec-accent"></div>
+      <div class="sec-num">01</div>
+      <span class="sec-icon">&#9728;</span>
+      <div class="sec-title">Photography</div>
+      <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
+      <div class="sec-arrow">Explore ↗</div>
     </a>
 
-    <!-- AI Career -->
-    <div class="card card-ai" id="ai">
-      <div class="card-tag">AI Career</div>
-      <div class="card-title">Notes from the field</div>
-      <div class="card-body">
-        Here I’ll share short updates about my work as an AI engineer:
-        challenges I’m seeing with LLMs and agents, patterns that actually ship,
-        and lessons from real client projects. Think of it as a lightweight career log.
-      </div>
-    </div>
+    <a class="sec sec-2" href="#ai">
+      <div class="sec-accent"></div>
+      <div class="sec-num">02</div>
+      <span class="sec-icon">&#9889;</span>
+      <div class="sec-title">AI Career</div>
+      <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
+      <div class="sec-arrow">Explore ↗</div>
+    </a>
 
-    <!-- LearnByAmir -->
-    <div class="card card-learn" id="learn">
-      <div class="card-tag">LearnByAmir</div>
-      <div class="learn-brand">LearnByAmir · Core Hub</div>
-      <div class="card-title">AI for builders,<br>from practice.</div>
-      <div class="card-body">
-        I design and deploy AI architectures end‑to‑end — LLM integration, RAG pipelines, intelligent agents, and MLOps.
-        <br><br>
-        <span class="teal-line"></span><br>
-        On LearnByAmir I turn that experience into concrete, copy‑pasteable material:
-        interactive HTML notebooks, architecture guides, and selection frameworks for tools
-        like LangGraph, LangChain, vector databases, and low‑code platforms.
-      </div>
-
-      <div class="course-list" style="margin-top:18px;">
-        <div class="course-item">
-          <div class="course-icon ci-1">📚</div>
-          <div class="course-info">
-            <div class="course-name">Topics Library</div>
-            <div class="course-meta">AutoGen, LangGraph vs LangChain, Azure AI‑102, connection strings, architecture decisions…</div>
-          </div>
-          <a href="LearnbyAmir/index.html" class="course-badge cb-free" style="text-decoration:none;">Open</a>
-        </div>
-        <div class="course-item">
-          <div class="course-icon ci-2">🧠</div>
-          <div class="course-info">
-            <div class="course-name">Choose Tools in LLM Projects</div>
-            <div class="course-meta">Data, prompts, testing, deployment, monitoring · local vs production tools</div>
-          </div>
-          <a href="LearnbyAmir/LLM/Tools/AgentTechnicalDebtMap.html" class="course-badge cb-new" style="text-decoration:none;">View map</a>
-        </div>
-        <div class="course-item">
-          <div class="course-icon ci-3">🤝</div>
-          <div class="course-info">
-            <div class="course-name">LLM &amp; Agents Notebook</div>
-            <div class="course-meta">LangGraph, LangChain, MCP, and agent patterns</div>
-          </div>
-          <span class="course-badge cb-new">Updated weekly</span>
-        </div>
-      </div>
-    </div>
-
+    <a class="sec sec-3" href="LearnbyAmir/">
+      <div class="sec-accent"></div>
+      <div class="sec-num">03</div>
+      <span class="sec-icon">&#9670;</span>
+      <div class="sec-title">LearnByAmir</div>
+      <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
+      <div class="sec-arrow">Explore ↗</div>
+    </a>
   </section>
 
   <!-- FOOTER -->
