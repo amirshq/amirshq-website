@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnAIbyAmir · Topics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050712;
+      --surface: #0f1020;
+      --surface-soft: #151731;
+      --border: #25264a;
+      --accent: #7c6af7;
+      --accent-soft: rgba(124,106,247,0.14);
+      --accent2: #f97373;
+      --text: #f5f5ff;
+      --muted: #9b9bb7;
+      --shadow-soft: 0 18px 60px rgba(0,0,0,0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top left, #1e1635 0, #050712 50%, #020308 100%);
+      color: var(--text);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 40px 16px 56px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1120px;
+      background: radial-gradient(circle at top, rgba(124,106,247,0.22), transparent 55%) var(--surface);
+      border-radius: 28px;
+      border: 1px solid rgba(124,106,247,0.35);
+      box-shadow: var(--shadow-soft);
+      padding: 28px 26px 30px;
+      backdrop-filter: blur(26px);
+    }
+
+    @media (min-width: 840px) {
+      .shell {
+        padding: 32px 34px 34px;
+      }
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+
+    .title-block h1 {
+      font-family: 'Syne', system-ui, sans-serif;
+      font-size: clamp(26px, 3vw, 32px);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .title-block h1 span {
+      background: linear-gradient(120deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .title-block p {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 460px;
+    }
+
+    .pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(124,106,247,0.55);
+      background: rgba(5,7,18,0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 6px rgba(34,197,94,0.26);
+    }
+
+    .topics-grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .topic-section {
+      margin-top: 24px;
+    }
+
+    .topic-section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .topic-section-title {
+      font-family: 'Syne', system-ui, sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .topic-section-tagline {
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.9;
+    }
+
+    .topic-card {
+      position: relative;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.04);
+      background: radial-gradient(circle at top left, rgba(124,106,247,0.12), rgba(10,11,30,0.94));
+      padding: 16px 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-3px) translateZ(0);
+      border-color: rgba(124,106,247,0.8);
+      background: radial-gradient(circle at top left, rgba(124,106,247,0.25), rgba(7,8,24,0.98));
+      box-shadow: 0 22px 55px rgba(0,0,0,0.7);
+    }
+
+    .topic-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    .topic-title {
+      font-family: 'Syne', system-ui, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .topic-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .topic-chip-row {
+      margin-top: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .topic-chip {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(18,22,60,0.9);
+      border: 1px solid rgba(71,85,225,0.4);
+      color: #c7d2ff;
+    }
+
+    .topic-arrow {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(148,163,255,0.6);
+      background: radial-gradient(circle at top, rgba(248,250,252,0.15), rgba(15,23,42,0.9));
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(148,163,255,0.28);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div class="title-block">
+        <div class="pill">
+          <span class="pill-dot"></span>
+          LIVE AI PLAYGROUND
+        </div>
+        <h1><span>LearnAIbyAmir</span> · Topics</h1>
+        <p>Browse interactive, single-page HTML notebooks covering AI frameworks, cloud services, agents, connection strings, and more.</p>
+      </div>
+    </header>
+
+    <section>
+      <div class="topic-section">
+        <div class="topic-section-header">
+          <div class="topic-section-title">Low-Code & Agent Frameworks</div>
+          <div class="topic-section-tagline">Hands-on notebooks for building AI systems and bots.</div>
+        </div>
+        <div class="topics-grid">
+          <a class="topic-card" href="Low Code frameworks/Autogen/autogen.html">
+            <div class="topic-tag">Agents & Orchestration</div>
+            <div class="topic-title">
+              <span>AutoGen · From Scratch</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Multi-agent patterns, tools, and workflows for building collaborative AI systems with AutoGen.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">multi-agent</span>
+              <span class="topic-chip">orchestration</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Low Code frameworks/CrewAI/crewai.html">
+            <div class="topic-tag">Agents & Crews</div>
+            <div class="topic-title">
+              <span>CrewAI</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Patterns for coordinating “crews” of specialized agents to solve complex tasks.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">agents</span>
+              <span class="topic-chip">coordination</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Low Code frameworks/Copilot Studio/copilotstudio.html">
+            <div class="topic-tag">Copilot</div>
+            <div class="topic-title">
+              <span>Copilot Studio</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Design and orchestration notes for building copilots using Microsoft Copilot Studio.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">microsoft</span>
+              <span class="topic-chip">copilot</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Low Code frameworks/Dialog CX/dialogcx.html">
+            <div class="topic-tag">Conversational AI</div>
+            <div class="topic-title">
+              <span>Dialog CX</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Google Cloud’s low‑code platform for building chatbots and voicebots, with design best practices.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">google cloud</span>
+              <span class="topic-chip">chat & voice</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Low Code frameworks/AmazonLEX/lex.html">
+            <div class="topic-tag">Conversational AI</div>
+            <div class="topic-title">
+              <span>Amazon Lex · Low Code</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Hands-on guide to building low-code chatbots and voice bots on AWS using Amazon Lex.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">aws</span>
+              <span class="topic-chip">lex</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Low Code frameworks/Low code frameworks selection guide/selectionguide.html">
+            <div class="topic-tag">Low-Code Guide</div>
+            <div class="topic-title">
+              <span>Low-Code Frameworks · Selection Guide</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Comparison and decision guide to choose between low-code AI frameworks like Lex, Dialog CX, Copilot Studio, and more.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">low-code</span>
+              <span class="topic-chip">selection</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="topic-section">
+        <div class="topic-section-header">
+          <div class="topic-section-title">LLM and Agents</div>
+          <div class="topic-section-tagline">Beginner-friendly guides for building and orchestrating LLM-powered applications and agents end to end, with clear markers for local experiments vs production deployments.</div>
+        </div>
+        <div class="topics-grid">
+          <a class="topic-card" href="LLM/Langgraph & Langchain/langraph&langchain.html">
+            <div class="topic-tag">Framework Comparison</div>
+            <div class="topic-title">
+              <span>LangGraph & LangChain</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Side‑by‑side exploration of graph- and chain-based LLM application patterns.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">langgraph</span>
+              <span class="topic-chip">langchain</span>
+              <span class="topic-chip">local / poc</span>
+              <span class="topic-chip">production</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="LLM/Tools/AgentTechnicalDebtMap.html">
+            <div class="topic-tag">LLM Systems</div>
+            <div class="topic-title">
+              <span>Choose Tools in LLM Projects</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Beginner-ready map that shows which tools to use for each part of an LLM / agent project (data, prompts, testing, deployment, monitoring), and whether they fit local testing, production, or both.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">agents</span>
+              <span class="topic-chip">architecture</span>
+              <span class="topic-chip">local vs production</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="LLM/MCP/mcp.html">
+            <div class="topic-tag">MCP & Tooling</div>
+            <div class="topic-title">
+              <span>MCP · Tools for LLM Agents</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Practical walkthrough of Model Context Protocol (MCP) and how to wire external tools into LLM agents in a structured, safe way.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">mcp</span>
+              <span class="topic-chip">tools</span>
+              <span class="topic-chip">agents</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="topic-section">
+        <div class="topic-section-header">
+          <div class="topic-section-title">Courses & Certifications</div>
+          <div class="topic-section-tagline">Exam prep and structured learning paths.</div>
+        </div>
+        <div class="topics-grid">
+          <a class="topic-card" href="AI102 Azure AI Engineer Course/azureAI102.html">
+            <div class="topic-tag">Certification Prep</div>
+            <div class="topic-title">
+              <span>Azure AI-102 Notes</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Scenario-based notes and examples to prepare for the Azure AI Engineer Associate exam.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">azure</span>
+              <span class="topic-chip">ai-102</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="topic-section">
+        <div class="topic-section-header">
+          <div class="topic-section-title">Architecture & Reference</div>
+          <div class="topic-section-tagline">Design decisions, patterns, and ready-to-use snippets.</div>
+        </div>
+        <div class="topics-grid">
+          <a class="topic-card" href="connection string/connectionstring.html">
+            <div class="topic-tag">Reference</div>
+            <div class="topic-title">
+              <span>Connection String Library</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Copy‑ready connection strings across SQL, NoSQL, vector DBs, cloud services, and messaging systems.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">databases</span>
+              <span class="topic-chip">cloud</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="Architecture Decision - Cosultation Level/Architecturedecision.html">
+            <div class="topic-tag">Architecture</div>
+            <div class="topic-title">
+              <span>Architecture Decision Guide</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Consultation-level guide for choosing AI architectures and patterns for real-world solutions.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">design</span>
+              <span class="topic-chip">trade‑offs</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Hosted via GitHub Pages · static HTML only.</span>
+      <span>Project: <a href="README.md">LearnAIbyAmir README</a></span>
+    </footer>
+  </main>
+</body>
+</html>
+

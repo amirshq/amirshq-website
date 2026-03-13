@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangChain & LangGraph — From Scratch</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #7c5cfc;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --code-bg: #0d0d15;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .back-pill {
+    position: fixed;
+    z-index: 9999;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(10,10,15,0.96);
+    border: 1px solid rgba(148,163,255,0.6);
+    color: #e5e7eb;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+  }
+
+  .back-pill span {
+    font-size: 14px;
+  }
+
+  @media (min-width: 768px) {
+    .back-pill {
+      top: 16px;
+      left: 20px;
+    }
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .logo em { color: var(--accent2); font-style: normal; }
+  .progress-bar {
+    height: 3px; background: var(--border);
+    width: 200px; border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  /* LAYOUT */
+  .container { display: flex; height: calc(100vh - 60px); }
+
+  /* SIDEBAR */
+  aside {
+    width: 280px; min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1.5rem 0;
+  }
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 0.8rem 1.5rem 0.4rem;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); background: var(--surface2); color: var(--text); }
+  .nav-item.done .nav-dot { background: var(--accent2); }
+  .nav-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); flex-shrink: 0;
+  }
+  .nav-item.active .nav-dot { background: var(--accent); }
+  .chapter-badge {
+    margin-left: auto; font-size: 0.6rem; font-family: 'Space Mono', monospace;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 3px; color: var(--muted);
+  }
+
+  /* MAIN CONTENT */
+  main {
+    flex: 1; overflow-y: auto;
+    padding: 3rem 4rem;
+    max-width: 860px;
+  }
+
+  .lesson {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+  .lesson-tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'Space Mono', monospace;
+    margin-bottom: 0.75rem;
+  }
+  .tag-lc { color: var(--accent); }
+  .tag-lg { color: var(--accent2); }
+  .tag-core { color: var(--accent3); }
+
+  h1 {
+    font-size: 2.2rem; font-weight: 800; line-height: 1.15;
+    letter-spacing: -0.03em; margin-bottom: 0.5rem;
+  }
+  .lesson-subtitle {
+    color: var(--muted); font-size: 1rem; margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.75rem;
+    color: var(--text);
+  }
+  h3 { font-size: 1rem; font-weight: 700; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+
+  p { color: #b0b0c0; line-height: 1.75; margin-bottom: 1rem; font-size: 0.95rem; }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 0.65rem; font-family: 'Space Mono', monospace;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .copy-btn {
+    font-size: 0.65rem; font-family: 'Space Mono', monospace;
+    color: var(--muted); background: none; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 3px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  pre {
+    padding: 1.25rem 1.25rem;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: #c9d1d9;
+  }
+
+  /* SYNTAX HIGHLIGHT COLORS */
+  .kw { color: #ff79c6; }
+  .fn { color: #50fa7b; }
+  .st { color: #f1fa8c; }
+  .cm { color: #6272a4; font-style: italic; }
+  .cl { color: #8be9fd; }
+  .num { color: #bd93f9; }
+  .op { color: #ff79c6; }
+
+  /* CALLOUTS */
+  .callout {
+    border-left: 3px solid;
+    padding: 1rem 1.25rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .callout-info { border-color: var(--accent); background: rgba(124,92,252,0.07); }
+  .callout-tip { border-color: var(--accent2); background: rgba(0,212,170,0.07); }
+  .callout-warn { border-color: var(--accent3); background: rgba(255,107,107,0.07); }
+  .callout strong { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .callout-info strong { color: var(--accent); }
+  .callout-tip strong { color: var(--accent2); }
+  .callout-warn strong { color: var(--accent3); }
+
+  /* DIAGRAM */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 2;
+    color: #8888aa;
+    overflow-x: auto;
+  }
+  .diagram .node { color: var(--accent2); font-weight: 700; }
+  .diagram .arrow { color: var(--accent); }
+  .diagram .label { color: var(--muted); }
+
+  /* CONCEPT CARDS */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .concept-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .concept-card:hover { border-color: var(--accent); }
+  .concept-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent2); }
+  .concept-card p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+
+  /* NAVIGATION BUTTONS */
+  .nav-btns {
+    display: flex; gap: 1rem; margin-top: 3rem; padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    font-family: 'Space Mono', monospace; font-size: 0.8rem;
+    padding: 0.6rem 1.5rem; border-radius: 5px; cursor: pointer;
+    transition: all 0.2s; border: none; font-weight: 700;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+  }
+  .btn-primary:hover { background: #9070ff; transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+  /* QUIZ */
+  .quiz-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem; margin: 2rem 0;
+  }
+  .quiz-box h3 { color: var(--accent3); margin-top: 0; }
+  .quiz-option {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 5px; cursor: pointer;
+    margin: 0.4rem 0; border: 1px solid var(--border);
+    font-size: 0.85rem; transition: all 0.15s;
+  }
+  .quiz-option:hover { background: rgba(124,92,252,0.1); border-color: var(--accent); }
+  .quiz-option.correct { background: rgba(0,212,170,0.1); border-color: var(--accent2); }
+  .quiz-option.wrong { background: rgba(255,107,107,0.1); border-color: var(--accent3); }
+  .quiz-result { font-size: 0.85rem; margin-top: 0.75rem; color: var(--muted); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.6rem 1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--accent2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { padding: 0.6rem 1rem; border: 1px solid var(--border); color: #b0b0c0; }
+  tr:hover td { background: var(--surface2); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  code { font-family: 'Space Mono', monospace; font-size: 0.8em; background: var(--surface2); padding: 1px 5px; border-radius: 3px; color: var(--accent2); }
+
+  @media (max-width: 768px) {
+    aside { display: none; }
+    main { padding: 2rem 1.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+  <span>←</span> Back to topics
+</button>
+
+<header>
+  <div class="logo"><span>Lang</span>Chain &amp; <em>Lang</em>Graph</div>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <span class="progress-label" id="progressLabel">0 / 10</span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</header>
+
+<div class="container">
+<aside>
+  <div class="section-label">Foundations</div>
+  <div class="nav-item active" onclick="goto(0)"><div class="nav-dot"></div>Introduction <span class="chapter-badge">01</span></div>
+  <div class="nav-item" onclick="goto(1)"><div class="nav-dot"></div>LLMs &amp; Prompts <span class="chapter-badge">02</span></div>
+  <div class="nav-item" onclick="goto(2)"><div class="nav-dot"></div>Chains <span class="chapter-badge">03</span></div>
+  <div class="nav-item" onclick="goto(3)"><div class="nav-dot"></div>Memory <span class="chapter-badge">04</span></div>
+  <div class="nav-item" onclick="goto(4)"><div class="nav-dot"></div>Tools &amp; Agents <span class="chapter-badge">05</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">LangGraph</div>
+  <div class="nav-item" onclick="goto(5)"><div class="nav-dot"></div>Why LangGraph? <span class="chapter-badge">06</span></div>
+  <div class="nav-item" onclick="goto(6)"><div class="nav-dot"></div>Graphs &amp; Nodes <span class="chapter-badge">07</span></div>
+  <div class="nav-item" onclick="goto(7)"><div class="nav-dot"></div>State Management <span class="chapter-badge">08</span></div>
+  <div class="nav-item" onclick="goto(8)"><div class="nav-dot"></div>Conditional Edges <span class="chapter-badge">09</span></div>
+  <div class="nav-item" onclick="goto(9)"><div class="nav-dot"></div>Full Agent Build <span class="chapter-badge">10</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Q&amp;A Deep Dives</div>
+  <div class="nav-item" onclick="goto(10)"><div class="nav-dot"></div>What is invoke()? <span class="chapter-badge">11</span></div>
+  <div class="nav-item" onclick="goto(11)"><div class="nav-dot"></div>The | Pipe Chain <span class="chapter-badge">12</span></div>
+  <div class="nav-item" onclick="goto(12)"><div class="nav-dot"></div>State in LangGraph <span class="chapter-badge">13</span></div>
+  <div class="nav-item" onclick="goto(13)"><div class="nav-dot"></div>Annotated &amp; Reducers <span class="chapter-badge">14</span></div>
+</aside>
+
+<main id="mainContent">
+
+<!-- LESSON 0: INTRO -->
+<div class="lesson active" id="lesson-0">
+  <div class="lesson-tag tag-core">Chapter 01 — Overview</div>
+  <h1>LangChain &amp; LangGraph from Scratch</h1>
+  <p class="lesson-subtitle">A complete technical guide — from zero to production-grade AI agents.</p>
+
+  <h2>What are we learning?</h2>
+  <p><strong>LangChain</strong> is the most popular framework for building LLM-powered applications. It provides composable building blocks: prompts, models, chains, memory, tools, and agents.</p>
+  <p><strong>LangGraph</strong> is LangChain's newer extension that models agent logic as a <em>stateful graph</em> — giving you fine-grained control over multi-step reasoning, loops, and branching workflows.</p>
+
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>🔗 LangChain</h4>
+      <p>Composable primitives for LLM apps. Best for: RAG pipelines, chatbots, single-agent tasks.</p>
+    </div>
+    <div class="concept-card">
+      <h4>🕸️ LangGraph</h4>
+      <p>Stateful graph execution engine. Best for: multi-step agents, loops, human-in-the-loop workflows.</p>
+    </div>
+    <div class="concept-card">
+      <h4>⚡ When to use which</h4>
+      <p>Use LangChain for linear pipelines. Use LangGraph when you need branching, retries, or persistent state.</p>
+    </div>
+    <div class="concept-card">
+      <h4>🏗️ They work together</h4>
+      <p>LangGraph nodes typically use LangChain components: LLMs, tools, prompts, and memory.</p>
+    </div>
+  </div>
+
+  <h2>The Stack</h2>
+  <div class="diagram">
+<span class="node">Your Application</span>
+        ↑
+<span class="node">LangGraph</span>  <span class="label">← orchestrates agent flow (nodes, edges, state)</span>
+        ↑
+<span class="node">LangChain</span>  <span class="label">← provides LLMs, prompts, tools, memory, retrievers</span>
+        ↑
+<span class="node">LLM APIs</span>   <span class="label">← OpenAI / Anthropic / Gemini / local models</span>
+  </div>
+
+  <h2>Installation</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># Install core packages</span>
+pip install langchain langchain-openai langchain-community
+pip install langgraph
+pip install python-dotenv  <span class="cm"># for API key management</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>💡 Tip</strong>
+    You'll need an OpenAI API key (or any supported LLM). Set it as <code>OPENAI_API_KEY</code> in a <code>.env</code> file or environment variable.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-primary" onclick="goto(1)">Next: LLMs &amp; Prompts →</button>
+  </div>
+</div>
+
+<!-- LESSON 1: LLMs & PROMPTS -->
+<div class="lesson" id="lesson-1">
+  <div class="lesson-tag tag-lc">Chapter 02 — LangChain Basics</div>
+  <h1>LLMs &amp; Prompt Templates</h1>
+  <p class="lesson-subtitle">The two most fundamental building blocks in any LangChain application.</p>
+
+  <h2>1. Calling an LLM</h2>
+  <p>LangChain wraps LLM providers behind a unified interface. You can swap <code>ChatOpenAI</code> for <code>ChatAnthropic</code>, <code>ChatGoogleGenerativeAI</code>, etc. without changing your app logic.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">ChatOpenAI</span>
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">HumanMessage</span>
+
+<span class="cm"># Initialize the model</span>
+llm = <span class="cl">ChatOpenAI</span>(model=<span class="st">"gpt-4o-mini"</span>, temperature=<span class="num">0.7</span>)
+
+<span class="cm"># Simple invocation</span>
+response = llm.invoke([<span class="cl">HumanMessage</span>(content=<span class="st">"What is LangChain?"</span>)])
+<span class="fn">print</span>(response.content)  <span class="cm"># AIMessage.content is the text</span></pre>
+  </div>
+
+  <h2>2. Prompt Templates</h2>
+  <p>Hard-coding prompts is brittle. <strong>Prompt Templates</strong> let you define reusable prompt structures with variables.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>
+
+<span class="cm"># Define a template with {topic} variable</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="st">"system"</span>, <span class="st">"You are a helpful assistant that explains {domain} concepts."</span>),
+    (<span class="st">"human"</span>, <span class="st">"Explain {topic} in simple terms."</span>)
+])
+
+<span class="cm"># Format the prompt with actual values</span>
+formatted = prompt.invoke({
+    <span class="st">"domain"</span>: <span class="st">"machine learning"</span>,
+    <span class="st">"topic"</span>: <span class="st">"gradient descent"</span>
+})
+
+response = llm.invoke(formatted)
+<span class="fn">print</span>(response.content)</pre>
+  </div>
+
+  <h2>3. The LCEL Pipe Operator</h2>
+  <p>LangChain Expression Language (LCEL) lets you chain components with the <code>|</code> operator — creating clean, readable pipelines.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+
+<span class="cm"># Chain: prompt → llm → parse to string</span>
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Invoke in one line!</span>
+result = chain.invoke({<span class="st">"domain"</span>: <span class="st">"AI"</span>, <span class="st">"topic"</span>: <span class="st">"embeddings"</span>})
+<span class="fn">print</span>(result)  <span class="cm"># plain string output</span>
+
+<span class="cm"># Streaming is built-in</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> chain.stream({<span class="st">"domain"</span>: <span class="st">"AI"</span>, <span class="st">"topic"</span>: <span class="st">"embeddings"</span>}):
+    <span class="fn">print</span>(chunk, end=<span class="st">""</span>, flush=<span class="num">True</span>)</pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>🔑 Key Insight</strong>
+    LCEL chains are lazy — they don't execute until you call <code>.invoke()</code>, <code>.stream()</code>, or <code>.batch()</code>. Every component in a chain must have matching input/output types.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(2)">Next: Chains →</button>
+  </div>
+</div>
+
+<!-- LESSON 2: CHAINS -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-tag tag-lc">Chapter 03 — LangChain</div>
+  <h1>Chains &amp; RAG Pipelines</h1>
+  <p class="lesson-subtitle">Compose complex workflows by chaining LangChain components together.</p>
+
+  <h2>What is a Chain?</h2>
+  <p>A chain is a sequence of components where the output of one becomes the input of the next. The most powerful use case is <strong>Retrieval-Augmented Generation (RAG)</strong> — grounding LLM responses in your own documents.</p>
+
+  <div class="diagram">
+<span class="label">RAG Pipeline:</span>
+
+<span class="node">User Question</span>
+      <span class="arrow">↓</span>
+<span class="node">Embeddings</span>  <span class="label">← convert question to a vector</span>
+      <span class="arrow">↓</span>
+<span class="node">Vector Store</span> <span class="label">← find similar document chunks</span>
+      <span class="arrow">↓</span>
+<span class="node">Prompt</span>       <span class="label">← inject retrieved context</span>
+      <span class="arrow">↓</span>
+<span class="node">LLM</span>          <span class="label">← generate grounded answer</span>
+      <span class="arrow">↓</span>
+<span class="node">Answer</span>
+  </div>
+
+  <h2>Building a RAG Chain</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">ChatOpenAI</span>, <span class="cl">OpenAIEmbeddings</span>
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> <span class="cl">FAISS</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnablePassthrough</span>
+
+<span class="cm"># 1. Create a vector store from your documents</span>
+embeddings = <span class="cl">OpenAIEmbeddings</span>()
+vectorstore = <span class="cl">FAISS</span>.from_texts(
+    texts=[
+        <span class="st">"LangChain is a framework for building LLM apps."</span>,
+        <span class="st">"LangGraph adds stateful graph execution to LangChain."</span>,
+        <span class="st">"FAISS is a library for efficient similarity search."</span>,
+    ],
+    embedding=embeddings
+)
+retriever = vectorstore.as_retriever(search_kwargs={<span class="st">"k"</span>: <span class="num">2</span>})
+
+<span class="cm"># 2. RAG prompt template</span>
+rag_prompt = <span class="cl">ChatPromptTemplate</span>.from_template(<span class="st">"""
+Answer based ONLY on the context provided.
+
+Context: {context}
+
+Question: {question}
+"""</span>)
+
+<span class="cm"># 3. Build the chain</span>
+llm = <span class="cl">ChatOpenAI</span>(model=<span class="st">"gpt-4o-mini"</span>)
+
+rag_chain = (
+    {<span class="st">"context"</span>: retriever, <span class="st">"question"</span>: <span class="cl">RunnablePassthrough</span>()}
+    <span class="op">|</span> rag_prompt
+    <span class="op">|</span> llm
+    <span class="op">|</span> <span class="cl">StrOutputParser</span>()
+)
+
+<span class="cm"># 4. Ask a question!</span>
+answer = rag_chain.invoke(<span class="st">"What is LangGraph?"</span>)
+<span class="fn">print</span>(answer)</pre>
+  </div>
+
+  <h2>Output Parsers</h2>
+  <p>Output parsers transform raw LLM text into structured data your code can use.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">JsonOutputParser</span>
+<span class="kw">from</span> pydantic <span class="kw">import</span> <span class="cl">BaseModel</span>
+
+<span class="kw">class</span> <span class="cl">MovieReview</span>(<span class="cl">BaseModel</span>):
+    title: str
+    rating: <span class="fn">int</span>
+    summary: str
+
+parser = <span class="cl">JsonOutputParser</span>(pydantic_object=<span class="cl">MovieReview</span>)
+
+prompt = <span class="cl">ChatPromptTemplate</span>.from_template(
+    <span class="st">"Review the movie '{title}'.\n{format_instructions}"</span>,
+    partial_variables={<span class="st">"format_instructions"</span>: parser.get_format_instructions()}
+)
+
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> parser
+review = chain.invoke({<span class="st">"title"</span>: <span class="st">"Inception"</span>})
+<span class="fn">print</span>(review.rating)   <span class="cm"># guaranteed int!</span></pre>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(3)">Next: Memory →</button>
+  </div>
+</div>
+
+<!-- LESSON 3: MEMORY -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-tag tag-lc">Chapter 04 — LangChain</div>
+  <h1>Memory &amp; Chat History</h1>
+  <p class="lesson-subtitle">LLMs are stateless — memory is how you give them context across turns.</p>
+
+  <h2>The Problem</h2>
+  <p>Every LLM call is independent. If you ask "What did I just say?", the model has no idea — unless you pass the conversation history explicitly.</p>
+
+  <h2>Approach 1: In-Memory (Simple Chatbot)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.chat_history <span class="kw">import</span> <span class="cl">InMemoryChatMessageHistory</span>
+<span class="kw">from</span> langchain_core.runnables.history <span class="kw">import</span> <span class="cl">RunnableWithMessageHistory</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">MessagesPlaceholder</span>
+
+<span class="cm"># Store for chat histories (keyed by session_id)</span>
+store = {}
+
+<span class="kw">def</span> <span class="fn">get_session_history</span>(session_id: str):
+    <span class="kw">if</span> session_id <span class="kw">not in</span> store:
+        store[session_id] = <span class="cl">InMemoryChatMessageHistory</span>()
+    <span class="kw">return</span> store[session_id]
+
+<span class="cm"># Prompt that includes message history placeholder</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="st">"system"</span>, <span class="st">"You are a helpful assistant."</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="st">"history"</span>),
+    (<span class="st">"human"</span>, <span class="st">"{input}"</span>),
+])
+
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Wrap with memory management</span>
+with_memory = <span class="cl">RunnableWithMessageHistory</span>(
+    chain,
+    get_session_history,
+    input_messages_key=<span class="st">"input"</span>,
+    history_messages_key=<span class="st">"history"</span>,
+)
+
+<span class="cm"># Conversation turn 1</span>
+r1 = with_memory.invoke(
+    {<span class="st">"input"</span>: <span class="st">"My name is Amir."</span>},
+    config={<span class="st">"configurable"</span>: {<span class="st">"session_id"</span>: <span class="st">"user_1"</span>}}
+)
+<span class="cm"># Conversation turn 2</span>
+r2 = with_memory.invoke(
+    {<span class="st">"input"</span>: <span class="st">"What's my name?"</span>},
+    config={<span class="st">"configurable"</span>: {<span class="st">"session_id"</span>: <span class="st">"user_1"</span>}}
+)
+<span class="fn">print</span>(r2)  <span class="cm"># → "Your name is Amir."</span></pre>
+  </div>
+
+  <h2>Memory Types Comparison</h2>
+  <table>
+    <tr><th>Type</th><th>How it works</th><th>Best for</th></tr>
+    <tr><td><code>InMemory</code></td><td>Full history in RAM</td><td>Development, short sessions</td></tr>
+    <tr><td><code>RedisChatHistory</code></td><td>Persisted in Redis</td><td>Production multi-user apps</td></tr>
+    <tr><td><code>SQLChatHistory</code></td><td>Stored in SQL DB</td><td>Auditable chat logs</td></tr>
+    <tr><td>Summarization</td><td>Compress old turns with LLM</td><td>Very long conversations</td></tr>
+    <tr><td>Vector memory</td><td>Embed + retrieve relevant turns</td><td>Long-term semantic recall</td></tr>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ Watch out</strong>
+    Full in-memory history grows unbounded. For production, always implement <strong>trimming</strong> or <strong>summarization</strong> to stay within the LLM's context window.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(2)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(4)">Next: Tools &amp; Agents →</button>
+  </div>
+</div>
+
+<!-- LESSON 4: TOOLS & AGENTS -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-tag tag-lc">Chapter 05 — LangChain</div>
+  <h1>Tools &amp; Agents</h1>
+  <p class="lesson-subtitle">Give your LLM the ability to take actions — search the web, run code, call APIs.</p>
+
+  <h2>What are Tools?</h2>
+  <p>A <strong>Tool</strong> is a function the LLM can choose to call. You define what it does; the LLM decides <em>when</em> to call it and with <em>what arguments</em>. This is the core of agentic behavior.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.tools <span class="kw">import</span> tool
+
+<span class="cm"># Define custom tools with the @tool decorator</span>
+<span class="op">@</span><span class="fn">tool</span>
+<span class="kw">def</span> <span class="fn">get_weather</span>(city: str) -> str:
+    <span class="st">"""Get current weather for a city. Use this when asked about weather."""</span>
+    <span class="cm"># In production: call a weather API</span>
+    <span class="kw">return</span> <span class="fn">f</span><span class="st">"Weather in {city}: 22°C, partly cloudy"</span>
+
+<span class="op">@</span><span class="fn">tool</span>
+<span class="kw">def</span> <span class="fn">calculate</span>(expression: str) -> str:
+    <span class="st">"""Evaluate a mathematical expression like '2 + 2' or 'sqrt(16)'."""</span>
+    <span class="kw">try</span>:
+        <span class="kw">return</span> <span class="fn">str</span>(<span class="fn">eval</span>(expression))
+    <span class="kw">except</span>:
+        <span class="kw">return</span> <span class="st">"Error: invalid expression"</span>
+
+<span class="cm"># Bind tools to the LLM</span>
+tools = [get_weather, calculate]
+llm_with_tools = llm.bind_tools(tools)</pre>
+  </div>
+
+  <h2>Creating a ReAct Agent</h2>
+  <p>A <strong>ReAct agent</strong> follows the <em>Reason → Act → Observe</em> loop: think about what to do, call a tool, observe the result, repeat until done.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.prebuilt <span class="kw">import</span> <span class="fn">create_react_agent</span>
+
+<span class="cm"># LangGraph provides a ready-made ReAct agent</span>
+agent = <span class="fn">create_react_agent</span>(
+    model=llm,
+    tools=tools,
+    state_modifier=<span class="st">"You are a helpful assistant. Use tools when needed."</span>
+)
+
+<span class="cm"># Run it</span>
+result = agent.invoke({
+    <span class="st">"messages"</span>: [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"What's the weather in Montreal and what's 15 * 7?"</span>}]
+})
+
+<span class="cm"># The agent will call BOTH tools before responding</span>
+<span class="fn">print</span>(result[<span class="st">"messages"</span>][-<span class="num">1</span>].content)</pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>🔑 The ReAct Loop</strong>
+    The agent keeps calling tools and observing results in a loop until it decides it has enough information to give a final answer — or a max_iterations limit is hit.
+  </div>
+
+  <div class="quiz-box">
+    <h3>🧠 Quick Check</h3>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1rem;">What makes an LLM "agentic"?</p>
+    <div class="quiz-option" onclick="checkAnswer(this, false)">A. Using a larger model</div>
+    <div class="quiz-option" onclick="checkAnswer(this, true)">B. The ability to choose and call tools in a loop</div>
+    <div class="quiz-option" onclick="checkAnswer(this, false)">C. Having more memory</div>
+    <div class="quiz-option" onclick="checkAnswer(this, false)">D. Using streaming responses</div>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(3)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(5)">Next: Why LangGraph? →</button>
+  </div>
+</div>
+
+<!-- LESSON 5: WHY LANGGRAPH -->
+<div class="lesson" id="lesson-5">
+  <div class="lesson-tag tag-lg">Chapter 06 — LangGraph</div>
+  <h1>Why LangGraph?</h1>
+  <p class="lesson-subtitle">LangChain's agent loop is powerful but limited. LangGraph gives you full control.</p>
+
+  <h2>The Limitations of Simple Agents</h2>
+  <p>The basic ReAct agent works for simple tasks. But real production agents need:</p>
+
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>🔀 Branching Logic</h4>
+      <p>Route to different workflows based on intent, confidence, or intermediate results.</p>
+    </div>
+    <div class="concept-card">
+      <h4>🔁 Loops &amp; Retries</h4>
+      <p>Retry failed tool calls, iterate on drafts, or run reflection loops.</p>
+    </div>
+    <div class="concept-card">
+      <h4>👤 Human-in-the-Loop</h4>
+      <p>Pause execution and wait for human approval before critical actions.</p>
+    </div>
+    <div class="concept-card">
+      <h4>💾 Persistent State</h4>
+      <p>Checkpoint and resume long-running workflows across sessions.</p>
+    </div>
+  </div>
+
+  <h2>LangGraph's Mental Model</h2>
+  <p>LangGraph models your agent as a <strong>directed graph</strong>:</p>
+
+  <div class="diagram">
+<span class="label">Nodes  = functions that transform state</span>
+<span class="label">Edges  = connections between nodes</span>
+<span class="label">State  = a typed dict passed through all nodes</span>
+
+<span class="node">START</span>
+  <span class="arrow">↓</span>
+<span class="node">[classify_intent]</span>  <span class="label">← node: run LLM to classify</span>
+  <span class="arrow">↓</span>   <span class="arrow">↘</span>
+<span class="node">[search_web]</span>   <span class="node">[answer_from_kb]</span>  <span class="label">← conditional edge</span>
+  <span class="arrow">↓</span>          <span class="arrow">↓</span>
+<span class="node">[format_response]</span>
+  <span class="arrow">↓</span>
+<span class="node">END</span>
+  </div>
+
+  <h2>LangGraph vs Simple Agent</h2>
+  <table>
+    <tr><th>Feature</th><th>Simple Agent</th><th>LangGraph</th></tr>
+    <tr><td>Branching</td><td>❌ Linear only</td><td>✅ Full conditional routing</td></tr>
+    <tr><td>Loops</td><td>⚠️ Black box</td><td>✅ Explicit, controllable</td></tr>
+    <tr><td>State</td><td>❌ Message list only</td><td>✅ Typed, custom state</td></tr>
+    <tr><td>Checkpointing</td><td>❌ No</td><td>✅ SQLite, Redis, etc.</td></tr>
+    <tr><td>Debugging</td><td>❌ Hard</td><td>✅ Step-by-step traces</td></tr>
+    <tr><td>Human-in-loop</td><td>❌ No</td><td>✅ Built-in interrupt</td></tr>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(4)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(6)">Next: Graphs &amp; Nodes →</button>
+  </div>
+</div>
+
+<!-- LESSON 6: GRAPHS & NODES -->
+<div class="lesson" id="lesson-6">
+  <div class="lesson-tag tag-lg">Chapter 07 — LangGraph</div>
+  <h1>Graphs, Nodes &amp; Edges</h1>
+  <p class="lesson-subtitle">The three primitives that make up every LangGraph application.</p>
+
+  <h2>Your First Graph</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> <span class="cl">StateGraph</span>, <span class="cl">START</span>, <span class="cl">END</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">TypedDict</span>
+
+<span class="cm"># 1. Define the State schema — what data flows through the graph</span>
+<span class="kw">class</span> <span class="cl">GraphState</span>(<span class="cl">TypedDict</span>):
+    messages: list
+    current_step: str
+
+<span class="cm"># 2. Define nodes — each is just a function</span>
+<span class="kw">def</span> <span class="fn">step_one</span>(state: <span class="cl">GraphState</span>) -> <span class="cl">GraphState</span>:
+    <span class="fn">print</span>(<span class="st">"Running step one..."</span>)
+    <span class="kw">return</span> {<span class="st">"current_step"</span>: <span class="st">"one"</span>}
+
+<span class="kw">def</span> <span class="fn">step_two</span>(state: <span class="cl">GraphState</span>) -> <span class="cl">GraphState</span>:
+    <span class="fn">print</span>(<span class="st">"Running step two..."</span>)
+    <span class="kw">return</span> {<span class="st">"current_step"</span>: <span class="st">"two"</span>}
+
+<span class="cm"># 3. Build the graph</span>
+builder = <span class="cl">StateGraph</span>(<span class="cl">GraphState</span>)
+
+builder.add_node(<span class="st">"step_one"</span>, step_one)
+builder.add_node(<span class="st">"step_two"</span>, step_two)
+
+<span class="cm"># 4. Connect nodes with edges</span>
+builder.add_edge(<span class="cl">START</span>, <span class="st">"step_one"</span>)   <span class="cm"># entry point</span>
+builder.add_edge(<span class="st">"step_one"</span>, <span class="st">"step_two"</span>)
+builder.add_edge(<span class="st">"step_two"</span>, <span class="cl">END</span>)      <span class="cm"># exit point</span>
+
+<span class="cm"># 5. Compile into a runnable</span>
+graph = builder.compile()
+
+<span class="cm"># 6. Run it!</span>
+result = graph.invoke({<span class="st">"messages"</span>: [], <span class="st">"current_step"</span>: <span class="st">""</span>})
+<span class="fn">print</span>(result)</pre>
+  </div>
+
+  <h2>LLM Node Pattern</h2>
+  <p>In practice, most nodes call an LLM with the current state:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">ChatOpenAI</span>
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">AIMessage</span>
+
+llm = <span class="cl">ChatOpenAI</span>(model=<span class="st">"gpt-4o-mini"</span>)
+
+<span class="kw">def</span> <span class="fn">llm_node</span>(state: <span class="cl">GraphState</span>) -> <span class="cl">GraphState</span>:
+    <span class="cm"># Read from state</span>
+    messages = state[<span class="st">"messages"</span>]
+    
+    <span class="cm"># Call the LLM</span>
+    response = llm.invoke(messages)
+    
+    <span class="cm"># Return state update — only changed fields needed</span>
+    <span class="kw">return</span> {<span class="st">"messages"</span>: messages + [response]}
+
+<span class="cm"># Node updates are MERGED into state, not replaced</span>
+<span class="cm"># (unless you define a custom reducer)</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>✅ Best Practice</strong>
+    Nodes should return only the state fields they modify. LangGraph merges the returned dict into the existing state — you don't need to return the whole state object.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(5)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(7)">Next: State Management →</button>
+  </div>
+</div>
+
+<!-- LESSON 7: STATE -->
+<div class="lesson" id="lesson-7">
+  <div class="lesson-tag tag-lg">Chapter 08 — LangGraph</div>
+  <h1>State Management</h1>
+  <p class="lesson-subtitle">State is the shared memory that flows through your entire graph.</p>
+
+  <h2>Defining State with Reducers</h2>
+  <p>By default, node updates <em>overwrite</em> state fields. For lists (like message history), you usually want to <em>append</em> instead. Use <strong>Annotated reducers</strong> for this.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Annotated</span>
+<span class="kw">from</span> langgraph.graph.message <span class="kw">import</span> add_messages
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    <span class="cm"># add_messages reducer: appends new messages instead of overwriting</span>
+    messages: <span class="cl">Annotated</span>[list, add_messages]
+    
+    <span class="cm"># These will overwrite on each update (default behavior)</span>
+    user_intent: str
+    retrieval_docs: list
+    is_done: bool
+
+<span class="cm"># Now nodes just return the new messages, not the full list:</span>
+<span class="kw">def</span> <span class="fn">my_node</span>(state: <span class="cl">AgentState</span>):
+    new_msg = llm.invoke(state[<span class="st">"messages"</span>])
+    <span class="kw">return</span> {<span class="st">"messages"</span>: [new_msg]}  <span class="cm"># will be APPENDED</span></pre>
+  </div>
+
+  <h2>Checkpointing (Persistent State)</h2>
+  <p>Add a <strong>checkpointer</strong> to persist graph state across sessions — enabling pause/resume and time-travel debugging.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.checkpoint.memory <span class="kw">import</span> <span class="cl">MemorySaver</span>
+<span class="cm"># For production: from langgraph.checkpoint.sqlite import SqliteSaver</span>
+
+checkpointer = <span class="cl">MemorySaver</span>()
+
+graph = builder.compile(checkpointer=checkpointer)
+
+<span class="cm"># Each run needs a thread_id to save/restore state</span>
+config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: <span class="st">"user-session-42"</span>}}
+
+<span class="cm"># First run</span>
+graph.invoke({<span class="st">"messages"</span>: [{<span class="st">"role"</span>:<span class="st">"user"</span>, <span class="st">"content"</span>:<span class="st">"Hello"</span>}]}, config)
+
+<span class="cm"># Second run — state is automatically loaded from checkpoint!</span>
+graph.invoke({<span class="st">"messages"</span>: [{<span class="st">"role"</span>:<span class="st">"user"</span>, <span class="st">"content"</span>:<span class="st">"What did I say before?"</span>}]}, config)
+
+<span class="cm"># View current state</span>
+state = graph.get_state(config)
+<span class="fn">print</span>(state.values[<span class="st">"messages"</span>])  <span class="cm"># full history!</span></pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>🔑 Thread IDs</strong>
+    Each unique <code>thread_id</code> is an isolated conversation/session. Use per-user or per-session IDs in production. The checkpointer stores and loads state automatically on each invoke.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(6)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(8)">Next: Conditional Edges →</button>
+  </div>
+</div>
+
+<!-- LESSON 8: CONDITIONAL EDGES -->
+<div class="lesson" id="lesson-8">
+  <div class="lesson-tag tag-lg">Chapter 09 — LangGraph</div>
+  <h1>Conditional Edges &amp; Routing</h1>
+  <p class="lesson-subtitle">The most powerful LangGraph feature — routing decisions made by your LLM.</p>
+
+  <h2>Static vs Conditional Edges</h2>
+  <p><strong>Static edges</strong> always go from node A to node B. <strong>Conditional edges</strong> choose which node to go to next based on the current state.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">AIMessage</span>
+
+<span class="cm"># A router function — reads state, returns the name of the next node</span>
+<span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">AgentState</span>) -> str:
+    last_msg = state[<span class="st">"messages"</span>][-<span class="num">1</span>]
+    
+    <span class="cm"># If the LLM called tools, go to tools node</span>
+    <span class="kw">if</span> <span class="fn">hasattr</span>(last_msg, <span class="st">"tool_calls"</span>) <span class="kw">and</span> last_msg.tool_calls:
+        <span class="kw">return</span> <span class="st">"use_tools"</span>
+    <span class="cm"># Otherwise, we're done</span>
+    <span class="kw">return</span> <span class="st">"end"</span>
+
+<span class="cm"># Connect using add_conditional_edges</span>
+builder.add_conditional_edges(
+    <span class="st">"llm_node"</span>,          <span class="cm"># source node</span>
+    should_continue,      <span class="cm"># routing function</span>
+    {
+        <span class="st">"use_tools"</span>: <span class="st">"tool_node"</span>,  <span class="cm"># route name → node name</span>
+        <span class="st">"end"</span>: <span class="cl">END</span>
+    }
+)</pre>
+  </div>
+
+  <h2>Full ReAct Loop with LangGraph</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> <span class="cl">StateGraph</span>, <span class="cl">START</span>, <span class="cl">END</span>
+<span class="kw">from</span> langgraph.prebuilt <span class="kw">import</span> <span class="cl">ToolNode</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Annotated</span>
+<span class="kw">from</span> langgraph.graph.message <span class="kw">import</span> add_messages
+
+<span class="kw">class</span> <span class="cl">State</span>(<span class="cl">TypedDict</span>):
+    messages: <span class="cl">Annotated</span>[list, add_messages]
+
+<span class="cm"># LLM with tools bound</span>
+llm_with_tools = llm.bind_tools([get_weather, calculate])
+
+<span class="kw">def</span> <span class="fn">call_llm</span>(state: <span class="cl">State</span>):
+    <span class="kw">return</span> {<span class="st">"messages"</span>: [llm_with_tools.invoke(state[<span class="st">"messages"</span>])]}
+
+<span class="kw">def</span> <span class="fn">route_after_llm</span>(state: <span class="cl">State</span>) -> str:
+    <span class="kw">if</span> state[<span class="st">"messages"</span>][-<span class="num">1</span>].tool_calls:
+        <span class="kw">return</span> <span class="st">"tools"</span>
+    <span class="kw">return</span> <span class="st">"end"</span>
+
+builder = <span class="cl">StateGraph</span>(<span class="cl">State</span>)
+builder.add_node(<span class="st">"llm"</span>, call_llm)
+builder.add_node(<span class="st">"tools"</span>, <span class="cl">ToolNode</span>([get_weather, calculate]))  <span class="cm"># auto-executes tool calls</span>
+
+builder.add_edge(<span class="cl">START</span>, <span class="st">"llm"</span>)
+builder.add_conditional_edges(<span class="st">"llm"</span>, route_after_llm, {<span class="st">"tools"</span>: <span class="st">"tools"</span>, <span class="st">"end"</span>: <span class="cl">END</span>})
+builder.add_edge(<span class="st">"tools"</span>, <span class="st">"llm"</span>)  <span class="cm"># ← loop back after tool execution!</span>
+
+graph = builder.compile()
+
+<span class="cm"># The graph will loop: llm → tools → llm → tools → llm → END</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>💡 The Loop</strong>
+    The <code>tools → llm</code> edge creates the ReAct loop. After executing a tool, we go back to the LLM which reads the tool result and either calls another tool or gives a final answer.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(7)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(9)">Next: Full Agent Build →</button>
+  </div>
+</div>
+
+<!-- LESSON 9: FULL AGENT -->
+<div class="lesson" id="lesson-9">
+  <div class="lesson-tag tag-lg">Chapter 10 — LangGraph</div>
+  <h1>Building a Full Production Agent</h1>
+  <p class="lesson-subtitle">Put it all together: a multi-tool, stateful agent with memory and error handling.</p>
+
+  <h2>Complete Agent Implementation</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.graph <span class="kw">import</span> <span class="cl">StateGraph</span>, <span class="cl">START</span>, <span class="cl">END</span>  <span class="cm"># Core graph builder + entry/exit sentinels</span>
+<span class="kw">from</span> langgraph.prebuilt <span class="kw">import</span> <span class="cl">ToolNode</span>              <span class="cm"># Pre-built node that automatically executes tool calls</span>
+<span class="kw">from</span> langgraph.checkpoint.memory <span class="kw">import</span> <span class="cl">MemorySaver</span>  <span class="cm"># In-memory checkpointer to persist conversation state across turns</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">ChatOpenAI</span>              <span class="cm"># OpenAI LLM wrapper (GPT-4o, GPT-4, etc.)</span>
+<span class="kw">from</span> langchain_core.tools <span class="kw">import</span> tool               <span class="cm"># Decorator to turn any Python function into a LangChain tool</span>
+<span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">SystemMessage</span>   <span class="cm"># Represents the system prompt message type</span>
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Annotated</span>, <span class="cl">TypedDict</span>             <span class="cm"># Annotated: attach metadata to types | TypedDict: typed dict schema for State</span>
+<span class="kw">from</span> langgraph.graph.message <span class="kw">import</span> add_messages     <span class="cm"># Reducer: appends new messages instead of overwriting the list</span>
+
+<span class="cm"># ── 1. TOOLS ─────────────────────────────────</span>
+<span class="op">@</span><span class="fn">tool</span>
+<span class="kw">def</span> <span class="fn">search_docs</span>(query: str) -> str:
+    <span class="st">"""Search internal knowledge base for information."""</span>
+    <span class="cm"># Replace with your actual retriever</span>
+    <span class="kw">return</span> <span class="fn">f</span><span class="st">"Found relevant docs about: {query}"</span>
+
+<span class="op">@</span><span class="fn">tool</span>
+<span class="kw">def</span> <span class="fn">web_search</span>(query: str) -> str:
+    <span class="st">"""Search the web for current information."""</span>
+    <span class="cm"># Replace with actual Tavily/SerpAPI call</span>
+    <span class="kw">return</span> <span class="fn">f</span><span class="st">"Web results for: {query}"</span>
+
+tools = [search_docs, web_search]
+
+<span class="cm"># ── 2. STATE ─────────────────────────────────</span>
+<span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    messages: <span class="cl">Annotated</span>[list, add_messages]
+    error_count: int   <span class="cm"># track errors for retry logic</span>
+
+<span class="cm"># ── 3. NODES ─────────────────────────────────</span>
+llm = <span class="cl">ChatOpenAI</span>(model=<span class="st">"gpt-4o"</span>).bind_tools(tools)
+SYSTEM_PROMPT = <span class="st">"You are a helpful AI assistant with access to search tools."</span>
+
+<span class="kw">def</span> <span class="fn">agent_node</span>(state: <span class="cl">AgentState</span>) -> <span class="cl">AgentState</span>:
+    <span class="st">"""Main reasoning node."""</span>
+    messages = [<span class="cl">SystemMessage</span>(content=<span class="cl">SYSTEM_PROMPT</span>)] + state[<span class="st">"messages"</span>]
+    <span class="kw">try</span>:
+        response = llm.invoke(messages)
+        <span class="kw">return</span> {<span class="st">"messages"</span>: [response], <span class="st">"error_count"</span>: <span class="num">0</span>}
+    <span class="kw">except</span> <span class="cl">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">return</span> {<span class="st">"error_count"</span>: state[<span class="st">"error_count"</span>] + <span class="num">1</span>}
+
+tool_node = <span class="cl">ToolNode</span>(tools)
+
+<span class="cm"># ── 4. ROUTING ───────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">router</span>(state: <span class="cl">AgentState</span>) -> str:
+    <span class="kw">if</span> state[<span class="st">"error_count"</span>] >= <span class="num">3</span>:
+        <span class="kw">return</span> <span class="st">"end"</span>  <span class="cm"># give up after 3 errors</span>
+    last = state[<span class="st">"messages"</span>][-<span class="num">1</span>]
+    <span class="kw">if</span> <span class="fn">hasattr</span>(last, <span class="st">"tool_calls"</span>) <span class="kw">and</span> last.tool_calls:
+        <span class="kw">return</span> <span class="st">"tools"</span>
+    <span class="kw">return</span> <span class="st">"end"</span>
+
+<span class="cm"># ── 5. GRAPH ─────────────────────────────────</span>
+builder = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+builder.add_node(<span class="st">"agent"</span>, agent_node)
+builder.add_node(<span class="st">"tools"</span>, tool_node)
+
+builder.add_edge(<span class="cl">START</span>, <span class="st">"agent"</span>)
+builder.add_conditional_edges(<span class="st">"agent"</span>, router, {<span class="st">"tools"</span>: <span class="st">"tools"</span>, <span class="st">"end"</span>: <span class="cl">END</span>})
+builder.add_edge(<span class="st">"tools"</span>, <span class="st">"agent"</span>)
+
+graph = builder.compile(checkpointer=<span class="cl">MemorySaver</span>())
+
+<span class="cm"># ── 6. RUN ───────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">chat</span>(user_input: str, session_id: str = <span class="st">"default"</span>):
+    config = {<span class="st">"configurable"</span>: {<span class="st">"thread_id"</span>: session_id}}
+    result = graph.invoke(
+        {<span class="st">"messages"</span>: [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: user_input}],
+         <span class="st">"error_count"</span>: <span class="num">0</span>},
+        config
+    )
+    <span class="kw">return</span> result[<span class="st">"messages"</span>][-<span class="num">1</span>].content
+
+<span class="cm"># Usage</span>
+<span class="fn">print</span>(<span class="fn">chat</span>(<span class="st">"Search for LangGraph documentation"</span>, <span class="st">"amir-session-1"</span>))
+<span class="fn">print</span>(<span class="fn">chat</span>(<span class="st">"What did I just ask about?"</span>, <span class="st">"amir-session-1"</span>))  <span class="cm"># memory works!</span></pre>
+  </div>
+
+  <h2>What's Next?</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>🔀 Multi-Agent Systems</h4>
+      <p>Use <code>send()</code> to spawn parallel subgraphs. Build supervisor agents that coordinate specialized workers.</p>
+    </div>
+    <div class="concept-card">
+      <h4>⏸️ Human-in-the-Loop</h4>
+      <p>Use <code>interrupt_before</code> to pause before sensitive actions. Resume after human review with <code>graph.invoke(None, config)</code>.</p>
+    </div>
+    <div class="concept-card">
+      <h4>📊 LangSmith Tracing</h4>
+      <p>Set <code>LANGCHAIN_TRACING_V2=true</code> to get full step-by-step traces, latency, and cost visibility.</p>
+    </div>
+    <div class="concept-card">
+      <h4>🚀 LangGraph Platform</h4>
+      <p>Deploy graphs as APIs with built-in persistence, streaming, and a visual debugger via LangGraph Studio.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>🎓 You've Completed the Course!</strong>
+    You now know: LangChain primitives (LLMs, prompts, chains, memory, tools) and LangGraph architecture (state, nodes, edges, conditional routing, checkpointing). You have everything to build production AI agents.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(8)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(10)">Next: Q&amp;A Deep Dives →</button>
+  </div>
+</div>
+
+<!-- LESSON 10: WHAT IS INVOKE -->
+<div class="lesson" id="lesson-10">
+  <div class="lesson-tag tag-lc">Chapter 11 — Q&amp;A Deep Dive</div>
+  <h1>What does <code>invoke()</code> do?</h1>
+  <p class="lesson-subtitle">The standard execution method for every Runnable in LangChain's LCEL interface.</p>
+
+  <h2>Core Idea</h2>
+  <p><code>invoke</code> is the primary way to <strong>execute</strong> anything in LangChain. Every object that implements the <strong>Runnable interface</strong> — LLMs, prompt templates, chains, retrievers, agents — exposes <code>.invoke()</code>.</p>
+  <p>It takes an input and returns an output by running it through the component.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># On an LLM</span>
+response = llm.invoke(<span class="st">"What is RAG?"</span>)
+
+<span class="cm"># On a prompt template</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_template(<span class="st">"Tell me about {topic}"</span>)
+result = prompt.invoke({<span class="st">"topic"</span>: <span class="st">"LangChain"</span>})
+
+<span class="cm"># On a full chain</span>
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> output_parser
+result = chain.invoke({<span class="st">"topic"</span>: <span class="st">"LangChain"</span>})</pre>
+  </div>
+
+  <h2>The Runnable Interface</h2>
+  <p><code>invoke</code> is part of a consistent interface that all LCEL components share — meaning you can swap any component freely and it always responds the same way.</p>
+
+  <table>
+    <tr><th>Method</th><th>Purpose</th></tr>
+    <tr><td><code>invoke</code></td><td>Run once, return single output</td></tr>
+    <tr><td><code>batch</code></td><td>Run on a list of inputs</td></tr>
+    <tr><td><code>stream</code></td><td>Stream output tokens as they arrive</td></tr>
+    <tr><td><code>ainvoke</code></td><td>Async version of invoke</td></tr>
+  </table>
+
+  <h2>invoke in a RAG Pipeline</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>retriever = vectorstore.as_retriever()
+chain = (
+    {<span class="st">"context"</span>: retriever, <span class="st">"question"</span>: <span class="cl">RunnablePassthrough</span>()}
+    <span class="op">|</span> prompt
+    <span class="op">|</span> llm
+    <span class="op">|</span> <span class="cl">StrOutputParser</span>()
+)
+
+<span class="cm"># invoke kicks off the whole pipeline</span>
+answer = chain.invoke(<span class="st">"What does this document say about X?"</span>)</pre>
+  </div>
+
+  <p>When you call <code>invoke</code> on the chain, it:</p>
+  <div class="diagram">
+<span class="node">1.</span> Passes the input through the <span class="node">retriever</span> to fetch relevant docs
+<span class="node">2.</span> Injects them into the <span class="node">prompt template</span>
+<span class="node">3.</span> Sends the formatted prompt to the <span class="node">LLM</span>
+<span class="node">4.</span> Parses and returns the <span class="node">output</span>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>🔑 Key Point</strong>
+    Think of <code>invoke</code> as the <em>"run this now, give me the result"</em> method. It replaced the older <code>.run()</code> and <code>.__call__()</code> patterns in LangChain, unifying the interface across all component types under LCEL.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(9)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(11)">Next: The | Pipe Chain →</button>
+  </div>
+</div>
+
+<!-- LESSON 11: PIPE CHAIN -->
+<div class="lesson" id="lesson-11">
+  <div class="lesson-tag tag-lc">Chapter 12 — Q&amp;A Deep Dive</div>
+  <h1>How does the <code>|</code> pipe chain work?</h1>
+  <p class="lesson-subtitle">LCEL's pipe operator — the cleanest way to compose LangChain components.</p>
+
+  <h2>Yes, that's how chains are defined</h2>
+  <p>The <code>|</code> (pipe) syntax is <strong>LCEL — LangChain Expression Language</strong>. The operator chains components together where the output of one becomes the input of the next.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>chain = prompt <span class="op">|</span> llm <span class="op">|</span> <span class="cl">StrOutputParser</span>()</pre>
+  </div>
+  <p>Reads as: <em>"take a prompt → feed it to the LLM → parse the output as a string"</em></p>
+
+  <h2>Step by Step</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># 1. Prompt template - formats your input into a message</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_template(<span class="st">"Tell me about {topic}"</span>)
+
+<span class="cm"># 2. LLM - takes the formatted prompt, returns an AIMessage</span>
+llm = <span class="cl">ChatOpenAI</span>(model=<span class="st">"gpt-4"</span>)
+
+<span class="cm"># 3. Parser - extracts just the string text from AIMessage</span>
+parser = <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># 4. Pipe them together into one Runnable</span>
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> parser
+
+<span class="cm"># 5. Invoke the whole pipeline</span>
+chain.invoke({<span class="st">"topic"</span>: <span class="st">"RAG systems"</span>})</pre>
+  </div>
+
+  <h2>What flows through</h2>
+  <div class="diagram">
+<span class="label">{</span><span class="node">"topic": "RAG systems"</span><span class="label">}</span>
+        <span class="arrow">↓  prompt</span>
+<span class="node">"Tell me about RAG systems"</span>  <span class="label">(formatted ChatPromptValue)</span>
+        <span class="arrow">↓  llm</span>
+<span class="node">AIMessage(content="RAG is...")</span>  <span class="label">(raw LLM response object)</span>
+        <span class="arrow">↓  StrOutputParser</span>
+<span class="node">"RAG is..."</span>  <span class="label">(plain string)</span>
+  </div>
+
+  <h2>Why the | works</h2>
+  <p>Under the hood, <code>|</code> calls <code>__or__</code> which wraps everything in a <code>RunnableSequence</code>. So these two are equivalent:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># Pipe syntax (clean)</span>
+chain = prompt <span class="op">|</span> llm <span class="op">|</span> parser
+
+<span class="cm"># Equivalent verbose form</span>
+chain = <span class="cl">RunnableSequence</span>(first=prompt, middle=[llm], last=parser)</pre>
+  </div>
+
+  <h2>More Complex: RAG fan-in</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>chain = (
+    {<span class="st">"context"</span>: retriever, <span class="st">"question"</span>: <span class="cl">RunnablePassthrough</span>()}
+    <span class="op">|</span> prompt
+    <span class="op">|</span> llm
+    <span class="op">|</span> <span class="cl">StrOutputParser</span>()
+)</pre>
+  </div>
+  <p>Here a dict is used to <strong>fan-in</strong> multiple sources (retrieved docs + the original question) before hitting the prompt. <code>RunnablePassthrough()</code> just passes the input unchanged.</p>
+
+  <div class="callout callout-tip">
+    <strong>💡 In short</strong>
+    <code>|</code> is syntactic sugar for building a pipeline of Runnables, which you then execute with <code>.invoke()</code>. Every step must have compatible input/output types.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(10)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(12)">Next: State in LangGraph →</button>
+  </div>
+</div>
+
+<!-- LESSON 12: STATE IN LANGGRAPH Q&A -->
+<div class="lesson" id="lesson-12">
+  <div class="lesson-tag tag-lg">Chapter 13 — Q&amp;A Deep Dive</div>
+  <h1>What is State in LangGraph?</h1>
+  <p class="lesson-subtitle">State is the shared data object passed between nodes — the "memory" of your workflow at any moment.</p>
+
+  <h2>Core Idea</h2>
+  <p>Think of state as a <strong>snapshot of everything the graph knows right now</strong> as it moves through nodes. Every node <strong>reads from</strong> and <strong>writes to</strong> this state object.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">TypedDict</span>, <span class="cl">List</span>
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    messages: <span class="cl">List</span>[str]
+    current_step: str
+    retrieved_docs: <span class="cl">List</span>[str]
+    final_answer: str</pre>
+  </div>
+
+  <h2>How it flows</h2>
+  <div class="diagram">
+<span class="node">START</span>
+  <span class="arrow">↓</span>
+<span class="node">[Node A]</span> <span class="label">→ reads state, does work, updates state</span>
+  <span class="arrow">↓</span>
+<span class="node">[Node B]</span> <span class="label">→ reads updated state, does more work, updates state</span>
+  <span class="arrow">↓</span>
+<span class="node">[Node C]</span> <span class="label">→ reads state, produces final output</span>
+  <span class="arrow">↓</span>
+<span class="node">END</span>
+
+<span class="label">No node talks directly to another — they only communicate through state.</span>
+  </div>
+
+  <h2>Simple Example</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">State</span>(<span class="cl">TypedDict</span>):
+    question: str
+    retrieved_docs: str
+    answer: str
+
+<span class="cm"># Each node receives state and returns ONLY what changed</span>
+<span class="kw">def</span> <span class="fn">retrieve</span>(state: <span class="cl">State</span>):
+    docs = retriever.invoke(state[<span class="st">"question"</span>])
+    <span class="kw">return</span> {<span class="st">"retrieved_docs"</span>: docs}      <span class="cm"># only update what changed</span>
+
+<span class="kw">def</span> <span class="fn">generate</span>(state: <span class="cl">State</span>):
+    answer = llm.invoke(state[<span class="st">"retrieved_docs"</span>])
+    <span class="kw">return</span> {<span class="st">"answer"</span>: answer}
+
+graph = <span class="cl">StateGraph</span>(<span class="cl">State</span>)
+graph.add_node(<span class="st">"retrieve"</span>, retrieve)
+graph.add_node(<span class="st">"generate"</span>, generate)
+graph.add_edge(<span class="st">"retrieve"</span>, <span class="st">"generate"</span>)</pre>
+  </div>
+
+  <h2>Why State matters — 3 key reasons</h2>
+  <h3>1. Nodes are decoupled</h3>
+  <p>Nodes don't call each other — they just read/write state. This makes the graph modular and testable.</p>
+
+  <h3>2. Conditional routing uses state</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">def</span> <span class="fn">should_continue</span>(state: <span class="cl">State</span>) -> str:
+    <span class="kw">if</span> state[<span class="st">"answer"</span>] == <span class="st">""</span>:
+        <span class="kw">return</span> <span class="st">"retry"</span>       <span class="cm"># go back and try again</span>
+    <span class="kw">return</span> <span class="st">"end"</span>             <span class="cm"># finish</span>
+
+graph.add_conditional_edges(<span class="st">"generate"</span>, should_continue)</pre>
+  </div>
+
+  <h3>3. State enables memory across turns</h3>
+  <p>In multi-turn agents, state persists the conversation history, tool results, and intermediate reasoning steps across the entire session.</p>
+
+  <h2>State vs Simple Variables</h2>
+  <table>
+    <tr><th></th><th>Regular Python variables</th><th>LangGraph State</th></tr>
+    <tr><td>Scope</td><td>Local to a function</td><td>Shared across all nodes</td></tr>
+    <tr><td>Persistence</td><td>Lost after function ends</td><td>Survives across node transitions</td></tr>
+    <tr><td>Routing</td><td>Can't drive graph flow</td><td>Can conditionally direct edges</td></tr>
+    <tr><td>Checkpointing</td><td>Not built-in</td><td>Can be saved/restored automatically</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>🧠 The Mental Model</strong>
+    If LangGraph is a workflow — <strong>Nodes</strong> are the workers doing tasks, <strong>Edges</strong> are the routes between workers, and <strong>State</strong> is the shared document everyone reads and writes as the work progresses. It's the central nervous system of your agent graph.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(11)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(13)">Next: Annotated &amp; Reducers →</button>
+  </div>
+</div>
+
+<!-- LESSON 13: ANNOTATED + REDUCERS -->
+<div class="lesson" id="lesson-13">
+  <div class="lesson-tag tag-lg">Chapter 14 — Deep Dive</div>
+  <h1>Annotated, TypedDict &amp; Reducers</h1>
+  <p class="lesson-subtitle">Breaking down every word in <code>messages: Annotated[list, add_messages]</code> — from first principles.</p>
+
+  <h2>The full line, dissected</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    messages: <span class="cl">Annotated</span>[list, add_messages]</pre>
+  </div>
+
+  <p>There are <strong>4 concepts</strong> in this one line. Let's unpack each one.</p>
+
+  <h2>1. TypedDict — a typed dictionary</h2>
+  <p><code>TypedDict</code> is a standard Python type from the <code>typing</code> module. It defines a dictionary with <strong>known keys and typed values</strong>. It's like a plain <code>dict</code>, but with type hints that tools (and LangGraph) can inspect.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">TypedDict</span>
+
+<span class="cm"># Without TypedDict — just a regular dict, no type safety</span>
+state = {<span class="st">"messages"</span>: [], <span class="st">"user"</span>: <span class="st">"Amir"</span>}
+
+<span class="cm"># With TypedDict — keys and value types are declared</span>
+<span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    messages: list
+    user: str
+
+<span class="cm"># It still behaves like a dict at runtime:</span>
+s: <span class="cl">AgentState</span> = {<span class="st">"messages"</span>: [], <span class="st">"user"</span>: <span class="st">"Amir"</span>}
+<span class="fn">print</span>(s[<span class="st">"user"</span>])   <span class="cm"># → "Amir"</span>
+<span class="fn">print</span>(<span class="fn">type</span>(s))     <span class="cm"># → &lt;class 'dict'&gt;  (it IS a dict!)</span></pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>🔑 Key Point</strong>
+    <code>TypedDict</code> is purely a <strong>type hint tool</strong> — it adds zero runtime overhead. At runtime it's just a plain Python dict. LangGraph uses the class definition to understand what fields exist in your state schema.
+  </div>
+
+  <h2>2. Annotated — attaching metadata to a type</h2>
+  <p><code>Annotated</code> is also from Python's <code>typing</code> module. It lets you attach <strong>extra metadata</strong> to a type hint — without changing the type itself.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Annotated</span>
+
+<span class="cm"># Syntax: Annotated[actual_type, metadata1, metadata2, ...]</span>
+<span class="cm"># The type is still "list" — Annotated doesn't change that</span>
+
+x: <span class="cl">Annotated</span>[list, <span class="st">"some metadata"</span>]   <span class="cm"># x is still a list</span>
+y: <span class="cl">Annotated</span>[int, <span class="st">"must be positive"</span>]   <span class="cm"># y is still an int</span>
+
+<span class="cm"># Python itself ignores the metadata at runtime</span>
+<span class="cm"># But FRAMEWORKS (like LangGraph, Pydantic) can READ it</span></pre>
+  </div>
+
+  <p>Think of <code>Annotated[list, add_messages]</code> as saying: <em>"This is a <code>list</code>, AND here's an instruction for LangGraph about what to do when this field gets updated."</em></p>
+
+  <h2>3. The default problem — overwrite vs append</h2>
+  <p>Without <code>Annotated</code>, when a node returns an update, LangGraph simply <strong>overwrites</strong> the field:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># State WITHOUT a reducer</span>
+<span class="kw">class</span> <span class="cl">BadState</span>(<span class="cl">TypedDict</span>):
+    messages: list   <span class="cm"># no Annotated — plain list</span>
+
+<span class="cm"># Node A sets messages to [msg1]</span>
+<span class="cm"># Node B returns {"messages": [msg2]}</span>
+<span class="cm"># Result: messages = [msg2]  ← msg1 is GONE! 💥</span>
+
+<span class="cm"># This is a disaster for chat history —</span>
+<span class="cm"># every node would wipe the previous messages</span></pre>
+  </div>
+
+  <h2>4. add_messages — the reducer function</h2>
+  <p><code>add_messages</code> is a <strong>reducer</strong> — a function that LangGraph calls to decide <em>how</em> to merge a node's returned value into the existing state field.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langgraph.graph.message <span class="kw">import</span> add_messages
+
+<span class="cm"># What add_messages actually does (simplified):</span>
+<span class="kw">def</span> <span class="fn">add_messages</span>(existing: list, new: list) -> list:
+    <span class="kw">return</span> existing + new   <span class="cm"># append, don't overwrite</span>
+
+<span class="cm"># LangGraph calls it like this internally:</span>
+<span class="cm"># new_state["messages"] = add_messages(old_state["messages"], node_return["messages"])</span></pre>
+  </div>
+
+  <div class="diagram">
+<span class="label">Without reducer (overwrite):</span>
+<span class="node">state.messages = [HumanMsg("hi")]</span>
+  <span class="arrow">↓  node returns {"messages": [AIMsg("hello")]}</span>
+<span class="node">state.messages = [AIMsg("hello")]</span>  <span class="label">← history lost! 💥</span>
+
+<span class="label">With add_messages reducer (append):</span>
+<span class="node">state.messages = [HumanMsg("hi")]</span>
+  <span class="arrow">↓  node returns {"messages": [AIMsg("hello")]}</span>
+<span class="node">state.messages = [HumanMsg("hi"), AIMsg("hello")]</span>  <span class="label">← ✅ preserved</span>
+  </div>
+
+  <h2>Putting it all together</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Annotated</span>, <span class="cl">TypedDict</span>
+<span class="kw">from</span> langgraph.graph.message <span class="kw">import</span> add_messages
+
+<span class="kw">class</span> <span class="cl">AgentState</span>(<span class="cl">TypedDict</span>):
+    <span class="cm"># "messages is a list, and use add_messages to update it"</span>
+    messages: <span class="cl">Annotated</span>[list, add_messages]
+    
+    <span class="cm"># These use default overwrite behavior (no reducer needed)</span>
+    user_intent: str
+    is_done: bool
+
+<span class="cm"># Node just returns the NEW message(s) — not the full history</span>
+<span class="kw">def</span> <span class="fn">chat_node</span>(state: <span class="cl">AgentState</span>):
+    response = llm.invoke(state[<span class="st">"messages"</span>])
+    <span class="kw">return</span> {<span class="st">"messages"</span>: [response]}  <span class="cm"># ← only new msg; reducer appends it</span>
+
+<span class="cm"># After 3 turns the state looks like:</span>
+<span class="cm"># state["messages"] = [</span>
+<span class="cm">#   HumanMessage("hi"),</span>
+<span class="cm">#   AIMessage("hello!"),</span>
+<span class="cm">#   HumanMessage("what's 2+2?"),</span>
+<span class="cm">#   AIMessage("It's 4."),</span>
+<span class="cm">#   HumanMessage("thanks"),</span>
+<span class="cm">#   AIMessage("You're welcome!"),</span>
+<span class="cm"># ]</span></pre>
+  </div>
+
+  <h2>add_messages also deduplicates</h2>
+  <p>The real <code>add_messages</code> from LangGraph is smarter than a simple append — it also handles <strong>message ID deduplication</strong>. If a message with the same ID is returned, it <em>replaces</em> the old one instead of duplicating it. This is useful for tool result updates.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">HumanMessage</span>, <span class="cl">AIMessage</span>
+
+existing = [<span class="cl">HumanMessage</span>(content=<span class="st">"hi"</span>, id=<span class="st">"msg-1"</span>)]
+new      = [<span class="cl">AIMessage</span>(content=<span class="st">"hello"</span>, id=<span class="st">"msg-2"</span>)]
+
+result = add_messages(existing, new)
+<span class="cm"># → [HumanMessage("hi"), AIMessage("hello")]  ← appended ✅</span>
+
+<span class="cm"># If IDs match — it REPLACES instead of appending:</span>
+update = [<span class="cl">HumanMessage</span>(content=<span class="st">"hey"</span>, id=<span class="st">"msg-1"</span>)]
+result2 = add_messages(existing, update)
+<span class="cm"># → [HumanMessage("hey")]  ← replaced, not duplicated ✅</span></pre>
+  </div>
+
+  <h2>Writing your own reducer</h2>
+  <p>You're not limited to <code>add_messages</code>. Any function with signature <code>(existing, new) → merged</code> works as a reducer:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># Custom reducer: keep only the last 10 messages (sliding window)</span>
+<span class="kw">def</span> <span class="fn">keep_last_10</span>(existing: list, new: list) -> list:
+    combined = existing + new
+    <span class="kw">return</span> combined[-<span class="num">10</span>:]   <span class="cm"># trim to last 10</span>
+
+<span class="cm"># Custom reducer: increment a counter</span>
+<span class="kw">def</span> <span class="fn">increment</span>(existing: int, new: int) -> int:
+    <span class="kw">return</span> existing + new
+
+<span class="kw">class</span> <span class="cl">MyState</span>(<span class="cl">TypedDict</span>):
+    messages: <span class="cl">Annotated</span>[list, keep_last_10]   <span class="cm"># sliding window</span>
+    tool_call_count: <span class="cl">Annotated</span>[int, increment]  <span class="cm"># accumulating counter</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>✅ Rule of thumb</strong>
+    Use <code>Annotated[list, add_messages]</code> for any field that <strong>accumulates</strong> over time (chat history, tool results, log entries). Use plain types (no <code>Annotated</code>) for fields that should simply be <strong>replaced</strong> (current intent, a flag, a score).
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(12)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(0)" style="background:var(--accent2);color:#000;">↩ Start Over</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const lessons = document.querySelectorAll('.lesson');
+const navItems = document.querySelectorAll('.nav-item');
+let completed = new Set();
+let current = 0;
+const TOTAL = 14;
+
+function goto(idx) {
+  lessons[current].classList.remove('active');
+  navItems[current].classList.remove('active');
+  completed.add(current);
+  navItems[current].classList.add('done');
+  navItems[current].querySelector('.nav-dot').style.background = 'var(--accent2)';
+
+  current = idx;
+  lessons[current].classList.add('active');
+  navItems[current].classList.add('active');
+  navItems[current].classList.remove('done');
+  navItems[current].querySelector('.nav-dot').style.background = '';
+
+  document.getElementById('progressLabel').textContent = `${completed.size} / ${TOTAL}`;
+  document.getElementById('progressFill').style.width = (completed.size / TOTAL * 100) + '%';
+
+  document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--accent2)';
+    setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+  });
+}
+
+function checkAnswer(el, isCorrect) {
+  document.querySelectorAll('.quiz-option').forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(isCorrect ? 'correct' : 'wrong');
+  document.getElementById('quizResult').textContent = isCorrect
+    ? '✅ Correct! An agent is defined by its ability to take actions (via tools) in a loop based on LLM reasoning.'
+    : '❌ Not quite. Try again — think about what makes an LLM capable of multi-step problem solving.';
+  if (!isCorrect) el.style.pointerEvents = 'auto';
+}
+</script>
+</body>
+</html>

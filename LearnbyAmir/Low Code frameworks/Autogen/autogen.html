@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoGen — From Scratch</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --accent: #7c6af7;
+    --accent2: #f97066;
+    --accent3: #34d399;
+    --text: #e2e2f0;
+    --muted: #6b6b8a;
+    --code-bg: #0d0d16;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .back-pill {
+    position: fixed;
+    z-index: 9999;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.96);
+    border: 1px solid rgba(148,163,255,0.6);
+    color: #e5e7eb;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+  }
+
+  .back-pill span {
+    font-size: 14px;
+  }
+
+  @media (min-width: 768px) {
+    .back-pill {
+      top: 16px;
+      left: 18px;
+    }
+  }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .logo-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-logo h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .sidebar-logo h1 span { color: var(--accent); }
+
+  .progress-bar-wrap {
+    margin: 16px 24px 0;
+    background: var(--border);
+    border-radius: 99px;
+    height: 4px;
+  }
+  .progress-bar-fill {
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 8px 24px 20px;
+  }
+
+  .nav { flex: 1; padding: 8px 12px; }
+
+  .nav-section-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 14px 12px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    position: relative;
+  }
+
+  .nav-item:hover { background: var(--border); color: var(--text); }
+
+  .nav-item.active {
+    background: rgba(124, 106, 247, 0.12);
+    color: var(--accent);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-item .nav-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .nav-item.active .nav-num {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .nav-item.done .nav-num {
+    background: var(--accent3);
+    color: #000;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    max-width: 820px;
+    padding: 60px 64px;
+    overflow-y: auto;
+  }
+
+  /* LESSON */
+  .lesson { display: none; animation: fadeIn 0.3s ease; }
+  .lesson.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .lesson-header {
+    margin-bottom: 40px;
+  }
+
+  .lesson-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lesson-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .lesson-subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  /* CONTENT BLOCKS */
+  .prose { font-size: 15px; line-height: 1.8; color: #b8b8d0; font-weight: 400; }
+  .prose p { margin-bottom: 18px; }
+  .prose strong { color: var(--text); font-weight: 700; }
+
+  h3.section-heading {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin: 36px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h3.section-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f0f1a;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .code-header .dots { display: flex; gap: 5px; }
+  .code-header .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-header .dots span:nth-child(1) { background: #ff5f56; }
+  .code-header .dots span:nth-child(2) { background: #ffbd2e; }
+  .code-header .dots span:nth-child(3) { background: #27c93f; }
+
+  .code-block pre {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #abb2bf;
+  }
+
+  .kw { color: #c678dd; }
+  .fn { color: #61afef; }
+  .str { color: #98c379; }
+  .cmt { color: #5c6370; font-style: italic; }
+  .cls { color: #e5c07b; }
+  .num { color: #d19a66; }
+  .var { color: #e06c75; }
+
+  /* INFO CARDS */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .card .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card .card-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .card .card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* CALLOUTS */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .callout.tip { background: rgba(52, 211, 153, 0.07); border: 1px solid rgba(52, 211, 153, 0.2); color: #a7f3d0; }
+  .callout.warn { background: rgba(249, 112, 102, 0.07); border: 1px solid rgba(249, 112, 102, 0.2); color: #fca5a5; }
+  .callout.info { background: rgba(124, 106, 247, 0.07); border: 1px solid rgba(124, 106, 247, 0.2); color: #c4bbfa; }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* COMPARE TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .compare-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #1a1a28;
+    color: #b8b8d0;
+    line-height: 1.5;
+  }
+  .compare-table tr:hover td { background: rgba(124, 106, 247, 0.04); }
+  .compare-table td:first-child { color: #fff; font-weight: 600; }
+
+  /* DIAGRAM */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .diagram svg { max-width: 100%; }
+
+  /* QUIZ */
+  .quiz-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 30px 0;
+  }
+  .quiz-q { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 18px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--muted);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--text); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(52, 211, 153, 0.08); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: var(--accent2); background: rgba(249, 112, 102, 0.08); color: var(--accent2); }
+  .quiz-opt .opt-key {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+  .quiz-feedback { margin-top: 14px; font-size: 13px; color: var(--muted); display: none; }
+
+  /* BOTTOM NAV */
+  .lesson-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #9080ff; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: #333350; }
+
+  .lesson-counter {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* PILL BADGES */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 0 3px;
+  }
+  .badge-purple { background: rgba(124,106,247,0.15); color: var(--accent); }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .badge-red { background: rgba(249,112,102,0.15); color: var(--accent2); }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; align-items: center; gap: 0; margin: 24px 0; flex-wrap: wrap; }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-node.highlight { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,0.07); }
+  .flow-arrow { color: var(--muted); font-size: 18px; padding: 0 8px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+  <button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+    <span>←</span> Back to topics
+  </button>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-tag">Interactive Course</div>
+      <h1>Auto<span>Gen</span></h1>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 8 complete</div>
+    <nav class="nav">
+      <div class="nav-section-label">Foundations</div>
+      <div class="nav-item active" onclick="goTo(0)" id="nav-0">
+        <span class="nav-num">1</span> What is AutoGen?
+      </div>
+      <div class="nav-item" onclick="goTo(1)" id="nav-1">
+        <span class="nav-num">2</span> Core Concepts
+      </div>
+      <div class="nav-item" onclick="goTo(2)" id="nav-2">
+        <span class="nav-num">3</span> Your First Agents
+      </div>
+      <div class="nav-section-label">Patterns</div>
+      <div class="nav-item" onclick="goTo(3)" id="nav-3">
+        <span class="nav-num">4</span> Conversation Patterns
+      </div>
+      <div class="nav-item" onclick="goTo(4)" id="nav-4">
+        <span class="nav-num">5</span> Tool Use & Functions
+      </div>
+      <div class="nav-item" onclick="goTo(5)" id="nav-5">
+        <span class="nav-num">6</span> Group Chat
+      </div>
+      <div class="nav-section-label">Production</div>
+      <div class="nav-item" onclick="goTo(6)" id="nav-6">
+        <span class="nav-num">7</span> Memory & RAG
+      </div>
+      <div class="nav-item" onclick="goTo(7)" id="nav-7">
+        <span class="nav-num">8</span> vs. Other Frameworks
+      </div>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- LESSON 0: What is AutoGen -->
+    <div class="lesson active" id="lesson-0">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 01 · Foundations</div>
+        <h2 class="lesson-title">What is AutoGen?</h2>
+        <p class="lesson-subtitle">Microsoft Research's framework for building multi-agent AI systems that can reason, collaborate, and execute code.</p>
+      </div>
+
+      <div class="prose">
+        <p>AutoGen is an open-source framework from Microsoft Research that lets you build systems where <strong>multiple AI agents work together</strong> to solve complex tasks. Think of it as a runtime for AI teamwork — agents can talk to each other, use tools, write and execute code, and ask humans for input.</p>
+        <p>Unlike workflow tools (n8n, Zapier) that execute deterministic steps, AutoGen agents reason autonomously. They decide <em>how</em> to solve a problem, not just follow a pre-written path.</p>
+      </div>
+
+      <h3 class="section-heading">Why does AutoGen exist?</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🧩</div>
+          <div class="card-title">Single LLM Limits</div>
+          <div class="card-desc">One LLM has a limited context window and can hallucinate. Multiple agents can verify each other, split tasks, and specialize.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔁</div>
+          <div class="card-title">Iterative Refinement</div>
+          <div class="card-desc">Agents can critique and improve each other's outputs — a critic agent reviewing a writer agent's code, for instance.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛠️</div>
+          <div class="card-title">Tool Execution</div>
+          <div class="card-desc">Agents can write Python, run it in a sandbox, see the result, fix bugs — closing the loop between planning and execution.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🧑‍💻</div>
+          <div class="card-title">Human in the Loop</div>
+          <div class="card-desc">You control how much autonomy agents have. Inject human approval at any step, or let them run fully automated.</div>
+        </div>
+      </div>
+
+      <h3 class="section-heading">The Big Picture</h3>
+      <div class="diagram">
+        <div class="flow" style="justify-content:center;">
+          <div class="flow-node">Human / Task</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node highlight">UserProxy Agent</div>
+          <div class="flow-arrow">↔</div>
+          <div class="flow-node highlight">AssistantAgent</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">Code Executor</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node">Result</div>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">💡</span>
+        <div><strong>AutoGen v0.4 (AgentChat)</strong> is the current stable API. It introduced a cleaner async-first design with <code>AssistantAgent</code>, <code>UserProxyAgent</code>, and <code>GroupChat</code>. This course uses v0.4 patterns.</div>
+      </div>
+
+      <h3 class="section-heading">AutoGen vs. The World</h3>
+      <table class="compare-table">
+        <thead><tr><th>Framework</th><th>Paradigm</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td>AutoGen</td><td>Autonomous multi-agent conversation</td><td>Complex reasoning, code generation, research tasks</td></tr>
+          <tr><td>LangGraph</td><td>Stateful graph-based workflows</td><td>Fine-grained control over agent state & branching</td></tr>
+          <tr><td>CrewAI</td><td>Role-based agent teams</td><td>Business automation with defined roles</td></tr>
+          <tr><td>n8n</td><td>Deterministic workflow automation</td><td>Integrating SaaS tools with predictable logic</td></tr>
+        </tbody>
+      </table>
+
+      <div class="quiz-block">
+        <div class="quiz-q">🧠 Quick Check: What fundamentally distinguishes AutoGen from n8n?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> AutoGen is newer and faster</div>
+          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> AutoGen agents reason autonomously; n8n executes deterministic steps</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> n8n can't use AI; AutoGen can</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> AutoGen only works with OpenAI models</div>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback-0"></div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" disabled>← Previous</button>
+        <span class="lesson-counter" id="counter-0">1 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(1)">Next: Core Concepts →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 1: Core Concepts -->
+    <div class="lesson" id="lesson-1">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 02 · Foundations</div>
+        <h2 class="lesson-title">Core Concepts</h2>
+        <p class="lesson-subtitle">The building blocks: agents, conversations, termination, and the LLM config pattern.</p>
+      </div>
+
+      <h3 class="section-heading">The Two Primary Agents</h3>
+      <div class="prose">
+        <p>Every AutoGen system is built from two fundamental agent types. Understanding these is the most important thing in this entire course.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card" style="border-color: rgba(124,106,247,0.3);">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">AssistantAgent</div>
+          <div class="card-desc">Powered by an LLM. Receives messages, reasons, and replies. It can suggest code, call functions, and generate plans. <strong>Doesn't execute code by default.</strong></div>
+        </div>
+        <div class="card" style="border-color: rgba(52,211,153,0.3);">
+          <div class="card-icon">👤</div>
+          <div class="card-title">UserProxyAgent</div>
+          <div class="card-desc">Represents a human or an executor. <strong>Can run code</strong> that the AssistantAgent produces, then feed results back. May prompt a real human for approval.</div>
+        </div>
+      </div>
+
+      <h3 class="section-heading">LLM Configuration</h3>
+      <div class="prose"><p>All agents that use an LLM require a config dict. This is where you define the model and API key.</p></div>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>llm_config.py</div>
+        <pre><span class="kw">import</span> autogen
+
+<span class="cmt"># Define your LLM config</span>
+<span class="var">llm_config</span> = {
+    <span class="str">"config_list"</span>: [
+        {
+            <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
+            <span class="str">"api_key"</span>: <span class="str">"sk-..."</span>,  <span class="cmt"># or use env var</span>
+        }
+    ],
+    <span class="str">"temperature"</span>: <span class="num">0.1</span>,      <span class="cmt"># low = more deterministic</span>
+    <span class="str">"cache_seed"</span>: <span class="num">42</span>,        <span class="cmt"># reproducible runs (optional)</span>
+}
+
+<span class="cmt"># Or load from a JSON file (recommended for production)</span>
+<span class="var">config_list</span> = autogen.<span class="fn">config_list_from_json</span>(
+    <span class="str">"OAI_CONFIG_LIST"</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Conversations & Termination</h3>
+      <div class="prose">
+        <p>A conversation begins when one agent <strong>initiates</strong> a chat with another. Agents take turns. This continues until a <strong>termination condition</strong> is met.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>termination.py</div>
+        <pre><span class="cmt"># Termination methods:</span>
+
+<span class="cmt"># 1. Max turns</span>
+<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(assistant, max_turns=<span class="num">5</span>)
+
+<span class="cmt"># 2. Keyword in reply ("TERMINATE")</span>
+<span class="var">assistant</span> = autogen.<span class="cls">AssistantAgent</span>(
+    system_message=<span class="str">"""...(your instructions)...
+    When done, reply with: TERMINATE"""</span>
+)
+
+<span class="cmt"># 3. Custom function</span>
+<span class="kw">def</span> <span class="fn">my_termination</span>(msg):
+    <span class="kw">return</span> <span class="str">"task_complete"</span> <span class="kw">in</span> msg[<span class="str">"content"</span>].lower()
+
+<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
+    is_termination_msg=my_termination
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Human Input Modes</h3>
+      <table class="compare-table">
+        <thead><tr><th>Mode</th><th>Behavior</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-red">ALWAYS</span></td><td>Asks a human to reply at every step</td><td>Interactive sessions, demos</td></tr>
+          <tr><td><span class="badge badge-purple">TERMINATE</span></td><td>Asks human only when termination is triggered</td><td>Approval gate at the end</td></tr>
+          <tr><td><span class="badge badge-green">NEVER</span></td><td>Fully autonomous — no human prompting</td><td>Production pipelines</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Code Execution Safety:</strong> UserProxyAgent can execute code. Always set <code>code_execution_config</code> with a Docker sandbox or a restricted local path in production. Never run untrusted agent code on bare metal.</div>
+      </div>
+
+      <div class="quiz-block">
+        <div class="quiz-q">🧠 Which agent actually <em>runs</em> Python code that the other agent writes?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> AssistantAgent</div>
+          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> UserProxyAgent</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> Both run code equally</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> Neither — AutoGen can't execute code</div>
+        </div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(0)">← Previous</button>
+        <span class="lesson-counter">2 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(2)">Next: Your First Agents →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 2: First Agents -->
+    <div class="lesson" id="lesson-2">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 03 · Foundations</div>
+        <h2 class="lesson-title">Your First Agents</h2>
+        <p class="lesson-subtitle">Build a working two-agent system from 15 lines of Python.</p>
+      </div>
+
+      <h3 class="section-heading">Installation</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>terminal</div>
+        <pre><span class="cmt"># Install AutoGen (v0.4+)</span>
+pip install pyautogen
+
+<span class="cmt"># For code execution in Docker (recommended)</span>
+pip install pyautogen[docker]
+
+<span class="cmt"># Set your API key</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-..."</span></pre>
+      </div>
+
+      <h3 class="section-heading">Hello World: Two-Agent System</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>hello_autogen.py</div>
+        <pre><span class="kw">import</span> autogen
+
+<span class="cmt"># 1. LLM config</span>
+<span class="var">llm_config</span> = {
+    <span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"sk-..."</span>}]
+}
+
+<span class="cmt"># 2. The AI assistant agent</span>
+<span class="var">assistant</span> = autogen.<span class="cls">AssistantAgent</span>(
+    name=<span class="str">"assistant"</span>,
+    llm_config=<span class="var">llm_config</span>,
+    system_message=<span class="str">"""You are a helpful Python expert.
+    When you finish the task, reply with: TERMINATE"""</span>
+)
+
+<span class="cmt"># 3. The user proxy (executes code, no human input)</span>
+<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
+    name=<span class="str">"user_proxy"</span>,
+    human_input_mode=<span class="str">"NEVER"</span>,
+    is_termination_msg=<span class="kw">lambda</span> x: <span class="str">"TERMINATE"</span> <span class="kw">in</span> x.get(<span class="str">"content"</span>, <span class="str">""</span>),
+    code_execution_config={
+        <span class="str">"work_dir"</span>: <span class="str">"coding"</span>,
+        <span class="str">"use_docker"</span>: <span class="num">False</span>,  <span class="cmt"># set True in production</span>
+    }
+)
+
+<span class="cmt"># 4. Start the conversation!</span>
+<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    <span class="var">assistant</span>,
+    message=<span class="str">"Write a Python script that prints the first 10 Fibonacci numbers."</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">What Happens Step by Step</h3>
+      <div class="flow" style="flex-direction:column; align-items:flex-start; gap:10px; padding: 10px 0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="flow-node highlight" style="min-width:160px;">user_proxy sends task</div>
+          <div style="font-size:13px; color:var(--muted);">→ "Write Fibonacci script"</div>
+        </div>
+        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="flow-node highlight" style="min-width:160px;">assistant reasons</div>
+          <div style="font-size:13px; color:var(--muted);">→ LLM generates Python code block</div>
+        </div>
+        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="flow-node" style="min-width:160px;">user_proxy executes</div>
+          <div style="font-size:13px; color:var(--muted);">→ Runs the code, captures stdout/stderr</div>
+        </div>
+        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="flow-node" style="min-width:160px;">result sent back</div>
+          <div style="font-size:13px; color:var(--muted);">→ Output fed to assistant as next message</div>
+        </div>
+        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="flow-node highlight" style="min-width:160px;">assistant replies TERMINATE</div>
+          <div style="font-size:13px; color:var(--muted);">→ Conversation ends</div>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">✅</span>
+        <div><strong>No code to execute?</strong> If the message contains no code block, user_proxy sends a canned reply like "There is no code from the last message, provide the code." — this automatically nudges the assistant to write code.</div>
+      </div>
+
+      <div class="quiz-block">
+        <div class="quiz-q">🧠 In the example above, what triggers the conversation to stop?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> A max_turns limit of 10</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">B</span> The code executing successfully</div>
+          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">C</span> The assistant including "TERMINATE" in its reply</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> AutoGen detects the task is done automatically</div>
+        </div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(1)">← Previous</button>
+        <span class="lesson-counter">3 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(3)">Next: Conversation Patterns →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 3: Conversation Patterns -->
+    <div class="lesson" id="lesson-3">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 04 · Patterns</div>
+        <h2 class="lesson-title">Conversation Patterns</h2>
+        <p class="lesson-subtitle">Two-agent, sequential chaining, nested chats, and when to use each.</p>
+      </div>
+
+      <h3 class="section-heading">Pattern 1: Two-Agent (Default)</h3>
+      <div class="prose"><p>You've seen this. One user_proxy, one assistant. Best for focused single tasks: code generation, Q&A, analysis.</p></div>
+
+      <h3 class="section-heading">Pattern 2: Sequential Chaining</h3>
+      <div class="prose"><p>Run multiple two-agent conversations where the output of one feeds into the next. Useful for pipelines (write → review → deploy).</p></div>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>sequential.py</div>
+        <pre><span class="cmt"># Step 1: Writer agent creates a blog post</span>
+<span class="var">result1</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    writer, message=<span class="str">"Write a blog post about RAG systems"</span>
+)
+<span class="var">draft</span> = <span class="var">result1</span>.summary
+
+<span class="cmt"># Step 2: Critic reviews it</span>
+<span class="var">result2</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    critic, message=<span class="str">f"Review this blog post:\n\n{draft}"</span>
+)
+
+<span class="cmt"># Step 3: Editor applies improvements</span>
+<span class="var">result3</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    editor, message=<span class="str">f"Apply this feedback:\n{result2.summary}"</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Pattern 3: Nested Chats</h3>
+      <div class="prose"><p>An agent can <strong>spawn a sub-conversation</strong> mid-conversation. This is powerful for tasks that require a specialist to handle a sub-task before the main flow continues.</p></div>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>nested.py</div>
+        <pre><span class="cmt"># Register a nested chat — when assistant gets a coding task,</span>
+<span class="cmt"># it spawns a full sub-conversation with a coding specialist</span>
+<span class="var">assistant</span>.<span class="fn">register_nested_chats</span>(
+    trigger=<span class="var">user_proxy</span>,
+    chat_queue=[
+        {
+            <span class="str">"recipient"</span>: coding_specialist,
+            <span class="str">"message"</span>: <span class="str">"Please implement this: "</span>,
+            <span class="str">"summary_method"</span>: <span class="str">"last_msg"</span>,
+            <span class="str">"max_turns"</span>: <span class="num">3</span>,
+        }
+    ]
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Pattern 4: Swarm (v0.4)</h3>
+      <div class="prose"><p>AutoGen 0.4 introduced a <strong>Swarm</strong> pattern — agents can hand off to each other dynamically based on context, like a call-routing system.</p></div>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>swarm.py</div>
+        <pre><span class="kw">from</span> autogen <span class="kw">import</span> <span class="cls">SwarmAgent</span>, <span class="fn">initiate_swarm_chat</span>
+
+<span class="cmt"># Each agent defines who it can hand off to</span>
+<span class="var">triage</span> = <span class="cls">SwarmAgent</span>(
+    name=<span class="str">"triage"</span>,
+    handoffs=[<span class="str">"billing_agent"</span>, <span class="str">"tech_support"</span>, <span class="str">"sales"</span>]
+)
+
+<span class="fn">initiate_swarm_chat</span>(
+    initial_agent=<span class="var">triage</span>,
+    agents=[<span class="var">triage</span>, billing, tech_support, sales],
+    messages=<span class="str">"I can't access my account after payment failed"</span>
+)</pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">🗺️</span>
+        <div><strong>Choosing a pattern:</strong> Single focused task → Two-agent. Sequential pipeline → Chaining. Complex orchestration with sub-tasks → Nested chats. Dynamic routing by context → Swarm. Team collaboration → Group Chat (next module).</div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(2)">← Previous</button>
+        <span class="lesson-counter">4 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(4)">Next: Tool Use →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 4: Tool Use -->
+    <div class="lesson" id="lesson-4">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 05 · Patterns</div>
+        <h2 class="lesson-title">Tool Use & Function Calling</h2>
+        <p class="lesson-subtitle">Give agents real-world capabilities: web search, database queries, API calls.</p>
+      </div>
+
+      <div class="prose">
+        <p>By default, agents can only reason and write code. <strong>Tools</strong> give them real-world capabilities. AutoGen wraps OpenAI function calling — agents decide when and how to call tools.</p>
+      </div>
+
+      <h3 class="section-heading">Defining Tools with Decorators</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>tools.py</div>
+        <pre><span class="kw">import</span> autogen
+<span class="kw">from</span> autogen <span class="kw">import</span> <span class="cls">AssistantAgent</span>, <span class="cls">UserProxyAgent</span>
+
+<span class="var">llm_config</span> = {<span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"..."</span>}]}
+
+<span class="var">assistant</span> = <span class="cls">AssistantAgent</span>(name=<span class="str">"assistant"</span>, llm_config=<span class="var">llm_config</span>)
+<span class="var">user_proxy</span> = <span class="cls">UserProxyAgent</span>(
+    name=<span class="str">"user_proxy"</span>, human_input_mode=<span class="str">"NEVER"</span>,
+    code_execution_config=<span class="num">False</span>  <span class="cmt"># disable code exec, use tools instead</span>
+)
+
+<span class="cmt"># ✨ Register a tool — function is callable by user_proxy,</span>
+<span class="cmt">#    description is shown to the LLM to know when to call it</span>
+<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Get current weather for a city"</span>)
+<span class="kw">def</span> <span class="fn">get_weather</span>(city: str) -> str:
+    <span class="cmt"># Call a real weather API here</span>
+    <span class="kw">return</span> <span class="str">f"Weather in {city}: 22°C, sunny"</span>
+
+<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Search the web for current info"</span>)
+<span class="kw">def</span> <span class="fn">web_search</span>(query: str) -> str:
+    <span class="cmt"># Integrate with Serper, Tavily, or Bing here</span>
+    <span class="kw">return</span> <span class="str">f"Results for '{query}': ..."</span>
+
+<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    <span class="var">assistant</span>,
+    message=<span class="str">"What's the weather in Tokyo and is there a tech conference there this week?"</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">How Tool Calling Works</h3>
+      <div class="flow" style="justify-content:center; flex-wrap:wrap; gap:0;">
+        <div class="flow-node">Task message</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node highlight">LLM decides to call tool</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">user_proxy executes fn</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node highlight">Result injected as tool_result</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">LLM uses result in reply</div>
+      </div>
+
+      <h3 class="section-heading">Tool Best Practices</h3>
+      <div class="prose">
+        <p><strong>Type hints matter.</strong> AutoGen uses Python type hints to generate the JSON schema for the LLM. Always annotate your function arguments and return type.</p>
+        <p><strong>Descriptions are prompts.</strong> The description string is what the LLM reads to decide when to call your tool. Write it like a clear instruction, not a comment.</p>
+        <p><strong>Return strings.</strong> Tool functions should return strings (or JSON-serializable types that AutoGen will stringify). The LLM reads this as text.</p>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">🔧</span>
+        <div><strong>Common integrations:</strong> Web search (Tavily, Serper), DB queries (SQLAlchemy), REST APIs (requests/httpx), file system ops, sending emails/Slack messages, calling other microservices.</div>
+      </div>
+
+      <div class="quiz-block">
+        <div class="quiz-q">🧠 When you register a tool, why does the <em>assistant</em> need <code>register_for_llm</code> and the <em>user_proxy</em> needs <code>register_for_execution</code>?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> It's just boilerplate — they're identical under the hood</div>
+          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> The LLM needs to know about the tool to decide to call it; the executor actually runs it</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> Both agents run the function independently</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> register_for_llm is only needed for GPT-4, not other models</div>
+        </div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(3)">← Previous</button>
+        <span class="lesson-counter">5 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(5)">Next: Group Chat →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 5: Group Chat -->
+    <div class="lesson" id="lesson-5">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 06 · Patterns</div>
+        <h2 class="lesson-title">Group Chat</h2>
+        <p class="lesson-subtitle">Orchestrate 3+ specialized agents collaborating on a shared task.</p>
+      </div>
+
+      <div class="prose">
+        <p>Group chat is where AutoGen really shines for complex tasks. You assemble a <strong>team of specialized agents</strong> (researcher, coder, critic, planner) and a <strong>GroupChatManager</strong> decides which agent speaks next.</p>
+      </div>
+
+      <h3 class="section-heading">Setting Up a Group Chat</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>group_chat.py</div>
+        <pre><span class="kw">import</span> autogen
+
+<span class="var">llm_config</span> = {<span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"..."</span>}]}
+
+<span class="cmt"># Specialized agents with distinct system messages</span>
+<span class="var">planner</span> = autogen.<span class="cls">AssistantAgent</span>(
+    name=<span class="str">"Planner"</span>, llm_config=<span class="var">llm_config</span>,
+    system_message=<span class="str">"You break complex tasks into subtasks and assign them."</span>
+)
+
+<span class="var">coder</span> = autogen.<span class="cls">AssistantAgent</span>(
+    name=<span class="str">"Coder"</span>, llm_config=<span class="var">llm_config</span>,
+    system_message=<span class="str">"You write high-quality Python code. No prose, just code."</span>
+)
+
+<span class="var">critic</span> = autogen.<span class="cls">AssistantAgent</span>(
+    name=<span class="str">"Critic"</span>, llm_config=<span class="var">llm_config</span>,
+    system_message=<span class="str">"Review code for bugs, edge cases, and style. Be concise."</span>
+)
+
+<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
+    name=<span class="str">"User"</span>, human_input_mode=<span class="str">"NEVER"</span>,
+    code_execution_config={<span class="str">"work_dir"</span>: <span class="str">"coding"</span>}
+)
+
+<span class="cmt"># Assemble the group chat</span>
+<span class="var">groupchat</span> = autogen.<span class="cls">GroupChat</span>(
+    agents=[<span class="var">user_proxy</span>, <span class="var">planner</span>, <span class="var">coder</span>, <span class="var">critic</span>],
+    messages=[],
+    max_round=<span class="num">12</span>,
+    speaker_selection_method=<span class="str">"auto"</span>  <span class="cmt"># LLM picks next speaker</span>
+)
+
+<span class="cmt"># The manager orchestrates the conversation</span>
+<span class="var">manager</span> = autogen.<span class="cls">GroupChatManager</span>(
+    groupchat=<span class="var">groupchat</span>,
+    llm_config=<span class="var">llm_config</span>
+)
+
+<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
+    <span class="var">manager</span>,
+    message=<span class="str">"Build a FastAPI endpoint that analyzes sentiment in text"</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Speaker Selection Methods</h3>
+      <table class="compare-table">
+        <thead><tr><th>Method</th><th>How It Works</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><code>auto</code></td><td>GroupChatManager (LLM) picks the most relevant agent</td><td>General purpose, flexible tasks</td></tr>
+          <tr><td><code>round_robin</code></td><td>Agents take turns in order</td><td>Structured review loops</td></tr>
+          <tr><td><code>random</code></td><td>Random selection each turn</td><td>Exploration, diversity of views</td></tr>
+          <tr><td><code>manual</code></td><td>Human picks each time</td><td>Interactive debugging</td></tr>
+          <tr><td><em>custom fn</em></td><td>Your function selects the speaker</td><td>Complex routing logic</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-heading">Custom Speaker Selection</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>custom_speaker.py</div>
+        <pre><span class="kw">def</span> <span class="fn">custom_speaker_selector</span>(last_speaker, groupchat):
+    <span class="cmt"># Always follow coder with critic</span>
+    <span class="kw">if</span> last_speaker.name == <span class="str">"Coder"</span>:
+        <span class="kw">return</span> <span class="fn">next</span>(a <span class="kw">for</span> a <span class="kw">in</span> groupchat.agents <span class="kw">if</span> a.name == <span class="str">"Critic"</span>)
+    <span class="cmt"># Always follow critic with user_proxy (to run fixed code)</span>
+    <span class="kw">if</span> last_speaker.name == <span class="str">"Critic"</span>:
+        <span class="kw">return</span> <span class="fn">next</span>(a <span class="kw">for</span> a <span class="kw">in</span> groupchat.agents <span class="kw">if</span> a.name == <span class="str">"User"</span>)
+    <span class="kw">return</span> <span class="str">"auto"</span>  <span class="cmt"># let LLM decide otherwise</span>
+
+<span class="var">groupchat</span> = autogen.<span class="cls">GroupChat</span>(
+    ...,
+    speaker_selection_method=<span class="fn">custom_speaker_selector</span>
+)</pre>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Token cost warning:</strong> Each agent in a group chat sees the <em>full conversation history</em>. With many agents and long conversations, costs scale quickly. Use <code>max_round</code> limits, concise system messages, and consider <code>GroupChat(messages=[], send_introductions=False)</code> to keep context lean.</div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(4)">← Previous</button>
+        <span class="lesson-counter">6 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(6)">Next: Memory & RAG →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 6: Memory & RAG -->
+    <div class="lesson" id="lesson-6">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 07 · Production</div>
+        <h2 class="lesson-title">Memory & RAG</h2>
+        <p class="lesson-subtitle">Give agents long-term memory with vector stores and retrieval-augmented generation.</p>
+      </div>
+
+      <div class="prose">
+        <p>By default, AutoGen agents have no memory between conversations. Every <code>initiate_chat</code> call starts fresh. For production systems, you need <strong>persistent memory</strong> — and AutoGen provides <code>RetrieveUserProxyAgent</code> and hooks for external vector stores.</p>
+      </div>
+
+      <h3 class="section-heading">Built-in RAG: RetrieveUserProxyAgent</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>rag_agent.py</div>
+        <pre><span class="kw">from</span> autogen.agentchat.contrib.retrieve_user_proxy_agent <span class="kw">import</span> <span class="cls">RetrieveUserProxyAgent</span>
+
+<span class="var">rag_agent</span> = <span class="cls">RetrieveUserProxyAgent</span>(
+    name=<span class="str">"rag_agent"</span>,
+    retrieve_config={
+        <span class="str">"task"</span>: <span class="str">"qa"</span>,
+        <span class="str">"docs_path"</span>: [<span class="str">"./my_docs/"</span>, <span class="str">"https://example.com/api-docs"</span>],
+        <span class="str">"chunk_token_size"</span>: <span class="num">2000</span>,
+        <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
+        <span class="str">"vector_db"</span>: <span class="str">"chroma"</span>,   <span class="cmt"># or "pgvector", "qdrant"</span>
+        <span class="str">"collection_name"</span>: <span class="str">"my_docs"</span>,
+        <span class="str">"get_or_create"</span>: <span class="num">True</span>,     <span class="cmt"># reuse existing collection</span>
+    },
+    code_execution_config=<span class="num">False</span>,
+    human_input_mode=<span class="str">"NEVER"</span>
+)
+
+<span class="var">rag_agent</span>.<span class="fn">initiate_chat</span>(
+    assistant,
+    problem=<span class="str">"What does our API return when authentication fails?"</span>
+)</pre>
+      </div>
+
+      <h3 class="section-heading">Memory Architecture Patterns</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🔍</div>
+          <div class="card-title">Vector DB (Semantic Memory)</div>
+          <div class="card-desc">Store embeddings of past conversations, docs, or facts. Retrieve semantically similar content. Best for: knowledge bases, long-term recall.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗄️</div>
+          <div class="card-title">SQL DB (Structured Memory)</div>
+          <div class="card-desc">Store structured facts: user preferences, task history, entities. Query with precise filters. Best for: user profiles, audit trails.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🕸️</div>
+          <div class="card-title">Graph DB (Relational Memory)</div>
+          <div class="card-desc">Model relationships between entities. Best for: knowledge graphs, dependency tracking, multi-hop reasoning over connected facts.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">In-Context (Short-term)</div>
+          <div class="card-desc">Conversation history in the context window. AutoGen manages this automatically. Limited by token budget — summarize old messages.</div>
+        </div>
+      </div>
+
+      <h3 class="section-heading">Custom Memory via Tools</h3>
+      <div class="code-block">
+        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>custom_memory.py</div>
+        <pre><span class="kw">import</span> chromadb
+
+<span class="var">chroma_client</span> = chromadb.<span class="fn">Client</span>()
+<span class="var">memory_collection</span> = <span class="var">chroma_client</span>.<span class="fn">get_or_create_collection</span>(<span class="str">"agent_memory"</span>)
+
+<span class="cmt"># Give agents tools to read/write memory</span>
+<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Save a fact to long-term memory"</span>)
+<span class="kw">def</span> <span class="fn">save_memory</span>(key: str, value: str) -> str:
+    <span class="var">memory_collection</span>.<span class="fn">add</span>(
+        documents=[value],
+        ids=[key]
+    )
+    <span class="kw">return</span> <span class="str">f"Saved: {key}"</span>
+
+<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Search memory for relevant facts"</span>)
+<span class="kw">def</span> <span class="fn">search_memory</span>(query: str) -> str:
+    results = <span class="var">memory_collection</span>.<span class="fn">query</span>(query_texts=[query], n_results=<span class="num">3</span>)
+    <span class="kw">return</span> str(results[<span class="str">"documents"</span>])</pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">🏗️</span>
+        <div><strong>Production pattern:</strong> Use Vector DB for semantic long-term memory + SQL for structured facts + in-context summarization for recent turns. This tri-layer architecture handles the full spectrum of memory needs for production chatbots and agentic pipelines.</div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(5)">← Previous</button>
+        <span class="lesson-counter">7 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(7)">Next: vs. Other Frameworks →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 7: vs Other Frameworks -->
+    <div class="lesson" id="lesson-7">
+      <div class="lesson-header">
+        <div class="lesson-tag">Module 08 · Production</div>
+        <h2 class="lesson-title">AutoGen vs. Other Frameworks</h2>
+        <p class="lesson-subtitle">When to use AutoGen, when to use something else, and how to combine them.</p>
+      </div>
+
+      <h3 class="section-heading">Decision Framework</h3>
+      <table class="compare-table">
+        <thead><tr><th>Scenario</th><th>Best Pick</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>AI writes & debugs code autonomously</td><td>AutoGen</td><td>Code execution loop + multi-agent review is AutoGen's sweet spot</td></tr>
+          <tr><td>Research: gather, analyze, synthesize</td><td>AutoGen</td><td>Autonomous reasoning + tool use + multi-agent collaboration</td></tr>
+          <tr><td>Strict step-by-step business workflow</td><td>LangGraph / n8n</td><td>Deterministic control flow with explicit state management</td></tr>
+          <tr><td>Role-based teams (PM, dev, QA)</td><td>CrewAI</td><td>First-class role/goal/task primitives</td></tr>
+          <tr><td>SaaS integration automation</td><td>n8n</td><td>500+ no-code connectors, trigger-based workflows</td></tr>
+          <tr><td>Complex RAG over many data sources</td><td>LlamaIndex + AutoGen</td><td>LlamaIndex handles retrieval; AutoGen handles agentic reasoning</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-heading">Complementary Architectures</h3>
+      <div class="prose"><p>The real power comes from <strong>combining</strong> these frameworks, not choosing one.</p></div>
+      <div class="diagram">
+        <div style="text-align:left; font-family:'JetBrains Mono',monospace; font-size:12px; color:#b8b8d0; line-height:2;">
+          <span style="color:#7c6af7;">n8n</span> trigger (email arrives)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#34d399;">LlamaIndex</span> retrieves relevant docs<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#f97066;">AutoGen</span> multi-agent reasons + writes response<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#7c6af7;">n8n</span> sends reply via Gmail connector<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#34d399;">SQL DB</span> logs outcome
+        </div>
+      </div>
+
+      <h3 class="section-heading">AutoGen Strengths & Weaknesses</h3>
+      <div class="card-grid">
+        <div class="card" style="border-color:rgba(52,211,153,0.3);">
+          <div class="card-icon">✅</div>
+          <div class="card-title">Strengths</div>
+          <div class="card-desc">
+            • Autonomous code writing + execution loop<br>
+            • Flexible conversation patterns<br>
+            • Strong Microsoft ecosystem integration<br>
+            • Human-in-the-loop at any granularity<br>
+            • Active research + rapid updates
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(249,112,102,0.3);">
+          <div class="card-icon">⚠️</div>
+          <div class="card-title">Weaknesses</div>
+          <div class="card-desc">
+            • Less deterministic than graph-based tools<br>
+            • Token costs can escalate in group chats<br>
+            • Debugging multi-agent loops is hard<br>
+            • v0.4 API still maturing<br>
+            • Less enterprise-grade tooling than LangGraph
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-heading">Key Takeaways</h3>
+      <div class="callout tip">
+        <span class="callout-icon">🎯</span>
+        <div>
+          <strong>Use AutoGen when the task requires genuine AI judgment</strong> — where the steps can't be pre-defined. For operational automation with predictable steps, use deterministic tools. The best production systems often combine both.
+        </div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">📚</span>
+        <div>
+          <strong>Next steps:</strong> Try <a href="https://microsoft.github.io/autogen/" style="color:var(--accent);" target="_blank">microsoft.github.io/autogen</a> for official docs. The AutoGen Studio UI lets you prototype multi-agent systems visually. For production, explore AutoGen + Azure AI Foundry for managed execution.
+        </div>
+      </div>
+
+      <div class="quiz-block">
+        <div class="quiz-q">🧠 Final Check: A company wants to automatically route customer emails to billing, tech, or sales teams using AI. Which combination is best?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> Pure AutoGen group chat for everything</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">B</span> Pure n8n with keyword filtering</div>
+          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">C</span> n8n triggers email → AutoGen Swarm routes intelligently → n8n sends response</div>
+          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> CrewAI with three specialized agents</div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; padding:28px; background: linear-gradient(135deg, rgba(124,106,247,0.1), rgba(52,211,153,0.07)); border-radius:14px; border:1px solid rgba(124,106,247,0.2); text-align:center;">
+        <div style="font-size:32px; margin-bottom:12px;">🎓</div>
+        <div style="font-size:20px; font-weight:800; color:#fff; margin-bottom:8px;">Course Complete!</div>
+        <div style="font-size:13px; color:var(--muted); line-height:1.7;">You've covered: agent types, conversation patterns, tool use, group chat, memory/RAG, and framework selection. You're ready to build production AutoGen systems.</div>
+      </div>
+
+      <div class="lesson-footer">
+        <button class="btn btn-ghost" onclick="goTo(6)">← Previous</button>
+        <span class="lesson-counter">8 / 8</span>
+        <button class="btn btn-primary" onclick="goTo(0)">↩ Start Over</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let current = 0;
+  const total = 8;
+  const done = new Set();
+
+  function goTo(n) {
+    done.add(current);
+    document.getElementById('lesson-' + current).classList.remove('active');
+    document.getElementById('nav-' + current).classList.remove('active');
+    if (done.has(current)) {
+      document.getElementById('nav-' + current).classList.add('done');
+      document.getElementById('nav-' + current).querySelector('.nav-num').textContent = '✓';
+    }
+    current = n;
+    document.getElementById('lesson-' + n).classList.add('active');
+    document.getElementById('nav-' + n).classList.remove('done');
+    document.getElementById('nav-' + n).classList.add('active');
+    document.getElementById('nav-' + n).querySelector('.nav-num').textContent = n + 1;
+    // Update progress
+    const pct = Math.round((done.size / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done.size + ' / ' + total + ' complete';
+    window.scrollTo(0,0);
+  }
+
+  function quiz(el, correct) {
+    const block = el.closest('.quiz-block');
+    const opts = block.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    el.classList.add(correct ? 'correct' : 'wrong');
+    if (!correct) {
+      opts.forEach(o => { if (o.dataset.correct) o.classList.add('correct'); });
+    }
+    // mark correct answer
+    if (!correct) {
+      opts.forEach(o => { if (o.onclick.toString().includes('true')) o.classList.add('correct'); });
+    }
+    const fb = block.querySelector('.quiz-feedback');
+    if (fb) {
+      fb.style.display = 'block';
+      fb.textContent = correct ? '✅ Correct! Well done.' : '❌ Not quite — the correct answer is highlighted above.';
+      fb.style.color = correct ? 'var(--accent3)' : 'var(--accent2)';
+    }
+  }
+</script>
+</body>
+</html>

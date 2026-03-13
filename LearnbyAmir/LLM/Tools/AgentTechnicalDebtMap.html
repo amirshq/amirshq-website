@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Tools in LLM Projects · LearnAIbyAmir</title>
+  <style>
+    :root {
+      --bg: #0A0A0F;
+      --surface: #0F0F1A;
+      --surface-soft: #13131F;
+      --border: #1E1E2E;
+      --text: #E2E8F0;
+      --muted: #6B7280;
+      --muted-soft: #4B5563;
+      --header-border: #1E1E2E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "IBM Plex Mono", "Fira Code", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      padding: 32px 40px 20px;
+      border-bottom: 1px solid var(--header-border);
+    }
+
+    .header-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--muted-soft);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      color: #F8FAFC;
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-left: 3px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      font-size: 12px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .sidebar-button span.icon {
+      font-size: 14px;
+    }
+
+    .sidebar-button.active {
+      background: var(--surface-soft);
+      color: #F8FAFC;
+    }
+
+    .sidebar-button.active[data-color] {
+      border-left-color: attr(data-color color, transparent);
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+    }
+
+    .phase-header {
+      margin-bottom: 28px;
+    }
+
+    .phase-header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .phase-icon {
+      font-size: 28px;
+    }
+
+    .phase-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .debt-callout {
+      background: var(--surface-soft);
+      border-radius: 6px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-left-width: 3px;
+    }
+
+    .debt-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .debt-text {
+      margin: 0;
+      font-size: 13px;
+      color: #CBD5E1;
+      line-height: 1.6;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .tool-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #F1F5F9;
+    }
+
+    .tool-pill {
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+      margin-left: 8px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border: 1px solid transparent;
+    }
+
+    .tool-role {
+      margin: 0;
+      font-size: 12px;
+      color: #94A3B8;
+      line-height: 1.5;
+    }
+
+    .tool-env-pill {
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+      margin-left: 6px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border: 1px solid transparent;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 10px;
+      color: #6B7280;
+      align-items: center;
+    }
+
+    .legend-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer {
+      padding: 12px 40px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: #374151;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        overflow-x: auto;
+      }
+      .sidebar-button {
+        flex: 1 0 auto;
+        border-left-width: 0;
+        border-bottom: 3px solid transparent;
+        justify-content: center;
+      }
+      .content {
+        padding: 20px 16px 28px;
+      }
+      .header {
+        padding: 20px 16px 16px;
+      }
+      .footer {
+        padding: 10px 16px;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-eyebrow">Technical Debt Reference — AI Agents</div>
+      <h1 class="header-title">Hidden Debt → Tools Stack</h1>
+      <p class="header-subtitle">
+        Each phase maps the technical debt risk to the tools that mitigate it. Use the labels to see which tools are great for local experiments vs production deployments.
+      </p>
+      <div class="legend">
+        <span>Environment focus:</span>
+        <span class="legend-label">
+          <span class="tool-env-pill" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44;">Local / POC</span>
+          for quick tests on your laptop or dev environment
+        </span>
+        <span class="legend-label">
+          <span class="tool-env-pill" style="background:#f9731622;color:#f97316;border-color:#f9731644;">Production</span>
+          for hardened, scalable workloads
+        </span>
+        <span class="legend-label">
+          <span class="tool-env-pill" style="background:#6366f122;color:#6366f1;border-color:#6366f144;">Local + Prod</span>
+          works well in both stages
+        </span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <main class="content">
+        <section class="phase-header" id="phase-header"></section>
+        <section class="tools-grid" id="tools-grid"></section>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <span>Based on: Hidden Technical Debt Behind AI Agents</span>
+      <span id="footer-count"></span>
+    </footer>
+  </div>
+
+  <script>
+    // Inline data (mirrors AgentTechnicalDebtMap.tsx)
+    const phasesData = [
+      {
+        id: "data",
+        label: "Data Strategy",
+        icon: "🗄️",
+        color: "#00D9FF",
+        debt: "Context management — agents accumulate conversation history, tool outputs, retrieved docs, and intermediate reasoning. Too much = latency/cost. Too little = poor performance.",
+        tools: [
+          { name: "ChromaDB", role: "Local vector store for RAG document retrieval", type: "Vector DB", env: "local" },
+          { name: "Pinecone", role: "Cloud vector DB for semantic search at scale", type: "Vector DB", env: "prod" },
+          { name: "pgvector", role: "PostgreSQL extension for unified relational + vector storage", type: "Vector DB", env: "both" },
+          { name: "SQLite", role: "Lightweight episodic memory & conversation history store", type: "Relational", env: "local" },
+          { name: "PostgreSQL", role: "Production-grade structured data & agent state", type: "Relational", env: "prod" },
+          { name: "Neo4j", role: "Knowledge graph memory for relationship traversal", type: "Graph DB", env: "prod" },
+          { name: "LangChain Memory", role: "Conversation buffer, summary, and window memory abstractions", type: "Framework", env: "both" },
+          { name: "LangMem", role: "Long-term semantic memory management for agents", type: "Framework", env: "prod" },
+        ],
+      },
+      {
+        id: "ai-core",
+        label: "AI Core Development",
+        icon: "🧠",
+        color: "#A78BFA",
+        debt: "Prompt complexity — logic encoded in prompts becomes fragile, large, and hard to maintain. A small wording change can break behavior. Not strongly typed or validated like code.",
+        tools: [
+          { name: "LangGraph", role: "Stateful, graph-based agent orchestration with control flow", type: "Orchestration", env: "both" },
+          { name: "LangChain", role: "Chain-based LLM orchestration and tool integration", type: "Orchestration", env: "both" },
+          { name: "CrewAI", role: "Multi-agent role-based collaboration framework", type: "Orchestration", env: "both" },
+          { name: "AutoGen", role: "Microsoft's conversational multi-agent framework", type: "Orchestration", env: "local" },
+          { name: "OpenAI API", role: "GPT models as the LLM reasoning core", type: "LLM Provider", env: "prod" },
+          { name: "Azure OpenAI", role: "Enterprise-grade GPT deployment on Azure", type: "LLM Provider", env: "prod" },
+          { name: "Anthropic API", role: "Claude models for reasoning and tool use", type: "LLM Provider", env: "prod" },
+          { name: "Prompt flow", role: "Azure tool for prompt versioning and flow design", type: "Prompt Mgmt", env: "prod" },
+        ],
+      },
+      {
+        id: "testing",
+        label: "Testing & Evaluation",
+        icon: "🧪",
+        color: "#34D399",
+        debt: "Evaluation gap — LLM behavior is probabilistic, not deterministic. Teams rely on manual testing or anecdotal evidence instead of systematic pipelines, leading to unpredictable failures.",
+        tools: [
+          { name: "LangSmith", role: "LangChain's tracing, testing, and evaluation platform", type: "Eval Platform", env: "prod" },
+          { name: "RAGAS", role: "RAG-specific evaluation framework (faithfulness, relevance)", type: "Eval Framework", env: "both" },
+          { name: "DeepEval", role: "Open-source LLM evaluation with metrics like hallucination rate", type: "Eval Framework", env: "local" },
+          { name: "PromptFoo", role: "CLI tool for prompt regression testing and comparison", type: "Prompt Testing", env: "local" },
+          { name: "Pytest", role: "Unit and integration tests for deterministic agent components", type: "Code Testing", env: "both" },
+          { name: "Evals (OpenAI)", role: "OpenAI's framework for benchmarking model outputs", type: "Eval Framework", env: "prod" },
+          { name: "TruLens", role: "Feedback-based LLM app evaluation and tracing", type: "Eval Platform", env: "prod" },
+        ],
+      },
+      {
+        id: "error",
+        label: "Error Handling & Fallbacks",
+        icon: "🛡️",
+        color: "#FB923C",
+        debt: "System reliability — agents have many moving parts (model, prompt, tools, retrieval, orchestration). Failures can occur at any point. Without safeguards, agents produce incorrect or misleading outputs.",
+        tools: [
+          { name: "Tenacity", role: "Python retry library with exponential backoff for API calls", type: "Retry Logic", env: "both" },
+          { name: "LangGraph error nodes", role: "Graph-level error routing and fallback state handling", type: "Orchestration", env: "prod" },
+          { name: "Guardrails AI", role: "Output validation and structured correction for LLM responses", type: "Validation", env: "prod" },
+          { name: "NeMo Guardrails", role: "NVIDIA's framework for safe, on-topic LLM behavior", type: "Safety", env: "prod" },
+          { name: "Pydantic", role: "Schema validation for structured agent outputs and tool inputs", type: "Validation", env: "both" },
+          { name: "Circuit Breaker (custom)", role: "Prevent cascading failures when downstream tools fail", type: "Resilience", env: "prod" },
+        ],
+      },
+      {
+        id: "security",
+        label: "Security & Privacy",
+        icon: "🔒",
+        color: "#F87171",
+        debt: "Tool integration risk — each external tool (API, DB, search) introduces hidden coupling. If a tool interface or output format changes, the agent silently produces incorrect results.",
+        tools: [
+          { name: "Azure Key Vault", role: "Secrets management for API keys and credentials", type: "Secrets", env: "prod" },
+          { name: "AWS Secrets Manager", role: "Secure storage and rotation of credentials", type: "Secrets", env: "prod" },
+          { name: "python-dotenv", role: "Local env variable management for dev environments", type: "Config", env: "local" },
+          { name: "Presidio (Microsoft)", role: "PII detection and anonymization in text data", type: "Privacy", env: "prod" },
+          { name: "LangChain callbacks", role: "Intercept and audit all LLM inputs/outputs for compliance", type: "Audit", env: "both" },
+          { name: "OAuth2 / JWT", role: "Secure API authentication for agent tool calls", type: "Auth", env: "prod" },
+        ],
+      },
+      {
+        id: "deployment",
+        label: "Deployment",
+        icon: "🚀",
+        color: "#60A5FA",
+        debt: "Orchestration complexity at scale — the model, prompt, tools, retrieval, and orchestration logic all need to be versioned, containerized, and deployed cohesively.",
+        tools: [
+          { name: "Docker", role: "Containerize agents and all dependencies", type: "Container", env: "both" },
+          { name: "Azure Functions", role: "Serverless deployment for event-driven agent triggers", type: "Serverless", env: "prod" },
+          { name: "Azure Container Apps", role: "Managed container hosting with auto-scaling", type: "Cloud", env: "prod" },
+          { name: "FastAPI", role: "Serve agents as REST APIs with async support", type: "API Server", env: "both" },
+          { name: "LangServe", role: "Deploy LangChain agents as production REST endpoints", type: "Framework", env: "prod" },
+          { name: "GitHub Actions", role: "CI/CD pipelines for agent code and prompt versioning", type: "CI/CD", env: "prod" },
+          { name: "Terraform / Bicep", role: "Infrastructure-as-code for Azure/AWS provisioning", type: "IaC", env: "prod" },
+        ],
+      },
+      {
+        id: "monitoring",
+        label: "Monitoring & Logging",
+        icon: "📊",
+        color: "#FBBF24",
+        debt: "Observability gap — decisions happen inside the LLM black box. Without logging and tracing infrastructure, you can't understand why the system produced a particular output.",
+        tools: [
+          { name: "LangSmith", role: "Full trace visibility: inputs, outputs, token usage, latency", type: "LLM Tracing", env: "prod" },
+          { name: "Helicone", role: "LLM proxy with request logging and cost tracking", type: "LLM Proxy", env: "prod" },
+          { name: "Arize Phoenix", role: "Open-source LLM observability and tracing", type: "Observability", env: "prod" },
+          { name: "Azure Monitor", role: "Cloud-native metrics, logs, and alerts for Azure deployments", type: "Cloud Monitor", env: "prod" },
+          { name: "Datadog", role: "Full-stack monitoring with LLM observability integrations", type: "APM", env: "prod" },
+          { name: "OpenTelemetry", role: "Vendor-neutral tracing and metrics instrumentation", type: "Standards", env: "prod" },
+          { name: "Loguru / structlog", role: "Python structured logging for agent decision steps", type: "Logging", env: "both" },
+        ],
+      },
+      {
+        id: "fallback",
+        label: "Fallback Loop & Continuous Improvement",
+        icon: "🔄",
+        color: "#E879F9",
+        debt: "No test coverage for probabilistic systems — without feedback loops and systematic evals, improvements are guesswork. Systems that appear to work fail predictably under new conditions.",
+        tools: [
+          { name: "LangSmith Datasets", role: "Capture production failures as eval datasets for regression testing", type: "Eval", env: "prod" },
+          { name: "RLHF pipelines", role: "Human feedback loops to improve model behavior over time", type: "Fine-tuning", env: "prod" },
+          { name: "MLflow", role: "Track experiments, prompt versions, and model performance metrics", type: "Experiment Tracking", env: "prod" },
+          { name: "Weights & Biases", role: "Experiment tracking and model performance dashboards", type: "Experiment Tracking", env: "prod" },
+          { name: "A/B prompt testing", role: "PromptFoo or custom harnesses to compare prompt versions", type: "Prompt Mgmt", env: "both" },
+          { name: "Databricks", role: "Lakehouse for storing feedback data and retraining pipelines", type: "Data Platform", env: "prod" },
+        ],
+      },
+      {
+        id: "maintenance",
+        label: "Maintenance",
+        icon: "🔧",
+        color: "#6EE7B7",
+        debt: "Scalability ceiling — without clean architecture, evaluation, observability, and maintainability practices, the entire system becomes difficult or impossible to scale and maintain.",
+        tools: [
+          { name: "Git + DVC", role: "Version control for code AND data/prompt artifacts", type: "Versioning", env: "both" },
+          { name: "Prompt registries", role: "LangSmith Hub or custom stores for versioned prompt management", type: "Prompt Mgmt", env: "prod" },
+          { name: "Dependabot", role: "Automated dependency updates to avoid tool interface breakage", type: "Dependencies", env: "prod" },
+          { name: "Makefile / Task", role: "Standardize dev commands: run, test, deploy, lint", type: "Dev Ops", env: "local" },
+          { name: "Architecture Decision Records", role: "Document why key design choices were made — critical for agents", type: "Documentation", env: "prod" },
+          { name: "LangGraph Studio", role: "Visual debugging and state inspection for graph-based agents", type: "Debugging", env: "local" },
+          { name: "Pre-commit hooks", role: "Enforce prompt format, code quality, and schema validation on commit", type: "Code Quality", env: "both" },
+        ],
+      },
+    ];
+
+    const typeColors = {
+      "Vector DB": "#00D9FF",
+      "Relational": "#60A5FA",
+      "Graph DB": "#A78BFA",
+      "Framework": "#34D399",
+      "Orchestration": "#A78BFA",
+      "LLM Provider": "#F472B6",
+      "Prompt Mgmt": "#FBBF24",
+      "Eval Platform": "#34D399",
+      "Eval Framework": "#6EE7B7",
+      "Prompt Testing": "#FBBF24",
+      "Code Testing": "#60A5FA",
+      "Retry Logic": "#FB923C",
+      "Validation": "#F87171",
+      "Safety": "#F43F5E",
+      "Resilience": "#FB923C",
+      "Secrets": "#F87171",
+      "Privacy": "#E879F9",
+      "Audit": "#FBBF24",
+      "Auth": "#60A5FA",
+      "Config": "#6EE7B7",
+      "Container": "#60A5FA",
+      "Serverless": "#A78BFA",
+      "Cloud": "#00D9FF",
+      "API Server": "#34D399",
+      "CI/CD": "#FBBF24",
+      "IaC": "#FB923C",
+      "LLM Tracing": "#FBBF24",
+      "LLM Proxy": "#FB923C",
+      "Observability": "#34D399",
+      "Cloud Monitor": "#60A5FA",
+      "APM": "#F472B6",
+      "Standards": "#6EE7B7",
+      "Logging": "#A78BFA",
+      "Eval": "#34D399",
+      "Fine-tuning": "#E879F9",
+      "Experiment Tracking": "#FBBF24",
+      "Data Platform": "#00D9FF",
+      "Versioning": "#60A5FA",
+      "Dependencies": "#FB923C",
+      "Dev Ops": "#6EE7B7",
+      "Documentation": "#A78BFA",
+      "Debugging": "#F472B6",
+      "Code Quality": "#34D399",
+    };
+
+    const envStyles = {
+      local:  { label: "Local / POC",  bg: "#22c55e22", color: "#22c55e", border: "#22c55e44" },
+      prod:   { label: "Production",   bg: "#f9731622", color: "#f97316", border: "#f9731644" },
+      both:   { label: "Local + Prod", bg: "#6366f122", color: "#6366f1", border: "#6366f144" },
+    };
+
+    const sidebarEl = document.getElementById("sidebar");
+    const headerEl = document.getElementById("phase-header");
+    const toolsEl = document.getElementById("tools-grid");
+    const footerCountEl = document.getElementById("footer-count");
+
+    let activeId = phasesData[0].id;
+
+    function renderSidebar() {
+      sidebarEl.innerHTML = "";
+      phasesData.forEach((phase) => {
+        const btn = document.createElement("button");
+        btn.className = "sidebar-button" + (phase.id === activeId ? " active" : "");
+        btn.dataset.color = phase.color;
+        btn.onclick = () => {
+          activeId = phase.id;
+          renderSidebar();
+          renderPhase();
+        };
+
+        const iconSpan = document.createElement("span");
+        iconSpan.className = "icon";
+        iconSpan.textContent = phase.icon;
+
+        const labelSpan = document.createElement("span");
+        labelSpan.textContent = phase.label;
+        labelSpan.style.lineHeight = "1.3";
+
+        btn.appendChild(iconSpan);
+        btn.appendChild(labelSpan);
+        sidebarEl.appendChild(btn);
+      });
+    }
+
+    function renderPhase() {
+      const phase = phasesData.find((p) => p.id === activeId);
+      if (!phase) return;
+
+      headerEl.innerHTML = "";
+      toolsEl.innerHTML = "";
+
+      // Header
+      const top = document.createElement("div");
+      top.className = "phase-header-top";
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "phase-icon";
+      iconSpan.textContent = phase.icon;
+
+      const title = document.createElement("h2");
+      title.className = "phase-title";
+      title.style.color = phase.color;
+      title.textContent = phase.label;
+
+      top.appendChild(iconSpan);
+      top.appendChild(title);
+
+      const callout = document.createElement("div");
+      callout.className = "debt-callout";
+      callout.style.borderLeftColor = phase.color;
+      callout.style.borderColor = phase.color + "22";
+
+      const label = document.createElement("div");
+      label.className = "debt-label";
+      label.style.color = phase.color;
+      label.textContent = "⚠ Hidden Debt Risk";
+
+      const text = document.createElement("p");
+      text.className = "debt-text";
+      text.textContent = phase.debt;
+
+      callout.appendChild(label);
+      callout.appendChild(text);
+
+      headerEl.appendChild(top);
+      headerEl.appendChild(callout);
+
+      // Tools
+      phase.tools.forEach((tool) => {
+        const card = document.createElement("div");
+        card.className = "tool-card";
+
+        const header = document.createElement("div");
+        header.className = "tool-header";
+
+        const name = document.createElement("div");
+        name.className = "tool-name";
+        name.textContent = tool.name;
+
+        const pill = document.createElement("span");
+        pill.className = "tool-pill";
+        const color = typeColors[tool.type] || "#6B7280";
+        pill.style.background = color + "22";
+        pill.style.color = color;
+        pill.style.borderColor = color + "44";
+        pill.textContent = tool.type;
+
+        const env = envStyles[tool.env || "both"];
+        const envPill = document.createElement("span");
+        envPill.className = "tool-env-pill";
+        envPill.style.background = env.bg;
+        envPill.style.color = env.color;
+        envPill.style.borderColor = env.border;
+        envPill.textContent = env.label;
+
+        header.appendChild(name);
+        header.appendChild(pill);
+        header.appendChild(envPill);
+
+        const role = document.createElement("p");
+        role.className = "tool-role";
+        role.textContent = tool.role;
+
+        card.appendChild(header);
+        card.appendChild(role);
+        toolsEl.appendChild(card);
+      });
+    }
+
+    function renderFooter() {
+      const totalTools = phasesData.reduce((sum, p) => sum + p.tools.length, 0);
+      footerCountEl.textContent = phasesData.length + " phases · " + totalTools + " tools mapped";
+    }
+
+    renderSidebar();
+    renderPhase();
+    renderFooter();
+  </script>
+</body>
+</html>
+

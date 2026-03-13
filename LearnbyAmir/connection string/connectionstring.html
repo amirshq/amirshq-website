@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connection Strings — Master Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --code-bg: #0d1b2e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+.back-pill {
+  position: fixed;
+  z-index: 9999;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15,23,42,0.96);
+  border: 1px solid rgba(148,163,255,0.6);
+  color: #e5e7eb;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+}
+
+.back-pill span {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .back-pill {
+    top: 16px;
+    left: 20px;
+  }
+}
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Layout */
+  .app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .sidebar-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .sidebar-search {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .search-input {
+    width: 100%;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .sidebar-nav { padding: 12px 0; }
+  .nav-section-label {
+    padding: 8px 24px 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 24px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    position: relative;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .nav-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* Main content */
+  .main { flex: 1; padding: 40px 48px; min-width: 0; }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 48px;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(124,58,237,0.08) 100%);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '{ }';
+    position: absolute;
+    right: 40px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 100px;
+    font-weight: 700;
+    color: rgba(0,212,255,0.06);
+    line-height: 1;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--text-dim); font-size: 15px; max-width: 560px; line-height: 1.6; }
+
+  .stats-row {
+    display: flex; gap: 24px; margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  .stat-chip strong {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 20px;
+    display: block;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-chip span { color: var(--text-muted); font-size: 11px; }
+
+  /* Section */
+  .section { margin-bottom: 60px; }
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .section-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Cards grid */
+  .cards { display: grid; gap: 20px; }
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+  .cards-1 { grid-template-columns: 1fr; }
+
+  /* Connection card */
+  .conn-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .conn-card:hover { border-color: rgba(0,212,255,0.3); transform: translateY(-1px); }
+
+  .card-header {
+    padding: 18px 22px 14px;
+    display: flex; align-items: flex-start; gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  .card-body { padding: 18px 22px; }
+
+  /* Code block */
+  .code-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .code-block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent-color, var(--accent));
+  }
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow: visible;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+  /* Syntax highlight */
+  .kw { color: #7c3aed; }
+  .str { color: #10b981; }
+  .key { color: #00d4ff; }
+  .val { color: #f59e0b; }
+  .cmt { color: #4a5568; font-style: italic; }
+  .hl { color: #ef4444; }
+  .n { color: #e2e8f0; }
+
+  /* Anatomy diagram */
+  .anatomy {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .anatomy-string {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 2;
+    word-break: break-all;
+    margin-bottom: 10px;
+  }
+  .anatomy-parts {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .anatomy-part {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .anatomy-part .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* Tips box */
+  .tip-box {
+    background: rgba(16,185,129,0.07);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .tip-box strong { color: var(--accent3); }
+
+  .warn-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .warn-box strong { color: var(--accent4); }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin-top: 8px;
+  }
+  .compare-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  .compare-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    background: rgba(0,212,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Color themes per category */
+  .cat-db    { --accent-color: #00d4ff; }
+  .cat-cloud { --accent-color: #f59e0b; }
+  .cat-msg   { --accent-color: #8b5cf6; }
+  .cat-cache { --accent-color: #ef4444; }
+  .cat-net   { --accent-color: #10b981; }
+  .cat-api   { --accent-color: #ec4899; }
+  .cat-misc  { --accent-color: #06b6d4; }
+
+  .badge-db    { background: rgba(0,212,255,0.12); color: #00d4ff; }
+  .badge-cloud { background: rgba(245,158,11,0.12); color: #f59e0b; }
+  .badge-msg   { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+  .badge-cache { background: rgba(239,68,68,0.12); color: #ef4444; }
+  .badge-net   { background: rgba(16,185,129,0.12); color: #10b981; }
+  .badge-api   { background: rgba(236,72,153,0.12); color: #ec4899; }
+  .badge-misc  { background: rgba(6,182,212,0.12); color: #06b6d4; }
+
+  .icon-db    { background: rgba(0,212,255,0.1); }
+  .icon-cloud { background: rgba(245,158,11,0.1); }
+  .icon-msg   { background: rgba(139,92,246,0.1); }
+  .icon-cache { background: rgba(239,68,68,0.1); }
+  .icon-net   { background: rgba(16,185,129,0.1); }
+  .icon-api   { background: rgba(236,72,153,0.1); }
+  .icon-misc  { background: rgba(6,182,212,0.1); }
+
+  .section-target { scroll-margin-top: 32px; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .cards-2 { grid-template-columns: 1fr; }
+    .main { padding: 32px 28px; }
+  }
+  @media (max-width: 780px) {
+    .sidebar { display: none; }
+    .main { padding: 24px 20px; }
+    .hero h1 { font-size: 26px; }
+    .hero::before { display: none; }
+  }
+</style>
+</head>
+<body>
+<button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+  <span>←</span> Back to topics
+</button>
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Dev Reference</div>
+    <div class="sidebar-title">Connection Strings</div>
+  </div>
+  <div class="sidebar-search">
+    <input class="search-input" type="text" placeholder="Search platforms..." id="searchInput" oninput="filterNav(this.value)">
+  </div>
+  <div class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section-label">Databases</div>
+    <div class="nav-item active" onclick="scrollTo('relational')" data-label="Relational SQL"><span class="nav-dot" style="background:#00d4ff"></span>Relational SQL <span class="nav-count">6</span></div>
+    <div class="nav-item" onclick="scrollTo('nosql')" data-label="NoSQL / Document"><span class="nav-dot" style="background:#00d4ff"></span>NoSQL / Document <span class="nav-count">4</span></div>
+    <div class="nav-item" onclick="scrollTo('vector')" data-label="Vector & Graph DBs"><span class="nav-dot" style="background:#00d4ff"></span>Vector & Graph DBs <span class="nav-count">4</span></div>
+    <div class="nav-section-label">Cloud & Services</div>
+    <div class="nav-item" onclick="scrollTo('azure')" data-label="Azure Services"><span class="nav-dot" style="background:#f59e0b"></span>Azure Services <span class="nav-count">5</span></div>
+    <div class="nav-item" onclick="scrollTo('aws')" data-label="AWS Services"><span class="nav-dot" style="background:#f59e0b"></span>AWS Services <span class="nav-count">3</span></div>
+    <div class="nav-section-label">Messaging & Cache</div>
+    <div class="nav-item" onclick="scrollTo('messaging')" data-label="Message Brokers"><span class="nav-dot" style="background:#8b5cf6"></span>Message Brokers <span class="nav-count">3</span></div>
+    <div class="nav-item" onclick="scrollTo('cache')" data-label="Cache & Key-Value"><span class="nav-dot" style="background:#ef4444"></span>Cache & Key-Value <span class="nav-count">3</span></div>
+    <div class="nav-section-label">Network & APIs</div>
+    <div class="nav-item" onclick="scrollTo('network')" data-label="Network Protocols"><span class="nav-dot" style="background:#10b981"></span>Network Protocols <span class="nav-count">4</span></div>
+    <div class="nav-item" onclick="scrollTo('api')" data-label="API & Auth"><span class="nav-dot" style="background:#ec4899"></span>API & Auth <span class="nav-count">3</span></div>
+    <div class="nav-section-label">Misc</div>
+    <div class="nav-item" onclick="scrollTo('misc')" data-label="Files & Storage"><span class="nav-dot" style="background:#06b6d4"></span>Files & Storage <span class="nav-count">3</span></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">Complete Reference Guide</div>
+    <h1>Connection <span>Strings</span><br>From Scratch</h1>
+    <p>Every connection string format across databases, cloud services, message brokers, caches, and protocols — with anatomy breakdowns and copy-ready examples.</p>
+    <div class="stats-row">
+      <div class="stat-chip"><strong>35+</strong><span>Platforms</span></div>
+      <div class="stat-chip"><strong>10</strong><span>Categories</span></div>
+      <div class="stat-chip"><strong>100+</strong><span>Examples</span></div>
+    </div>
+  </div>
+
+  <!-- ======================== RELATIONAL SQL ======================== -->
+  <div class="section section-target" id="relational">
+    <div class="section-header">
+      <div class="section-icon icon-db">🗄️</div>
+      <div>
+        <h2>Relational SQL Databases</h2>
+        <p>Traditional structured databases with JDBC, ODBC, and driver-specific formats</p>
+      </div>
+    </div>
+
+    <!-- Anatomy First -->
+    <div class="conn-card cat-db" style="margin-bottom:20px">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🧬 Anatomy of a Connection String</div>
+          <div class="card-subtitle">Understanding the common parts before diving in</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="anatomy">
+          <div class="anatomy-string">
+            <span style="color:#00d4ff">protocol</span><span style="color:#94a3b8">://</span><span style="color:#10b981">user</span><span style="color:#94a3b8">:</span><span style="color:#f59e0b">password</span><span style="color:#94a3b8">@</span><span style="color:#ec4899">host</span><span style="color:#94a3b8">:</span><span style="color:#8b5cf6">port</span><span style="color:#94a3b8">/</span><span style="color:#ef4444">database</span><span style="color:#94a3b8">?</span><span style="color:#06b6d4">options</span>
+          </div>
+          <div class="anatomy-parts">
+            <div class="anatomy-part"><span class="dot" style="background:#00d4ff"></span>protocol — driver/engine</div>
+            <div class="anatomy-part"><span class="dot" style="background:#10b981"></span>user — login name</div>
+            <div class="anatomy-part"><span class="dot" style="background:#f59e0b"></span>password — credential</div>
+            <div class="anatomy-part"><span class="dot" style="background:#ec4899"></span>host — server address</div>
+            <div class="anatomy-part"><span class="dot" style="background:#8b5cf6"></span>port — TCP port</div>
+            <div class="anatomy-part"><span class="dot" style="background:#ef4444"></span>database — schema/db name</div>
+            <div class="anatomy-part"><span class="dot" style="background:#06b6d4"></span>options — key=value params</div>
+          </div>
+        </div>
+        <div class="tip-box"><strong>💡 Rule of thumb:</strong> Not all parts are always present. SQLite has no host/user. Some drivers use semicolons (;) instead of & for options. Always check your specific driver docs.</div>
+      </div>
+    </div>
+
+    <div class="cards cards-2">
+
+      <!-- PostgreSQL -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🐘 PostgreSQL</div><div class="card-subtitle">Most popular open-source relational DB</div></div>
+          <span class="card-badge badge-db">SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'pg')">URL Format</div>
+            <div class="tab" onclick="switchTab(this,'pg')">Key-Value</div>
+            <div class="tab" onclick="switchTab(this,'pg')">Python/psycopg2</div>
+            <div class="tab" onclick="switchTab(this,'pg')">SSL</div>
+          </div>
+          <div class="tab-content active">
+            <div class="code-label">Standard URL</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Standard URL format (PostgreSQL + libpq)</span>
+<span class="str">postgresql://</span><span class="val">username</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">5432</span><span class="n">/</span><span class="str">mydb</span>
+
+<span class="cmt"># With options</span>
+<span class="str">postgresql://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host</span><span class="n">:</span><span class="val">5432</span><span class="n">/</span><span class="str">db</span><span class="n">?sslmode=require&connect_timeout=10</span>
+
+<span class="cmt"># postgres:// also works (alias)</span>
+<span class="str">postgres://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host</span><span class="n">/</span><span class="str">db</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Key-Value (libpq)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># libpq key=value format</span>
+<span class="key">host</span>=<span class="val">localhost</span> <span class="key">port</span>=<span class="val">5432</span> <span class="key">dbname</span>=<span class="val">mydb</span>
+<span class="key">user</span>=<span class="val">postgres</span> <span class="key">password</span>=<span class="val">secret</span>
+<span class="key">sslmode</span>=<span class="val">require</span> <span class="key">connect_timeout</span>=<span class="val">10</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Python (psycopg2 / SQLAlchemy)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="kw">import</span> psycopg2
+conn = psycopg2.<span class="key">connect</span>(
+    <span class="str">"postgresql://user:pass@localhost/db"</span>
+)
+
+<span class="cmt"># SQLAlchemy engine</span>
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+engine = create_engine(
+    <span class="str">"postgresql+psycopg2://user:pass@host:5432/db"</span>
+)</pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">With SSL (Production)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># sslmode options: disable, allow, prefer, require, verify-ca, verify-full</span>
+<span class="str">postgresql://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">prod-server</span><span class="n">:</span><span class="val">5432</span><span class="n">/</span><span class="str">db</span>
+<span class="n">?sslmode=verify-full
+&sslcert=/path/to/client.crt
+&sslkey=/path/to/client.key
+&sslrootcert=/path/to/ca.crt</span></pre>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 5432 &nbsp;|&nbsp; <strong>Env var:</strong> DATABASE_URL (Heroku/Railway convention)</div>
+        </div>
+      </div>
+
+      <!-- MySQL -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🐬 MySQL / MariaDB</div><div class="card-subtitle">World's most used open-source DB</div></div>
+          <span class="card-badge badge-db">SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'mysql')">URL Format</div>
+            <div class="tab" onclick="switchTab(this,'mysql')">ODBC</div>
+            <div class="tab" onclick="switchTab(this,'mysql')">Python</div>
+          </div>
+          <div class="tab-content active">
+            <div class="code-label">Standard URL</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Standard</span>
+<span class="str">mysql://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">3306</span><span class="n">/</span><span class="str">mydb</span>
+
+<span class="cmt"># With SSL and charset</span>
+<span class="str">mysql://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host</span><span class="n">:</span><span class="val">3306</span><span class="n">/</span><span class="str">db</span>
+<span class="n">?ssl=true&charset=utf8mb4
+
+</span><span class="cmt"># MariaDB (same format)</span>
+<span class="str">mariadb://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host</span><span class="n">:</span><span class="val">3306</span><span class="n">/</span><span class="str">db</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">ODBC Connection String</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="key">Driver</span>=<span class="val">{MySQL ODBC 8.0 Driver}</span>;
+<span class="key">Server</span>=<span class="val">localhost</span>;
+<span class="key">Port</span>=<span class="val">3306</span>;
+<span class="key">Database</span>=<span class="val">mydb</span>;
+<span class="key">User</span>=<span class="val">root</span>;
+<span class="key">Password</span>=<span class="hl">secret</span>;
+<span class="key">Option</span>=<span class="val">3</span>;</pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Python (mysql-connector / SQLAlchemy)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># mysql-connector-python</span>
+<span class="kw">import</span> mysql.connector
+conn = mysql.connector.<span class="key">connect</span>(
+    host=<span class="str">"localhost"</span>, port=<span class="val">3306</span>,
+    user=<span class="str">"root"</span>, password=<span class="str">"secret"</span>,
+    database=<span class="str">"mydb"</span>
+)
+<span class="cmt"># SQLAlchemy</span>
+<span class="str">"mysql+mysqlconnector://user:pass@host/db"</span>
+<span class="str">"mysql+pymysql://user:pass@host/db"</span></pre>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 3306 &nbsp;|&nbsp; <strong>Note:</strong> Always set charset=utf8mb4 for emoji support</div>
+        </div>
+      </div>
+
+      <!-- SQL Server -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🪟 SQL Server (MSSQL)</div><div class="card-subtitle">Microsoft's enterprise relational database</div></div>
+          <span class="card-badge badge-db">SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'mssql')">ADO.NET</div>
+            <div class="tab" onclick="switchTab(this,'mssql')">ODBC</div>
+            <div class="tab" onclick="switchTab(this,'mssql')">Python/Node</div>
+          </div>
+          <div class="tab-content active">
+            <div class="code-label">ADO.NET (C# / .NET)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt">// Standard SQL auth</span>
+<span class="key">Server</span>=<span class="val">myserver.database.windows.net</span>;
+<span class="key">Database</span>=<span class="val">mydb</span>;
+<span class="key">User Id</span>=<span class="val">myuser</span>;
+<span class="key">Password</span>=<span class="hl">mypassword</span>;
+<span class="key">Encrypt</span>=<span class="val">True</span>;
+
+<span class="cmt">// Windows Integrated Auth (no password needed)</span>
+<span class="key">Server</span>=<span class="val">localhost\SQLEXPRESS</span>;
+<span class="key">Database</span>=<span class="val">mydb</span>;
+<span class="key">Trusted_Connection</span>=<span class="val">True</span>;
+<span class="key">TrustServerCertificate</span>=<span class="val">True</span>;</pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">ODBC Format</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="key">Driver</span>=<span class="val">{ODBC Driver 18 for SQL Server}</span>;
+<span class="key">Server</span>=<span class="val">tcp:myserver,1433</span>;
+<span class="key">Database</span>=<span class="val">mydb</span>;
+<span class="key">Uid</span>=<span class="val">myuser</span>;
+<span class="key">Pwd</span>=<span class="hl">{my_password}</span>;
+<span class="key">Encrypt</span>=<span class="val">yes</span>;
+<span class="key">TrustServerCertificate</span>=<span class="val">no</span>;</pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Python (pyodbc) / Node (mssql)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Python SQLAlchemy</span>
+<span class="str">"mssql+pyodbc://user:pass@server/db?driver=ODBC+Driver+18+for+SQL+Server"</span>
+
+<span class="cmt">// Node.js (mssql package)</span>
+<span class="kw">const</span> config = {
+  server: <span class="str">'myserver'</span>,
+  database: <span class="str">'mydb'</span>,
+  user: <span class="str">'user'</span>,
+  password: <span class="str">'pass'</span>,
+  port: <span class="val">1433</span>,
+  options: { encrypt: <span class="val">true</span>, trustServerCertificate: <span class="val">false</span> }
+};</pre>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 1433 &nbsp;|&nbsp; <strong>Named instance:</strong> Server=host\INSTANCE_NAME</div>
+        </div>
+      </div>
+
+      <!-- SQLite -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">📦 SQLite</div><div class="card-subtitle">Serverless file-based database</div></div>
+          <span class="card-badge badge-db">SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">File Path (no host/user needed)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Relative path</span>
+<span class="str">sqlite:///relative/path/to/db.sqlite</span>
+
+<span class="cmt"># Absolute path (note 4 slashes on Unix)</span>
+<span class="str">sqlite:////home/user/mydb.sqlite</span>
+
+<span class="cmt"># In-memory (lost when connection closes)</span>
+<span class="str">sqlite:///:memory:</span>
+
+<span class="cmt"># Python built-in</span>
+<span class="kw">import</span> sqlite3
+conn = sqlite3.<span class="key">connect</span>(<span class="str">"mydb.sqlite"</span>)
+conn = sqlite3.<span class="key">connect</span>(<span class="str">":memory:"</span>)</pre>
+          </div>
+          <div class="tip-box"><strong>No server needed</strong> — SQLite is a file. Perfect for dev, testing, and embedded apps. LangChain memory often uses SQLite.</div>
+        </div>
+      </div>
+
+      <!-- Oracle -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🔴 Oracle DB</div><div class="card-subtitle">Enterprise-grade Oracle database</div></div>
+          <span class="card-badge badge-db">SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">JDBC / cx_Oracle / SQLAlchemy</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt">// JDBC URL</span>
+<span class="str">jdbc:oracle:thin:</span><span class="n">@</span><span class="key">hostname</span><span class="n">:</span><span class="val">1521</span><span class="n">:</span><span class="str">ORCL</span>
+<span class="cmt">// With service name (preferred in modern Oracle)</span>
+<span class="str">jdbc:oracle:thin:</span><span class="n">@//</span><span class="key">hostname</span><span class="n">:</span><span class="val">1521</span><span class="n">/</span><span class="str">service_name</span>
+
+<span class="cmt"># Python (cx_Oracle / python-oracledb)</span>
+<span class="key">DSN</span> = <span class="str">"hostname:1521/service_name"</span>
+conn = cx_Oracle.<span class="key">connect</span>(
+    user=<span class="str">"scott"</span>, password=<span class="str">"tiger"</span>, dsn=DSN
+)
+<span class="cmt"># SQLAlchemy</span>
+<span class="str">"oracle+cx_oracle://user:pass@host:1521/?service_name=orcl"</span></pre>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 1521 &nbsp;|&nbsp; <strong>SID vs Service:</strong> Use service name (newer). SID is legacy.</div>
+        </div>
+      </div>
+
+      <!-- Supabase / PlanetScale / Neon -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">☁️ Cloud SQL Platforms</div><div class="card-subtitle">Supabase, PlanetScale, Neon, Render Postgres</div></div>
+          <span class="card-badge badge-db">Cloud SQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Supabase (PostgreSQL)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Supabase direct connection</span>
+<span class="str">postgresql://</span><span class="val">postgres</span><span class="n">:</span><span class="hl">[password]</span><span class="n">@</span>
+<span class="key">db.xxxx.supabase.co</span><span class="n">:</span><span class="val">5432</span><span class="n">/</span><span class="str">postgres</span>
+
+<span class="cmt"># Supabase pooled (transaction mode via PgBouncer)</span>
+<span class="str">postgresql://</span><span class="val">postgres</span><span class="n">:</span><span class="hl">[password]</span><span class="n">@</span>
+<span class="key">aws-0-us-east-1.pooler.supabase.com</span><span class="n">:</span><span class="val">6543</span><span class="n">/</span><span class="str">postgres</span>
+
+<span class="cmt"># Neon (serverless Postgres)</span>
+<span class="str">postgresql://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">ep-xxx.us-east-2.aws.neon.tech</span><span class="n">/</span><span class="str">dbname</span>
+<span class="n">?sslmode=require</span>
+
+<span class="cmt"># PlanetScale (MySQL-compatible)</span>
+<span class="str">mysql://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">xxx.connect.psdb.cloud</span><span class="n">/</span><span class="str">mydb</span>
+<span class="n">?ssl={"rejectUnauthorized":true}</span></pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== NOSQL ======================== -->
+  <div class="section section-target" id="nosql">
+    <div class="section-header">
+      <div class="section-icon icon-db">🍃</div>
+      <div>
+        <h2>NoSQL / Document Databases</h2>
+        <p>MongoDB, Firestore, DynamoDB and other schema-flexible stores</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <!-- MongoDB -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🍃 MongoDB</div><div class="card-subtitle">Document database with rich query language</div></div>
+          <span class="card-badge badge-db">NoSQL</span>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'mongo')">Standard</div>
+            <div class="tab" onclick="switchTab(this,'mongo')">Atlas Cloud</div>
+            <div class="tab" onclick="switchTab(this,'mongo')">Python/Node</div>
+          </div>
+          <div class="tab-content active">
+            <div class="code-label">MongoDB URI Format</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Basic</span>
+<span class="str">mongodb://</span><span class="val">localhost</span><span class="n">:</span><span class="val">27017</span><span class="n">/</span><span class="str">mydb</span>
+
+<span class="cmt"># With auth</span>
+<span class="str">mongodb://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">27017</span><span class="n">/</span><span class="str">mydb</span>
+<span class="n">?authSource=admin
+
+</span><span class="cmt"># Replica set</span>
+<span class="str">mongodb://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host1</span><span class="n">:</span><span class="val">27017</span><span class="n">,</span><span class="key">host2</span><span class="n">:</span><span class="val">27017</span><span class="n">/</span><span class="str">db</span>
+<span class="n">?replicaSet=myReplSet&readPreference=secondaryPreferred</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">MongoDB Atlas (SRV)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Atlas uses +srv for DNS-based discovery (no port needed)</span>
+<span class="str">mongodb+srv://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span>
+<span class="key">cluster0.xxxxx.mongodb.net</span><span class="n">/</span><span class="str">mydb</span>
+<span class="n">?retryWrites=true&w=majority
+&appName=MyApp</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Python (pymongo) / Node (mongoose)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Python</span>
+<span class="kw">from</span> pymongo <span class="kw">import</span> MongoClient
+client = MongoClient(<span class="str">"mongodb+srv://user:pass@cluster/db"</span>)
+db = client[<span class="str">"mydb"</span>]
+
+<span class="cmt">// Mongoose (Node.js)</span>
+<span class="kw">await</span> mongoose.<span class="key">connect</span>(
+  <span class="str">"mongodb+srv://user:pass@cluster/db"</span>,
+  { useNewUrlParser: <span class="val">true</span>, useUnifiedTopology: <span class="val">true</span> }
+);</pre>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 27017 &nbsp;|&nbsp; <strong>Atlas tip:</strong> Always use +srv format for Atlas — it handles failover automatically</div>
+        </div>
+      </div>
+
+      <!-- Cosmos DB -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🌌 Azure Cosmos DB</div><div class="card-subtitle">Multi-model globally distributed database</div></div>
+          <span class="card-badge badge-db">NoSQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Cosmos DB Connection Patterns</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># NoSQL API (native SDK)</span>
+<span class="kw">from</span> azure.cosmos <span class="kw">import</span> CosmosClient
+client = CosmosClient(
+    url=<span class="str">"https://myaccount.documents.azure.com:443/"</span>,
+    credential=<span class="str">"PRIMARY_KEY_HERE"</span>
+)
+
+<span class="cmt"># MongoDB API (use mongo URI with SSL)</span>
+<span class="str">mongodb://</span><span class="val">account</span><span class="n">:</span><span class="hl">PRIMARY_KEY</span><span class="n">@</span>
+<span class="key">account.mongo.cosmos.azure.com</span><span class="n">:</span><span class="val">10255</span><span class="n">/</span><span class="str">mydb</span>
+<span class="n">?ssl=true&retrywrites=false
+
+</span><span class="cmt"># Connection string from portal</span>
+<span class="key">AccountEndpoint</span>=<span class="val">https://account.documents.azure.com:443/</span>;
+<span class="key">AccountKey</span>=<span class="hl">BASE64KEY==</span>;</pre>
+          </div>
+          <div class="warn-box"><strong>⚠️ Security:</strong> Use Managed Identity or Azure Key Vault in production — never hardcode AccountKey</div>
+        </div>
+      </div>
+
+      <!-- Firestore -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🔥 Firebase / Firestore</div><div class="card-subtitle">Google's real-time NoSQL cloud database</div></div>
+          <span class="card-badge badge-db">NoSQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Firebase SDK Config (no URI — uses JSON credentials)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt">// Client SDK (browser/React Native)</span>
+<span class="kw">import</span> { initializeApp } <span class="kw">from</span> <span class="str">"firebase/app"</span>;
+<span class="kw">const</span> firebaseConfig = {
+  apiKey: <span class="str">"AIzaSy..."</span>,
+  authDomain: <span class="str">"myapp.firebaseapp.com"</span>,
+  projectId: <span class="str">"myapp-12345"</span>,
+  storageBucket: <span class="str">"myapp.appspot.com"</span>,
+  messagingSenderId: <span class="str">"123456789"</span>,
+  appId: <span class="str">"1:123:web:abc..."</span>
+};
+<span class="kw">const</span> app = initializeApp(firebaseConfig);
+
+<span class="cmt"># Python Admin SDK (server-side)</span>
+<span class="kw">import</span> firebase_admin
+cred = firebase_admin.credentials.<span class="key">Certificate</span>(
+    <span class="str">"serviceAccountKey.json"</span>
+)
+firebase_admin.<span class="key">initialize_app</span>(cred)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- DynamoDB -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">⚡ Amazon DynamoDB</div><div class="card-subtitle">AWS serverless key-value & document store</div></div>
+          <span class="card-badge badge-db">NoSQL</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">DynamoDB — Uses AWS credentials (no URI)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Python (boto3)</span>
+<span class="kw">import</span> boto3
+dynamodb = boto3.<span class="key">resource</span>(
+    <span class="str">"dynamodb"</span>,
+    region_name=<span class="str">"us-east-1"</span>,
+    aws_access_key_id=<span class="str">"AKIAIOSFODNN7"</span>,
+    aws_secret_access_key=<span class="str">"wJalrXUtnFEMI"</span>
+)
+<span class="cmt"># Or use environment variables (preferred)</span>
+<span class="cmt"># AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION</span>
+
+<span class="cmt"># Local DynamoDB for dev</span>
+dynamodb = boto3.<span class="key">resource</span>(
+    <span class="str">"dynamodb"</span>,
+    endpoint_url=<span class="str">"http://localhost:8000"</span>
+)</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== VECTOR & GRAPH ======================== -->
+  <div class="section section-target" id="vector">
+    <div class="section-header">
+      <div class="section-icon icon-db">🧠</div>
+      <div>
+        <h2>Vector & Graph Databases</h2>
+        <p>AI-native stores — semantic search, embeddings, and knowledge graphs</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <!-- Chroma -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🎨 ChromaDB</div><div class="card-subtitle">Open-source vector DB for AI apps</div></div>
+          <span class="card-badge badge-db">Vector</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">ChromaDB Connection Modes</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">import</span> chromadb
+
+<span class="cmt"># In-memory (ephemeral — for testing)</span>
+client = chromadb.<span class="key">EphemeralClient</span>()
+
+<span class="cmt"># Persistent local (file-backed)</span>
+client = chromadb.<span class="key">PersistentClient</span>(
+    path=<span class="str">"/path/to/chroma_data"</span>
+)
+
+<span class="cmt"># Remote HTTP client (ChromaDB server running)</span>
+client = chromadb.<span class="key">HttpClient</span>(
+    host=<span class="str">"localhost"</span>,
+    port=<span class="val">8000</span>
+)
+
+<span class="cmt"># Cloud (Chroma Cloud)</span>
+client = chromadb.cloud.<span class="key">CloudClient</span>(
+    tenant=<span class="str">"my-tenant"</span>,
+    database=<span class="str">"my-db"</span>,
+    api_key=<span class="str">"chroma-api-key"</span>
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinecone -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🌲 Pinecone</div><div class="card-subtitle">Managed vector database for ML</div></div>
+          <span class="card-badge badge-db">Vector</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Pinecone (API Key Based)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">from</span> pinecone <span class="kw">import</span> Pinecone
+
+<span class="cmt"># Initialize with API key</span>
+pc = Pinecone(api_key=<span class="str">"your-api-key"</span>)
+
+<span class="cmt"># Connect to index</span>
+index = pc.<span class="key">Index</span>(<span class="str">"my-index"</span>)
+
+<span class="cmt"># Or specify host directly</span>
+index = pc.<span class="key">Index</span>(
+    name=<span class="str">"my-index"</span>,
+    host=<span class="str">"https://my-index-xxx.svc.pinecone.io"</span>
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weaviate -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🕸️ Weaviate</div><div class="card-subtitle">Open-source AI-native vector search engine</div></div>
+          <span class="card-badge badge-db">Vector</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Weaviate Client</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">import</span> weaviate
+<span class="kw">from</span> weaviate.auth <span class="kw">import</span> AuthApiKey
+
+<span class="cmt"># Local instance</span>
+client = weaviate.<span class="key">connect_to_local</span>(
+    host=<span class="str">"localhost"</span>,
+    port=<span class="val">8080</span>, grpc_port=<span class="val">50051</span>
+)
+
+<span class="cmt"># Weaviate Cloud Services (WCS)</span>
+client = weaviate.<span class="key">connect_to_wcs</span>(
+    cluster_url=<span class="str">"https://cluster.weaviate.network"</span>,
+    auth_credentials=AuthApiKey(<span class="str">"wcs-api-key"</span>)
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Neo4j -->
+      <div class="conn-card cat-db">
+        <div class="card-header">
+          <div><div class="card-title">🕷️ Neo4j</div><div class="card-subtitle">Graph database — nodes, edges, relationships</div></div>
+          <span class="card-badge badge-db">Graph</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Neo4j Bolt / HTTP Connection</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">from</span> neo4j <span class="kw">import</span> GraphDatabase
+
+<span class="cmt"># Bolt protocol (default, binary, fast)</span>
+driver = GraphDatabase.<span class="key">driver</span>(
+    <span class="str">"bolt://localhost:7687"</span>,
+    auth=(<span class="str">"neo4j"</span>, <span class="str">"password"</span>)
+)
+
+<span class="cmt"># Neo4j Aura (cloud, TLS)</span>
+driver = GraphDatabase.<span class="key">driver</span>(
+    <span class="str">"neo4j+s://xxxxx.databases.neo4j.io"</span>,
+    auth=(<span class="str">"neo4j"</span>, <span class="str">"password"</span>)
+)
+<span class="cmt"># neo4j:// — bolt, no TLS</span>
+<span class="cmt"># neo4j+s:// — bolt with TLS</span>
+<span class="cmt"># neo4j+ssc:// — bolt with TLS, no cert validation</span></pre>
+          </div>
+          <div class="tip-box"><strong>Ports:</strong> Bolt: 7687 &nbsp;|&nbsp; HTTP: 7474 &nbsp;|&nbsp; HTTPS: 7473</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== AZURE ======================== -->
+  <div class="section section-target" id="azure">
+    <div class="section-header">
+      <div class="section-icon icon-cloud">☁️</div>
+      <div>
+        <h2>Azure Cloud Services</h2>
+        <p>Storage, Service Bus, Event Hubs, AI Services and more</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <!-- Azure Storage -->
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">🗃️ Azure Storage</div><div class="card-subtitle">Blob, Queue, Table, File storage</div></div>
+          <span class="card-badge badge-cloud">Azure</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Storage Account Connection String</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Full connection string (from Azure Portal)</span>
+<span class="key">DefaultEndpointsProtocol</span>=<span class="val">https</span>;
+<span class="key">AccountName</span>=<span class="val">mystorageaccount</span>;
+<span class="key">AccountKey</span>=<span class="hl">BASE64_KEY==</span>;
+<span class="key">EndpointSuffix</span>=<span class="val">core.windows.net</span>
+
+<span class="cmt"># Blob-specific URL (with SAS token)</span>
+<span class="str">https://</span><span class="key">account</span><span class="str">.blob.core.windows.net/</span><span class="val">container</span>
+<span class="n">?sv=2021-06-08&ss=b&srt=sco&sp=rwdlacuptfx
+&se=2024-12-31T00%3A00%3A00Z&sig=SIGNATURE
+
+</span><span class="cmt"># Python SDK (preferred — Managed Identity)</span>
+<span class="kw">from</span> azure.storage.blob <span class="kw">import</span> BlobServiceClient
+<span class="kw">from</span> azure.identity <span class="kw">import</span> DefaultAzureCredential
+client = BlobServiceClient(
+    account_url=<span class="str">"https://account.blob.core.windows.net"</span>,
+    credential=DefaultAzureCredential()
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Azure Service Bus -->
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">🚌 Azure Service Bus</div><div class="card-subtitle">Enterprise messaging — queues and topics</div></div>
+          <span class="card-badge badge-cloud">Azure</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Service Bus Connection String</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Shared Access Signature (SAS)</span>
+<span class="key">Endpoint</span>=<span class="val">sb://mynamespace.servicebus.windows.net/</span>;
+<span class="key">SharedAccessKeyName</span>=<span class="val">RootManageSharedAccessKey</span>;
+<span class="key">SharedAccessKey</span>=<span class="hl">BASE64_KEY=</span>
+
+<span class="cmt"># Python SDK</span>
+<span class="kw">from</span> azure.servicebus <span class="kw">import</span> ServiceBusClient
+client = ServiceBusClient.<span class="key">from_connection_string</span>(
+    conn_str=<span class="str">"Endpoint=sb://..."</span>
+)
+sender = client.<span class="key">get_queue_sender</span>(
+    queue_name=<span class="str">"my-queue"</span>
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Azure Event Hubs -->
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">📡 Azure Event Hubs</div><div class="card-subtitle">Real-time data streaming ingestion service</div></div>
+          <span class="card-badge badge-cloud">Azure</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Event Hubs Connection String</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Namespace-level (can send to any hub)</span>
+<span class="key">Endpoint</span>=<span class="val">sb://mynamespace.servicebus.windows.net/</span>;
+<span class="key">SharedAccessKeyName</span>=<span class="val">RootManageSharedAccessKey</span>;
+<span class="key">SharedAccessKey</span>=<span class="hl">BASE64_KEY=</span>
+
+<span class="cmt"># Entity-level (specific event hub)</span>
+<span class="key">Endpoint</span>=<span class="val">sb://mynamespace.servicebus.windows.net/</span>;
+<span class="key">SharedAccessKeyName</span>=<span class="val">send</span>;
+<span class="key">SharedAccessKey</span>=<span class="hl">KEY=</span>;
+<span class="key">EntityPath</span>=<span class="val">my-event-hub</span></pre>
+          </div>
+          <div class="tip-box"><strong>Note:</strong> Event Hubs and Service Bus share the same sb:// namespace format but use different SDKs</div>
+        </div>
+      </div>
+
+      <!-- Azure SQL / Cosmos -->
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">🔷 Azure SQL Database</div><div class="card-subtitle">Managed SQL Server in the cloud</div></div>
+          <span class="card-badge badge-cloud">Azure</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Azure SQL Connection String</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># ADO.NET</span>
+<span class="key">Server</span>=<span class="val">tcp:myserver.database.windows.net,1433</span>;
+<span class="key">Initial Catalog</span>=<span class="val">mydb</span>;
+<span class="key">Persist Security Info</span>=<span class="val">False</span>;
+<span class="key">User ID</span>=<span class="val">myuser</span>;
+<span class="key">Password</span>=<span class="hl">mypassword</span>;
+<span class="key">MultipleActiveResultSets</span>=<span class="val">False</span>;
+<span class="key">Encrypt</span>=<span class="val">True</span>;
+<span class="key">TrustServerCertificate</span>=<span class="val">False</span>;
+<span class="key">Connection Timeout</span>=<span class="val">30</span>;</pre>
+          </div>
+          <div class="warn-box"><strong>⚠️ Best practice:</strong> Use Azure Managed Identity instead of passwords — eliminates credential management entirely</div>
+        </div>
+      </div>
+
+      <!-- Azure AI / OpenAI -->
+      <div class="conn-card cat-cloud" style="grid-column: span 2;">
+        <div class="card-header">
+          <div><div class="card-title">🤖 Azure OpenAI / AI Services</div><div class="card-subtitle">Azure-hosted LLMs, Cognitive Services, AI Search</div></div>
+          <span class="card-badge badge-cloud">Azure AI</span>
+        </div>
+        <div class="card-body">
+          <div class="cards cards-2" style="margin:0">
+            <div>
+              <div class="code-label">Azure OpenAI</div>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                <pre><span class="kw">from</span> openai <span class="kw">import</span> AzureOpenAI
+client = AzureOpenAI(
+    api_key=<span class="str">"AZURE_OPENAI_KEY"</span>,
+    api_version=<span class="str">"2024-02-01"</span>,
+    azure_endpoint=<span class="str">"https://myresource.openai.azure.com/"</span>
+)
+<span class="cmt"># ENV VARS: AZURE_OPENAI_API_KEY
+# AZURE_OPENAI_ENDPOINT, OPENAI_API_VERSION</span></pre>
+              </div>
+            </div>
+            <div>
+              <div class="code-label">Azure AI Search</div>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                <pre><span class="kw">from</span> azure.search.documents <span class="kw">import</span> SearchClient
+client = SearchClient(
+    endpoint=<span class="str">"https://myservice.search.windows.net"</span>,
+    index_name=<span class="str">"my-index"</span>,
+    credential=AzureKeyCredential(<span class="str">"ADMIN_KEY"</span>)
+)</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== AWS ======================== -->
+  <div class="section section-target" id="aws">
+    <div class="section-header">
+      <div class="section-icon icon-cloud">🟠</div>
+      <div>
+        <h2>AWS Services</h2>
+        <p>S3, RDS, SQS and AWS connection patterns</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">🪣 AWS S3</div><div class="card-subtitle">Simple Storage Service — object storage</div></div>
+          <span class="card-badge badge-cloud">AWS</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">S3 Paths & boto3</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># S3 URI format (used in many tools)</span>
+<span class="str">s3://</span><span class="key">my-bucket</span><span class="n">/</span><span class="val">path/to/object.csv</span>
+
+<span class="cmt"># boto3 (uses AWS credentials from env/config)</span>
+<span class="kw">import</span> boto3
+s3 = boto3.<span class="key">client</span>(
+    <span class="str">'s3'</span>,
+    region_name=<span class="str">'us-east-1'</span>,
+    aws_access_key_id=<span class="str">'AKIAIOSFODNN7'</span>,
+    aws_secret_access_key=<span class="str">'wJalrXUtnFEMI'</span>
+)
+<span class="cmt"># Best practice: use ~/.aws/credentials or IAM role</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">📨 AWS SQS / SNS</div><div class="card-subtitle">Simple Queue Service / Notification Service</div></div>
+          <span class="card-badge badge-cloud">AWS</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">SQS Queue URL (not a classic connection string)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># SQS Queue URL format</span>
+<span class="str">https://sqs.</span><span class="val">us-east-1</span><span class="str">.amazonaws.com/</span>
+<span class="key">123456789012</span><span class="n">/</span><span class="str">MyQueueName</span>
+
+<span class="cmt"># boto3 usage</span>
+sqs = boto3.<span class="key">client</span>(<span class="str">'sqs'</span>, region_name=<span class="str">'us-east-1'</span>)
+sqs.<span class="key">send_message</span>(
+    QueueUrl=<span class="str">"https://sqs.us-east-1.amazonaws.com/..."</span>,
+    MessageBody=<span class="str">"Hello"</span>
+)</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-cloud">
+        <div class="card-header">
+          <div><div class="card-title">🗄️ AWS RDS</div><div class="card-subtitle">Managed relational DB (Postgres, MySQL, etc.)</div></div>
+          <span class="card-badge badge-cloud">AWS</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">RDS Endpoint (same as standard DB URLs)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># RDS uses standard DB connection strings — just with RDS hostname</span>
+
+<span class="cmt"># PostgreSQL on RDS</span>
+<span class="str">postgresql://</span><span class="val">admin</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span>
+<span class="key">mydb.cluster-xxx.us-east-1.rds.amazonaws.com</span>
+<span class="n">:</span><span class="val">5432</span><span class="n">/</span><span class="str">mydb</span>
+
+<span class="cmt"># MySQL on RDS</span>
+<span class="str">mysql://</span><span class="val">admin</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span>
+<span class="key">mydb.xxx.us-east-1.rds.amazonaws.com</span>
+<span class="n">:</span><span class="val">3306</span><span class="n">/</span><span class="str">mydb</span></pre>
+          </div>
+          <div class="tip-box"><strong>IAM Auth:</strong> AWS RDS supports token-based IAM authentication — no password needed with proper IAM role</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== MESSAGING ======================== -->
+  <div class="section section-target" id="messaging">
+    <div class="section-header">
+      <div class="section-icon icon-msg">📨</div>
+      <div>
+        <h2>Message Brokers</h2>
+        <p>RabbitMQ, Kafka, NATS — async communication between services</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-msg">
+        <div class="card-header">
+          <div><div class="card-title">🐰 RabbitMQ</div><div class="card-subtitle">AMQP message broker</div></div>
+          <span class="card-badge badge-msg">AMQP</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">AMQP URI Format</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># AMQP (plain)</span>
+<span class="str">amqp://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">5672</span><span class="n">/</span><span class="str">vhost</span>
+
+<span class="cmt"># AMQPS (TLS)</span>
+<span class="str">amqps://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">broker.host.com</span><span class="n">:</span><span class="val">5671</span><span class="n">/</span><span class="str">vhost</span>
+
+<span class="cmt"># Python (pika)</span>
+<span class="kw">import</span> pika
+params = pika.<span class="key">URLParameters</span>(
+    <span class="str">"amqp://guest:guest@localhost:5672/%2F"</span>
+)
+conn = pika.<span class="key">BlockingConnection</span>(params)</pre>
+          </div>
+          <div class="tip-box"><strong>Default ports:</strong> AMQP: 5672 &nbsp;|&nbsp; AMQPS: 5671 &nbsp;|&nbsp; Management UI: 15672</div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-msg">
+        <div class="card-header">
+          <div><div class="card-title">🪵 Apache Kafka</div><div class="card-subtitle">High-throughput distributed event streaming</div></div>
+          <span class="card-badge badge-msg">Kafka</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Kafka Bootstrap Servers (not a URI — comma-separated list)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Kafka uses bootstrap servers list (no URI scheme)</span>
+<span class="key">bootstrap.servers</span>=<span class="val">broker1:9092,broker2:9092</span>
+
+<span class="cmt"># Python (confluent-kafka)</span>
+<span class="kw">from</span> confluent_kafka <span class="kw">import</span> Producer
+p = Producer({
+    <span class="str">"bootstrap.servers"</span>: <span class="str">"localhost:9092"</span>
+})
+
+<span class="cmt"># With SASL/SSL (cloud Kafka)</span>
+{
+  <span class="str">"bootstrap.servers"</span>: <span class="str">"broker.cloud:9092"</span>,
+  <span class="str">"security.protocol"</span>: <span class="str">"SASL_SSL"</span>,
+  <span class="str">"sasl.mechanism"</span>: <span class="str">"PLAIN"</span>,
+  <span class="str">"sasl.username"</span>: <span class="str">"API_KEY"</span>,
+  <span class="str">"sasl.password"</span>: <span class="str">"API_SECRET"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-msg">
+        <div class="card-header">
+          <div><div class="card-title">🔗 NATS</div><div class="card-subtitle">Lightweight cloud-native messaging system</div></div>
+          <span class="card-badge badge-msg">NATS</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">NATS URL</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Basic NATS</span>
+<span class="str">nats://localhost:4222</span>
+
+<span class="cmt"># With credentials</span>
+<span class="str">nats://</span><span class="val">user</span><span class="n">:</span><span class="hl">token</span><span class="n">@</span><span class="key">nats.example.com</span><span class="n">:</span><span class="val">4222</span>
+
+<span class="cmt"># TLS</span>
+<span class="str">tls://nats.example.com:4222</span>
+
+<span class="cmt"># Python</span>
+<span class="kw">import</span> nats
+nc = <span class="kw">await</span> nats.<span class="key">connect</span>(<span class="str">"nats://localhost:4222"</span>)</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== CACHE ======================== -->
+  <div class="section section-target" id="cache">
+    <div class="section-header">
+      <div class="section-icon icon-cache">⚡</div>
+      <div>
+        <h2>Cache & Key-Value Stores</h2>
+        <p>Redis, Memcached, and in-memory data structures</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-cache">
+        <div class="card-header">
+          <div><div class="card-title">🔴 Redis</div><div class="card-subtitle">In-memory data structure store</div></div>
+          <span class="card-badge badge-cache">Cache</span>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'redis')">URL</div>
+            <div class="tab" onclick="switchTab(this,'redis')">Python</div>
+            <div class="tab" onclick="switchTab(this,'redis')">Cluster/TLS</div>
+          </div>
+          <div class="tab-content active">
+            <div class="code-label">Redis URI</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Basic (no auth)</span>
+<span class="str">redis://localhost:6379</span>
+
+<span class="cmt"># With password</span>
+<span class="str">redis://:</span><span class="hl">mypassword</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">6379</span>
+
+<span class="cmt"># With username (Redis 6+)</span>
+<span class="str">redis://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">localhost</span><span class="n">:</span><span class="val">6379</span>
+
+<span class="cmt"># With DB index (0-15)</span>
+<span class="str">redis://localhost:6379/</span><span class="val">0</span>
+
+<span class="cmt"># TLS (rediss://)</span>
+<span class="str">rediss://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">redis.cloud.com</span><span class="n">:</span><span class="val">6380</span></pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Python (redis-py)</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="kw">import</span> redis
+
+<span class="cmt"># From URL</span>
+r = redis.Redis.<span class="key">from_url</span>(<span class="str">"redis://localhost:6379/0"</span>)
+
+<span class="cmt"># Parameters</span>
+r = redis.<span class="key">Redis</span>(
+    host=<span class="str">"localhost"</span>, port=<span class="val">6379</span>, db=<span class="val">0</span>,
+    password=<span class="str">"secret"</span>, decode_responses=<span class="val">True</span>
+)
+
+<span class="cmt"># Async (aioredis)</span>
+<span class="kw">import</span> redis.asyncio <span class="kw">as</span> aioredis
+r = <span class="kw">await</span> aioredis.<span class="key">from_url</span>(<span class="str">"redis://localhost"</span>)</pre>
+            </div>
+          </div>
+          <div class="tab-content">
+            <div class="code-label">Redis Cluster & Sentinel</div>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copyCode(this)">copy</button>
+              <pre><span class="cmt"># Redis Cluster</span>
+<span class="kw">from</span> redis.cluster <span class="kw">import</span> RedisCluster
+rc = RedisCluster(
+    startup_nodes=[
+        {<span class="str">"host"</span>: <span class="str">"node1"</span>, <span class="str">"port"</span>: <span class="str">"6379"</span>},
+        {<span class="str">"host"</span>: <span class="str">"node2"</span>, <span class="str">"port"</span>: <span class="str">"6379"</span>}
+    ],
+    decode_responses=<span class="val">True</span>
+)
+<span class="cmt"># Upstash (serverless Redis, HTTPS)</span>
+<span class="str">rediss://default:</span><span class="hl">TOKEN</span><span class="n">@</span><span class="key">xxx.upstash.io</span><span class="n">:</span><span class="val">6379</span></pre>
+            </div>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 6379 &nbsp;|&nbsp; <strong>TLS:</strong> rediss:// (double-s) &nbsp;|&nbsp; <strong>Azure Cache for Redis</strong> uses port 6380 with SSL</div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-cache">
+        <div class="card-header">
+          <div><div class="card-title">🧠 Memcached</div><div class="card-subtitle">Simple, fast distributed memory caching</div></div>
+          <span class="card-badge badge-cache">Cache</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Memcached Connection</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># Memcached has no URI standard — uses host:port tuples</span>
+
+<span class="cmt"># Python (pymemcache)</span>
+<span class="kw">from</span> pymemcache.client.base <span class="kw">import</span> Client
+client = Client((<span class="str">"localhost"</span>, <span class="val">11211</span>))
+
+<span class="cmt"># Multiple servers (pooling)</span>
+<span class="kw">from</span> pymemcache.client.hash <span class="kw">import</span> HashClient
+client = HashClient([
+    (<span class="str">"server1"</span>, <span class="val">11211</span>),
+    (<span class="str">"server2"</span>, <span class="val">11211</span>)
+])</pre>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 11211 &nbsp;|&nbsp; No auth in basic Memcached</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== NETWORK ======================== -->
+  <div class="section section-target" id="network">
+    <div class="section-header">
+      <div class="section-icon icon-net">🌐</div>
+      <div>
+        <h2>Network Protocols & Transfer</h2>
+        <p>FTP, SSH/SFTP, SMTP, LDAP — lower-level connection strings</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-net">
+        <div class="card-header">
+          <div><div class="card-title">📂 FTP / SFTP</div><div class="card-subtitle">File transfer protocols</div></div>
+          <span class="card-badge badge-net">Protocol</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">FTP / SFTP URIs</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># FTP</span>
+<span class="str">ftp://</span><span class="val">user</span><span class="n">:</span><span class="hl">password</span><span class="n">@</span><span class="key">ftp.example.com</span><span class="n">:</span><span class="val">21</span><span class="n">/</span><span class="str">path/to/dir</span>
+
+<span class="cmt"># FTPS (FTP over TLS)</span>
+<span class="str">ftps://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">ftp.example.com</span><span class="n">:</span><span class="val">990</span>
+
+<span class="cmt"># SFTP (SSH File Transfer — different from FTPS)</span>
+<span class="str">sftp://</span><span class="val">user</span><span class="n">:</span><span class="hl">pass</span><span class="n">@</span><span class="key">host.com</span><span class="n">:</span><span class="val">22</span><span class="n">/</span><span class="str">remote/path</span>
+
+<span class="cmt"># Python (paramiko SFTP)</span>
+<span class="kw">import</span> paramiko
+ssh = paramiko.<span class="key">SSHClient</span>()
+ssh.<span class="key">connect</span>(<span class="str">"host"</span>, port=<span class="val">22</span>, username=<span class="str">"user"</span>, password=<span class="str">"pass"</span>)
+sftp = ssh.<span class="key">open_sftp</span>()</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-net">
+        <div class="card-header">
+          <div><div class="card-title">📧 SMTP / IMAP / POP3</div><div class="card-subtitle">Email protocols</div></div>
+          <span class="card-badge badge-net">Email</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Email Protocol Connections</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># SMTP URIs</span>
+<span class="str">smtp://</span><span class="key">smtp.gmail.com</span><span class="n">:</span><span class="val">587</span>        <span class="cmt"># STARTTLS</span>
+<span class="str">smtps://</span><span class="key">smtp.gmail.com</span><span class="n">:</span><span class="val">465</span>       <span class="cmt"># SSL/TLS</span>
+
+<span class="cmt"># Python smtplib</span>
+<span class="kw">import</span> smtplib
+smtp = smtplib.<span class="key">SMTP</span>(<span class="str">"smtp.gmail.com"</span>, <span class="val">587</span>)
+smtp.<span class="key">starttls</span>()
+smtp.<span class="key">login</span>(<span class="str">"user@gmail.com"</span>, <span class="str">"app_password"</span>)
+
+<span class="cmt"># IMAP (read email)</span>
+<span class="kw">import</span> imaplib
+imap = imaplib.<span class="key">IMAP4_SSL</span>(<span class="str">"imap.gmail.com"</span>, <span class="val">993</span>)
+imap.<span class="key">login</span>(<span class="str">"user@gmail.com"</span>, <span class="str">"app_password"</span>)</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-net">
+        <div class="card-header">
+          <div><div class="card-title">🔐 LDAP / Active Directory</div><div class="card-subtitle">Directory services and authentication</div></div>
+          <span class="card-badge badge-net">Auth</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">LDAP URI Format</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># LDAP URI</span>
+<span class="str">ldap://</span><span class="key">ldap.example.com</span><span class="n">:</span><span class="val">389</span>
+
+<span class="cmt"># LDAPS (TLS)</span>
+<span class="str">ldaps://</span><span class="key">ldap.example.com</span><span class="n">:</span><span class="val">636</span>
+
+<span class="cmt"># Python (ldap3)</span>
+<span class="kw">from</span> ldap3 <span class="kw">import</span> Server, Connection
+server = Server(<span class="str">"ldaps://ad.company.com:636"</span>)
+conn = Connection(
+    server,
+    user=<span class="str">"CN=svc,OU=Users,DC=company,DC=com"</span>,
+    password=<span class="str">"secret"</span>, auto_bind=<span class="val">True</span>
+)</pre>
+          </div>
+          <div class="tip-box"><strong>LDAP ports:</strong> 389 (plain) / 636 (TLS) &nbsp;|&nbsp; DN format: CN=name,OU=unit,DC=domain,DC=com</div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-net">
+        <div class="card-header">
+          <div><div class="card-title">🌐 WebSocket</div><div class="card-subtitle">Full-duplex real-time communication</div></div>
+          <span class="card-badge badge-net">WebSocket</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">WebSocket URI</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># ws:// (plain), wss:// (TLS — always use in production)</span>
+<span class="str">ws://localhost:8765</span>
+<span class="str">wss://api.example.com/ws</span>
+<span class="str">wss://api.example.com/ws?token=</span><span class="hl">JWT_TOKEN</span>
+
+<span class="cmt"># Python (websockets)</span>
+<span class="kw">import</span> websockets
+<span class="kw">async with</span> websockets.<span class="key">connect</span>(
+    <span class="str">"wss://echo.websocket.org"</span>
+) <span class="kw">as</span> ws:
+    <span class="kw">await</span> ws.<span class="key">send</span>(<span class="str">"Hello!"</span>)
+    msg = <span class="kw">await</span> ws.<span class="key">recv</span>()
+
+<span class="cmt">// JavaScript</span>
+<span class="kw">const</span> ws = <span class="kw">new</span> WebSocket(<span class="str">"wss://api.example.com/ws"</span>);</pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== API / AUTH ======================== -->
+  <div class="section section-target" id="api">
+    <div class="section-header">
+      <div class="section-icon icon-api">🔑</div>
+      <div>
+        <h2>API & Auth Connection Patterns</h2>
+        <p>REST APIs, OAuth, JWT — connecting to services via credentials</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-api">
+        <div class="card-header">
+          <div><div class="card-title">🔑 API Keys (REST)</div><div class="card-subtitle">Most common API authentication pattern</div></div>
+          <span class="card-badge badge-api">Auth</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">API Key Patterns</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># 1. Header (most secure — recommended)</span>
+<span class="key">Authorization</span>: <span class="val">Bearer</span> <span class="hl">YOUR_API_KEY</span>
+<span class="key">X-API-Key</span>: <span class="hl">YOUR_API_KEY</span>
+
+<span class="cmt"># 2. Query param (avoid in production — logs URLs)</span>
+<span class="str">https://api.service.com/data?api_key=</span><span class="hl">KEY</span>
+
+<span class="cmt"># Python (requests)</span>
+<span class="kw">import</span> requests
+headers = {<span class="str">"Authorization"</span>: <span class="str">f"Bearer </span><span class="hl">{API_KEY}</span><span class="str">"</span>}
+resp = requests.<span class="key">get</span>(<span class="str">"https://api.example.com/"</span>, headers=headers)
+
+<span class="cmt"># OpenAI SDK pattern</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+client = OpenAI(api_key=<span class="str">"sk-..."</span>)</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-api">
+        <div class="card-header">
+          <div><div class="card-title">🛡️ OAuth 2.0 / JWT</div><div class="card-subtitle">Token-based delegated authorization</div></div>
+          <span class="card-badge badge-api">OAuth</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">OAuth Token Exchange</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># OAuth2 token endpoint (Client Credentials flow)</span>
+<span class="kw">POST</span> <span class="str">https://auth.example.com/oauth/token</span>
+Content-Type: application/x-www-form-urlencoded
+
+<span class="key">grant_type</span>=<span class="val">client_credentials</span>
+&<span class="key">client_id</span>=<span class="val">my-client-id</span>
+&<span class="key">client_secret</span>=<span class="hl">my-client-secret</span>
+&<span class="key">scope</span>=<span class="val">read:data write:data</span>
+
+<span class="cmt"># Use returned token</span>
+<span class="key">Authorization</span>: <span class="val">Bearer</span> <span class="hl">eyJhbGciOiJSUzI1NiJ9...</span></pre>
+          </div>
+          <div class="warn-box"><strong>⚠️ Security:</strong> Never store tokens in localStorage. Use httpOnly cookies or secure server-side sessions. Rotate secrets regularly.</div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-api">
+        <div class="card-header">
+          <div><div class="card-title">🔗 Database Connection Pools</div><div class="card-subtitle">Managing multiple connections efficiently</div></div>
+          <span class="card-badge badge-api">Best Practice</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">SQLAlchemy Connection Pool (Python)</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+
+engine = create_engine(
+    <span class="str">"postgresql://user:pass@localhost/db"</span>,
+    pool_size=<span class="val">10</span>,         <span class="cmt"># persistent connections</span>
+    max_overflow=<span class="val">20</span>,      <span class="cmt"># extra connections under load</span>
+    pool_timeout=<span class="val">30</span>,      <span class="cmt"># wait time before error</span>
+    pool_recycle=<span class="val">1800</span>,    <span class="cmt"># recycle connections (secs)</span>
+    pool_pre_ping=<span class="val">True</span>    <span class="cmt"># test connection before use</span>
+)</pre>
+          </div>
+          <div class="tip-box"><strong>Rule:</strong> Always use connection pools in production. Never open a new DB connection per request — it will kill performance.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== MISC ======================== -->
+  <div class="section section-target" id="misc">
+    <div class="section-header">
+      <div class="section-icon icon-misc">📁</div>
+      <div>
+        <h2>Files, Search & Misc</h2>
+        <p>Elasticsearch, HDFS, connection string security best practices</p>
+      </div>
+    </div>
+    <div class="cards cards-2">
+
+      <div class="conn-card cat-misc">
+        <div class="card-header">
+          <div><div class="card-title">🔍 Elasticsearch / OpenSearch</div><div class="card-subtitle">Distributed search & analytics engine</div></div>
+          <span class="card-badge badge-misc">Search</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">Elasticsearch Client</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="kw">from</span> elasticsearch <span class="kw">import</span> Elasticsearch
+
+<span class="cmt"># Basic local</span>
+es = Elasticsearch(<span class="str">"http://localhost:9200"</span>)
+
+<span class="cmt"># Cloud (Elastic Cloud)</span>
+es = Elasticsearch(
+    cloud_id=<span class="str">"my-cluster:xxx"</span>,
+    api_key=(<span class="str">"id"</span>, <span class="str">"api_key_value"</span>)
+)
+
+<span class="cmt"># With auth</span>
+es = Elasticsearch(
+    <span class="str">"https://myhost:9200"</span>,
+    basic_auth=(<span class="str">"elastic"</span>, <span class="str">"password"</span>),
+    ca_certs=<span class="str">"/path/to/cert.crt"</span>
+)</pre>
+          </div>
+          <div class="tip-box"><strong>Default port:</strong> 9200 (HTTP) / 9300 (transport) &nbsp;|&nbsp; Azure AI Search is a managed alternative</div>
+        </div>
+      </div>
+
+      <div class="conn-card cat-misc">
+        <div class="card-header">
+          <div><div class="card-title">🔒 Security Best Practices</div><div class="card-subtitle">Never hardcode credentials — use these patterns</div></div>
+          <span class="card-badge badge-misc">Security</span>
+        </div>
+        <div class="card-body">
+          <div class="code-label">The Right Way to Handle Connection Strings</div>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="cmt"># ❌ NEVER — hardcoded in source code</span>
+DB_URL = <span class="hl">"postgresql://admin:supersecret@prod/db"</span>
+
+<span class="cmt"># ✅ Environment variables</span>
+<span class="kw">import</span> os
+DB_URL = os.<span class="key">getenv</span>(<span class="str">"DATABASE_URL"</span>)
+
+<span class="cmt"># ✅ .env file (dev only — add to .gitignore!)</span>
+<span class="cmt"># Use python-dotenv</span>
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+load_dotenv()
+
+<span class="cmt"># ✅ Azure Key Vault (production)</span>
+<span class="kw">from</span> azure.keyvault.secrets <span class="kw">import</span> SecretClient
+<span class="kw">from</span> azure.identity <span class="kw">import</span> DefaultAzureCredential
+client = SecretClient(vault_url=<span class="str">"https://kv.vault.azure.net/"</span>, credential=DefaultAzureCredential())
+DB_URL = client.<span class="key">get_secret</span>(<span class="str">"db-connection-string"</span>).value
+
+<span class="cmt"># ✅ AWS Secrets Manager</span>
+secrets = boto3.<span class="key">client</span>(<span class="str">"secretsmanager"</span>)
+secret = secrets.<span class="key">get_secret_value</span>(SecretId=<span class="str">"my/db/conn"</span>)</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Reference Table -->
+      <div class="conn-card cat-misc" style="grid-column: span 2;">
+        <div class="card-header">
+          <div><div class="card-title">📊 Quick Reference — Default Ports & Schemes</div><div class="card-subtitle">All the numbers you always forget</div></div>
+        </div>
+        <div class="card-body">
+          <table class="compare-table">
+            <thead>
+              <tr><th>Service</th><th>Scheme</th><th>Default Port</th><th>TLS Port / Scheme</th><th>Auth Pattern</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>PostgreSQL</td><td>postgresql://</td><td>5432</td><td>sslmode=require</td><td>user:password</td></tr>
+              <tr><td>MySQL</td><td>mysql://</td><td>3306</td><td>ssl=true param</td><td>user:password</td></tr>
+              <tr><td>SQL Server</td><td>Server=host</td><td>1433</td><td>Encrypt=True</td><td>User Id / Trusted_Connection</td></tr>
+              <tr><td>Oracle</td><td>jdbc:oracle:thin:@</td><td>1521</td><td>tcps:// scheme</td><td>user/password</td></tr>
+              <tr><td>MongoDB</td><td>mongodb:// / mongodb+srv://</td><td>27017</td><td>mongodb+srv (Atlas)</td><td>user:password@host</td></tr>
+              <tr><td>Redis</td><td>redis://</td><td>6379</td><td>rediss:// port 6380</td><td>:password@ or user:pass@</td></tr>
+              <tr><td>RabbitMQ</td><td>amqp://</td><td>5672</td><td>amqps:// port 5671</td><td>user:password@host/vhost</td></tr>
+              <tr><td>Elasticsearch</td><td>http://</td><td>9200</td><td>https:// + CA cert</td><td>basic_auth / api_key</td></tr>
+              <tr><td>Neo4j</td><td>bolt:// / neo4j://</td><td>7687</td><td>neo4j+s://</td><td>user:password</td></tr>
+              <tr><td>SMTP</td><td>smtp://</td><td>587 (STARTTLS)</td><td>smtps:// port 465</td><td>login(user, pass)</td></tr>
+              <tr><td>LDAP</td><td>ldap://</td><td>389</td><td>ldaps:// port 636</td><td>DN string + password</td></tr>
+              <tr><td>FTP</td><td>ftp://</td><td>21</td><td>ftps:// port 990</td><td>user:password@host</td></tr>
+              <tr><td>SFTP/SSH</td><td>sftp://</td><td>22</td><td>Always encrypted</td><td>user:pass or key file</td></tr>
+              <tr><td>WebSocket</td><td>ws://</td><td>80 (default)</td><td>wss:// port 443</td><td>token in URL/header</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function switchTab(tabEl, group) {
+  const card = tabEl.closest('.card-body');
+  const tabs = card.querySelectorAll('.tab');
+  const contents = card.querySelectorAll('.tab-content');
+  const idx = Array.from(tabs).indexOf(tabEl);
+  tabs.forEach(t => t.classList.remove('active'));
+  contents.forEach(c => c.classList.remove('active'));
+  tabEl.classList.add('active');
+  if (contents[idx]) contents[idx].classList.add('active');
+}
+
+function copyCode(btn) {
+  const block = btn.closest('.code-block');
+  const text = block.querySelector('pre').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function filterNav(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = item.getAttribute('data-label') || item.textContent;
+    item.style.display = label.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// Highlight active nav on scroll
+window.addEventListener('scroll', () => {
+  const sections = ['relational','nosql','vector','azure','aws','messaging','cache','network','api','misc'];
+  const navItems = document.querySelectorAll('.nav-item');
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const el = document.getElementById(sections[i]);
+    if (el && el.getBoundingClientRect().top <= 80) {
+      navItems.forEach(n => n.classList.remove('active'));
+      navItems[i] && navItems[i].classList.add('active');
+      break;
+    }
+  }
+}, { passive: true });
+</script>
+</body>
+</html>

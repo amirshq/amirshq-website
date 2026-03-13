@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amir Sh. — AI Engineer & Photographer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy-950: #04080f;
+    --navy-900: #070d1a;
+    --navy-800: #0c1528;
+    --navy-700: #111e38;
+    --navy-600: #172545;
+    --navy-500: #1e3060;
+    --teal-400: #2dd4bf;
+    --teal-300: #5eead4;
+    --teal-200: #99f6e4;
+    --teal-glow: rgba(45, 212, 191, 0.15);
+    --teal-glow-strong: rgba(45, 212, 191, 0.3);
+    --glass-bg: rgba(14, 22, 45, 0.7);
+    --glass-border: rgba(255,255,255,0.07);
+    --glass-border-hover: rgba(45, 212, 191, 0.25);
+    --text-primary: #f0f4ff;
+    --text-secondary: rgba(200, 215, 255, 0.6);
+    --text-muted: rgba(150, 170, 220, 0.4);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--navy-950);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .bg-layer::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 20%, rgba(45,212,191,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 80%, rgba(99,102,241,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(14,22,45,0.8) 0%, transparent 100%);
+  }
+  /* Star dots */
+  .bg-layer::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 15%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 35%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 70%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 55% 80%, rgba(45,212,191,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 55%, rgba(255,255,255,0.2) 0%, transparent 100%);
+  }
+
+  /* ── LAYOUT ── */
+  .site-wrap {
+    position: relative; z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 0 40px;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--teal-400); }
+  .nav-links {
+    display: flex; gap: 32px; list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px; font-weight: 400;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal-400); }
+  .nav-cta {
+    font-size: 13px; font-weight: 500;
+    color: var(--teal-400);
+    text-decoration: none;
+    border: 1px solid rgba(45,212,191,0.3);
+    padding: 8px 18px; border-radius: 100px;
+    transition: all 0.2s;
+    background: var(--teal-glow);
+  }
+  .nav-cta:hover {
+    background: var(--teal-glow-strong);
+    border-color: var(--teal-400);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 20px 0 60px;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal-400);
+    margin-bottom: 20px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--teal-400);
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6vw, 76px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    max-width: 680px;
+    margin-bottom: 20px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--teal-400);
+  }
+  .hero-sub {
+    font-size: 16px; font-weight: 300;
+    color: var(--text-secondary);
+    max-width: 420px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .hero-badges {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 400;
+    color: var(--text-secondary);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 6px 14px; border-radius: 100px;
+    backdrop-filter: blur(10px);
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal-400);
+    box-shadow: 0 0 6px var(--teal-400);
+  }
+
+  /* ── BENTO GRID ── */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  /* Glass card base */
+  .card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(45,212,191,0.04), transparent 70%);
+    pointer-events: none;
+  }
+  .card:hover {
+    border-color: var(--glass-border-hover);
+    transform: translateY(-2px);
+  }
+
+  .card-tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal-400);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-tag::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--teal-400);
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .card-body {
+    font-size: 13px; font-weight: 300;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ── CARD 1: Photography — wide left ── */
+  .card-photo {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    min-height: 280px;
+  }
+  .photo-mosaic {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    height: 140px;
+    margin-top: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .photo-mosaic .ph {
+    border-radius: 6px;
+    background: var(--navy-700);
+    position: relative; overflow: hidden;
+  }
+  .photo-mosaic .ph::after {
+    content: '';
+    position: absolute; inset: 0;
+    opacity: 0.5;
+  }
+  .ph-1 { grid-row: 1 / 3; background: linear-gradient(135deg, #0c2340 0%, #1a3a5c 50%, #0f2a48 100%); }
+  .ph-1::after { background: linear-gradient(200deg, rgba(45,212,191,0.15), rgba(99,102,241,0.2)); }
+  .ph-2 { background: linear-gradient(135deg, #1a2a1a 0%, #2d4a2d 100%); }
+  .ph-2::after { background: linear-gradient(160deg, rgba(100,200,100,0.1), transparent); }
+  .ph-3 { background: linear-gradient(135deg, #2a1a0a 0%, #4a3010 100%); }
+  .ph-3::after { background: linear-gradient(160deg, rgba(220,150,60,0.2), transparent); }
+  .ph-4 { background: linear-gradient(135deg, #0a0a2a 0%, #1a1a4a 100%); }
+  .ph-4::after { background: linear-gradient(160deg, rgba(150,100,255,0.2), transparent); }
+  .ph-5 { background: linear-gradient(135deg, #1a0a0a 0%, #3a1010 100%); }
+  .ph-5::after { background: linear-gradient(160deg, rgba(220,80,80,0.15), transparent); }
+
+  .photo-label {
+    position: absolute; bottom: 6px; left: 8px;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .photo-meta {
+    display: flex; gap: 14px; margin-top: 14px;
+  }
+  .photo-meta-item {
+    font-size: 12px; color: var(--text-muted);
+  }
+  .photo-meta-item strong {
+    display: block;
+    font-size: 18px; font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  /* ── CARD 2: Fast stat ── */
+  .card-stat {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 280px;
+  }
+  .stat-orb {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(45,212,191,0.3), rgba(45,212,191,0.05) 60%, transparent 80%);
+    border: 1px solid rgba(45,212,191,0.2);
+    margin: 0 auto 16px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stat-orb::after {
+    content: '';
+    position: absolute;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    border: 1px solid rgba(45,212,191,0.08);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.4; }
+  }
+  .stat-orb-inner {
+    font-family: var(--font-display);
+    font-size: 26px; font-weight: 800;
+    color: var(--teal-300);
+    letter-spacing: -0.03em;
+    text-align: center;
+  }
+  .stat-orb-inner span { display: block; font-size: 9px; font-weight: 500; letter-spacing: 0.05em; color: var(--teal-400); }
+  .stat-label {
+    font-family: var(--font-display);
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .stat-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── CARD 3: AI Career ── */
+  .card-ai {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 300px;
+  }
+  .tech-stack {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 16px;
+  }
+  .tech-chip {
+    font-size: 11px; font-weight: 400;
+    color: var(--text-secondary);
+    background: rgba(45,212,191,0.06);
+    border: 1px solid rgba(45,212,191,0.12);
+    padding: 4px 10px; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .tech-chip:hover {
+    background: rgba(45,212,191,0.12);
+    color: var(--teal-300);
+    border-color: rgba(45,212,191,0.3);
+  }
+  .tech-chip.hi {
+    background: rgba(45,212,191,0.1);
+    color: var(--teal-300);
+    border-color: rgba(45,212,191,0.25);
+  }
+  .ai-pipeline {
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .pipe-node {
+    font-size: 10px; font-weight: 500;
+    padding: 5px 10px; border-radius: 6px;
+    background: var(--navy-700);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .pipe-node.active {
+    background: rgba(45,212,191,0.1);
+    border-color: rgba(45,212,191,0.3);
+    color: var(--teal-300);
+  }
+  .pipe-arrow {
+    font-size: 10px; color: var(--text-muted);
+  }
+
+  /* ── CARD 4: LearnByAmir ── */
+  .card-learn {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 300px;
+  }
+  .learn-brand {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--teal-400);
+    margin-bottom: 4px;
+  }
+  .course-list {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-top: 16px;
+  }
+  .course-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .course-item:hover {
+    background: rgba(45,212,191,0.05);
+    border-color: rgba(45,212,191,0.15);
+  }
+  .course-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .ci-1 { background: rgba(45,212,191,0.12); }
+  .ci-2 { background: rgba(99,102,241,0.12); }
+  .ci-3 { background: rgba(245,158,11,0.12); }
+  .course-info { flex: 1; }
+  .course-name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .course-meta { font-size: 10px; color: var(--text-muted); }
+  .course-badge {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 4px;
+  }
+  .cb-free { background: rgba(45,212,191,0.1); color: var(--teal-400); }
+  .cb-new { background: rgba(99,102,241,0.12); color: #a5b4fc; }
+
+  /* ── CARD 5: Contact ── */
+  .card-contact {
+    grid-column: 3;
+    grid-row: 2;
+    min-height: 300px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .contact-links {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 20px;
+  }
+  .contact-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+    group: true;
+  }
+  .contact-link:hover {
+    background: rgba(45,212,191,0.06);
+    border-color: rgba(45,212,191,0.2);
+    transform: translateX(3px);
+  }
+  .contact-link-left {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .contact-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    background: var(--navy-700);
+    border: 1px solid var(--glass-border);
+  }
+  .contact-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .contact-handle { font-size: 11px; color: var(--text-muted); }
+  .contact-arrow {
+    font-size: 12px; color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .contact-link:hover .contact-arrow { color: var(--teal-400); }
+
+  .contact-footer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 11px; color: var(--text-muted);
+    text-align: center;
+  }
+  .contact-footer strong { color: var(--teal-400); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-name {
+    font-family: var(--font-display);
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+  }
+  .footer-name span { color: var(--teal-400); }
+  .footer-copy { font-size: 11px; color: var(--text-muted); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero { animation: fadeUp 0.7s ease both; }
+  .card { animation: fadeUp 0.7s ease both; }
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.2s; }
+  .card:nth-child(3) { animation-delay: 0.3s; }
+  .card:nth-child(4) { animation-delay: 0.35s; }
+  .card:nth-child(5) { animation-delay: 0.4s; }
+
+  /* ── TEAL LINE ACCENT ── */
+  .teal-line {
+    display: inline-block;
+    width: 32px; height: 2px;
+    background: linear-gradient(90deg, var(--teal-400), transparent);
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy-950); }
+  ::-webkit-scrollbar-thumb { background: var(--navy-600); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .bento { grid-template-columns: 1fr; }
+    .card-photo, .card-stat, .card-ai, .card-learn, .card-contact {
+      grid-column: 1; grid-row: auto;
+    }
+    .nav-links { display: none; }
+    .hero h1 { font-size: 42px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<div class="site-wrap">
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Amir <span>Sh.</span></a>
+    <ul class="nav-links">
+      <li><a href="#photography">Photography</a></li>
+      <li><a href="#ai">AI Career</a></li>
+      <li><a href="#learn">LearnByAmir</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Say hello</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Senior AI Engineer · Québec</div>
+    <h1>Building <em>intelligent</em><br>systems &amp; capturing<br>the world.</h1>
+    <p class="hero-sub">I architect LLM pipelines, RAG systems, and AI agents — and I travel the world with a camera.</p>
+    <div class="hero-badges">
+      <span class="badge"><span class="badge-dot"></span>Available for projects</span>
+      <span class="badge">Based in Québec, Canada</span>
+      <span class="badge">LangGraph · RAG · MLOps</span>
+    </div>
+  </section>
+
+  <!-- MAIN SECTIONS -->
+  <section class="bento">
+
+    <!-- Photography (skeleton) -->
+    <div class="card" id="photography">
+      <div class="card-tag">Photography</div>
+      <div class="card-title">Weekly photo stories</div>
+      <div class="card-body">
+        This space is reserved for a rotating set of images and short stories from my weekly shoots.
+        I’ll use it as a visual journal — trips, city walks, and small moments around Québec and beyond.
+      </div>
+    </div>
+
+    <!-- AI Career (skeleton) -->
+    <div class="card" id="ai">
+      <div class="card-tag">AI Career</div>
+      <div class="card-title">Notes from the field</div>
+      <div class="card-body">
+        Here I’ll share short weekly updates about my work as an AI engineer:
+        challenges I’m seeing with LLMs and agents, patterns that actually ship,
+        and lessons from real client projects. Think of it as a lightweight career log.
+      </div>
+    </div>
+
+    <!-- LearnByAmir (all core content) -->
+    <div class="card card-learn" id="learn">
+      <div class="card-tag">LearnByAmir</div>
+      <div class="learn-brand">LearnByAmir · Core Hub</div>
+      <div class="card-title">AI for builders,<br>from practice.</div>
+      <div class="card-body">
+        I design and deploy AI architectures end‑to‑end — LLM integration, RAG pipelines, intelligent agents, and MLOps.
+        <br><br>
+        <span class="teal-line"></span><br>
+        On LearnByAmir I turn that experience into concrete, copy‑pasteable material:
+        interactive HTML notebooks, architecture guides, and selection frameworks for tools
+        like LangGraph, LangChain, vector databases, and low‑code platforms.
+      </div>
+
+      <div class="course-list" style="margin-top:18px;">
+        <div class="course-item">
+          <div class="course-icon ci-1">📚</div>
+          <div class="course-info">
+            <div class="course-name">Topics Library</div>
+            <div class="course-meta">AutoGen, LangGraph vs LangChain, Azure AI‑102, connection strings, architecture decisions…</div>
+          </div>
+          <a href="LearnbyAmir/index.html" class="course-badge cb-free" style="text-decoration:none;">Open</a>
+        </div>
+        <div class="course-item">
+          <div class="course-icon ci-2">🧠</div>
+          <div class="course-info">
+            <div class="course-name">Choose Tools in LLM Projects</div>
+            <div class="course-meta">Data, prompts, testing, deployment, monitoring · local vs production tools</div>
+          </div>
+          <a href="LearnbyAmir/LLM/Tools/AgentTechnicalDebtMap.html" class="course-badge cb-new" style="text-decoration:none;">View map</a>
+        </div>
+        <div class="course-item">
+          <div class="course-icon ci-3">🤝</div>
+          <div class="course-info">
+            <div class="course-name">LLM &amp; Agents Notebook</div>
+            <div class="course-meta">LangGraph, LangChain, MCP, and agent patterns</div>
+          </div>
+          <span class="course-badge cb-new">Updated weekly</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-name">Amir <span>Sh.</span> · 2026</div>
+    <div class="footer-copy">Built with precision. Deployed with intention.</div>
+  </footer>
+
+</div>
+</body>
+</html>

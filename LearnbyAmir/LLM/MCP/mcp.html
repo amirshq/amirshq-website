@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MCP & Tool Calling — How Agents Use Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #141720;
+  --surface2: #1c2030;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf0;
+  --muted: #7a7f96;
+  --accent: #4f8ef7;
+  --accent-dim: rgba(79,142,247,0.12);
+  --amber: #e9a23b;
+  --amber-dim: rgba(233,162,59,0.12);
+  --green: #3ecf8e;
+  --green-dim: rgba(62,207,142,0.10);
+  --coral: #f06a6a;
+  --coral-dim: rgba(240,106,106,0.10);
+  --purple: #a78bfa;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Sora', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── PAGE LAYOUT ── */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 64px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--accent);
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 46px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--accent); }
+.hero-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 620px;
+  line-height: 1.75;
+}
+
+/* ── CONCEPT SECTION ── */
+.section { margin-bottom: 56px; }
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* ── CONCEPT CARDS ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) { .concept-grid { grid-template-columns: 1fr; } }
+
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.concept-card .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.tag-blue { background: var(--accent-dim); color: var(--accent); }
+.tag-amber { background: var(--amber-dim); color: var(--amber); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+
+.concept-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.concept-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.concept-card code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(255,255,255,0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+/* ── FLOW DIAGRAM ── */
+.flow-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: nowrap;
+  justify-content: center;
+  min-width: 560px;
+}
+.flow-node {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: center;
+  min-width: 110px;
+}
+.flow-node .fn-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.flow-node .fn-sub {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.flow-node.accent { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.08); }
+.flow-node.amber-n { border-color: rgba(233,162,59,0.4); background: rgba(233,162,59,0.08); }
+.flow-node.green-n { border-color: rgba(62,207,142,0.4); background: rgba(62,207,142,0.08); }
+
+.flow-arrow {
+  flex-shrink: 0;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── KEY INSIGHT BOX ── */
+.insight-box {
+  background: linear-gradient(135deg, rgba(79,142,247,0.08) 0%, rgba(167,139,250,0.06) 100%);
+  border: 1px solid rgba(79,142,247,0.25);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.insight-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--accent), var(--purple));
+  border-radius: 3px 0 0 3px;
+}
+.insight-box .ib-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.insight-box p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.insight-box p:last-child { margin-bottom: 0; }
+.insight-box strong { color: var(--text); font-weight: 600; }
+.insight-box code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--green);
+}
+
+/* ── DEMO SHELL ── */
+.demo-wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.demo-header {
+  padding: 14px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.demo-header-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.demo-header-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 4px;
+}
+.demo-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 680px) {
+  .demo-body { grid-template-columns: 1fr; }
+}
+.demo-panel {
+  padding: 20px;
+}
+.demo-panel + .demo-panel {
+  border-left: 1px solid var(--border);
+}
+@media (max-width: 680px) {
+  .demo-panel + .demo-panel { border-left: none; border-top: 1px solid var(--border); }
+}
+
+.demo-panel-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* Presets */
+.preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.preset-btn {
+  font-size: 11px;
+  font-family: var(--sans);
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.preset-btn:hover { background: rgba(79,142,247,0.12); color: var(--accent); border-color: rgba(79,142,247,0.3); }
+
+/* Input row */
+.input-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.input-row input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-row input:focus { border-color: rgba(79,142,247,0.5); }
+.input-row input::placeholder { color: var(--muted); }
+.input-row button {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.input-row button:hover { opacity: 0.88; }
+.input-row button:active { transform: scale(0.97); }
+
+/* Chat bubbles */
+.chat-log { display: flex; flex-direction: column; gap: 8px; min-height: 80px; }
+.bubble {
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 92%;
+}
+.bubble.user {
+  align-self: flex-end;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(79,142,247,0.25);
+}
+.bubble.agent {
+  align-self: flex-start;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.bubble.tool-call {
+  align-self: flex-start;
+  background: var(--amber-dim);
+  color: var(--amber);
+  border: 1px solid rgba(233,162,59,0.25);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  max-width: 100%;
+}
+.bubble.tool-result {
+  align-self: flex-start;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(62,207,142,0.2);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  max-width: 100%;
+}
+.bubble pre { margin: 4px 0 0; white-space: pre-wrap; word-break: break-all; font-size: 11px; line-height: 1.5; }
+.empty-hint { font-size: 12px; color: var(--muted); text-align: center; padding: 24px 0; font-family: var(--mono); }
+
+/* Servers + tools */
+.server-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.server-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-family: var(--mono);
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  width: fit-content;
+}
+.server-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; box-shadow: 0 0 5px var(--green); }
+
+.tools-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.tool-chip {
+  font-size: 11px; font-family: var(--mono);
+  padding: 4px 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  color: var(--muted);
+}
+
+/* Trace */
+.trace-log { display: flex; flex-direction: column; gap: 10px; }
+.trace-item {
+  border-left: 2px solid var(--border2);
+  padding-left: 12px;
+  transition: border-color 0.3s;
+}
+.trace-item.active { border-left-color: var(--amber); }
+.trace-item.done   { border-left-color: var(--green); }
+.trace-step {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); margin-bottom: 3px;
+  font-family: var(--mono);
+}
+.trace-content {
+  font-size: 11.5px; color: var(--muted);
+  font-family: var(--mono);
+  white-space: pre-wrap; word-break: break-all; line-height: 1.55;
+}
+.trace-highlight { color: var(--accent); font-weight: 500; }
+
+/* ── LEGEND ── */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+.legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; color: var(--muted); font-family: var(--mono);
+}
+.legend-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Agentic AI — Module 03</div>
+    <h1>MCP &amp; <span>Tool Calling</span><br/>How Agents Use Tools</h1>
+    <p class="hero-desc">
+      Understand the difference between the MCP protocol and tool calling, and watch a live agent
+      decide which tool to invoke, send the call, receive a result, and form its final answer.
+    </p>
+  </div>
+
+  <!-- CONCEPTS -->
+  <div class="section">
+    <div class="section-label">Core Concepts</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <span class="tag tag-blue">Tool Calling</span>
+        <h3>The Mechanism</h3>
+        <p>
+          The agent's ability to invoke a function at runtime. Instead of answering directly, the LLM
+          emits a structured <code>tool_use</code> block — a JSON object naming the tool and its input arguments.
+          The host framework intercepts it, executes the tool, and injects the <code>tool_result</code> back into context.
+        </p>
+      </div>
+      <div class="concept-card">
+        <span class="tag tag-amber">MCP Protocol</span>
+        <h3>The Standard</h3>
+        <p>
+          Model Context Protocol is a <em>universal adapter layer</em> for exposing tools to any agent.
+          Before MCP, every framework (LangGraph, AutoGen, CrewAI) had its own custom tool format.
+          MCP standardises how tools are defined, discovered, and called — write once, use everywhere.
+        </p>
+      </div>
+      <div class="concept-card">
+        <span class="tag tag-green">MCP Server</span>
+        <h3>The Tool Provider</h3>
+        <p>
+          A process that exposes a set of tools over the MCP protocol. Examples: a Google Calendar
+          MCP server exposes <code>gcal_list_events</code>, <code>gcal_create_event</code>. 
+          A Gmail MCP server exposes <code>gmail_search_messages</code>. The agent connects to 
+          one or many servers.
+        </p>
+      </div>
+      <div class="concept-card">
+        <span class="tag tag-purple">MCP Client</span>
+        <h3>The Router</h3>
+        <p>
+          Lives inside the agent framework. Receives <code>tool_use</code> blocks from the LLM,
+          looks up which MCP server owns that tool, forwards the call, waits for the result, and
+          returns a <code>tool_result</code> block back to the LLM context.
+        </p>
+      </div>
+    </div>
+
+    <!-- Flow diagram -->
+    <div class="flow-diagram">
+      <div class="flow-row">
+        <div class="flow-node accent">
+          <div class="fn-label">LLM</div>
+          <div class="fn-sub">emits tool_use</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="fn-label">MCP Client</div>
+          <div class="fn-sub">routes call</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node amber-n">
+          <div class="fn-label">MCP Server</div>
+          <div class="fn-sub">executes tool</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node green-n">
+          <div class="fn-label">Tool Result</div>
+          <div class="fn-sub">returned to LLM</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node accent">
+          <div class="fn-label">LLM</div>
+          <div class="fn-sub">synthesises reply</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHT -->
+  <div class="insight-box">
+    <div class="ib-eyebrow">Key Insight</div>
+    <p>
+      <strong>Steps 2–4 are invisible to the user.</strong> From their perspective, the agent just
+      "knew" what meetings they had. But under the hood, the agent never had that data — it fetched it
+      in real time via tool calling over MCP.
+    </p>
+    <p>
+      For your consulting work, this is why the <strong>MCP server is a reusable asset</strong>: you write
+      <code>gcal_list_events</code> once as an MCP server, and any agent — LangGraph, AutoGen, Claude API —
+      can call it the same way, without rewriting the integration per framework.
+    </p>
+  </div>
+
+  <!-- INTERACTIVE DEMO -->
+  <div class="section">
+    <div class="section-label">Live Demo — Watch the Agent Think</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7;">
+      Pick a preset message or type your own. Watch the right panel trace every step:
+      LLM reasoning → tool call emitted → MCP routing → server result → final answer.
+    </p>
+
+    <div class="demo-wrapper">
+      <div class="demo-header">
+        <div class="demo-header-dot" style="background:#f06a6a;"></div>
+        <div class="demo-header-dot" style="background:#e9a23b;"></div>
+        <div class="demo-header-dot" style="background:#3ecf8e;"></div>
+        <div class="demo-header-title">agent-demo.js — running locally</div>
+      </div>
+
+      <div class="demo-body">
+        <!-- LEFT: Chat -->
+        <div class="demo-panel">
+          <div class="demo-panel-title">Chat — user ↔ agent</div>
+          <div class="preset-row" id="presets">
+            <button class="preset-btn" onclick="setPreset(0)">📅 What meetings do I have today?</button>
+            <button class="preset-btn" onclick="setPreset(1)">📧 Any unread emails from my team?</button>
+            <button class="preset-btn" onclick="setPreset(2)">📅 Book a 30-min call with Sara tomorrow at 2pm</button>
+          </div>
+          <div class="input-row">
+            <input type="text" id="user-input" placeholder="Type a message…"/>
+            <button onclick="runDemo()">Send ↗</button>
+          </div>
+          <div class="chat-log" id="chat-log">
+            <div class="empty-hint">// conversation appears here</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Trace -->
+        <div class="demo-panel">
+          <div class="demo-panel-title">Under the hood — agent trace</div>
+          <div class="server-list">
+            <div class="server-badge"><span class="server-dot"></span>MCP server: google-calendar</div>
+            <div class="server-badge"><span class="server-dot"></span>MCP server: gmail</div>
+          </div>
+          <div class="demo-panel-title" style="margin-bottom:8px;">Available tools</div>
+          <div class="tools-row">
+            <span class="tool-chip">📅 gcal_list_events</span>
+            <span class="tool-chip">📅 gcal_create_event</span>
+            <span class="tool-chip">📧 gmail_search_messages</span>
+            <span class="tool-chip">📧 gmail_read_message</span>
+          </div>
+          <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+          <div class="demo-panel-title">Execution trace</div>
+          <div class="trace-log" id="trace-log">
+            <div class="empty-hint">// trace appears here</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>user / agent message</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber);"></div>tool call (LLM → MCP)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div>tool result (MCP → LLM)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <span>MCP &amp; Tool Calling — Module 03</span>
+    <span>Agentic AI Consultant Toolkit</span>
+  </div>
+
+</div>
+
+<script>
+const PRESETS = [
+  "What meetings do I have today?",
+  "Any unread emails from my team?",
+  "Book a 30-min call with Sara tomorrow at 2pm"
+];
+
+function setPreset(i) {
+  document.getElementById('user-input').value = PRESETS[i];
+}
+
+const SCENARIOS = {
+  calendar_list: {
+    match: /meeting|calendar|schedule|today|appointment/i,
+    steps: [
+      { type: 'llm_thinking', label: '1. LLM reads user message', content: 'User wants to know about today\'s meetings.\nScanning available tools from MCP servers...\n→ gcal_list_events looks like a match.' },
+      { type: 'tool_call', label: '2. Tool call emitted', json: { tool: 'gcal_list_events', input: { time_min: 'today 00:00', time_max: 'today 23:59', calendar_id: 'primary' } } },
+      { type: 'mcp_routing', label: '3. MCP routes call to server', content: 'MCP client forwards call to:\n→ Google Calendar MCP server\nMethod: gcal_list_events\nWaiting for response...' },
+      { type: 'tool_result', label: '4. MCP server returns result', json: [{ title: 'Standup', time: '9:00 AM', attendees: 3 }, { title: 'Client Demo', time: '2:00 PM', attendees: 8 }, { title: '1:1 with Sara', time: '4:30 PM', attendees: 2 }] },
+      { type: 'llm_answer', label: '5. LLM synthesises final answer', content: 'Tool result injected into context.\nLLM now has the data and composes reply.' }
+    ],
+    answer: 'You have 3 meetings today:\n• 9:00 AM — Standup (3 attendees)\n• 2:00 PM — Client Demo (8 attendees)\n• 4:30 PM — 1:1 with Sara (2 attendees)'
+  },
+  gmail: {
+    match: /email|unread|inbox|message|mail/i,
+    steps: [
+      { type: 'llm_thinking', label: '1. LLM reads user message', content: 'User wants unread emails from their team.\nScanning available tools from MCP servers...\n→ gmail_search_messages is the right tool.' },
+      { type: 'tool_call', label: '2. Tool call emitted', json: { tool: 'gmail_search_messages', input: { query: 'is:unread from:team label:inbox', max_results: 5 } } },
+      { type: 'mcp_routing', label: '3. MCP routes call to server', content: 'MCP client forwards call to:\n→ Gmail MCP server\nMethod: gmail_search_messages\nWaiting for response...' },
+      { type: 'tool_result', label: '4. MCP server returns result', json: [{ from: 'ali@company.com', subject: 'Q2 plan review', time: '8:42 AM' }, { from: 'priya@company.com', subject: 'Staging issue', time: '7:15 AM' }] },
+      { type: 'llm_answer', label: '5. LLM synthesises final answer', content: 'Tool result injected into context.\nLLM now has the data and composes reply.' }
+    ],
+    answer: 'You have 2 unread emails from your team:\n• Ali — "Q2 plan review" (8:42 AM)\n• Priya — "Staging issue" (7:15 AM)'
+  },
+  calendar_create: {
+    match: /book|schedule|create|add|set up|30.min|call with/i,
+    steps: [
+      { type: 'llm_thinking', label: '1. LLM reads user message', content: 'User wants to create a calendar event.\nParsing intent: 30-min call, Sara, tomorrow 2pm.\n→ gcal_create_event is the right tool.' },
+      { type: 'tool_call', label: '2. Tool call emitted', json: { tool: 'gcal_create_event', input: { title: '30-min call with Sara', start: 'tomorrow 14:00', duration_minutes: 30, attendees: ['sara@company.com'] } } },
+      { type: 'mcp_routing', label: '3. MCP routes call to server', content: 'MCP client forwards call to:\n→ Google Calendar MCP server\nMethod: gcal_create_event\nWaiting for response...' },
+      { type: 'tool_result', label: '4. MCP server returns result', json: { status: 'created', event_id: 'evt_8x2kz', link: 'calendar.google.com/event/8x2kz' } },
+      { type: 'llm_answer', label: '5. LLM synthesises final answer', content: 'Tool result injected into context.\nLLM now has the data and composes reply.' }
+    ],
+    answer: 'Done! I\'ve booked "30-min call with Sara" tomorrow at 2:00 PM and added her as an attendee. Event created in your primary calendar.'
+  }
+};
+
+function detectScenario(msg) {
+  for (const [, s] of Object.entries(SCENARIOS)) {
+    if (s.match.test(msg)) return s;
+  }
+  return null;
+}
+
+let running = false;
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function addBubble(type, html) {
+  const log = document.getElementById('chat-log');
+  const empty = log.querySelector('.empty-hint');
+  if (empty) empty.remove();
+  const el = document.createElement('div');
+  el.className = `bubble ${type}`;
+  el.innerHTML = html;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+function addTrace(step, state) {
+  const log = document.getElementById('trace-log');
+  const empty = log.querySelector('.empty-hint');
+  if (empty) empty.remove();
+  const item = document.createElement('div');
+  item.className = `trace-item ${state}`;
+  let inner = `<div class="trace-step">${step.label}</div>`;
+  if (step.type === 'tool_call') {
+    inner += `<div class="trace-content"><span class="trace-highlight">→ Tool call:</span>\n${JSON.stringify(step.json, null, 2)}</div>`;
+  } else if (step.type === 'tool_result') {
+    inner += `<div class="trace-content"><span class="trace-highlight">← Result:</span>\n${JSON.stringify(step.json, null, 2)}</div>`;
+  } else {
+    inner += `<div class="trace-content">${step.content}</div>`;
+  }
+  item.innerHTML = inner;
+  log.appendChild(item);
+  log.scrollTop = log.scrollHeight;
+  return item;
+}
+
+async function runDemo() {
+  if (running) return;
+  const input = document.getElementById('user-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  running = true;
+  input.value = '';
+
+  document.getElementById('chat-log').innerHTML = '';
+  document.getElementById('trace-log').innerHTML = '';
+
+  addBubble('user', msg);
+  await sleep(400);
+
+  const scenario = detectScenario(msg);
+
+  if (!scenario) {
+    addTrace({ label: '1. LLM reads user message', type: 'llm_thinking', content: 'No tool call needed for this message.\nLLM answers from its own knowledge.' }, 'done');
+    await sleep(600);
+    addBubble('agent', 'I can answer that directly — no tool call needed. Try asking about your calendar or emails to see MCP tool calling in action!');
+    running = false;
+    return;
+  }
+
+  for (let i = 0; i < scenario.steps.length; i++) {
+    const step = scenario.steps[i];
+    const traceItem = addTrace(step, 'active');
+    await sleep(i === 0 ? 500 : 900);
+    if (step.type === 'tool_call') {
+      addBubble('tool-call', `<b>Tool call →</b> ${step.json.tool}<pre>${JSON.stringify(step.json.input, null, 2)}</pre>`);
+    }
+    if (step.type === 'tool_result') {
+      addBubble('tool-result', `<b>← Tool result</b><pre>${JSON.stringify(step.json, null, 2)}</pre>`);
+    }
+    traceItem.className = 'trace-item done';
+  }
+
+  await sleep(700);
+  addBubble('agent', scenario.answer.replace(/\n/g, '<br>'));
+  running = false;
+}
+
+document.getElementById('user-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runDemo();
+});
+</script>
+</body>
+</html>

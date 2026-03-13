@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Framework Selection Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07080f;
+  --surface: #0f1018;
+  --surface2: #161825;
+  --surface3: #1e2135;
+  --border: #252840;
+  --border2: #2e3355;
+  --navy: #1E3A5F;
+  --blue: #2E6DA4;
+  --sky: #4A90D9;
+  --amber: #F0A500;
+  --text: #e4e8f4;
+  --muted: #6a7090;
+  --muted2: #4a5070;
+  --yes-bg: #0d2a0d; --yes-fg: #4ade80; --yes-border: #166534;
+  --no-bg: #2a0d0d;  --no-fg: #f87171;  --no-border: #991b1b;
+  --part-bg: #2a220a; --part-fg: #fbbf24; --part-border: #92400e;
+  --lex:        #f59e0b;
+  --copilot:    #3b82f6;
+  --dialogflow: #22c55e;
+  --langchain:  #a855f7;
+  --autogen:    #ef4444;
+  --crewai:     #14b8a6;
+  --open-glow: rgba(168,85,247,0.08);
+  --low-glow:  rgba(59,130,246,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'Syne',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(78,85,200,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,85,200,0.025) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.app { display:flex; min-height:100vh; position:relative; z-index:1; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────── */
+.sidebar {
+  width:260px; flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh;
+  overflow:hidden;
+}
+
+.sidebar-logo {
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.sidebar-logo .brand {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--muted); text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:6px; display:block;
+}
+
+.sidebar-logo h2 {
+  font-size:15px; font-weight:800; line-height:1.3;
+  background:linear-gradient(135deg,#fff 0%,#7c8fff 60%,#c084fc 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+
+.sidebar-nav { flex:1; overflow-y:auto; padding:12px 0; }
+
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 20px; cursor:pointer;
+  border:none; background:none; width:100%;
+  text-align:left; color:var(--muted);
+  font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+  transition:all 0.2s; position:relative;
+  border-left:3px solid transparent;
+}
+
+.nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+.nav-item.active {
+  color:#fff;
+  background:linear-gradient(90deg,rgba(74,80,200,0.18),transparent);
+  border-left-color:var(--sky);
+}
+
+.nav-item .nav-icon { font-size:16px; flex-shrink:0; }
+.nav-item .nav-label { font-size:12px; line-height:1.3; }
+.nav-item .nav-badge {
+  margin-left:auto; font-family:'JetBrains Mono',monospace;
+  font-size:10px; background:var(--surface3);
+  color:var(--muted); padding:2px 7px; border-radius:10px;
+  border:1px solid var(--border);
+}
+.nav-item.active .nav-badge { background:rgba(74,144,217,0.2); color:var(--sky); border-color:rgba(74,144,217,0.3); }
+
+.sidebar-footer {
+  padding:16px 20px;
+  border-top:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--muted2);
+  line-height:1.6;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────────────── */
+.main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+
+/* ── SHEET PANELS ─────────────────────────────────────────────────── */
+.sheet { display:none; flex:1; flex-direction:column; overflow:hidden; height:100vh; }
+.sheet.active { display:flex; }
+
+/* ── SHEET HEADER ─────────────────────────────────────────────────── */
+.sheet-header {
+  padding:28px 36px 20px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+
+.sheet-tag {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:var(--sky); text-transform:uppercase; letter-spacing:3px;
+  margin-bottom:8px; display:block;
+}
+
+.sheet-header h1 {
+  font-size:clamp(18px,2.5vw,28px); font-weight:800; line-height:1.1;
+  background:linear-gradient(135deg,#fff 0%,#8aa4f8 50%,#c084fc 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:6px;
+}
+
+.sheet-header p {
+  font-size:13px; color:var(--muted); line-height:1.5; max-width:700px;
+}
+
+/* ── TOOLBAR ─────────────────────────────────────────────────────── */
+.toolbar {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 36px; border-bottom:1px solid var(--border);
+  flex-shrink:0; flex-wrap:wrap;
+}
+
+.toolbar-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:var(--muted2); text-transform:uppercase; letter-spacing:2px;
+}
+
+.filter-btn {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--muted); padding:5px 14px; border-radius:4px;
+  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  cursor:pointer; transition:all 0.15s; letter-spacing:0.5px;
+}
+.filter-btn:hover { border-color:var(--sky); color:var(--text); }
+.filter-btn.active { background:var(--blue); border-color:var(--sky); color:#fff; }
+
+.search-box {
+  margin-left:auto; display:flex; align-items:center; gap:8px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:6px; padding:5px 12px;
+}
+.search-box input {
+  background:none; border:none; outline:none;
+  font-family:'Syne',sans-serif; font-size:12px; color:var(--text);
+  width:180px;
+}
+.search-box input::placeholder { color:var(--muted2); }
+.search-box svg { color:var(--muted2); flex-shrink:0; }
+
+/* ── TABLE AREA ─────────────────────────────────────────────────── */
+.table-area {
+  flex:1; overflow:auto; padding:0;
+}
+
+table { width:100%; border-collapse:collapse; }
+
+/* ── SHEET 1 — OVERVIEW ─────────────────────────────────────────── */
+#s1 .col-scenario { min-width:320px; max-width:420px; }
+#s1 table th {
+  padding:13px 16px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
+  text-transform:uppercase; letter-spacing:1.5px;
+  background:var(--surface2); border-bottom:2px solid var(--border2);
+  position:sticky; top:0; z-index:5; white-space:nowrap;
+  color:var(--muted);
+}
+#s1 table th:nth-child(1) { min-width:160px; }
+#s1 table th:nth-child(4) { min-width:320px; }
+
+#s1 table td {
+  padding:14px 16px; font-size:12.5px; line-height:1.55;
+  vertical-align:top; border-bottom:1px solid var(--border);
+}
+
+#s1 .fw-name { font-weight:800; font-size:14px; color:#fff; }
+#s1 .fw-type {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  padding:2px 8px; border-radius:3px; font-weight:500;
+}
+.type-low  { background:rgba(59,130,246,0.15); color:#7eb3ff; border:1px solid rgba(59,130,246,0.25); }
+.type-open { background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
+
+#s1 .oss-yes { color:#4ade80; } #s1 .oss-no { color:#f87171; }
+
+#s1 tr.row-open { background:rgba(168,85,247,0.04); }
+#s1 tr.row-low  { background:rgba(59,130,246,0.04); }
+#s1 tr.row-open:hover { background:rgba(168,85,247,0.08); }
+#s1 tr.row-low:hover  { background:rgba(59,130,246,0.08); }
+
+#s1 .scenario-text { font-size:12px; color:#b0bcd0; line-height:1.6; }
+#s1 .badge { display:inline-block; padding:2px 8px; border-radius:3px; font-size:11px; }
+.badge-yes  { background:var(--yes-bg); color:var(--yes-fg); border:1px solid var(--yes-border); }
+.badge-no   { background:var(--no-bg);  color:var(--no-fg);  border:1px solid var(--no-border); }
+.badge-part { background:var(--part-bg);color:var(--part-fg);border:1px solid var(--part-border); }
+.badge-neutral { background:var(--surface3); color:var(--muted); border:1px solid var(--border2); }
+
+/* ── SHEET 2 — DECISION MATRIX ─────────────────────────────────── */
+#s2 table th {
+  padding:13px 16px; text-align:center;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  background:var(--surface2); border-bottom:2px solid var(--border2);
+  position:sticky; top:0; z-index:5; white-space:nowrap;
+  min-width:120px;
+}
+#s2 table th:first-child { text-align:left; min-width:260px; color:var(--muted); }
+#s2 table th.th-copilot { color:var(--copilot); border-top:3px solid var(--copilot); }
+#s2 table th.th-dialogflow { color:var(--dialogflow); border-top:3px solid var(--dialogflow); }
+#s2 table th.th-lex { color:var(--lex); border-top:3px solid var(--lex); }
+#s2 table th.th-langchain { color:var(--langchain); border-top:3px solid var(--langchain); }
+#s2 table th.th-autogen { color:var(--autogen); border-top:3px solid var(--autogen); }
+#s2 table th.th-crewai { color:var(--crewai); border-top:3px solid var(--crewai); }
+
+#s2 table td { padding:11px 16px; border-bottom:1px solid var(--border); font-size:12.5px; }
+#s2 table td:not(:first-child) { text-align:center; }
+
+#s2 tr.section-row td {
+  background:var(--surface3);
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2.5px; color:var(--sky);
+  padding:8px 16px; border-bottom:1px solid var(--border2);
+}
+#s2 tr:not(.section-row):hover td { background:rgba(255,255,255,0.02); }
+
+.cell-yes  { background:var(--yes-bg); color:var(--yes-fg); border-radius:4px; padding:4px 0; font-size:16px; display:block; }
+.cell-no   { background:var(--no-bg);  color:var(--no-fg);  border-radius:4px; padding:4px 0; font-size:16px; display:block; }
+.cell-part { background:var(--part-bg);color:var(--part-fg);border-radius:4px; padding:4px 0; font-size:16px; display:block; }
+
+#s2 td:first-child { color:var(--text); font-weight:600; }
+
+/* ── SHEET 3 — SCENARIOS ─────────────────────────────────────────── */
+#s3 table th {
+  padding:13px 16px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  background:var(--surface2); border-bottom:2px solid var(--border2);
+  position:sticky; top:0; z-index:5; white-space:nowrap; color:var(--muted);
+}
+
+#s3 table td {
+  padding:13px 16px; font-size:12.5px; border-bottom:1px solid var(--border);
+  vertical-align:top; line-height:1.55;
+}
+#s3 tr:nth-child(even) td { background:rgba(255,255,255,0.015); }
+#s3 tr:hover td { background:rgba(255,255,255,0.03); }
+
+#s3 .sc-name { font-weight:700; color:#fff; font-size:13px; }
+#s3 .sc-industry { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); }
+
+.sc-primary { background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.25); border-radius:4px; padding:3px 9px; font-weight:700; font-size:11.5px; white-space:nowrap; display:inline-block; }
+.sc-secondary { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.25); border-radius:4px; padding:3px 9px; font-weight:600; font-size:11.5px; white-space:nowrap; display:inline-block; }
+.sc-avoid { background:rgba(248,113,113,0.12); color:#f87171; border:1px solid rgba(248,113,113,0.25); border-radius:4px; padding:3px 9px; font-weight:600; font-size:11.5px; white-space:nowrap; display:inline-block; }
+#s3 .reason { font-size:12px; color:#9aabb8; line-height:1.6; }
+
+/* ── SHEET 4 — QUICK REFERENCE ───────────────────────────────────── */
+#s4 .qr-grid {
+  display:grid; gap:0;
+}
+#s4 .qr-row {
+  display:grid; grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+#s4 .qr-row:hover { background:rgba(255,255,255,0.025); }
+#s4 .qr-row:nth-child(odd) { background:rgba(255,255,255,0.01); }
+#s4 .qr-row:nth-child(odd):hover { background:rgba(255,255,255,0.03); }
+
+#s4 .qr-condition {
+  padding:18px 28px; font-size:14px; font-weight:700;
+  color:var(--text); border-right:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+}
+#s4 .qr-if { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--sky); letter-spacing:2px; margin-right:4px; }
+#s4 .qr-answer {
+  padding:18px 28px; font-size:13.5px; color:#a8d4ff;
+  display:flex; align-items:center; gap:8px; font-weight:600;
+}
+#s4 .qr-arrow { color:var(--sky); font-size:18px; flex-shrink:0; }
+#s4 .qr-note {
+  margin:24px 28px; padding:16px 20px;
+  background:rgba(240,165,0,0.08); border:1px solid rgba(240,165,0,0.2);
+  border-radius:8px; font-size:12.5px; color:#c8a84a; line-height:1.7;
+  border-left:3px solid var(--amber);
+}
+#s4 .qr-note span { font-weight:700; color:var(--amber); }
+
+/* ── SHEET 5 — CHEAT SHEET ───────────────────────────────────────── */
+#s5 .fw-legend {
+  display:flex; flex-wrap:wrap; gap:8px;
+  padding:14px 36px; border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#s5 .fw-pill {
+  display:flex; align-items:center; gap:6px;
+  padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700;
+  border:1px solid; letter-spacing:0.3px;
+}
+#s5 .fw-dot { width:7px; height:7px; border-radius:50%; }
+
+#s5 .cs-table { width:100%; border-collapse:collapse; }
+#s5 .cs-table th {
+  padding:12px 14px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  position:sticky; top:0; z-index:5;
+  background:var(--surface2); border-bottom:2px solid var(--border2);
+  white-space:nowrap;
+}
+#s5 .cs-table th:nth-child(1) { min-width:240px; color:var(--muted); }
+#s5 .cs-table th.th-lex { color:var(--lex); border-top:3px solid var(--lex); min-width:160px; }
+#s5 .cs-table th.th-copilot { color:var(--copilot); border-top:3px solid var(--copilot); min-width:170px; }
+#s5 .cs-table th.th-dialogflow { color:var(--dialogflow); border-top:3px solid var(--dialogflow); min-width:170px; }
+#s5 .cs-table th.th-langchain { color:var(--langchain); border-top:3px solid var(--langchain); min-width:200px; }
+#s5 .cs-table th.th-autogen { color:var(--autogen); border-top:3px solid var(--autogen); min-width:190px; }
+#s5 .cs-table th.th-crewai { color:var(--crewai); border-top:3px solid var(--crewai); min-width:190px; }
+
+#s5 .cs-table td {
+  padding:12px 14px; font-size:12px; vertical-align:top;
+  border-bottom:1px solid var(--border); line-height:1.5;
+}
+
+#s5 tr.cs-group td {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2.5px;
+  padding:8px 14px;
+}
+#s5 tr.cs-group.g-nlp td    { background:rgba(124,106,247,0.12); color:#9b8ef7; border-bottom:1px solid rgba(124,106,247,0.2); }
+#s5 tr.cs-group.g-agent td  { background:rgba(232,93,154,0.12);  color:#e85d9a; border-bottom:1px solid rgba(232,93,154,0.2); }
+#s5 tr.cs-group.g-memory td { background:rgba(61,214,200,0.12);  color:#3dd6c8; border-bottom:1px solid rgba(61,214,200,0.2); }
+#s5 tr.cs-group.g-flow td   { background:rgba(245,158,11,0.12);  color:#f59e0b; border-bottom:1px solid rgba(245,158,11,0.2); }
+
+#s5 tr.row-nlp    td:first-child { border-left:3px solid rgba(124,106,247,0.5); }
+#s5 tr.row-agent  td:first-child { border-left:3px solid rgba(232,93,154,0.5); }
+#s5 tr.row-memory td:first-child { border-left:3px solid rgba(61,214,200,0.5); }
+#s5 tr.row-flow   td:first-child { border-left:3px solid rgba(245,158,11,0.5); }
+
+#s5 tr.row-nlp:nth-child(even) td    { background:rgba(124,106,247,0.03); }
+#s5 tr.row-agent:nth-child(even) td  { background:rgba(232,93,154,0.03); }
+#s5 tr.row-memory:nth-child(even) td { background:rgba(61,214,200,0.03); }
+#s5 tr.row-flow:nth-child(even) td   { background:rgba(245,158,11,0.03); }
+
+#s5 tr:not(.cs-group):hover td { background:rgba(255,255,255,0.03) !important; }
+
+#s5 .concept-name { font-weight:800; font-size:13px; color:#fff; display:block; margin-bottom:3px; }
+#s5 .concept-def  { font-size:11px; color:var(--muted); line-height:1.5; display:block; }
+#s5 .concept-ex   {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:#3dd6c8; margin-top:5px; display:block;
+  background:rgba(61,214,200,0.07); padding:3px 7px; border-radius:3px;
+  border-left:2px solid rgba(61,214,200,0.4);
+}
+
+#s5 .term-name { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:11.5px; display:block; margin-bottom:3px; padding:2px 6px; border-radius:3px; }
+#s5 .term-note { font-size:11px; color:var(--muted); line-height:1.45; display:block; }
+.na-cell { color:var(--muted2); font-family:'JetBrains Mono',monospace; font-size:11px; font-style:italic; }
+
+.lex-term        { background:rgba(245,158,11,0.12); color:#f59e0b; }
+.copilot-term    { background:rgba(59,130,246,0.12); color:#60a5fa; }
+.dialogflow-term { background:rgba(34,197,94,0.12);  color:#4ade80; }
+.langchain-term  { background:rgba(168,85,247,0.12); color:#c084fc; }
+.autogen-term    { background:rgba(239,68,68,0.12);  color:#f87171; }
+.crewai-term     { background:rgba(20,184,166,0.12); color:#2dd4bf; }
+
+/* ── SEARCH HIGHLIGHT ─────────────────────────────────────────────── */
+mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
+
+/* ── STATS BAR ─────────────────────────────────────────────────────── */
+.stats-bar {
+  display:flex; gap:16px; flex-wrap:wrap;
+  padding:0 36px 20px;
+}
+.stat-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:10px 18px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.stat-num {
+  font-size:22px; font-weight:800;
+  background:linear-gradient(135deg,var(--sky),#a78bfa);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.stat-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted2); text-transform:uppercase; letter-spacing:1.5px; }
+
+/* ── SCROLLBAR ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--blue); }
+
+/* ── HIDDEN ────────────────────────────────────────────────────────── */
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── SIDEBAR ──────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="brand">// AI Framework Guide</span>
+    <h2>Selection &amp; Reference Toolkit</h2>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="switchSheet('s1',this)">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Framework Overview</span>
+      <span class="nav-badge">6</span>
+    </button>
+    <button class="nav-item" onclick="switchSheet('s2',this)">
+      <span class="nav-icon">🧭</span>
+      <span class="nav-label">Decision Matrix</span>
+      <span class="nav-badge">25</span>
+    </button>
+    <button class="nav-item" onclick="switchSheet('s3',this)">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">Use-Case Scenarios</span>
+      <span class="nav-badge">15</span>
+    </button>
+    <button class="nav-item" onclick="switchSheet('s4',this)">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Quick Reference</span>
+      <span class="nav-badge">12</span>
+    </button>
+    <button class="nav-item" onclick="switchSheet('s5',this)">
+      <span class="nav-icon">🗂</span>
+      <span class="nav-label">Cheat Sheet — Term Map</span>
+      <span class="nav-badge">20</span>
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    Covers 6 frameworks<br>
+    LangChain · LangGraph · AutoGen<br>
+    CrewAI · Copilot Studio<br>
+    Dialogflow CX · Amazon Lex
+  </div>
+</aside>
+
+<!-- ── MAIN ──────────────────────────────────────────────────────────── -->
+<main class="main">
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 1 — FRAMEWORK OVERVIEW
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet active" id="s1">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 1 of 5</span>
+    <h1>AI Chatbot &amp; Agent Framework — Selection Guide</h1>
+    <p>Covers: Copilot Studio • Dialogflow CX • Amazon Lex • LangChain/LangGraph • AutoGen • CrewAI</p>
+  </div>
+  <div class="stats-bar" style="padding-top:16px;">
+    <div class="stat-card"><span class="stat-num">6</span><span class="stat-lbl">Frameworks</span></div>
+    <div class="stat-card"><span class="stat-num">15</span><span class="stat-lbl">Dimensions</span></div>
+    <div class="stat-card"><span class="stat-num">3</span><span class="stat-lbl">Low-Code</span></div>
+    <div class="stat-card"><span class="stat-num">3</span><span class="stat-lbl">Open-Source</span></div>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">Filter:</span>
+    <button class="filter-btn active" onclick="s1Filter('all',this)">All</button>
+    <button class="filter-btn" onclick="s1Filter('low',this)">Low-Code / SaaS</button>
+    <button class="filter-btn" onclick="s1Filter('open',this)">Open-Source</button>
+    <div class="search-box">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s1search" placeholder="Search frameworks…" oninput="s1Search(this.value)">
+    </div>
+  </div>
+  <div class="table-area">
+    <table id="s1table">
+      <thead>
+        <tr>
+          <th>Framework</th><th>Type</th><th>Open-Source?</th>
+          <th>Best Scenario(s) — Full Description</th>
+          <th>Primary Use Case</th><th>Multi-Agent?</th>
+          <th>LLM Flexibility</th><th>Memory / State</th>
+          <th>RAG Support</th><th>Voice / Telephony</th>
+          <th>Azure Native?</th><th>Deployment</th>
+          <th>Coding Required?</th><th>Learning Curve</th><th>Cost Model</th>
+        </tr>
+      </thead>
+      <tbody id="s1body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 2 — DECISION MATRIX
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet" id="s2">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 2 of 5</span>
+    <h1>Decision Matrix</h1>
+    <p>Score each criterion for your project. ✅ = Strong fit &nbsp;⚠️ = Partial fit &nbsp;❌ = Poor fit</p>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">Section:</span>
+    <button class="filter-btn active" onclick="s2Filter('all',this)">All</button>
+    <button class="filter-btn" onclick="s2Filter('PROJECT CONTEXT',this)">Project Context</button>
+    <button class="filter-btn" onclick="s2Filter('BOT / AGENT TYPE',this)">Bot / Agent Type</button>
+    <button class="filter-btn" onclick="s2Filter('CHANNELS & INTEGRATION',this)">Channels</button>
+    <button class="filter-btn" onclick="s2Filter('MEMORY & KNOWLEDGE',this)">Memory</button>
+    <button class="filter-btn" onclick="s2Filter('GOVERNANCE & COMPLIANCE',this)">Governance</button>
+    <div class="search-box" style="margin-left:auto;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s2search" placeholder="Search criteria…" oninput="s2Search(this.value)">
+    </div>
+  </div>
+  <div class="table-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Decision Criterion</th>
+          <th class="th-copilot">Copilot<br>Studio</th>
+          <th class="th-dialogflow">Dialogflow<br>CX</th>
+          <th class="th-lex">Amazon<br>Lex</th>
+          <th class="th-langchain">LangChain/<br>LangGraph</th>
+          <th class="th-autogen">AutoGen<br>v0.4</th>
+          <th class="th-crewai">CrewAI</th>
+        </tr>
+      </thead>
+      <tbody id="s2body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 3 — USE-CASE SCENARIOS
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet" id="s3">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 3 of 5</span>
+    <h1>Real-World Use-Case Scenarios</h1>
+    <p>Each scenario shows which framework to choose first (Primary), a fallback option (Secondary), and what to avoid.</p>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">Filter:</span>
+    <button class="filter-btn active" onclick="s3Filter('all',this)">All</button>
+    <button class="filter-btn" onclick="s3Filter('Copilot Studio',this)">Copilot Studio</button>
+    <button class="filter-btn" onclick="s3Filter('Dialogflow',this)">Dialogflow CX</button>
+    <button class="filter-btn" onclick="s3Filter('Amazon Lex',this)">Amazon Lex</button>
+    <button class="filter-btn" onclick="s3Filter('LangChain',this)">LangChain</button>
+    <button class="filter-btn" onclick="s3Filter('AutoGen',this)">AutoGen</button>
+    <button class="filter-btn" onclick="s3Filter('CrewAI',this)">CrewAI</button>
+    <div class="search-box" style="margin-left:auto;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s3search" placeholder="Search scenarios…" oninput="s3Search(this.value)">
+    </div>
+  </div>
+  <div class="table-area">
+    <table>
+      <thead>
+        <tr>
+          <th>Scenario / Use Case</th><th>Industry</th>
+          <th>Primary Framework</th><th>Secondary Option</th>
+          <th>Avoid</th><th>Key Reason</th>
+        </tr>
+      </thead>
+      <tbody id="s3body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 4 — QUICK REFERENCE
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet" id="s4">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 4 of 5</span>
+    <h1>Quick Reference Card</h1>
+    <p>IF your situation → THEN use this framework. Instant decision guide.</p>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">12 decision rules</span>
+    <div class="search-box" style="margin-left:auto;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s4search" placeholder="Search rules…" oninput="s4Search(this.value)">
+    </div>
+  </div>
+  <div class="table-area">
+    <div class="qr-grid" id="s4grid"></div>
+    <div class="qr-note" id="s4note">
+      <span>💡 Note:</span> LangChain/LangGraph, AutoGen, and CrewAI are open-source and can run on ANY cloud or on-premise. Low-code platforms (Copilot Studio, Dialogflow CX, Lex) are vendor-managed SaaS with less flexibility but faster time-to-value.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 5 — CHEAT SHEET
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet" id="s5">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 5 of 5</span>
+    <h1>Cross-Framework Cheat Sheet — Same Concept, Different Names</h1>
+    <p>Every major AI chatbot / agent concept mapped across all 6 frameworks.</p>
+  </div>
+  <div class="fw-legend">
+    <span class="fw-pill" style="color:var(--lex);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08)"><span class="fw-dot" style="background:var(--lex)"></span>Amazon Lex</span>
+    <span class="fw-pill" style="color:var(--copilot);border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.08)"><span class="fw-dot" style="background:var(--copilot)"></span>Copilot Studio</span>
+    <span class="fw-pill" style="color:var(--dialogflow);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08)"><span class="fw-dot" style="background:var(--dialogflow)"></span>Dialogflow CX</span>
+    <span class="fw-pill" style="color:var(--langchain);border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08)"><span class="fw-dot" style="background:var(--langchain)"></span>LangChain / LangGraph</span>
+    <span class="fw-pill" style="color:var(--autogen);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)"><span class="fw-dot" style="background:var(--autogen)"></span>AutoGen v0.4</span>
+    <span class="fw-pill" style="color:var(--crewai);border-color:rgba(20,184,166,0.3);background:rgba(20,184,166,0.08)"><span class="fw-dot" style="background:var(--crewai)"></span>CrewAI</span>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">Group:</span>
+    <button class="filter-btn active" onclick="s5Filter('all',this)">All</button>
+    <button class="filter-btn" onclick="s5Filter('nlp',this)">🗣 NLP / Intent</button>
+    <button class="filter-btn" onclick="s5Filter('agent',this)">🤖 Agent / Execution</button>
+    <button class="filter-btn" onclick="s5Filter('memory',this)">🧠 Memory / State</button>
+    <button class="filter-btn" onclick="s5Filter('flow',this)">🔀 Flow / Orchestration</button>
+    <div class="search-box" style="margin-left:auto;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="s5search" placeholder="Search concepts or terms…" oninput="s5Search(this.value)">
+    </div>
+  </div>
+  <div class="table-area">
+    <table class="cs-table" id="s5table">
+      <thead>
+        <tr>
+          <th>Universal Concept</th>
+          <th class="th-lex">🟡 Amazon Lex</th>
+          <th class="th-copilot">🔵 Copilot Studio</th>
+          <th class="th-dialogflow">🟢 Dialogflow CX</th>
+          <th class="th-langchain">🟣 LangChain / LangGraph</th>
+          <th class="th-autogen">🔴 AutoGen v0.4</th>
+          <th class="th-crewai">🩵 CrewAI</th>
+        </tr>
+      </thead>
+      <tbody id="s5body"></tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════════════════
+
+const S1_DATA = [
+  {type:'low', name:'Copilot Studio', typeLabel:'Low-Code / SaaS', oss:'❌ No',
+   scenario:'Best for enterprise teams on Microsoft 365 / Teams / SharePoint who need a governed, IT-approved chatbot with minimal code. Ideal for HR bots, IT helpdesk, internal FAQ, and customer-facing portals already running on Azure. Great when business analysts (not developers) own the bot. Perfect fit when Power Platform connectors (Dataverse, SharePoint, SAP, Salesforce) are already in use. Strong compliance story for regulated industries (finance, healthcare) needing audit logs and DLP policies.',
+   useCase:'Internal copilots / M365 bots', multiAgent:'✅ Yes (Orchestrator)', llm:'GPT-4o (Azure only)',
+   memory:'Session + Dataverse', rag:'✅ Copilot Knowledge', voice:'✅ ACS / Teams Voice',
+   azure:'✅ Deep native', deploy:'Azure / Teams / Web', coding:'⬛ Minimal', curve:'🟢 Low',
+   cost:'Per-message + M365 license'},
+  {type:'low', name:'Dialogflow CX', typeLabel:'Low-Code / SaaS', oss:'❌ No',
+   scenario:'Best for contact-center IVR and complex conversational flows where state machine precision matters. Ideal when business needs visual flow design with branching logic, slot-filling forms, and telephony hand-off. Choose when running on Google Cloud (GKE, Cloud Functions, BigQuery). Strong for multilingual customer support bots (39+ languages). Best when the team has CX agents who prefer a GUI over code. Suits regulated environments needing CCAI (Contact Center AI) integration with DTMF/voice.',
+   useCase:'Contact-center IVR / CX flows', multiAgent:'⚠️ Limited (Flows)', llm:'Gemini / External via webhook',
+   memory:'Session + Firestore', rag:'✅ via Data Store Agents', voice:'✅ CCAI / Telephony',
+   azure:'⚠️ GCP-centric', deploy:'GCP / Dialogflow Messenger', coding:'⬛ Low-Medium', curve:'🟡 Medium',
+   cost:'Per-session + GCP infra cost'},
+  {type:'low', name:'Amazon Lex', typeLabel:'Low-Code / SaaS', oss:'❌ No',
+   scenario:'Best for AWS-native workloads where voice + chat bots must integrate tightly with Lambda, Connect (call-center), DynamoDB, and S3. Ideal for building call-center automation (Amazon Connect integration is seamless). Choose when the infrastructure team is AWS-first and prefers managed services with IAM-level security. Great for retail, banking, and telecom chatbots needing multi-turn NLU with slot elicitation. Suits teams already using AWS Amplify or AppSync for the front end.',
+   useCase:'AWS call-center / NLU bots', multiAgent:'⚠️ Limited (Lambda)', llm:'Amazon Titan / Bedrock',
+   memory:'Session + DynamoDB', rag:'✅ Kendra / Bedrock KB', voice:'✅ Amazon Connect',
+   azure:'⚠️ AWS-centric', deploy:'AWS Lambda / Connect', coding:'⬛ Low-Medium', curve:'🟡 Medium',
+   cost:'Pay-per-request (AWS)'},
+  {type:'open', name:'LangChain & LangGraph', typeLabel:'Open-Source Framework', oss:'✅ Yes (MIT)',
+   scenario:'Best for developers building custom RAG pipelines, conversational agents, or agentic workflows with precise control over every step. Choose LangChain when you need composable chains (retrieval → rerank → generate) with any LLM provider (OpenAI, Azure, Anthropic, Ollama). Upgrade to LangGraph when the workflow requires cycles, conditional branching, human-in-the-loop checkpoints, or persistent state across turns. Ideal for production systems needing observability via LangSmith. Strong fit for consulting projects requiring white-label, self-hosted, cloud-agnostic agents with long-term memory (LangMem).',
+   useCase:'Custom RAG + stateful agents', multiAgent:'✅ Yes (LangGraph)', llm:'✅ Any LLM provider',
+   memory:'✅ LangMem / Checkpointer', rag:'✅ First-class support', voice:'⚠️ Via custom tools',
+   azure:'✅ Azure / Any cloud', deploy:'Any cloud / On-premise', coding:'🔴 High (Python)', curve:'🔴 High',
+   cost:'Free (infra cost only)'},
+  {type:'open', name:'AutoGen (v0.4)', typeLabel:'Open-Source Framework', oss:'✅ Yes (MIT)',
+   scenario:'Best for complex multi-agent reasoning tasks where multiple AI personas (Planner, Coder, Critic, Executor) must collaborate autonomously or with human oversight. Ideal for code generation pipelines, automated research synthesis, software engineering assistants, and any scenario requiring back-and-forth agent debate. Choose AutoGen when cognitive complexity is high and agents need to self-correct. AutoGen Studio provides a low-code GUI for non-engineers to configure agent teams. Works well in enterprise settings where agents must call tools (APIs, databases, code execution) with audit trails.',
+   useCase:'Multi-agent reasoning / coding', multiAgent:'✅ Yes (core feature)', llm:'✅ GPT-4, Azure OAI, local',
+   memory:'✅ ConversationHistory', rag:'✅ Custom RAG agents', voice:'⚠️ Via custom agent',
+   azure:'✅ Azure OpenAI native', deploy:'Azure / On-premise / Local', coding:'🔴 High (Python)', curve:'🔴 High',
+   cost:'Free (infra cost only)'},
+  {type:'open', name:'CrewAI', typeLabel:'Open-Source Framework', oss:'✅ Yes (MIT)',
+   scenario:'Best for role-based multi-agent pipelines where distinct agents with clear job titles (Researcher, Writer, Analyst, QA) execute tasks sequentially or in parallel. Ideal for content generation pipelines, market research automation, document summarization workflows, and reporting systems. Choose CrewAI when you want a higher-level abstraction over agent orchestration than LangGraph provides — less boilerplate for business-logic-heavy use cases. Strong for consulting PoC delivery where speed of agent team construction matters. Integrates well with LangChain tools.',
+   useCase:'Role-based agent pipelines', multiAgent:'✅ Yes (native)', llm:'✅ Any via LangChain',
+   memory:'✅ Agent memory store', rag:'✅ via LangChain tools', voice:'⚠️ Via custom agent',
+   azure:'✅ Any cloud', deploy:'Any cloud / On-premise', coding:'🔴 High (Python)', curve:'🟡 Medium-High',
+   cost:'Free (infra cost only)'},
+];
+
+const S2_DATA = {
+  'PROJECT CONTEXT': [
+    ['Team has no/low Python dev capacity','✅','✅','✅','❌','❌','❌'],
+    ['Team is Python-fluent AI engineers','❌','⚠️','⚠️','✅','✅','✅'],
+    ['Need cloud-agnostic / self-hosted','❌','❌','❌','✅','✅','✅'],
+    ['Locked into Microsoft Azure / M365','✅','❌','❌','✅','✅','⚠️'],
+    ['Locked into Google Cloud (GCP)','❌','✅','❌','✅','✅','✅'],
+    ['Locked into AWS','❌','❌','✅','✅','✅','✅'],
+  ],
+  'BOT / AGENT TYPE': [
+    ['Simple FAQ / intent-matching chatbot','✅','✅','✅','⚠️','❌','❌'],
+    ['Complex conversational flow (state-machine)','⚠️','✅','✅','✅','⚠️','⚠️'],
+    ['Custom RAG over private documents','⚠️','⚠️','⚠️','✅','✅','✅'],
+    ['Multi-agent autonomous reasoning','⚠️','❌','❌','✅','✅','✅'],
+    ['Role-based agent pipeline (crew)','❌','❌','❌','⚠️','⚠️','✅'],
+    ['Code generation / software engineering','❌','❌','❌','✅','✅','⚠️'],
+  ],
+  'CHANNELS & INTEGRATION': [
+    ['Voice / telephony / IVR integration','✅','✅','✅','⚠️','⚠️','⚠️'],
+    ['Microsoft Teams / SharePoint embed','✅','❌','❌','⚠️','⚠️','⚠️'],
+    ['Contact-center (Amazon Connect / CCAI)','⚠️','✅','✅','⚠️','❌','❌'],
+    ['REST API / webhook-driven backend','⚠️','✅','✅','✅','✅','✅'],
+    ['Multiple LLM providers needed','❌','⚠️','⚠️','✅','✅','✅'],
+  ],
+  'MEMORY & KNOWLEDGE': [
+    ['Long-term user memory required','⚠️','⚠️','⚠️','✅','✅','✅'],
+    ['Vector DB / semantic search (RAG)','⚠️','✅','✅','✅','✅','✅'],
+    ['Structured SQL data retrieval','⚠️','⚠️','⚠️','✅','✅','✅'],
+    ['Graph-based memory / Neo4j','❌','❌','❌','✅','✅','⚠️'],
+  ],
+  'GOVERNANCE & COMPLIANCE': [
+    ['Enterprise governance / audit logs','✅','✅','⚠️','⚠️','⚠️','⚠️'],
+    ['Data sovereignty / on-premise deploy','❌','❌','❌','✅','✅','✅'],
+    ['Low-cost / open-source budget','❌','❌','❌','✅','✅','✅'],
+    ['Fast PoC delivery (days not weeks)','✅','✅','✅','⚠️','⚠️','✅'],
+  ],
+};
+
+const S3_DATA = [
+  ['Internal HR / IT helpdesk chatbot on Microsoft Teams','Enterprise / Any','Copilot Studio','LangChain + Azure','Amazon Lex','Deepest M365 integration; business analysts can own it; governance built-in.'],
+  ['Customer support IVR with complex decision trees & voice','Telecom / Banking / Retail','Dialogflow CX','Amazon Lex','AutoGen','Visual flow designer for branching; CCAI telephony; multi-language support out of the box.'],
+  ['AWS call-center bot integrated with Amazon Connect','Contact Centre / Insurance','Amazon Lex','Dialogflow CX','Copilot Studio','Native Lambda + Connect integration; pay-per-request billing; Kendra RAG.'],
+  ['Custom RAG chatbot over private knowledge base (PDF, SharePoint, SQL)','Consulting / Legal / Finance','LangChain / LangGraph','Copilot Studio (for M365)','Dialogflow CX','Full control over chunking, embedding, retrieval reranking, and LLM selection. LangSmith observability.'],
+  ['Multi-agent research assistant (planner + researcher + writer)','Media / Research / Consulting','CrewAI','AutoGen','Copilot Studio','Role-based crew abstraction is fastest to build; sequential/parallel task orchestration built-in.'],
+  ['Autonomous software engineering agent (code gen + test + fix)','Software Development / DevOps','AutoGen','LangGraph','Copilot Studio','ConversableAgent back-and-forth debate loop; integrated code executor; self-correction cycles.'],
+  ['Long-term memory agentic chatbot (remembers user across sessions)','Healthcare / Personal AI / CRM','LangGraph + LangMem','AutoGen','Dialogflow CX','LangMem semantic/episodic memory with Postgres/Chroma backend; checkpointer for persistent state.'],
+  ['Real-time voice AI for Azure contact center (ACS + Functions)','Banking / Insurance / Telco','LangChain + Azure (ACS)','Copilot Studio','Amazon Lex','ACS Call Automation + Azure Functions streaming STT/TTS; full LLM control for dynamic responses.'],
+  ['Rapid PoC chatbot for client demo (days, not weeks)','Any / Consulting','Copilot Studio or CrewAI','Dialogflow CX','AutoGen','Copilot Studio for no-code speed; CrewAI for agentic PoC with minimal boilerplate Python.'],
+  ['Regulated industry bot needing on-premise / private cloud deploy','Healthcare / Government / Defence','LangChain / LangGraph','AutoGen','Copilot Studio (SaaS)','Self-hosted; works with local LLMs (Ollama/vLLM); no data leaves your infrastructure.'],
+  ['Document analysis pipeline (ingest, summarize, compare, report)','Legal / Finance / Insurance','CrewAI','LangGraph','Dialogflow CX','Researcher + Analyst + Writer crew maps perfectly; output structured reports; easy tool integration.'],
+  ['Multi-cloud / cloud-agnostic agent platform','Enterprise IT / ISV / MSP','LangChain / LangGraph','AutoGen','Dialogflow CX / Lex','Framework-agnostic; supports Azure, AWS, GCP, Ollama, HuggingFace; no vendor lock-in.'],
+  ['Conversational analytics bot (query SQL / BI via natural language)','Finance / Retail / Ops','LangChain (SQL Agent)','AutoGen (code executor)','Copilot Studio','LangChain SQL agent with reflection; can combine vector + relational retrieval for hybrid answers.'],
+  ['Graph-based knowledge agent (Neo4j / property graph memory)','Life Sciences / Knowledge Mgmt','LangGraph + Neo4j','AutoGen','Copilot Studio','LangGraph integrates directly with Neo4j; graph traversal for relationship-heavy knowledge queries.'],
+  ['Low-budget startup chatbot (zero licensing cost)','Startup / Non-profit','LangChain or CrewAI','AutoGen','Copilot Studio / Dialogflow','MIT open-source; free frameworks; only pay for LLM API calls (or use Ollama for local inference).'],
+];
+
+const S4_DATA = [
+  ["IF your team can't write Python","→ Copilot Studio, Dialogflow CX, or Amazon Lex"],
+  ["IF you're on Azure / M365","→ Copilot Studio (first choice) + LangChain with Azure OpenAI"],
+  ["IF you're on AWS","→ Amazon Lex + Bedrock + Kendra"],
+  ["IF you're on GCP","→ Dialogflow CX + Vertex AI + CCAI"],
+  ["IF you need custom RAG with any LLM","→ LangChain / LangGraph"],
+  ["IF you need multi-agent autonomous reasoning","→ AutoGen (cognitive complexity) or CrewAI (role pipelines)"],
+  ["IF you need stateful long-term memory agents","→ LangGraph + LangMem"],
+  ["IF you need voice / telephony","→ Copilot Studio (ACS), Dialogflow CX (CCAI), Amazon Lex (Connect)"],
+  ["IF you need on-premise / private cloud","→ LangChain / AutoGen / CrewAI (self-hosted + Ollama)"],
+  ["IF budget is $0 (open-source only)","→ LangChain, AutoGen, or CrewAI"],
+  ["IF you need fastest PoC (days)","→ Copilot Studio (no-code) or CrewAI (minimal boilerplate)"],
+  ["IF you need enterprise governance & compliance","→ Copilot Studio (M365 DLP) or Dialogflow CX (GCP IAM)"],
+];
+
+const S5_DATA = [
+  {group:'nlp', label:'🗣  NLP / Intent Recognition'},
+  {group:'nlp', concept:'Intent', def:'A named goal the user wants to accomplish. Top-level classification of user purpose.',
+   ex:'"BookFlight", "CheckBalance", "CancelOrder"',
+   lex:['Intent','Core unit; every Lex bot is a collection of named intents.'],
+   copilot:['Topic','A topic contains trigger phrases + the conversation path for one goal.'],
+   dialogflow:['Intent','Matched via ML classifier or exact phrases. Same concept as Lex.'],
+   langchain:['Tool / Chain','No formal intent; routing done by LLM selecting a tool or chain to invoke.'],
+   autogen:['—','Not applicable in this framework.'],
+   crewai:['Task','Closest analog; a Task defines what an agent should accomplish.']},
+  {group:'nlp', concept:'Utterances / Training Phrases', def:'Sample phrases users might say to trigger an intent. Used to train the NLU classifier.',
+   ex:'"I want a pizza", "Order me food", "Get me a margherita"',
+   lex:['Utterances','Listed per intent; Lex uses them to train its ML NLU model.'],
+   copilot:['Trigger Phrases','Phrases added to a topic that cause it to activate.'],
+   dialogflow:['Training Phrases','Added per intent; annotated with entity tags for extraction.'],
+   langchain:['Prompt / System Prompt','No training phrases; LLM handles NLU natively. Routing is instruction-based.'],
+   autogen:['—','Not applicable in this framework.'],
+   crewai:['Task Description','Natural language description; LLM interprets it directly — no training data.']},
+  {group:'nlp', concept:'Entity / Slot (Type)', def:'A typed variable extracted from user input — a piece of data needed to fulfill the intent.',
+   ex:'City = "Montreal", Date = "tomorrow", Size = "large"',
+   lex:['Slot Type','Typed data points Lex extracts. Each intent has a slot list.'],
+   copilot:['Variable / Entity','Variables store extracted values; entities define the type (city, date…).'],
+   dialogflow:['Entity / Parameter','Entities define types; parameters are per-intent instances.'],
+   langchain:['Tool Input Schema (Pydantic)','Tool args defined via Pydantic BaseModel; LLM fills them from conversation.'],
+   autogen:['Function Parameter','Tool call arguments extracted by LLM when invoking a registered function.'],
+   crewai:['Task Input / Context','Passed as structured context when a task is created. No formal slot loop.']},
+  {group:'nlp', concept:'Slot Filling / Elicitation', def:'Multi-turn loop where the bot asks follow-up questions to collect all required slots before fulfillment.',
+   ex:'Bot: "What city?" → User: "Paris" → Bot: "What date?"',
+   lex:['Slot Elicitation','Built-in; Lex auto-prompts for missing slots using configured prompts.'],
+   copilot:['Question Nodes','Ask-a-Question nodes on the canvas collect variable values one by one.'],
+   dialogflow:['Form / Parameter Filling','CX Form nodes collect all parameters before moving to the next page.'],
+   langchain:['Multi-turn Chain / HITL Interrupt','Managed manually or via LangGraph interrupt() nodes with state checkpoints.'],
+   autogen:['Multi-agent Turn / Human Proxy','UserProxyAgent simulates user turn; missing info is requested via follow-up messages.'],
+   crewai:['—','Not applicable in this framework.']},
+  {group:'nlp', concept:'Confidence Score / Fallback', def:'How certain the NLU model is about its intent match. Below a threshold, a fallback intent fires.',
+   ex:'Confidence: 0.43 → triggers FallbackIntent',
+   lex:['AMAZON.FallbackIntent','Special built-in intent fired when no other intent meets the confidence threshold.'],
+   copilot:['Fallback Topic / Escalate','"Fallback" system topic; can escalate to a live human agent.'],
+   dialogflow:['Default Fallback Intent','Fires when NLU confidence is below threshold; configurable per flow.'],
+   langchain:['Default Tool / Catch-all Prompt','No native concept; handled by prompt design or a default routing branch.'],
+   autogen:['—','Not applicable in this framework.'],
+   crewai:['—','Not applicable in this framework.']},
+  {group:'agent', label:'🤖  Agent / Execution'},
+  {group:'agent', concept:'Agent / Bot', def:'Top-level autonomous entity that perceives input, reasons, and takes actions or generates responses.',
+   ex:'CustomerSupportBot, ResearchAgent, SalesAgent',
+   lex:['Bot','The Lex Bot; contains all intents, slot types, and locales.'],
+   copilot:['Copilot / Agent','The published Copilot; wraps all topics and knowledge sources.'],
+   dialogflow:['Agent','A Dialogflow CX agent; contains all flows, intents, and entity types.'],
+   langchain:['Agent (AgentExecutor)','AgentExecutor or LangGraph graph node that reasons + calls tools in a loop.'],
+   autogen:['Agent (AssistantAgent)','ConversableAgent subclass. AssistantAgent is the LLM-powered agent role.'],
+   crewai:['Agent','Defined with role, goal, backstory, and tools. The atomic worker unit.']},
+  {group:'agent', concept:'Tool / Action / Function', def:'A callable function the agent can invoke to interact with the outside world — APIs, DBs, code executors.',
+   ex:'search_web(), query_db(), send_email(), run_code()',
+   lex:['Lambda Hook (Fulfillment)','AWS Lambda triggered on slot capture or intent fulfillment.'],
+   copilot:['Action / Power Automate Flow','HTTP calls or Power Automate flows triggered within a topic.'],
+   dialogflow:['Webhook / Fulfillment','HTTP webhook called when an intent or page fires; returns dynamic responses.'],
+   langchain:['Tool (@tool decorator)','Python function wrapped with @tool. LLM selects and calls via function calling.'],
+   autogen:['Tool / Registered Function','Functions registered on agents; LLM invokes via OpenAI-style function calling.'],
+   crewai:['Tool (BaseTool / @tool)','BaseTool subclass or @tool-decorated function assigned to an agent.']},
+  {group:'agent', concept:'Human Proxy / User Simulator', def:'A component that stands in for a human in automated or multi-agent pipelines — handles I/O on behalf of a person.',
+   ex:'Testing pipelines, auto-feedback loops, HITL approval',
+   lex:['—','Not applicable in this framework.'],
+   copilot:['—','Not applicable in this framework.'],
+   dialogflow:['—','Not applicable in this framework.'],
+   langchain:['Human-in-the-loop (interrupt)','LangGraph interrupt() pauses the graph and waits for human input before resuming.'],
+   autogen:['UserProxyAgent','Core AutoGen agent representing the human. Can auto-reply or request real input.'],
+   crewai:["human_input_mode='ALWAYS'",'Pauses agent execution for real human approval when set on an agent.']},
+  {group:'agent', concept:'Role / Persona', def:'The identity, expertise, and behavioral framing given to an agent that shapes how it responds.',
+   ex:'"You are a senior financial analyst…", role="Researcher"',
+   lex:['—','Not applicable in this framework.'],
+   copilot:['Identity / Instructions','Set in "Configure" tab; defines the copilot\'s name, tone, and scope.'],
+   dialogflow:['Agent Description','High-level description used by generative playbooks to shape behavior.'],
+   langchain:['System Prompt','Injected into every LLM call to define persona and behavioral constraints.'],
+   autogen:['system_message','Constructor arg on ConversableAgent that defines role and behavior.'],
+   crewai:['role + backstory','Explicit Agent fields: role (short title), backstory (detailed persona narrative).']},
+  {group:'agent', concept:'LLM / Model Config', def:'Configuration of which language model the agent uses and its inference parameters (temperature, tokens…).',
+   ex:'model="gpt-4o", temperature=0.2, max_tokens=1024',
+   lex:['— (Built-in NLU)','Lex uses its own built-in NLU; no LLM config exposed directly.'],
+   copilot:['Generative AI Model Settings','Configured in "AI capabilities"; selects Azure OpenAI model and controls.'],
+   dialogflow:['Generative Model Settings','Per-agent or per-playbook model selection (Gemini family).'],
+   langchain:['LLM / ChatModel object','ChatOpenAI(model=…, temperature=…) or any LangChain-compatible LLM.'],
+   autogen:['llm_config dict','{"model": "gpt-4o", "temperature": 0.1, …} passed to agent constructor.'],
+   crewai:['llm= param on Agent','Agent(llm=ChatOpenAI(…)) or string model name; supports LiteLLM backends.']},
+  {group:'memory', label:'🧠  Memory / State Management'},
+  {group:'memory', concept:'Session / Context', def:'Container holding all data for one user conversation — variables, history, and state — from start to end.',
+   ex:'session_id = "user_789_20240312"',
+   lex:['Session Attributes','Key-value map persisting for the session lifetime.'],
+   copilot:['Conversation Session','Scoped variables (conversation vs. global) stored per session.'],
+   dialogflow:['Session','Session parameters carry values across pages within one conversation.'],
+   langchain:['State (TypedDict)','In LangGraph, the entire graph state dict is the session. Passed node-to-node.'],
+   autogen:['Chat History (messages list)','The running list of messages between agents constitutes the session state.'],
+   crewai:['Context / shared_memory','Task output is passed as context to subsequent tasks; crew-level shared memory optional.']},
+  {group:'memory', concept:'Conversation History / Memory', def:'Record of past messages and interactions the agent uses to maintain coherent multi-turn dialogue.',
+   ex:'ChatHistory, message buffer, summarized past turns',
+   lex:['Session Attributes (manual)','No native message history; must be managed in Lambda or session attributes.'],
+   copilot:['Conversation Variables','Variable storage per conversation; full history not exposed natively.'],
+   dialogflow:['Session Parameters','Values persist within a session; full history managed externally.'],
+   langchain:['Memory / ChatMessageHistory','ConversationBufferMemory, SummaryMemory, or LangGraph state messages list.'],
+   autogen:['messages (agent chat history)','Full message list on each agent; can be cleared/summarized to manage token budget.'],
+   crewai:['memory=True on Crew','Enables short-term (in-task), long-term (SQLite), and entity memory via embeddings.']},
+  {group:'memory', concept:'Long-term / Persistent Memory', def:'Storage that survives beyond a single session — user preferences, historical facts stored in a DB.',
+   ex:'User preference store, vector DB recall, user profile',
+   lex:['DynamoDB (external)','Must be built manually via Lambda + DynamoDB; not native to Lex.'],
+   copilot:['Global Variables / Dataverse','Global-scope variables or Dataverse/Dynamics 365 for persistent user data.'],
+   dialogflow:['External DB via Webhook',"Must be implemented in fulfillment webhook; Dialogflow doesn't persist cross-session natively."],
+   langchain:['VectorStore / LangMem','ChromaDB, Pinecone etc. via retrievers. LangMem adds background memory updates.'],
+   autogen:['TeachableAgent + memo store','TeachableAgent writes facts to a vector DB memo store and retrieves on future sessions.'],
+   crewai:['Long-term Memory (SQLite + embeddings)','Stored in ~/.crewai/memory/; crew recalls past runs using semantic search.']},
+  {group:'flow', label:'🔀  Flow / Orchestration'},
+  {group:'flow', concept:'Flow / Graph / Pipeline', def:'Top-level structure defining how conversation steps or agent actions are sequenced and connected.',
+   ex:'Start → Greet → CollectInfo → Confirm → Fulfill → End',
+   lex:['Intent + Slot Flow (implicit)','Implicit flow: Lex follows slot elicitation order then calls fulfillment Lambda.'],
+   copilot:['Topic Canvas','Visual node-based canvas showing the entire conversation path for a topic.'],
+   dialogflow:['Flow + Pages','CX introduces Flows (sub-graphs) each containing Pages (states).'],
+   langchain:['LangGraph StateGraph','StateGraph with nodes (functions) and edges (transitions). Supports cycles & branching.'],
+   autogen:['GroupChat / Swarm','GroupChatManager routes messages between agents. Swarm is a newer topology.'],
+   crewai:['Crew (process="sequential"/"hierarchical")','Crew orchestrates agent order. Sequential = chain; Hierarchical = manager routes.']},
+  {group:'flow', concept:'State / Node / Page', def:'A discrete point where a specific action happens — a question is asked, a decision is made, or data is processed.',
+   ex:'AskCityNode, ConfirmOrderPage, ExtractSlotStep',
+   lex:['Dialog Step (implicit)','Lex manages state implicitly through slot collection; no explicit node concept.'],
+   copilot:['Node (Message / Question / Action)','Canvas nodes: Message, Question, Condition, Action, End Conversation.'],
+   dialogflow:['Page','CX core unit; each Page has entry fulfillment, a form, routes, and event handlers.'],
+   langchain:['Node (function in StateGraph)','Any Python function added to StateGraph is a node. Receives and returns state dict.'],
+   autogen:["Agent turn / message handler","Each agent's reply() constitutes a step; no explicit 'node' abstraction."],
+   crewai:['Task','Each Task is a discrete step assigned to an agent; tasks are the nodes of the crew pipeline.']},
+  {group:'flow', concept:'Transition / Edge / Route', def:'A conditional or unconditional link that moves execution from one state to the next.',
+   ex:'if slot_filled → next_page,  if condition → branch_A else branch_B',
+   lex:['Conditional Branch (Lambda)','Branching done in Lambda return value (dialogAction); no visual routing.'],
+   copilot:['Condition Node / Branch','Condition nodes create if/else branches based on variable values.'],
+   dialogflow:['Route / Transition Route','Condition-based or intent-triggered routes move page to page.'],
+   langchain:['Edge / Conditional Edge','add_edge() for fixed; add_conditional_edges() for dynamic routing based on state.'],
+   autogen:['Handoff / speaker_selection_func','GroupChatManager selects next speaker; custom functions enable conditional routing.'],
+   crewai:['Task dependency (context=)','context=[prev_task] chains tasks. Hierarchical process uses manager LLM to route.']},
+  {group:'flow', concept:'Loop / ReAct Cycle', def:'Think→Act→Observe loop where the agent repeatedly reasons, calls a tool, observes the result, and continues until done.',
+   ex:'Reason → Call search_tool → Observe → Reason again → Answer',
+   lex:['—','Not applicable in this framework.'],
+   copilot:['Generative Actions (Orchestrator)','Autonomous mode uses an AI orchestrator to decide which action to call next.'],
+   dialogflow:['Playbook (Generator Loop)','CX Playbooks enable a generator loop for autonomous multi-step task completion.'],
+   langchain:['AgentExecutor / LangGraph cycle','AgentExecutor runs the ReAct loop. LangGraph uses explicit cycles (should_continue edge).'],
+   autogen:['ConversableAgent reply loop','Agents exchange messages in a loop; each exchange is one think-act step.'],
+   crewai:['Agent execution loop','Under the hood, each CrewAI agent uses a ReAct-style loop when executing a task.']},
+  {group:'flow', concept:'Fulfillment / Final Answer', def:'The step where the agent delivers the final response after all information is gathered and processing is done.',
+   ex:'"Your flight to Paris on Jan 15 is booked! Confirmation: XY291"',
+   lex:['Fulfillment Lambda','Lambda called after all slots are filled; returns final response to user.'],
+   copilot:["Message Node (End)","Final message or 'End Conversation' node delivers the closing response."],
+   dialogflow:['End Flow / Response Fulfillment','Webhook response or static text on the final page transition.'],
+   langchain:['Final Response / END node','When graph reaches END, last state value (messages[-1]) is the answer.'],
+   autogen:['Termination (is_termination_msg)','Conversation ends when termination condition met; last assistant message is output.'],
+   crewai:["Task Output / Crew Output","Each task returns a TaskOutput; final task's output is the crew's result."]},
+  {group:'flow', concept:'Handoff / Delegation', def:'Transfer of control from one agent to another — escalating to a specialist or handing off to a human.',
+   ex:'BillingAgent → EscalateToHuman,  ResearchAgent → WriterAgent',
+   lex:['— (via Lambda → Connect)','Not native; can forward session to Connect agent queue via Lambda.'],
+   copilot:["Escalate to Human / Transfer Topic","Built-in 'Transfer Conversation' node hands off to live agent queue."],
+   dialogflow:['Live Agent Handoff','Built-in event that routes conversation to CCAI-integrated human agent.'],
+   langchain:['Handoff (LangGraph node / edge)','Conditional edge routes to a different subgraph or agent node based on state.'],
+   autogen:['Agent-to-Agent Message','An agent sends a message to another; GroupChatManager facilitates multi-agent handoffs.'],
+   crewai:['delegate_work Tool','Agents call delegate_work() to hand a sub-task to a colleague agent by name.']},
+];
+
+// ════════════════════════════════════════════════════════════════════
+// RENDER HELPERS
+// ════════════════════════════════════════════════════════════════════
+function hl(text, term) {
+  if (!term) return text;
+  const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function badgeScore(v) {
+  if (v==='✅') return `<span class="cell-yes">✅</span>`;
+  if (v==='❌') return `<span class="cell-no">❌</span>`;
+  if (v==='⚠️') return `<span class="cell-part">⚠️</span>`;
+  return v;
+}
+
+function s1BadgeField(v) {
+  if (v.startsWith('✅')) return `<span class="badge badge-yes">${v}</span>`;
+  if (v.startsWith('❌')) return `<span class="badge badge-no">${v}</span>`;
+  if (v.startsWith('⚠️')) return `<span class="badge badge-part">${v}</span>`;
+  if (v.startsWith('🔴')) return `<span class="badge badge-no">${v}</span>`;
+  if (v.startsWith('🟡')) return `<span class="badge badge-part">${v}</span>`;
+  if (v.startsWith('🟢')) return `<span class="badge badge-yes">${v}</span>`;
+  if (v.startsWith('⬛')) return `<span class="badge badge-neutral">${v}</span>`;
+  return `<span style="font-size:12px;color:#9aabb8;">${v}</span>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SHEET 1
+// ════════════════════════════════════════════════════════════════════
+let s1FilterActive = 'all';
+
+function renderS1(filter='all', search='') {
+  const tbody = document.getElementById('s1body');
+  tbody.innerHTML = '';
+  S1_DATA.forEach(fw => {
+    if (filter !== 'all' && fw.type !== filter) return;
+    const text = Object.values(fw).join(' ').toLowerCase();
+    if (search && !text.includes(search.toLowerCase())) return;
+    const q = search;
+    const tr = document.createElement('tr');
+    tr.className = `row-${fw.type}`;
+    tr.innerHTML = `
+      <td><div class="fw-name">${hl(fw.name,q)}</div></td>
+      <td><span class="fw-type type-${fw.type}">${fw.typeLabel}</span></td>
+      <td class="${fw.oss.startsWith('✅')?'oss-yes':'oss-no'}" style="font-size:13px;">${fw.oss}</td>
+      <td><div class="scenario-text">${hl(fw.scenario,q)}</div></td>
+      <td style="color:#c8d8e8;font-size:12px;">${hl(fw.useCase,q)}</td>
+      <td>${s1BadgeField(fw.multiAgent)}</td>
+      <td>${s1BadgeField(fw.llm)}</td>
+      <td style="font-size:12px;color:#9aabb8;">${fw.memory}</td>
+      <td>${s1BadgeField(fw.rag)}</td>
+      <td>${s1BadgeField(fw.voice)}</td>
+      <td>${s1BadgeField(fw.azure)}</td>
+      <td style="font-size:12px;color:#9aabb8;">${fw.deploy}</td>
+      <td>${s1BadgeField(fw.coding)}</td>
+      <td>${s1BadgeField(fw.curve)}</td>
+      <td style="font-size:12px;color:#9aabb8;">${fw.cost}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function s1Filter(type, btn) {
+  s1FilterActive = type;
+  document.querySelectorAll('#s1 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderS1(type, document.getElementById('s1search').value);
+}
+
+function s1Search(val) {
+  renderS1(s1FilterActive, val);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SHEET 2
+// ════════════════════════════════════════════════════════════════════
+let s2FilterActive = 'all';
+
+function renderS2(sectionFilter='all', search='') {
+  const tbody = document.getElementById('s2body');
+  tbody.innerHTML = '';
+  Object.entries(S2_DATA).forEach(([section, rows]) => {
+    if (sectionFilter !== 'all' && section !== sectionFilter) return;
+
+    const filteredRows = rows.filter(r => {
+      if (!search) return true;
+      return r[0].toLowerCase().includes(search.toLowerCase());
+    });
+    if (filteredRows.length === 0) return;
+
+    const secTr = document.createElement('tr');
+    secTr.className = 'section-row';
+    secTr.innerHTML = `<td colspan="7">${section}</td>`;
+    tbody.appendChild(secTr);
+
+    filteredRows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${hl(r[0], search)}</td>
+        <td>${badgeScore(r[1])}</td>
+        <td>${badgeScore(r[2])}</td>
+        <td>${badgeScore(r[3])}</td>
+        <td>${badgeScore(r[4])}</td>
+        <td>${badgeScore(r[5])}</td>
+        <td>${badgeScore(r[6])}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function s2Filter(section, btn) {
+  s2FilterActive = section;
+  document.querySelectorAll('#s2 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderS2(section, document.getElementById('s2search').value);
+}
+
+function s2Search(val) {
+  renderS2(s2FilterActive, val);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SHEET 3
+// ════════════════════════════════════════════════════════════════════
+let s3FilterActive = 'all';
+
+function renderS3(fwFilter='all', search='') {
+  const tbody = document.getElementById('s3body');
+  tbody.innerHTML = '';
+  S3_DATA.forEach(r => {
+    if (fwFilter !== 'all') {
+      const allText = r[2]+r[3]+r[4];
+      if (!allText.toLowerCase().includes(fwFilter.toLowerCase())) return;
+    }
+    const text = r.join(' ').toLowerCase();
+    if (search && !text.includes(search.toLowerCase())) return;
+    const q = search;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="sc-name">${hl(r[0],q)}</div>
+        <div class="sc-industry">${r[1]}</div>
+      </td>
+      <td>${r[1]}</td>
+      <td><span class="sc-primary">${hl(r[2],q)}</span></td>
+      <td><span class="sc-secondary">${hl(r[3],q)}</span></td>
+      <td><span class="sc-avoid">${hl(r[4],q)}</span></td>
+      <td class="reason">${hl(r[5],q)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function s3Filter(fw, btn) {
+  s3FilterActive = fw;
+  document.querySelectorAll('#s3 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderS3(fw, document.getElementById('s3search').value);
+}
+
+function s3Search(val) {
+  renderS3(s3FilterActive, val);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// SHEET 4
+// ════════════════════════════════════════════════════════════════════
+function renderS4(search='') {
+  const grid = document.getElementById('s4grid');
+  grid.innerHTML = '';
+  S4_DATA.forEach(([cond, ans]) => {
+    const text = (cond+ans).toLowerCase();
+    if (search && !text.includes(search.toLowerCase())) return;
+    const q = search;
+    const div = document.createElement('div');
+    div.className = 'qr-row';
+    div.innerHTML = `
+      <div class="qr-condition">
+        <span class="qr-if">IF</span>
+        ${hl(cond.replace(/^IF /i,''), q)}
+      </div>
+      <div class="qr-answer">
+        <span class="qr-arrow">›</span>
+        ${hl(ans.replace(/^→ /,''), q)}
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function s4Search(val) { renderS4(val); }
+
+// ════════════════════════════════════════════════════════════════════
+// SHEET 5
+// ════════════════════════════════════════════════════════════════════
+let s5FilterActive = 'all';
+
+function termCell(termArr, cls) {
+  if (!termArr) return '<td></td>';
+  const [term, note] = termArr;
+  const isNA = term === '—';
+  if (isNA) return `<td><span class="na-cell">— &nbsp;<span style="font-size:10px;color:#3a3a55;">${note}</span></span></td>`;
+  return `<td>
+    <span class="term-name ${cls}">${term}</span>
+    <span class="term-note">${note}</span>
+  </td>`;
+}
+
+function renderS5(groupFilter='all', search='') {
+  const tbody = document.getElementById('s5body');
+  tbody.innerHTML = '';
+  S5_DATA.forEach(item => {
+    if (item.label) {
+      // group header row
+      if (groupFilter !== 'all' && groupFilter !== item.group) return;
+      const tr = document.createElement('tr');
+      tr.className = `cs-group g-${item.group}`;
+      tr.dataset.group = item.group;
+      tr.innerHTML = `<td colspan="7">${item.label}</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    if (groupFilter !== 'all' && groupFilter !== item.group) return;
+    const allText = [item.concept, item.def, item.ex,
+      ...[item.lex,item.copilot,item.dialogflow,item.langchain,item.autogen,item.crewai]
+        .filter(Boolean).flat()].join(' ').toLowerCase();
+    if (search && !allText.includes(search.toLowerCase())) return;
+    const q = search;
+    const tr = document.createElement('tr');
+    tr.className = `row-${item.group}`;
+    tr.dataset.group = item.group;
+    tr.innerHTML = `
+      <td>
+        <span class="concept-name">${hl(item.concept,q)}</span>
+        <span class="concept-def">${hl(item.def,q)}</span>
+        <span class="concept-ex">▸ ${hl(item.ex,q)}</span>
+      </td>
+      ${termCell(item.lex,'lex-term')}
+      ${termCell(item.copilot,'copilot-term')}
+      ${termCell(item.dialogflow,'dialogflow-term')}
+      ${termCell(item.langchain,'langchain-term')}
+      ${termCell(item.autogen,'autogen-term')}
+      ${termCell(item.crewai,'crewai-term')}
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function s5Filter(group, btn) {
+  s5FilterActive = group;
+  document.querySelectorAll('#s5 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderS5(group, document.getElementById('s5search').value);
+}
+
+function s5Search(val) {
+  renderS5(s5FilterActive, val);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════════════
+function switchSheet(id, btn) {
+  document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════════
+renderS1();
+renderS2();
+renderS3();
+renderS4();
+renderS5();
+</script>
+</body>
+</html>

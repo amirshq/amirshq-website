@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Lex — Low Code Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg2: #0f1218;
+    --bg3: #151923;
+    --surface: #1a2030;
+    --border: #252d3d;
+    --accent: #ff6b35;
+    --accent2: #00d4aa;
+    --accent3: #7b61ff;
+    --text: #e8ecf4;
+    --text2: #8a95a8;
+    --text3: #5a6375;
+    --code-bg: #0d1117;
+    --tag: #1e3a5f;
+    --tag-text: #60b4ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 270px;
+    min-width: 270px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .sidebar-brand {
+    padding: 24px 20px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-brand .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .sidebar-brand h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .sidebar-brand span { color: var(--accent2); }
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+  .nav-section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 14px 20px 6px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    font-size: 13.5px;
+    color: var(--text2);
+    font-weight: 400;
+  }
+  .nav-item:hover { background: rgba(255,107,53,0.06); color: var(--text); border-left-color: var(--border); }
+  .nav-item.active { background: rgba(255,107,53,0.1); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+  .nav-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    min-width: 20px;
+  }
+  .nav-item.active .num { color: var(--accent); }
+  .progress-bar-wrap { padding: 16px 20px; border-top: 1px solid var(--border); }
+  .progress-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .progress-label span { color: var(--accent2); font-family: 'JetBrains Mono', monospace; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* MAIN */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    min-height: 100vh;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+  .section {
+    display: none;
+    padding: 52px 48px 80px;
+    width: 100%;
+    max-width: 1100px;
+    animation: fadeIn 0.3s ease;
+  }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* TYPOGRAPHY */
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--tag);
+    color: var(--tag-text);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  h2 span { color: var(--accent); }
+  .subtitle {
+    color: var(--text2);
+    font-size: 16px;
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 32px 0 12px;
+  }
+  h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 8px;
+  }
+  p { color: var(--text2); margin-bottom: 14px; }
+  strong { color: var(--text); font-weight: 500; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+  }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .card-grid .card { margin-bottom: 0; }
+  .card h4 { margin-top: 0; }
+  .card ul { padding-left: 18px; }
+  .card ul li { color: var(--text2); font-size: 13.5px; margin-bottom: 5px; }
+  .card ul li strong { color: var(--accent2); }
+
+  /* HIGHLIGHT BOXES */
+  .box {
+    border-radius: 8px;
+    padding: 20px 28px;
+    margin: 20px 0;
+    border-left: 3px solid;
+    font-size: 13.5px;
+    width: 100%;
+    display: block;
+  }
+  .box.info { background: rgba(0,212,170,0.07); border-color: var(--accent2); }
+  .box.warn { background: rgba(255,107,53,0.08); border-color: var(--accent); }
+  .box.purple { background: rgba(123,97,255,0.08); border-color: var(--accent3); }
+  .box p { margin: 0; color: var(--text); }
+  .box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .box.info .box-label { color: var(--accent2); }
+  .box.warn .box-label { color: var(--accent); }
+  .box.purple .box-label { color: var(--accent3); }
+
+  /* CODE BLOCKS */
+  .code-wrap {
+    position: relative;
+    margin: 16px 0 24px;
+    width: 100%;
+  }
+  .code-wrap .copy-btn {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 10px;
+    padding: 4px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .code-wrap .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    overflow-x: auto;
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.75;
+    width: 100%;
+    display: block;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+  }
+  .card pre {
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    font-size: 11.5px;
+    padding: 14px 18px;
+  }
+  .kw { color: #ff79c6; }
+  .str { color: #f1fa8c; }
+  .cm { color: #6272a4; }
+  .fn { color: #50fa7b; }
+  .num { color: #bd93f9; }
+  .key { color: #8be9fd; }
+  .val { color: #ffb86c; }
+
+  /* STEP-BY-STEP */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 20px;
+    counter-increment: step;
+  }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+  .step-num::before { content: counter(step); }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .step-body p { margin: 0; font-size: 13.5px; }
+
+  /* ARCH DIAGRAM */
+  .arch {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin: 20px 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    width: 100%;
+    display: block;
+  }
+  .arch-row { display: flex; justify-content: center; align-items: center; gap: 0; margin: 6px 0; flex-wrap: wrap; }
+  .arch-box {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .arch-box.orange { background: rgba(255,107,53,0.15); border-color: var(--accent); color: var(--accent); }
+  .arch-box.teal { background: rgba(0,212,170,0.12); border-color: var(--accent2); color: var(--accent2); }
+  .arch-box.purple { background: rgba(123,97,255,0.12); border-color: var(--accent3); color: var(--accent3); }
+  .arch-box.blue { background: rgba(96,180,255,0.12); border-color: #60b4ff; color: #60b4ff; }
+  .arch-arrow { color: var(--text3); margin: 0 8px; font-size: 14px; }
+  .arch-arrow-down { color: var(--text3); font-size: 14px; display: block; margin: 4px auto; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  th { background: var(--surface); color: var(--text2); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(37,45,61,0.5); color: var(--text2); vertical-align: top; }
+  tr:hover td { background: rgba(255,107,53,0.03); }
+  td strong { color: var(--text); }
+  td code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent2); }
+
+  /* QUIZ */
+  .quiz { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin: 24px 0; }
+  .quiz h4 { margin-top: 0; font-size: 12px; letter-spacing: 2px; }
+  .quiz-q { font-size: 15px; color: var(--text); font-weight: 500; margin-bottom: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--text2);
+    transition: all 0.15s;
+    background: var(--bg3);
+  }
+  .quiz-opt:hover { border-color: var(--accent3); color: var(--text); }
+  .quiz-opt.correct { background: rgba(0,212,170,0.1); border-color: var(--accent2); color: var(--accent2); }
+  .quiz-opt.wrong { background: rgba(255,107,53,0.1); border-color: var(--accent); color: var(--accent); }
+  .quiz-feedback { margin-top: 14px; font-size: 13px; padding: 10px 14px; border-radius: 6px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(0,212,170,0.1); color: var(--accent2); }
+  .quiz-feedback.bad { background: rgba(255,107,53,0.1); color: var(--accent); }
+
+  /* NAV BUTTONS */
+  .nav-btns { display: flex; gap: 12px; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #ff8555; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--text2); color: var(--text); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* BADGE */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
+  .badge.console { background: rgba(255,107,53,0.15); color: var(--accent); }
+  .badge.sdk { background: rgba(123,97,255,0.15); color: var(--accent3); }
+  .badge.api { background: rgba(0,212,170,0.15); color: var(--accent2); }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* HERO */
+  .hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0; }
+  .hero-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .hero-card .icon { font-size: 28px; margin-bottom: 10px; }
+  .hero-card .label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .hero-card .desc { font-size: 11.5px; color: var(--text3); }
+
+  /* INLINE CODE */
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent2); border: 1px solid var(--border); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">AWS · Low Code</div>
+    <h1>Amazon <span>Lex</span><br>Mastery</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Foundation</div>
+    <div class="nav-item active" onclick="navTo(0)"><span class="num">01</span> What is Amazon Lex?</div>
+    <div class="nav-item" onclick="navTo(1)"><span class="num">02</span> Core Concepts</div>
+    <div class="nav-item" onclick="navTo(2)"><span class="num">03</span> Console Walkthrough</div>
+
+    <div class="nav-section-label">Building Bots</div>
+    <div class="nav-item" onclick="navTo(3)"><span class="num">04</span> Your First Bot</div>
+    <div class="nav-item" onclick="navTo(4)"><span class="num">05</span> Intents & Utterances</div>
+    <div class="nav-item" onclick="navTo(5)"><span class="num">06</span> Slots & Slot Types</div>
+    <div class="nav-item" onclick="navTo(6)"><span class="num">07</span> Fulfillment & Lambda</div>
+
+    <div class="nav-section-label">Advanced</div>
+    <div class="nav-item" onclick="navTo(7)"><span class="num">08</span> Conversation Flow</div>
+    <div class="nav-item" onclick="navTo(8)"><span class="num">09</span> Multi-Channel Deploy</div>
+    <div class="nav-item" onclick="navTo(9)"><span class="num">10</span> Analytics & Testing</div>
+    <div class="nav-item" onclick="navTo(10)"><span class="num">11</span> Real-World Project</div>
+  </nav>
+  <div class="progress-bar-wrap">
+    <div class="progress-label">Progress <span id="prog-txt">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ===== 0: INTRO ===== -->
+<section class="section active" id="s0">
+  <div class="section-tag">Module 01 · Foundation</div>
+  <h2>What is <span>Amazon Lex?</span></h2>
+  <p class="subtitle">Build production-grade conversational AI without ML expertise</p>
+
+  <p>Amazon Lex is AWS's fully managed, low-code service for building <strong>conversational interfaces</strong> — chatbots and voice bots — using the same deep learning technology that powers Alexa. You define the conversation logic visually or via JSON/API, and AWS handles all the NLP, ASR (speech recognition), and infrastructure.</p>
+
+  <div class="hero-grid">
+    <div class="hero-card"><div class="icon">🧠</div><div class="label">NLU Built-in</div><div class="desc">Intent recognition + entity extraction with zero ML training</div></div>
+    <div class="hero-card"><div class="icon">🎙️</div><div class="label">Voice + Text</div><div class="desc">Automatic speech recognition works out of the box</div></div>
+    <div class="hero-card"><div class="icon">⚡</div><div class="label">Serverless</div><div class="desc">No servers to manage, scales instantly with traffic</div></div>
+    <div class="hero-card"><div class="icon">🔗</div><div class="label">Lambda Ready</div><div class="desc">Hook into any backend via AWS Lambda for fulfillment</div></div>
+    <div class="hero-card"><div class="icon">📱</div><div class="label">Omnichannel</div><div class="desc">Slack, Facebook, Kendra, Connect, web widget</div></div>
+    <div class="hero-card"><div class="icon">💰</div><div class="label">Pay Per Use</div><div class="desc">$0.004/text request, $0.00065/speech second</div></div>
+  </div>
+
+  <h3>Where Lex Sits in the AWS AI Stack</h3>
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box orange">User (Web / Mobile / Voice)</div>
+    </div>
+    <div class="arch-arrow-down">↓</div>
+    <div class="arch-row">
+      <div class="arch-box teal">Amazon Lex V2 (Intent + Slot NLU)</div>
+    </div>
+    <div class="arch-arrow-down">↓</div>
+    <div class="arch-row">
+      <div class="arch-box purple">AWS Lambda (Business Logic)</div>
+      <div class="arch-arrow">or</div>
+      <div class="arch-box blue">Built-in Fulfillment</div>
+    </div>
+    <div class="arch-arrow-down">↓</div>
+    <div class="arch-row">
+      <div class="arch-box orange">DynamoDB / RDS / APIs / Kendra</div>
+    </div>
+  </div>
+
+  <h3>Lex vs Alternatives — When to Pick Lex</h3>
+  <table>
+    <thead><tr><th>Criteria</th><th>Amazon Lex</th><th>Dialogflow CX</th><th>Copilot Studio</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ecosystem</strong></td><td>AWS-native</td><td>Google Cloud</td><td>Microsoft 365</td></tr>
+      <tr><td><strong>LLM Integration</strong></td><td>Bedrock + Claude</td><td>Vertex AI</td><td>Azure OpenAI</td></tr>
+      <tr><td><strong>Voice (ASR)</strong></td><td>Built-in Polly/Transcribe</td><td>Dialogflow STT</td><td>Azure Speech</td></tr>
+      <tr><td><strong>Low-Code UI</strong></td><td>Visual flow builder</td><td>Page/flow designer</td><td>Canvas designer</td></tr>
+      <tr><td><strong>Best for</strong></td><td>AWS workloads, Contact Center</td><td>GCP workloads</td><td>M365 enterprise</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box info">
+    <div class="box-label">💡 Key Insight</div>
+    <p>Amazon Lex V2 (current version) introduced a visual conversation flow designer and multi-bot aliasing — the older V1 API is deprecated for new projects. Always use V2.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" disabled>← Previous</button>
+    <button class="btn btn-primary" onclick="navTo(1)">Core Concepts →</button>
+  </div>
+</section>
+
+<!-- ===== 1: CORE CONCEPTS ===== -->
+<section class="section" id="s1">
+  <div class="section-tag">Module 02 · Foundation</div>
+  <h2>Core <span>Concepts</span></h2>
+  <p class="subtitle">The vocabulary you must know to build anything in Lex</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>🤖 Bot</h4>
+      <p style="font-size:13px;margin:0;">Top-level container. Holds all intents, slot types, and configurations. Has a name, language setting, and IAM role.</p>
+    </div>
+    <div class="card">
+      <h4>🎯 Intent</h4>
+      <p style="font-size:13px;margin:0;">Represents what a user <em>wants to do</em>. E.g., <code>OrderPizza</code>, <code>CheckBalance</code>, <code>BookFlight</code>.</p>
+    </div>
+    <div class="card">
+      <h4>💬 Utterance</h4>
+      <p style="font-size:13px;margin:0;">Sample phrases users might say to trigger an intent. "I want a pizza", "Order me a large margherita".</p>
+    </div>
+    <div class="card">
+      <h4>📦 Slot</h4>
+      <p style="font-size:13px;margin:0;">A piece of data Lex needs to collect. Like a form field. E.g., <code>PizzaSize</code>, <code>ToppingType</code>.</p>
+    </div>
+    <div class="card">
+      <h4>🏷️ Slot Type</h4>
+      <p style="font-size:13px;margin:0;">Defines valid values for a slot. Built-in types (dates, numbers) or custom enumerations you define.</p>
+    </div>
+    <div class="card">
+      <h4>⚙️ Fulfillment</h4>
+      <p style="font-size:13px;margin:0;">What happens after all slots are filled. Either a Lambda hook or a simple static response message.</p>
+    </div>
+  </div>
+
+  <h3>The Conversation Lifecycle</h3>
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box orange">User says something</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box teal">Lex NLU: Match Intent</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box purple">Elicit Missing Slots</div>
+    </div>
+    <div class="arch-arrow-down">↓</div>
+    <div class="arch-row">
+      <div class="arch-box blue">All Slots Filled?</div>
+      <div class="arch-arrow">→ yes →</div>
+      <div class="arch-box orange">Fulfillment (Lambda / Static)</div>
+    </div>
+    <div class="arch-arrow-down">↓ no</div>
+    <div class="arch-row">
+      <div class="arch-box teal">Ask user for missing slot value</div>
+    </div>
+  </div>
+
+  <h3>Confidence Score & Fallback</h3>
+  <p>Every intent match has a <strong>confidence score</strong> (0–1). If no intent passes the threshold, Lex triggers the built-in <code>FallbackIntent</code>. You can configure what happens there — route to an agent, ask for clarification, or connect to Amazon Bedrock for LLM-generated responses.</p>
+
+  <div class="box purple">
+    <div class="box-label">📐 Architecture Tip</div>
+    <p>Think of Lex as a <strong>router + form filler</strong>. It's excellent at extracting structured data from natural language. For open-ended chat or reasoning, chain it with Bedrock/Claude via Lambda.</p>
+  </div>
+
+  <h3>Bot Versioning & Aliases</h3>
+  <table>
+    <thead><tr><th>Concept</th><th>Purpose</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Draft</strong></td><td>Working version, not live</td><td>Your dev sandbox</td></tr>
+      <tr><td><strong>Version</strong></td><td>Immutable snapshot</td><td>Version 1, 2, 3...</td></tr>
+      <tr><td><strong>Alias</strong></td><td>Named pointer to a version</td><td><code>PROD</code> → Version 3</td></tr>
+    </tbody>
+  </table>
+  <p>Aliases let you do <strong>blue/green deployments</strong>: create a new version, test it under a staging alias, then switch the PROD alias with zero downtime.</p>
+
+  <div class="quiz">
+    <h4>🧠 Quick Check</h4>
+    <div class="quiz-q">What is an "Utterance" in Amazon Lex?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)">A. The data collected in a slot field</div>
+      <div class="quiz-opt" onclick="answer(this, true)">B. A sample phrase that triggers an intent</div>
+      <div class="quiz-opt" onclick="answer(this, false)">C. The Lambda function response</div>
+      <div class="quiz-opt" onclick="answer(this, false)">D. A type of bot deployment version</div>
+    </div>
+    <div class="quiz-feedback" id="qfb">Utterances are example phrases you provide so Lex's NLU knows which intent to trigger. More diverse utterances = better recognition accuracy.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(0)">← What is Lex</button>
+    <button class="btn btn-primary" onclick="navTo(2)">Console Walkthrough →</button>
+  </div>
+</section>
+
+<!-- ===== 2: CONSOLE WALKTHROUGH ===== -->
+<section class="section" id="s2">
+  <div class="section-tag">Module 03 · Foundation</div>
+  <h2>Console <span>Walkthrough</span></h2>
+  <p class="subtitle">Navigating the Amazon Lex V2 console from top to bottom</p>
+
+  <div class="box info">
+    <div class="box-label">🔑 Prerequisites</div>
+    <p>AWS account with IAM user/role. Lex requires an IAM role with <code>AmazonLexFullAccess</code> + <code>AWSLambdaRole</code> if using Lambda fulfillment.</p>
+  </div>
+
+  <h3>Console Sections at a Glance</h3>
+  <table>
+    <thead><tr><th>Section</th><th>What you do there</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bots</strong></td><td>List, create, import/export bots</td></tr>
+      <tr><td><strong>Bot > Intents</strong></td><td>Create intents, add utterances, configure slots</td></tr>
+      <tr><td><strong>Bot > Slot types</strong></td><td>Define custom enumerated types with synonyms</td></tr>
+      <tr><td><strong>Bot > Visual flow</strong></td><td>Drag-and-drop conversation graph editor</td></tr>
+      <tr><td><strong>Bot > Versions</strong></td><td>Create immutable snapshots</td></tr>
+      <tr><td><strong>Bot > Aliases</strong></td><td>Map aliases to versions, configure Lambda</td></tr>
+      <tr><td><strong>Bot > Channel integrations</strong></td><td>Connect to Slack, Facebook Messenger, etc.</td></tr>
+      <tr><td><strong>Test console (inline)</strong></td><td>Chat in-browser to test NLU + dialogue</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Step-by-Step: Creating a Bot</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Open the Lex Console</strong>
+        <p>Go to <code>console.aws.amazon.com/lex</code> → Select region (e.g. us-east-1) → Click <strong>Create bot</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Choose Bot Configuration Method</strong>
+        <p>Select <strong>"Create a blank bot"</strong> for full control, or use a pre-built template (BookTrip, OrderFlowers). Templates are great for learning.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Set Bot Name + IAM Role</strong>
+        <p>Give your bot a unique name. For IAM role: choose <strong>"Create a role with basic Amazon Lex permissions"</strong> for auto-setup.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Configure COPPA + Idle TTL</strong>
+        <p>COPPA: No (for general apps). Idle session TTL: 5 minutes is standard. This controls how long sessions are remembered.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Select Language</strong>
+        <p>English (US) is most feature-complete. Lex supports 10+ languages. You can add multiple languages to one bot.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <strong>Hit "Done" and Start Building</strong>
+        <p>You'll land in the Intents list. Two intents are auto-created: <code>FallbackIntent</code> and you create the rest.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(1)">← Core Concepts</button>
+    <button class="btn btn-primary" onclick="navTo(3)">Build Your First Bot →</button>
+  </div>
+</section>
+
+<!-- ===== 3: FIRST BOT ===== -->
+<section class="section" id="s3">
+  <div class="section-tag">Module 04 · Building Bots</div>
+  <h2>Your <span>First Bot</span></h2>
+  <p class="subtitle">A complete Pizza Ordering bot — from zero to working chatbot</p>
+
+  <p>We'll build <strong>PizzaBot</strong> — a bot that takes pizza orders. It will collect size, crust, and topping, then confirm the order. This teaches every core concept hands-on.</p>
+
+  <h3>Bot Architecture Plan</h3>
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box orange">Intent: OrderPizza</div>
+    </div>
+    <div class="arch-arrow-down">↓ requires slots</div>
+    <div class="arch-row">
+      <div class="arch-box teal">Slot: PizzaSize</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box teal">Slot: CrustType</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box teal">Slot: Toppings</div>
+    </div>
+    <div class="arch-arrow-down">↓ all collected</div>
+    <div class="arch-row">
+      <div class="arch-box purple">Lambda: process_order()</div>
+    </div>
+    <div class="arch-arrow-down">↓</div>
+    <div class="arch-row">
+      <div class="arch-box blue">"Your {Size} pizza is on its way!"</div>
+    </div>
+  </div>
+
+  <h3>Step 1: Define the Intent</h3>
+  <p>In the Lex console under your bot → <strong>Intents</strong> → <strong>Add intent</strong> → Name it <code>OrderPizza</code>.</p>
+
+  <h3>Step 2: Add Utterances</h3>
+  <p>Add at least 10 varied utterances. Lex learns from them to match user input:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Sample utterances for OrderPizza intent</span>
+I want to order a pizza
+Can I get a pizza please
+Order me a {PizzaSize} pizza
+I'd like a {PizzaSize} {CrustType} crust pizza
+Get me a pizza with {Toppings}
+I want a large pizza with extra cheese
+Place a pizza order for me
+Can you order a medium thin crust pizza
+I'd like to place a pizza order
+One pizza please</pre></div>
+
+  <div class="box info">
+    <div class="box-label">💡 Slot References in Utterances</div>
+    <p>Notice <code>{PizzaSize}</code> in utterances — Lex will extract the slot value directly from the phrase. This speeds up the conversation by skipping the "What size?" prompt.</p>
+  </div>
+
+  <h3>Step 3: Create Slot Types</h3>
+  <p>Before creating slots, define the custom types. Go to <strong>Slot types</strong> → <strong>Add slot type</strong>:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Slot Type: PizzaSizeType</span>
+<span class="key">Type:</span>   <span class="str">Custom slot type (Expand values)</span>
+<span class="key">Values:</span>
+  - Small  (synonyms: sm, personal)
+  - Medium (synonyms: med, regular)
+  - Large  (synonyms: lg, big, family)
+  - Extra Large (synonyms: XL, extra-large)
+
+<span class="cm"># Slot Type: CrustType</span>
+<span class="key">Values:</span>
+  - Thin      (synonyms: thin-crust, crispy)
+  - Thick     (synonyms: deep-dish, pan)
+  - Stuffed   (synonyms: cheese-stuffed)
+  - Gluten-free
+
+<span class="cm"># Slot Type: ToppingType (AMAZON.AlphaNumeric also works)</span>
+<span class="key">Values:</span>
+  - Cheese, Pepperoni, Mushrooms, Onions
+  - Olives, Peppers, Bacon, Pineapple</pre></div>
+
+  <h3>Step 4: Add Slots to the Intent</h3>
+  <p>Back in your <code>OrderPizza</code> intent → <strong>Slots</strong> section → Add three slots:</p>
+  <table>
+    <thead><tr><th>Slot Name</th><th>Slot Type</th><th>Prompt (Lex asks this)</th><th>Required?</th></tr></thead>
+    <tbody>
+      <tr><td><code>PizzaSize</code></td><td>PizzaSizeType</td><td>"What size pizza would you like?"</td><td>Yes</td></tr>
+      <tr><td><code>CrustType</code></td><td>CrustType</td><td>"What type of crust would you like?"</td><td>Yes</td></tr>
+      <tr><td><code>Toppings</code></td><td>ToppingType</td><td>"What toppings would you like?"</td><td>No</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Step 5: Confirmation Prompt</h3>
+  <p>Enable the <strong>Confirmation prompt</strong> in the intent settings:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="key">Confirmation prompt:</span>
+<span class="str">"Just to confirm: a {PizzaSize} pizza with {CrustType} crust"</span>
+<span class="str">"and {Toppings}. Shall I place this order?"</span>
+
+<span class="key">Decline response:</span>
+<span class="str">"No problem, order cancelled. Let me know if you'd like anything else."</span></pre></div>
+
+  <h3>Step 6: Build & Test</h3>
+  <p>Click <strong>Build</strong> (top right). Wait ~30 seconds. Then use the <strong>Test</strong> panel to have a conversation:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm">You:</span>  I want a pizza
+<span class="key">Bot:</span>  What size pizza would you like?
+<span class="cm">You:</span>  Large
+<span class="key">Bot:</span>  What type of crust would you like?
+<span class="cm">You:</span>  Thin crust
+<span class="key">Bot:</span>  What toppings would you like?
+<span class="cm">You:</span>  Pepperoni and mushrooms
+<span class="key">Bot:</span>  Just to confirm: a Large pizza with Thin crust and Pepperoni and mushrooms. Shall I place this order?
+<span class="cm">You:</span>  Yes
+<span class="key">Bot:</span>  [Fulfillment response]</pre></div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(2)">← Console Walkthrough</button>
+    <button class="btn btn-primary" onclick="navTo(4)">Intents Deep Dive →</button>
+  </div>
+</section>
+
+<!-- ===== 4: INTENTS ===== -->
+<section class="section" id="s4">
+  <div class="section-tag">Module 05 · Building Bots</div>
+  <h2>Intents & <span>Utterances</span></h2>
+  <p class="subtitle">Designing intents that understand natural human language</p>
+
+  <h3>Intent Lifecycle States</h3>
+  <table>
+    <thead><tr><th>State</th><th>Meaning</th><th>Your action</th></tr></thead>
+    <tbody>
+      <tr><td><code>InProgress</code></td><td>Collecting slot values</td><td>Lex prompts user for each slot</td></tr>
+      <tr><td><code>ReadyForFulfillment</code></td><td>All required slots filled</td><td>Trigger Lambda or return response</td></tr>
+      <tr><td><code>Fulfilled</code></td><td>Lambda/response returned</td><td>Show result to user</td></tr>
+      <tr><td><code>Failed</code></td><td>Lambda threw an error</td><td>Show error message</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Built-in Intents</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>AMAZON.FallbackIntent</h4>
+      <ul><li>Triggered when no intent matches</li><li>Use to transfer to agent or trigger LLM</li><li>Always exists, can't be deleted</li></ul>
+    </div>
+    <div class="card">
+      <h4>AMAZON.KendraSearchIntent</h4>
+      <ul><li>Auto-queries Amazon Kendra</li><li>Returns FAQ-style answers</li><li>Ideal for knowledge base bots</li></ul>
+    </div>
+  </div>
+
+  <h3>Utterance Best Practices</h3>
+  <div class="box warn">
+    <div class="box-label">⚠️ Common Mistake</div>
+    <p>Don't add 3 utterances and wonder why NLU fails. Lex needs <strong>15–30 diverse utterances per intent</strong> for robust recognition. Vary structure, not just wording.</p>
+  </div>
+
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># ❌ BAD - Too similar, low diversity</span>
+I want to book a flight
+I would like to book a flight
+Book me a flight
+
+<span class="cm"># ✅ GOOD - Structural variety</span>
+I want to book a flight
+Can I get a ticket to {Destination}
+Book me a {CabinClass} seat on {Date}
+What flights are available to {Destination}
+I need to fly to {Destination} on {Date}
+Get me on a flight to {Destination}
+Reserve a seat for me
+I'd like to make a flight reservation
+Schedule a flight for next {Date}
+{Destination} please, flying {Date}</pre></div>
+
+  <h3>Intent Priority & Disambiguation</h3>
+  <p>When multiple intents could match, Lex picks the highest confidence score. If two intents score similarly, you can configure <strong>clarification prompts</strong> — Lex asks "Did you mean X or Y?"</p>
+
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Enable in console: Bot Settings > Clarification</span>
+<span class="key">Clarification prompt:</span>
+<span class="str">"I'm not sure what you mean. Did you want to (1) check order status or (2) place a new order?"</span>
+<span class="key">Max clarification retries:</span> <span class="num">2</span>
+<span class="key">If still unclear:</span> trigger FallbackIntent</pre></div>
+
+  <h3>Closing Responses</h3>
+  <p>Every intent should have a <strong>closing response</strong> for when it ends successfully. This replaces the plain "Intent fulfilled" default message.</p>
+
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># In Lex Console: Intent > Closing response</span>
+<span class="key">Message:</span> <span class="str">"Your {PizzaSize} pizza has been ordered! ETA: 30 minutes. Enjoy! 🍕"</span>
+
+<span class="cm"># You can also use session attributes in messages:</span>
+<span class="key">Message:</span> <span class="str">"Order #{orderRef} confirmed for {CustomerName}. Check your email for details."</span></pre></div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(3)">← First Bot</button>
+    <button class="btn btn-primary" onclick="navTo(5)">Slots & Slot Types →</button>
+  </div>
+</section>
+
+<!-- ===== 5: SLOTS ===== -->
+<section class="section" id="s5">
+  <div class="section-tag">Module 06 · Building Bots</div>
+  <h2>Slots & <span>Slot Types</span></h2>
+  <p class="subtitle">Data collection at the heart of every Lex conversation</p>
+
+  <h3>Built-in Slot Types (AMAZON.*)</h3>
+  <table>
+    <thead><tr><th>Slot Type</th><th>Captures</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>AMAZON.Date</code></td><td>Dates in any format</td><td>"next Monday" → 2025-01-20</td></tr>
+      <tr><td><code>AMAZON.Time</code></td><td>Times</td><td>"3pm" → 15:00</td></tr>
+      <tr><td><code>AMAZON.Duration</code></td><td>Time spans</td><td>"2 hours" → PT2H</td></tr>
+      <tr><td><code>AMAZON.Number</code></td><td>Integers/floats</td><td>"forty two" → 42</td></tr>
+      <tr><td><code>AMAZON.EmailAddress</code></td><td>Email strings</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88fdfbedfac8edf0e9e5f8e4eda6ebe7e5">[email&#160;protected]</a></td></tr>
+      <tr><td><code>AMAZON.PhoneNumber</code></td><td>Phone numbers</td><td>+1-800-555-0100</td></tr>
+      <tr><td><code>AMAZON.City</code></td><td>US city names</td><td>New York, Boston</td></tr>
+      <tr><td><code>AMAZON.AlphaNumeric</code></td><td>Any word/phrase</td><td>Free-form string</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Custom Slot Types</h3>
+  <p>Two modes for custom types:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>Expand Values</h4>
+      <p style="font-size:13px;">Lex recognizes your values <strong>plus similar words</strong> via NLU. Best for open-ended categories.</p>
+      <pre style="margin:8px 0;font-size:11px;">Values: ["pizza", "burger", "sushi"]
+→ Also matches "pie", "sandwich"</pre>
+    </div>
+    <div class="card">
+      <h4>Restrict to Slot Values</h4>
+      <p style="font-size:13px;">Lex <strong>only accepts exact matches</strong> + synonyms. Use for controlled data like product codes.</p>
+      <pre style="margin:8px 0;font-size:11px;">Values: ["PLAN_A", "PLAN_B"]
+→ Rejects anything else</pre>
+    </div>
+  </div>
+
+  <h3>Slot Prompts & Retries</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Slot configuration in Lex console</span>
+<span class="key">Slot:</span> DepartureCity
+<span class="key">Type:</span> AMAZON.City
+<span class="key">Required:</span> <span class="val">true</span>
+
+<span class="key">Prompts:</span>
+  <span class="str">"Which city are you flying from?"</span>
+  <span class="str">"What's your departure city?"</span>      <span class="cm"># Retry 1</span>
+  <span class="str">"Please tell me where you're departing from."</span>  <span class="cm"># Retry 2</span>
+
+<span class="key">Max retries:</span> <span class="num">2</span>
+<span class="key">If still not filled:</span> Close with failure response</pre></div>
+
+  <h3>Slot Validation via Lambda</h3>
+  <p>Use a <strong>validation hook</strong> to check slot values in real-time before the conversation proceeds:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">lambda_handler</span>(event, context):
+    invocation_source = event[<span class="str">'invocationSource'</span>]
+    
+    <span class="kw">if</span> invocation_source == <span class="str">'DialogCodeHook'</span>:
+        <span class="cm"># Validate slots on every turn</span>
+        slots = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>][<span class="str">'slots'</span>]
+        pizza_size = slots.get(<span class="str">'PizzaSize'</span>)
+        
+        <span class="kw">if</span> pizza_size <span class="kw">and</span> pizza_size[<span class="str">'value'</span>][<span class="str">'interpretedValue'</span>] <span class="kw">not in</span> [<span class="str">'Small'</span>,<span class="str">'Medium'</span>,<span class="str">'Large'</span>]:
+            <span class="cm"># Invalid value — re-elicit the slot</span>
+            <span class="kw">return</span> elicit_slot(event, <span class="str">'PizzaSize'</span>, 
+                <span class="str">"Sorry, we only have Small, Medium, or Large. Which would you like?"</span>)
+        
+        <span class="cm"># All good — delegate back to Lex</span>
+        <span class="kw">return</span> delegate(event)
+    
+    <span class="kw">elif</span> invocation_source == <span class="str">'FulfillmentCodeHook'</span>:
+        <span class="kw">return</span> fulfill_order(event)
+
+
+<span class="kw">def</span> <span class="fn">elicit_slot</span>(event, slot_name, message):
+    <span class="kw">return</span> {
+        <span class="str">'sessionState'</span>: {
+            <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'ElicitSlot'</span>, <span class="str">'slotToElicit'</span>: slot_name},
+            <span class="str">'intent'</span>: event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>]
+        },
+        <span class="str">'messages'</span>: [{<span class="str">'contentType'</span>: <span class="str">'PlainText'</span>, <span class="str">'content'</span>: message}]
+    }
+
+<span class="kw">def</span> <span class="fn">delegate</span>(event):
+    <span class="kw">return</span> {
+        <span class="str">'sessionState'</span>: {
+            <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'Delegate'</span>},
+            <span class="str">'intent'</span>: event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>]
+        }
+    }</pre></div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(4)">← Intents</button>
+    <button class="btn btn-primary" onclick="navTo(6)">Fulfillment & Lambda →</button>
+  </div>
+</section>
+
+<!-- ===== 6: FULFILLMENT ===== -->
+<section class="section" id="s6">
+  <div class="section-tag">Module 07 · Building Bots</div>
+  <h2>Fulfillment & <span>Lambda</span></h2>
+  <p class="subtitle">Connecting your bot to real backend systems</p>
+
+  <h3>Two Fulfillment Modes</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Static Response</h4>
+      <p style="font-size:13px;">Return a hardcoded message with slot values interpolated. No Lambda needed. Use for simple confirmations.</p>
+      <pre style="font-size:11px;margin:8px 0;">"Thanks {CustomerName}! Your order is placed."</pre>
+    </div>
+    <div class="card">
+      <h4>Lambda Hook</h4>
+      <p style="font-size:13px;">Call a Lambda function with the full session state. Run business logic, query databases, call APIs.</p>
+      <pre style="font-size:11px;margin:8px 0;">Lambda → DynamoDB / Stripe / CRM</pre>
+    </div>
+  </div>
+
+  <h3>The Lambda Event Structure</h3>
+  <p>Lex sends this JSON to your Lambda function. Understanding it is critical:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre>{
+  <span class="key">"sessionId"</span>: <span class="str">"user-abc-123"</span>,
+  <span class="key">"invocationSource"</span>: <span class="str">"FulfillmentCodeHook"</span>,  <span class="cm">// or "DialogCodeHook"</span>
+  <span class="key">"inputTranscript"</span>: <span class="str">"Large pepperoni thin crust please"</span>,
+  <span class="key">"sessionState"</span>: {
+    <span class="key">"intent"</span>: {
+      <span class="key">"name"</span>: <span class="str">"OrderPizza"</span>,
+      <span class="key">"state"</span>: <span class="str">"ReadyForFulfillment"</span>,
+      <span class="key">"slots"</span>: {
+        <span class="key">"PizzaSize"</span>: {
+          <span class="key">"value"</span>: {
+            <span class="key">"originalValue"</span>: <span class="str">"large"</span>,
+            <span class="key">"interpretedValue"</span>: <span class="str">"Large"</span>,
+            <span class="key">"resolvedValues"</span>: [<span class="str">"Large"</span>]
+          }
+        },
+        <span class="key">"CrustType"</span>: {
+          <span class="key">"value"</span>: {<span class="key">"interpretedValue"</span>: <span class="str">"Thin"</span>}
+        },
+        <span class="key">"Toppings"</span>: {
+          <span class="key">"value"</span>: {<span class="key">"interpretedValue"</span>: <span class="str">"Pepperoni"</span>}
+        }
+      }
+    },
+    <span class="key">"sessionAttributes"</span>: {
+      <span class="key">"userId"</span>: <span class="str">"user-abc-123"</span>
+    }
+  }
+}</pre></div>
+
+  <h3>Complete Fulfillment Lambda (Python)</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="kw">import</span> json
+<span class="kw">import</span> boto3
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">import</span> uuid
+
+dynamodb = boto3.resource(<span class="str">'dynamodb'</span>)
+orders_table = dynamodb.Table(<span class="str">'PizzaOrders'</span>)
+
+<span class="kw">def</span> <span class="fn">lambda_handler</span>(event, context):
+    source = event[<span class="str">'invocationSource'</span>]
+    
+    <span class="kw">if</span> source == <span class="str">'FulfillmentCodeHook'</span>:
+        slots = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>][<span class="str">'slots'</span>]
+        
+        <span class="cm"># Extract slot values safely</span>
+        <span class="kw">def</span> <span class="fn">get_slot</span>(name):
+            s = slots.get(name)
+            <span class="kw">return</span> s[<span class="str">'value'</span>][<span class="str">'interpretedValue'</span>] <span class="kw">if</span> s <span class="kw">else</span> <span class="val">None</span>
+        
+        size    = get_slot(<span class="str">'PizzaSize'</span>)
+        crust   = get_slot(<span class="str">'CrustType'</span>)
+        toppings = get_slot(<span class="str">'Toppings'</span>) <span class="kw">or</span> <span class="str">'Cheese only'</span>
+        
+        <span class="cm"># Generate order ID and save to DynamoDB</span>
+        order_id = str(uuid.uuid4())[:8].upper()
+        orders_table.put_item(Item={
+            <span class="str">'orderId'</span>: order_id,
+            <span class="str">'size'</span>: size,
+            <span class="str">'crust'</span>: crust,
+            <span class="str">'toppings'</span>: toppings,
+            <span class="str">'timestamp'</span>: datetime.utcnow().isoformat(),
+            <span class="str">'status'</span>: <span class="str">'confirmed'</span>
+        })
+        
+        message = <span class="fn">f</span><span class="str">"Order #{order_id} confirmed! "</span> \
+                  <span class="fn">f</span><span class="str">"Your {size} {crust} crust pizza with {toppings} "</span> \
+                  <span class="str">"will be ready in ~25 minutes."</span>
+        
+        <span class="kw">return</span> close_intent(event, message, <span class="str">'Fulfilled'</span>)
+    
+    <span class="kw">return</span> close_intent(event, <span class="str">"Something went wrong. Please try again."</span>, <span class="str">'Failed'</span>)
+
+
+<span class="kw">def</span> <span class="fn">close_intent</span>(event, message, state):
+    intent = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>]
+    intent[<span class="str">'state'</span>] = state
+    <span class="kw">return</span> {
+        <span class="str">'sessionState'</span>: {
+            <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'Close'</span>},
+            <span class="str">'intent'</span>: intent,
+            <span class="str">'sessionAttributes'</span>: event[<span class="str">'sessionState'</span>].get(<span class="str">'sessionAttributes'</span>, {})
+        },
+        <span class="str">'messages'</span>: [{<span class="str">'contentType'</span>: <span class="str">'PlainText'</span>, <span class="str">'content'</span>: message}]
+    }</pre></div>
+
+  <div class="box warn">
+    <div class="box-label">⚠️ Lambda Permission</div>
+    <p>You must add a resource-based policy to Lambda allowing Lex to invoke it. In Lex console under Alias → Lambda → select your function. AWS adds the permission automatically.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(5)">← Slots</button>
+    <button class="btn btn-primary" onclick="navTo(7)">Conversation Flow →</button>
+  </div>
+</section>
+
+<!-- ===== 7: CONVERSATION FLOW ===== -->
+<section class="section" id="s7">
+  <div class="section-tag">Module 08 · Advanced</div>
+  <h2>Conversation <span>Flow</span></h2>
+  <p class="subtitle">Visual flow designer, session state, and multi-intent conversations</p>
+
+  <h3>Visual Flow Designer</h3>
+  <p>Lex V2's <strong>Visual Conversation Builder</strong> lets you design branching dialogue without code. Access it via <strong>Bot → Visual conversation builder</strong>.</p>
+
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box orange">Start</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box teal">Invoke Intent</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box purple">Branch: Is Member?</div>
+    </div>
+    <div class="arch-arrow-down">↓ yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ no</div>
+    <div class="arch-row">
+      <div class="arch-box blue">Member Discount Flow</div>
+      <div class="arch-arrow" style="visibility:hidden;">→</div>
+      <div class="arch-box orange">Standard Pricing Flow</div>
+    </div>
+  </div>
+
+  <h3>Session Attributes</h3>
+  <p>Session attributes are key-value pairs that persist across <strong>the entire session</strong> (all intents). Use them to carry context:</p>
+
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Lambda: Set a session attribute</span>
+session_attrs = event[<span class="str">'sessionState'</span>].get(<span class="str">'sessionAttributes'</span>, {})
+session_attrs[<span class="str">'customerTier'</span>] = <span class="str">'GOLD'</span>
+session_attrs[<span class="str">'cartTotal'</span>] = <span class="str">'29.99'</span>
+
+<span class="cm"># Return with updated session attributes</span>
+<span class="kw">return</span> {
+    <span class="str">'sessionState'</span>: {
+        <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'Delegate'</span>},
+        <span class="str">'intent'</span>: event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>],
+        <span class="str">'sessionAttributes'</span>: session_attrs   <span class="cm"># ← persisted!</span>
+    }
+}</pre></div>
+
+  <h3>Request Attributes vs Session Attributes</h3>
+  <table>
+    <thead><tr><th>Type</th><th>Scope</th><th>Use Case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Session Attributes</strong></td><td>Entire session (all turns)</td><td>User ID, cart, preferences</td></tr>
+      <tr><td><strong>Request Attributes</strong></td><td>Current turn only</td><td>UI context, page ID, A/B test variant</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Switching Intents Mid-Conversation</h3>
+  <p>Users often switch topics. Lex handles this via <strong>intent chaining</strong>. You can force a switch via Lambda:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Lambda: switch to a different intent</span>
+<span class="kw">return</span> {
+    <span class="str">'sessionState'</span>: {
+        <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'ElicitIntent'</span>},
+        <span class="str">'intent'</span>: {<span class="str">'name'</span>: <span class="str">'CheckOrderStatus'</span>},  <span class="cm"># jump here</span>
+        <span class="str">'sessionAttributes'</span>: session_attrs
+    },
+    <span class="str">'messages'</span>: [{
+        <span class="str">'contentType'</span>: <span class="str">'PlainText'</span>,
+        <span class="str">'content'</span>: <span class="str">'Sure! Let me check your order status. What\\'s your order number?'</span>
+    }]
+}</pre></div>
+
+  <h3>Dialog Actions Reference</h3>
+  <table>
+    <thead><tr><th>Action</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td><code>Delegate</code></td><td>Hand control back to Lex to continue dialogue</td></tr>
+      <tr><td><code>ElicitSlot</code></td><td>Ask user for a specific slot value</td></tr>
+      <tr><td><code>ElicitIntent</code></td><td>Ask user what they want to do</td></tr>
+      <tr><td><code>ConfirmIntent</code></td><td>Ask yes/no confirmation</td></tr>
+      <tr><td><code>Close</code></td><td>End the intent (fulfilled or failed)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(6)">← Fulfillment</button>
+    <button class="btn btn-primary" onclick="navTo(8)">Multi-Channel Deploy →</button>
+  </div>
+</section>
+
+<!-- ===== 8: DEPLOYMENT ===== -->
+<section class="section" id="s8">
+  <div class="section-tag">Module 09 · Advanced</div>
+  <h2>Multi-Channel <span>Deployment</span></h2>
+  <p class="subtitle">Publishing your bot to web, Slack, Facebook, and Amazon Connect</p>
+
+  <h3>Deployment Architecture</h3>
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box orange">Web Chat (JS SDK)</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box teal">Slack</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box purple">Facebook Messenger</div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-box blue">Amazon Connect</div>
+    </div>
+    <div class="arch-arrow-down">↓ all connect via</div>
+    <div class="arch-row">
+      <div class="arch-box orange">Lex Runtime API (V2)</div>
+    </div>
+  </div>
+
+  <h3>Option A: Embedded Web Chat (AWS Amplify)</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm">// Install: npm install @aws-sdk/client-lex-runtime-v2</span>
+<span class="kw">import</span> { LexRuntimeV2Client, RecognizeTextCommand } <span class="kw">from</span> <span class="str">"@aws-sdk/client-lex-runtime-v2"</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">LexRuntimeV2Client</span>({
+  region: <span class="str">"us-east-1"</span>,
+  credentials: cognitoCredentials  <span class="cm">// from Cognito Identity Pool</span>
+});
+
+<span class="kw">async function</span> <span class="fn">sendMessage</span>(text) {
+  <span class="kw">const</span> command = <span class="kw">new</span> <span class="fn">RecognizeTextCommand</span>({
+    botId: <span class="str">"YOUR_BOT_ID"</span>,
+    botAliasId: <span class="str">"TSTALIASID"</span>,  <span class="cm">// or your alias</span>
+    localeId: <span class="str">"en_US"</span>,
+    sessionId: <span class="str">"user-session-123"</span>,
+    text: text
+  });
+  
+  <span class="kw">const</span> response = <span class="kw">await</span> client.<span class="fn">send</span>(command);
+  <span class="kw">const</span> reply = response.messages?.[<span class="num">0</span>]?.content;
+  console.<span class="fn">log</span>(<span class="str">"Bot says:"</span>, reply);
+  <span class="kw">return</span> reply;
+}
+
+<span class="cm">// Usage</span>
+<span class="fn">sendMessage</span>(<span class="str">"I want to order a large pizza"</span>);</pre></div>
+
+  <h3>Option B: Slack Integration</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body"><strong>Create a Slack App</strong><p>Go to api.slack.com/apps → Create New App → Enable Bot Token Scopes: <code>chat:write</code>, <code>im:history</code>.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body"><strong>Configure in Lex Console</strong><p>Bot → Aliases → PROD → Add channel integration → Slack → Enter Bot Token + Signing Secret.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body"><strong>Set Slack Event URL</strong><p>Copy the callback URL from Lex and paste into Slack App Event Subscriptions. Verify challenge.</p></div>
+    </div>
+  </div>
+
+  <h3>Option C: Amazon Connect (Voice Bot)</h3>
+  <p>This is the most powerful deployment — a full IVR / voice contact center with Lex as the NLU brain:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Amazon Connect Contact Flow snippet (JSON)</span>
+{
+  <span class="key">"Type"</span>: <span class="str">"GetParticipantInput"</span>,
+  <span class="key">"Parameters"</span>: {
+    <span class="key">"Text"</span>: <span class="str">"Welcome to PizzaBot! How can I help you today?"</span>,
+    <span class="key">"LexV2Bot"</span>: {
+      <span class="key">"AliasArn"</span>: <span class="str">"arn:aws:lex:us-east-1:123456789:bot-alias/BOTID/ALIASID"</span>
+    }
+  }
+}</pre></div>
+
+  <h3>Using API Gateway for Custom Web Integration</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Lambda proxy to Lex (keeps credentials server-side)</span>
+<span class="kw">import</span> boto3, json
+
+lex = boto3.client(<span class="str">'lexv2-runtime'</span>, region_name=<span class="str">'us-east-1'</span>)
+
+<span class="kw">def</span> <span class="fn">lambda_handler</span>(event, context):
+    body = json.loads(event[<span class="str">'body'</span>])
+    
+    response = lex.recognize_text(
+        botId=<span class="str">'YOUR_BOT_ID'</span>,
+        botAliasId=<span class="str">'YOUR_ALIAS_ID'</span>,
+        localeId=<span class="str">'en_US'</span>,
+        sessionId=body[<span class="str">'sessionId'</span>],
+        text=body[<span class="str">'message'</span>]
+    )
+    
+    reply = response[<span class="str">'messages'</span>][<span class="num">0</span>][<span class="str">'content'</span>] <span class="kw">if</span> response.get(<span class="str">'messages'</span>) <span class="kw">else</span> <span class="str">''</span>
+    
+    <span class="kw">return</span> {
+        <span class="str">'statusCode'</span>: <span class="num">200</span>,
+        <span class="str">'headers'</span>: {<span class="str">'Access-Control-Allow-Origin'</span>: <span class="str">'*'</span>},
+        <span class="str">'body'</span>: json.dumps({<span class="str">'reply'</span>: reply})
+    }</pre></div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(7)">← Conversation Flow</button>
+    <button class="btn btn-primary" onclick="navTo(9)">Analytics & Testing →</button>
+  </div>
+</section>
+
+<!-- ===== 9: ANALYTICS ===== -->
+<section class="section" id="s9">
+  <div class="section-tag">Module 10 · Advanced</div>
+  <h2>Analytics & <span>Testing</span></h2>
+  <p class="subtitle">Measuring bot performance and catching failures before production</p>
+
+  <h3>Built-in Analytics Dashboard</h3>
+  <p>Lex console → <strong>Analytics</strong> shows:</p>
+  <div class="card-grid">
+    <div class="card"><h4>📊 Conversation Metrics</h4><ul><li>Total conversations</li><li>Missed utterances</li><li>Intent success rate</li><li>Drop-off points</li></ul></div>
+    <div class="card"><h4>🎯 Intent Metrics</h4><ul><li>Per-intent recognition rate</li><li>Slot fill rate</li><li>Fulfillment success/failure</li><li>Avg. turns to complete</li></ul></div>
+  </div>
+
+  <h3>Missed Utterances — Your #1 Improvement Tool</h3>
+  <p>The <strong>Missed Utterances</strong> report shows exactly what users said that Lex couldn't match. Review weekly and add them as utterances:</p>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Example missed utterances to review:</span>
+<span class="str">"gimme a pizza"</span>         <span class="cm">→ Add to OrderPizza</span>
+<span class="str">"what's in my cart"</span>     <span class="cm">→ Add to CheckCart intent</span>
+<span class="str">"cancel that"</span>           <span class="cm">→ Add to CancelOrder</span>
+<span class="str">"speak to a person"</span>     <span class="cm">→ Add to EscalateToAgent</span></pre></div>
+
+  <h3>Testing with the CLI (Automated)</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="cm"># Test a Lex bot via AWS CLI</span>
+aws lexv2-runtime recognize-text \
+  --bot-id <span class="str">YOUR_BOT_ID</span> \
+  --bot-alias-id <span class="str">TSTALIASID</span> \
+  --locale-id <span class="str">en_US</span> \
+  --session-id <span class="str">test-session-001</span> \
+  --text <span class="str">"I want a large pepperoni pizza"</span>
+
+<span class="cm"># Response shows intent + slots:</span>
+{
+  <span class="key">"sessionId"</span>: <span class="str">"test-session-001"</span>,
+  <span class="key">"messages"</span>: [{<span class="key">"content"</span>: <span class="str">"What type of crust would you like?"</span>}],
+  <span class="key">"sessionState"</span>: {
+    <span class="key">"intent"</span>: {
+      <span class="key">"name"</span>: <span class="str">"OrderPizza"</span>,
+      <span class="key">"state"</span>: <span class="str">"InProgress"</span>,
+      <span class="key">"slots"</span>: {
+        <span class="key">"PizzaSize"</span>: {<span class="key">"value"</span>: {<span class="key">"interpretedValue"</span>: <span class="str">"Large"</span>}},
+        <span class="key">"Toppings"</span>: {<span class="key">"value"</span>: {<span class="key">"interpretedValue"</span>: <span class="str">"Pepperoni"</span>}},
+        <span class="key">"CrustType"</span>: <span class="val">null</span>  <span class="cm"># still being elicited</span>
+      }
+    }
+  }
+}</pre></div>
+
+  <h3>Automated Test Script (Python)</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="kw">import</span> boto3, json
+
+lex = boto3.client(<span class="str">'lexv2-runtime'</span>)
+
+test_cases = [
+    {<span class="str">"input"</span>: <span class="str">"I want a pizza"</span>, <span class="str">"expected_intent"</span>: <span class="str">"OrderPizza"</span>},
+    {<span class="str">"input"</span>: <span class="str">"What's my order status"</span>, <span class="str">"expected_intent"</span>: <span class="str">"CheckOrderStatus"</span>},
+    {<span class="str">"input"</span>: <span class="str">"gibberish xyz 123"</span>, <span class="str">"expected_intent"</span>: <span class="str">"FallbackIntent"</span>},
+]
+
+<span class="kw">for</span> i, test <span class="kw">in</span> <span class="fn">enumerate</span>(test_cases):
+    resp = lex.recognize_text(
+        botId=<span class="str">'YOUR_BOT_ID'</span>, botAliasId=<span class="str">'TSTALIASID'</span>,
+        localeId=<span class="str">'en_US'</span>, sessionId=<span class="fn">f</span><span class="str">'test-{i}'</span>,
+        text=test[<span class="str">'input'</span>]
+    )
+    actual = resp[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>][<span class="str">'name'</span>]
+    status = <span class="str">'✅ PASS'</span> <span class="kw">if</span> actual == test[<span class="str">'expected_intent'</span>] <span class="kw">else</span> <span class="str">'❌ FAIL'</span>
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"{status} | '{test['input']}' → {actual}"</span>)</pre></div>
+
+  <div class="quiz">
+    <h4>🧠 Quick Check</h4>
+    <div class="quiz-q">What should you do with "missed utterances" in Lex Analytics?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)">A. Delete them — they represent user errors</div>
+      <div class="quiz-opt" onclick="answer(this, false)">B. Ignore them until they accumulate to 1000+</div>
+      <div class="quiz-opt" onclick="answer(this, true)">C. Review and add them as utterances to the correct intents</div>
+      <div class="quiz-opt" onclick="answer(this, false)">D. Route all of them to FallbackIntent permanently</div>
+    </div>
+    <div class="quiz-feedback" id="qfb">Missed utterances are gold. They show exactly how real users phrase things. Adding them regularly is the #1 way to improve bot accuracy over time.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(8)">← Deployment</button>
+    <button class="btn btn-primary" onclick="navTo(10)">Real-World Project →</button>
+  </div>
+</section>
+
+<!-- ===== 10: PROJECT ===== -->
+<section class="section" id="s10">
+  <div class="section-tag">Module 11 · Capstone</div>
+  <h2>Real-World <span>Project</span></h2>
+  <p class="subtitle">Build a complete Banking Support Bot — BankBot</p>
+
+  <p>This capstone project builds <strong>BankBot</strong> — a production-grade banking assistant that handles balance inquiries, transfers, and fraud alerts. It integrates everything you've learned.</p>
+
+  <h3>BankBot Intent Map</h3>
+  <table>
+    <thead><tr><th>Intent</th><th>Utterances (sample)</th><th>Slots</th><th>Fulfillment</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CheckBalance</strong></td><td>"What's my balance", "How much do I have"</td><td>AccountType</td><td>Lambda → DynamoDB</td></tr>
+      <tr><td><strong>TransferFunds</strong></td><td>"Transfer money", "Send $50 to savings"</td><td>Amount, FromAccount, ToAccount</td><td>Lambda → Transfer API</td></tr>
+      <tr><td><strong>ReportFraud</strong></td><td>"Report fraud", "My card was stolen"</td><td>CardLast4, IncidentDate</td><td>Lambda → SNS alert</td></tr>
+      <tr><td><strong>EscalateAgent</strong></td><td>"Talk to a human", "Agent please"</td><td>—</td><td>Lambda → Connect queue</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Full Lambda Architecture</h3>
+  <div class="code-wrap"><button class="copy-btn" onclick="copyPre(this)">copy</button><pre><span class="kw">import</span> boto3, json
+
+dynamodb = boto3.resource(<span class="str">'dynamodb'</span>)
+sns = boto3.client(<span class="str">'sns'</span>)
+accounts = dynamodb.Table(<span class="str">'BankAccounts'</span>)
+
+<span class="kw">def</span> <span class="fn">lambda_handler</span>(event, context):
+    intent_name = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>][<span class="str">'name'</span>]
+    source = event[<span class="str">'invocationSource'</span>]
+    slots = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>].get(<span class="str">'slots'</span>, {})
+    session = event[<span class="str">'sessionState'</span>].get(<span class="str">'sessionAttributes'</span>, {})
+    
+    <span class="kw">def</span> <span class="fn">get_slot</span>(name):
+        s = slots.get(name)
+        <span class="kw">return</span> s[<span class="str">'value'</span>][<span class="str">'interpretedValue'</span>] <span class="kw">if</span> s <span class="kw">else</span> <span class="val">None</span>
+    
+    <span class="kw">if</span> intent_name == <span class="str">'CheckBalance'</span> <span class="kw">and</span> source == <span class="str">'FulfillmentCodeHook'</span>:
+        user_id = session.get(<span class="str">'userId'</span>, <span class="str">'demo-user'</span>)
+        acct_type = get_slot(<span class="str">'AccountType'</span>) <span class="kw">or</span> <span class="str">'checking'</span>
+        
+        <span class="cm"># Look up balance</span>
+        result = accounts.get_item(Key={<span class="str">'userId'</span>: user_id, <span class="str">'accountType'</span>: acct_type})
+        balance = result.get(<span class="str">'Item'</span>, {}).get(<span class="str">'balance'</span>, <span class="str">'N/A'</span>)
+        
+        <span class="kw">return</span> <span class="fn">close</span>(event, <span class="fn">f</span><span class="str">"Your {acct_type} balance is ${balance:,.2f}."</span>)
+    
+    <span class="kw">elif</span> intent_name == <span class="str">'ReportFraud'</span> <span class="kw">and</span> source == <span class="str">'FulfillmentCodeHook'</span>:
+        card = get_slot(<span class="str">'CardLast4'</span>)
+        <span class="cm"># Send SNS alert to fraud team</span>
+        sns.publish(
+            TopicArn=<span class="str">'arn:aws:sns:us-east-1:123456789:FraudAlerts'</span>,
+            Subject=<span class="str">f'Fraud Report - Card ending {card}'</span>,
+            Message=json.dumps({<span class="str">'userId'</span>: session.get(<span class="str">'userId'</span>), <span class="str">'card'</span>: card})
+        )
+        <span class="kw">return</span> <span class="fn">close</span>(event, 
+            <span class="fn">f</span><span class="str">"Fraud report filed for card ending {card}. "</span>
+            <span class="str">"Your card has been blocked. A specialist will contact you within 2 hours."</span>)
+    
+    <span class="kw">elif</span> intent_name == <span class="str">'TransferFunds'</span> <span class="kw">and</span> source == <span class="str">'FulfillmentCodeHook'</span>:
+        amount = get_slot(<span class="str">'Amount'</span>)
+        from_acct = get_slot(<span class="str">'FromAccount'</span>)
+        to_acct = get_slot(<span class="str">'ToAccount'</span>)
+        <span class="cm"># Real transfer logic goes here</span>
+        <span class="kw">return</span> <span class="fn">close</span>(event, <span class="fn">f</span><span class="str">"${amount} transferred from {from_acct} to {to_acct}. Done! ✅"</span>)
+    
+    <span class="kw">return</span> <span class="fn">close</span>(event, <span class="str">"I'm not sure how to help with that. Type 'agent' to speak with someone."</span>)
+
+
+<span class="kw">def</span> <span class="fn">close</span>(event, message):
+    intent = event[<span class="str">'sessionState'</span>][<span class="str">'intent'</span>]
+    intent[<span class="str">'state'</span>] = <span class="str">'Fulfilled'</span>
+    <span class="kw">return</span> {
+        <span class="str">'sessionState'</span>: {
+            <span class="str">'dialogAction'</span>: {<span class="str">'type'</span>: <span class="str">'Close'</span>},
+            <span class="str">'intent'</span>: intent,
+            <span class="str">'sessionAttributes'</span>: event[<span class="str">'sessionState'</span>].get(<span class="str">'sessionAttributes'</span>, {})
+        },
+        <span class="str">'messages'</span>: [{<span class="str">'contentType'</span>: <span class="str">'PlainText'</span>, <span class="str">'content'</span>: message}]
+    }</pre></div>
+
+  <h3>Security Checklist for Production</h3>
+  <div class="card">
+    <ul>
+      <li>✅ <strong>Authentication</strong>: Pass user ID via session attributes from your auth layer (Cognito/JWT)</li>
+      <li>✅ <strong>No PII in Lex logs</strong>: Disable conversation logs or use CloudWatch log filtering</li>
+      <li>✅ <strong>IAM least-privilege</strong>: Lambda role should only access the specific DynamoDB tables it needs</li>
+      <li>✅ <strong>Input validation</strong>: Always validate slot values in Lambda, never trust Lex output blindly</li>
+      <li>✅ <strong>Rate limiting</strong>: Use API Gateway throttling on any public-facing Lex proxy endpoint</li>
+      <li>✅ <strong>Bot versioning</strong>: Always deploy via aliases, never point directly to DRAFT in production</li>
+    </ul>
+  </div>
+
+  <div class="box purple">
+    <div class="box-label">🚀 Lex + Bedrock (Next Level)</div>
+    <p>In your FallbackIntent Lambda, call Amazon Bedrock/Claude to handle questions Lex can't match. This creates a hybrid bot: structured tasks go through Lex intents, open-ended questions go to Claude. This is the modern agentic chatbot architecture.</p>
+  </div>
+
+  <div class="box info">
+    <div class="box-label">🎓 Course Complete!</div>
+    <p>You now know: Lex core concepts, intent/slot/utterance design, Lambda fulfillment, conversation flow control, multi-channel deployment, analytics, and a real production architecture. Next step: build your own bot and integrate with Bedrock for LLM fallback.</p>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-ghost" onclick="navTo(9)">← Analytics</button>
+    <button class="btn btn-primary" onclick="navTo(0)">↺ Start Over</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  var current = 0;
+  var total = 11;
+  var visited = new Set([0]);
+
+  var sections = document.querySelectorAll('.section');
+  var navItems = document.querySelectorAll('.nav-item');
+
+  function updateProgress() {
+    var pct = Math.round((visited.size / total) * 100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-txt').textContent = pct + '%';
+  }
+
+  window.navTo = function(idx) {
+    sections[current].classList.remove('active');
+    navItems[current].classList.remove('active');
+    current = idx;
+    sections[current].classList.add('active');
+    navItems[current].classList.add('active');
+    visited.add(idx);
+    window.scrollTo(0, 0);
+    updateProgress();
+  };
+
+  window.copyPre = function(btn) {
+    var pre = btn.parentElement.querySelector('pre');
+    var text = pre.innerText.trim();
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'copied!';
+      setTimeout(function() { btn.textContent = 'copy'; }, 1500);
+    });
+  };
+
+  window.answer = function(el, correct) {
+    var opts = el.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(function(o) { o.onclick = null; });
+    el.classList.add(correct ? 'correct' : 'wrong');
+    var fb = el.closest('.quiz').querySelector('.quiz-feedback');
+    fb.classList.add('show', correct ? 'ok' : 'bad');
+  };
+
+  updateProgress();
+});
+</script>
+<script>
+let current = 0;
+const total = 11;
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const visited = new Set([0]);
+
+function goto(idx) {
+  sections[current].classList.remove('active');
+  navItems[current].classList.remove('active');
+  current = idx;
+  sections[current].classList.add('active');
+  navItems[current].classList.add('active');
+  visited.add(idx);
+  window.scrollTo(0,0);
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((visited.size / total) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = pct + '%';
+}
+
+function copyPre(btn) {
+  const pre = btn.parentElement;
+  const text = pre.innerText.replace('copy\n','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 1500);
+  });
+}
+
+function answer(el, correct) {
+  const opts = el.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.onclick = null);
+  el.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {

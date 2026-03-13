@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogflow CX — Visual Concept Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #070b14;
+  color: #e2e8f0;
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 44px 20px 20px;
+  position: relative;
+}
+header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+header h1 span { color: #38bdf8; }
+header p { font-size: 14px; color: #64748b; }
+
+/* ── TAB BAR ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px 0;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 8px 18px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  color: #64748b;
+  transition: all 0.2s;
+}
+.tab:hover { border-color: #38bdf8; color: #38bdf8; }
+.tab.active { background: #38bdf8; color: #000; border-color: #38bdf8; font-weight: 600; }
+
+/* ── VIEWS ── */
+.view { display: none; padding: 32px 24px 60px; max-width: 1100px; margin: 0 auto; }
+.view.active { display: block; animation: fadeUp 0.35s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+
+/* ════════════════════════════════════
+   VIEW 1 — HIERARCHY PYRAMID
+════════════════════════════════════ */
+.pyramid { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px 0; }
+
+.py-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+}
+
+.py-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 14px;
+  border: 1.5px solid;
+  padding: 16px 28px;
+  transition: all 0.22s;
+  position: relative;
+  background: #0f172a;
+}
+.py-box:hover { transform: translateY(-2px); }
+.py-box .icon { font-size: 26px; flex-shrink: 0; }
+.py-box .label { font-weight: 700; font-size: 17px; }
+.py-box .sublabel { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.py-box .badge {
+  margin-left: auto;
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+/* level colours */
+.py-level:nth-child(1) .py-box { border-color: #f59e0b; width: 360px; }
+.py-level:nth-child(1) .badge { background: rgba(245,158,11,.15); color: #f59e0b; }
+.py-level:nth-child(2) .py-box { border-color: #38bdf8; width: 460px; }
+.py-level:nth-child(2) .badge { background: rgba(56,189,248,.15); color: #38bdf8; }
+.py-level:nth-child(3) .py-box { border-color: #a78bfa; width: 560px; }
+.py-level:nth-child(3) .badge { background: rgba(167,139,250,.15); color: #a78bfa; }
+.py-level:nth-child(4) .py-box { border-color: #f472b6; width: 660px; }
+.py-level:nth-child(4) .badge { background: rgba(244,114,182,.15); color: #f472b6; }
+.py-level:nth-child(5) .py-box { border-color: #34d399; width: 760px; }
+.py-level:nth-child(5) .badge { background: rgba(52,211,153,.15); color: #34d399; }
+.py-level:nth-child(6) .py-box { border-color: #fb923c; width: 860px; }
+.py-level:nth-child(6) .badge { background: rgba(251,146,60,.15); color: #fb923c; }
+
+.py-connector {
+  width: 2px; height: 22px;
+  background: linear-gradient(#1e293b, #334155);
+  position: relative;
+}
+.py-connector::after {
+  content: '▼';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #334155;
+}
+
+/* POP TOOLTIP */
+.py-tooltip {
+  max-width: 700px;
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-top: 10px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #cbd5e1;
+  display: none;
+  animation: fadeUp 0.2s ease;
+}
+.py-tooltip.show { display: block; }
+.py-tooltip strong { color: #e2e8f0; }
+.py-tooltip code {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  padding: 1px 7px;
+  border-radius: 4px;
+  color: #7dd3fc;
+}
+
+/* ════════════════════════════════════
+   VIEW 2 — CONVERSATION FLOW
+════════════════════════════════════ */
+.flow-canvas {
+  position: relative;
+  overflow-x: auto;
+  padding: 20px 10px 40px;
+}
+
+.flow-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+/* SVG arrows drawn separately */
+.flow-svg {
+  width: 100%;
+  height: 320px;
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 160px);
+  grid-template-rows: auto auto auto;
+  gap: 0;
+  position: relative;
+  width: 860px;
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+.fn {  /* flow node */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+}
+
+.fn-box {
+  border-radius: 12px;
+  border: 1.5px solid;
+  padding: 12px 16px;
+  text-align: center;
+  background: #0f172a;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+.fn-box:hover { transform: scale(1.04); }
+.fn-box .fn-icon { font-size: 22px; margin-bottom: 5px; }
+.fn-box .fn-label { font-size: 12px; font-weight: 600; }
+.fn-box .fn-type { font-size: 10px; color: #64748b; margin-top: 3px; font-family: 'Fira Code', monospace; }
+
+.fn-box.agent   { border-color: #f59e0b; }
+.fn-box.flow    { border-color: #38bdf8; }
+.fn-box.page    { border-color: #a78bfa; }
+.fn-box.intent  { border-color: #f472b6; }
+.fn-box.entity  { border-color: #34d399; }
+.fn-box.fulfill { border-color: #fb923c; }
+.fn-box.webhook { border-color: #c084fc; }
+.fn-box.param   { border-color: #67e8f9; }
+
+/* highlighted state */
+.fn-box.lit { box-shadow: 0 0 0 3px currentColor, 0 0 24px rgba(255,255,255,0.1); }
+.fn-box.agent.lit   { box-shadow: 0 0 0 3px #f59e0b, 0 0 20px rgba(245,158,11,0.25); }
+.fn-box.flow.lit    { box-shadow: 0 0 0 3px #38bdf8, 0 0 20px rgba(56,189,248,0.25); }
+.fn-box.page.lit    { box-shadow: 0 0 0 3px #a78bfa, 0 0 20px rgba(167,139,250,0.25); }
+.fn-box.intent.lit  { box-shadow: 0 0 0 3px #f472b6, 0 0 20px rgba(244,114,182,0.25); }
+.fn-box.entity.lit  { box-shadow: 0 0 0 3px #34d399, 0 0 20px rgba(52,211,153,0.25); }
+.fn-box.fulfill.lit { box-shadow: 0 0 0 3px #fb923c, 0 0 20px rgba(251,146,60,0.25); }
+.fn-box.webhook.lit { box-shadow: 0 0 0 3px #c084fc, 0 0 20px rgba(192,132,252,0.25); }
+.fn-box.param.lit   { box-shadow: 0 0 0 3px #67e8f9, 0 0 20px rgba(103,232,249,0.25); }
+
+/* ════════════════════════════════════
+   VIEW 3 — STEP-BY-STEP STORY
+════════════════════════════════════ */
+.story-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.story-step {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 8px;
+  opacity: 0.35;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateX(-8px);
+}
+.story-step.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.story-step.done { opacity: 0.65; }
+
+.step-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.step-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid #1e293b;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  background: #0f172a;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.story-step.active .step-num {
+  border-color: #38bdf8;
+  background: #38bdf8;
+  color: #000;
+}
+.story-step.done .step-num {
+  border-color: #34d399;
+  background: rgba(52,211,153,0.15);
+  color: #34d399;
+}
+.step-vline {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  background: #1e293b;
+  margin: 4px 0;
+}
+.step-body {
+  padding: 4px 0 28px;
+  flex: 1;
+}
+.step-tag {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.step-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.step-desc {
+  font-size: 13.5px;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.step-example {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  color: #7dd3fc;
+  line-height: 1.6;
+}
+
+.story-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+  position: sticky;
+  bottom: 20px;
+}
+.sc-btn {
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  transition: all 0.2s;
+}
+.sc-btn.prev { background: #1e293b; color: #94a3b8; }
+.sc-btn.prev:hover { background: #334155; color: #e2e8f0; }
+.sc-btn.next { background: #38bdf8; color: #000; }
+.sc-btn.next:hover { background: #7dd3fc; }
+.sc-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ════════════════════════════════════
+   VIEW 4 — PIZZA BOT COMPLETE MAP
+════════════════════════════════════ */
+#pizzaMap {
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+svg.mapsvg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* DETAIL PANEL */
+.detail-panel {
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  min-height: 100px;
+  transition: all 0.25s;
+}
+.detail-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.detail-panel p { font-size: 13.5px; color: #94a3b8; line-height: 1.7; margin-bottom: 8px; }
+.detail-panel .props { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.prop-chip {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Fira Code', monospace;
+  font-size: 11.5px;
+  color: #7dd3fc;
+}
+
+/* LEGEND */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+.leg-dot {
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* responsive */
+@media (max-width: 600px) {
+  .py-level:nth-child(n) .py-box { width: 92vw !important; }
+  .fn-box { min-width: 90px; }
+  header h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dialogflow CX — <span>Visual Concept Map</span></h1>
+  <p>Click any concept to learn what it is and how it connects to everything else</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchView('hierarchy')">🏗 Hierarchy</div>
+  <div class="tab" onclick="switchView('flow')">🔄 Conversation Flow</div>
+  <div class="tab" onclick="switchView('story')">📖 Step-by-Step</div>
+  <div class="tab" onclick="switchView('pizza')">🍕 Full Example Map</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     VIEW 1 — HIERARCHY
+════════════════════════════════════════ -->
+<div class="view active" id="view-hierarchy">
+  <div style="text-align:center;margin-bottom:24px;">
+    <p style="font-size:13px;color:#64748b;">Click each level to expand its explanation ↓</p>
+  </div>
+
+  <div class="pyramid">
+
+    <div class="py-level" onclick="toggleTip('tip1')">
+      <div class="py-box">
+        <span class="icon">🤖</span>
+        <div><div class="label">AGENT</div><div class="sublabel">The whole chatbot</div></div>
+        <span class="badge">top level</span>
+      </div>
+      <div class="py-tooltip" id="tip1">
+        <strong>Agent</strong> is the entire chatbot — your project container. One agent = one bot (e.g., "PizzaBot" or "BankBot").<br><br>
+        It holds everything: flows, intents, entities, webhooks. You configure its language, timezone, and default welcome message here.<br><br>
+        Think of it like a <strong>software application</strong> — the agent is the app, everything else lives inside it.
+      </div>
+    </div>
+
+    <div class="py-connector"></div>
+
+    <div class="py-level" onclick="toggleTip('tip2')">
+      <div class="py-box">
+        <span class="icon">📊</span>
+        <div><div class="label">FLOWS</div><div class="sublabel">Topic modules inside the agent</div></div>
+        <span class="badge">modules</span>
+      </div>
+      <div class="py-tooltip" id="tip2">
+        <strong>Flows</strong> are like chapters in a book, or modules in a codebase. Each flow handles one major topic area.<br><br>
+        Example: <code>Billing Flow</code>, <code>Order Flow</code>, <code>Support Flow</code>.<br><br>
+        Every agent automatically has a <strong>Default Start Flow</strong> — this is where every conversation begins. Flows can call other flows, like function calls. This keeps large agents clean and organized.
+      </div>
+    </div>
+
+    <div class="py-connector"></div>
+
+    <div class="py-level" onclick="toggleTip('tip3')">
+      <div class="py-box">
+        <span class="icon">📄</span>
+        <div><div class="label">PAGES</div><div class="sublabel">The current state of the conversation</div></div>
+        <span class="badge">★ most important</span>
+      </div>
+      <div class="py-tooltip" id="tip3">
+        <strong>Pages</strong> are the most important concept in Dialogflow CX. A page = the <em>current state</em> of the conversation.<br><br>
+        At any moment, the bot is on <strong>exactly one page</strong>. Like a screen in an app — you're always on one screen at a time.<br><br>
+        Each page can:<br>
+        • Say something when you arrive (<strong>Entry Fulfillment</strong>)<br>
+        • Collect information from the user (<strong>Form</strong>)<br>
+        • Decide where to go next (<strong>Routes</strong>)<br><br>
+        Example pages in a pizza bot: <code>Greeting</code> → <code>Choose Size</code> → <code>Choose Toppings</code> → <code>Confirm Order</code>
+      </div>
+    </div>
+
+    <div class="py-connector"></div>
+
+    <div class="py-level" onclick="toggleTip('tip4')">
+      <div class="py-box">
+        <span class="icon">🎯</span>
+        <div><div class="label">INTENTS</div><div class="sublabel">What the user wants to do</div></div>
+        <span class="badge">NLU layer</span>
+      </div>
+      <div class="py-tooltip" id="tip4">
+        <strong>Intents</strong> classify <em>what the user means</em>. You train each intent with example phrases — the NLU model learns to recognize similar inputs.<br><br>
+        <code>"I want a pizza"</code> → matches intent: <strong>order.pizza</strong><br>
+        <code>"Cancel my order"</code> → matches intent: <strong>cancel.order</strong><br><br>
+        Intents don't do anything by themselves — they <strong>trigger Routes</strong>. A route says "when this intent fires on this page → do this action."<br><br>
+        Key insight: <em>The same intent can have different behavior on different pages.</em> "Yes" on the order page confirms an order. "Yes" on the cancel page confirms cancellation.
+      </div>
+    </div>
+
+    <div class="py-connector"></div>
+
+    <div class="py-level" onclick="toggleTip('tip5')">
+      <div class="py-box">
+        <span class="icon">📦</span>
+        <div><div class="label">ENTITIES</div><div class="sublabel">Pieces of data extracted from user input</div></div>
+        <span class="badge">extraction</span>
+      </div>
+      <div class="py-tooltip" id="tip5">
+        <strong>Entities</strong> pull structured data out of free-form text.<br><br>
+        From: <code>"I want a large pepperoni pizza"</code><br>
+        Extracts: <code>pizza-size = "large"</code> and <code>topping = "pepperoni"</code><br><br>
+        Three types:<br>
+        • <strong>System entities</strong> — built-in: <code>@sys.date</code>, <code>@sys.number</code>, <code>@sys.city</code><br>
+        • <strong>Custom entities</strong> — you define: <code>@pizza-size</code> = small/medium/large<br>
+        • <strong>Regex entities</strong> — patterns: <code>@order-id</code> = BK[0-9]{5}<br><br>
+        Extracted entity values become <strong>Parameters</strong> stored in the session.
+      </div>
+    </div>
+
+    <div class="py-connector"></div>
+
+    <div class="py-level" onclick="toggleTip('tip6')">
+      <div class="py-box">
+        <span class="icon">⚡</span>
+        <div><div class="label">FULFILLMENT</div><div class="sublabel">What happens when a route fires</div></div>
+        <span class="badge">action layer</span>
+      </div>
+      <div class="py-tooltip" id="tip6">
+        <strong>Fulfillment</strong> is the action that runs when a route is triggered. It can:<br><br>
+        • 💬 Send a <strong>text/card response</strong> to the user<br>
+        • 🌐 Call a <strong>Webhook</strong> (your backend API)<br>
+        • 📝 <strong>Set parameters</strong> (store data in the session)<br>
+        • ↩️ <strong>Transition</strong> to another page or flow<br><br>
+        Multiple actions can happen at once. Example: call webhook → set parameter → send response → transition to next page.<br><br>
+        This is where your business logic lives.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RELATIONSHIP SUMMARY -->
+  <div style="max-width:680px;margin:32px auto 0;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:24px;">
+    <div style="font-size:12px;color:#64748b;font-family:'Fira Code',monospace;margin-bottom:14px;text-align:center;text-transform:uppercase;letter-spacing:1px;">How they all connect</div>
+    <div style="font-size:13.5px;color:#94a3b8;line-height:2;text-align:center;">
+      <span style="color:#f59e0b;font-weight:600;">Agent</span> contains
+      <span style="color:#38bdf8;font-weight:600;"> Flows</span> which contain
+      <span style="color:#a78bfa;font-weight:600;"> Pages</span> which have
+      <span style="color:#fb923c;font-weight:600;"> Routes</span><br>
+      Routes are triggered by
+      <span style="color:#f472b6;font-weight:600;"> Intents</span> (which use
+      <span style="color:#34d399;font-weight:600;"> Entities</span> to extract data)<br>
+      When a route fires →
+      <span style="color:#fb923c;font-weight:600;"> Fulfillment</span> runs (responses, webhooks, transitions)
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     VIEW 2 — CONVERSATION FLOW
+════════════════════════════════════════ -->
+<div class="view" id="view-flow">
+  <div style="text-align:center;margin-bottom:20px;">
+    <p style="font-size:13px;color:#64748b;">How a single user message travels through Dialogflow CX</p>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#f59e0b"></div>Agent/Session</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#38bdf8"></div>Flow</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#a78bfa"></div>Page</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f472b6"></div>Intent</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#34d399"></div>Entity</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#fb923c"></div>Fulfillment</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#c084fc"></div>Webhook</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#67e8f9"></div>Parameter</div>
+  </div>
+
+  <!-- SVG FLOWCHART -->
+  <div style="overflow-x:auto;">
+  <svg width="900" height="580" viewBox="0 0 900 580" style="display:block;margin:0 auto;font-family:'Space Grotesk',sans-serif;" id="flowSvg">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#334155"/>
+      </marker>
+      <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/>
+      </marker>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+
+    <!-- USER MESSAGE (top-left) -->
+    <g id="n-user" class="flow-node-g" onclick="highlightFlow('user')" style="cursor:pointer">
+      <rect x="30" y="30" width="140" height="64" rx="10" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+      <text x="100" y="55" text-anchor="middle" font-size="20">💬</text>
+      <text x="100" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#e2e8f0">User Message</text>
+      <text x="100" y="88" text-anchor="middle" font-size="10" fill="#64748b" font-family="'Fira Code',monospace">"I want a pizza"</text>
+    </g>
+
+    <!-- ARROW: user → NLU -->
+    <line x1="170" y1="62" x2="218" y2="62" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="194" y="56" text-anchor="middle" font-size="10" fill="#64748b">sends</text>
+
+    <!-- NLU ENGINE -->
+    <g id="n-nlu" onclick="highlightFlow('nlu')" style="cursor:pointer">
+      <rect x="220" y="30" width="140" height="64" rx="10" fill="#0f172a" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="290" y="55" text-anchor="middle" font-size="20">🧠</text>
+      <text x="290" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#f472b6">NLU Engine</text>
+      <text x="290" y="88" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">matches Intent</text>
+    </g>
+
+    <!-- ARROW: NLU → Intent -->
+    <line x1="360" y1="62" x2="408" y2="62" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="384" y="56" text-anchor="middle" font-size="10" fill="#64748b">found</text>
+
+    <!-- INTENT BOX -->
+    <g id="n-intent" onclick="highlightFlow('intent')" style="cursor:pointer">
+      <rect x="410" y="30" width="140" height="64" rx="10" fill="#0f172a" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="480" y="55" text-anchor="middle" font-size="20">🎯</text>
+      <text x="480" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#f472b6">Intent</text>
+      <text x="480" y="88" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">order.pizza</text>
+    </g>
+
+    <!-- ENTITY extraction (below NLU) -->
+    <line x1="290" y1="94" x2="290" y2="148" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="305" y="128" font-size="10" fill="#64748b">extracts</text>
+    <g id="n-entity" onclick="highlightFlow('entity')" style="cursor:pointer">
+      <rect x="220" y="150" width="140" height="64" rx="10" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+      <text x="290" y="175" text-anchor="middle" font-size="20">📦</text>
+      <text x="290" y="194" text-anchor="middle" font-size="12" font-weight="600" fill="#34d399">Entities</text>
+      <text x="290" y="208" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">size=large</text>
+    </g>
+
+    <!-- Entity → Param -->
+    <line x1="360" y1="182" x2="408" y2="182" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="384" y="176" text-anchor="middle" font-size="10" fill="#64748b">stored as</text>
+    <g id="n-param" onclick="highlightFlow('param')" style="cursor:pointer">
+      <rect x="410" y="150" width="140" height="64" rx="10" fill="#0f172a" stroke="#67e8f9" stroke-width="1.5"/>
+      <text x="480" y="175" text-anchor="middle" font-size="20">📝</text>
+      <text x="480" y="194" text-anchor="middle" font-size="12" font-weight="600" fill="#67e8f9">Parameters</text>
+      <text x="480" y="208" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">$session.params</text>
+    </g>
+
+    <!-- CURRENT PAGE (right side) -->
+    <g id="n-page" onclick="highlightFlow('page')" style="cursor:pointer">
+      <rect x="600" y="30" width="140" height="64" rx="10" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="670" y="55" text-anchor="middle" font-size="20">📄</text>
+      <text x="670" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#a78bfa">Current Page</text>
+      <text x="670" y="88" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">Choose Size</text>
+    </g>
+
+    <!-- Intent + Page → Route -->
+    <line x1="550" y1="62" x2="598" y2="62" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="574" y="56" text-anchor="middle" font-size="10" fill="#64748b">on page</text>
+
+    <!-- ROUTE (below page) -->
+    <line x1="670" y1="94" x2="670" y2="148" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="694" y="128" font-size="10" fill="#64748b">triggers</text>
+    <g id="n-route" onclick="highlightFlow('route')" style="cursor:pointer">
+      <rect x="600" y="150" width="140" height="64" rx="10" fill="#0f172a" stroke="#fb923c" stroke-width="1.5"/>
+      <text x="670" y="175" text-anchor="middle" font-size="20">🔀</text>
+      <text x="670" y="194" text-anchor="middle" font-size="12" font-weight="600" fill="#fb923c">Route</text>
+      <text x="670" y="208" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">intent + condition</text>
+    </g>
+
+    <!-- Route → Fulfillment -->
+    <line x1="670" y1="214" x2="670" y2="268" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>
+    <text x="694" y="248" font-size="10" fill="#64748b">runs</text>
+    <g id="n-fulfill" onclick="highlightFlow('fulfill')" style="cursor:pointer">
+      <rect x="600" y="270" width="140" height="64" rx="10" fill="#0f172a" stroke="#fb923c" stroke-width="1.5"/>
+      <text x="670" y="295" text-anchor="middle" font-size="20">⚡</text>
+      <text x="670" y="314" text-anchor="middle" font-size="12" font-weight="600" fill="#fb923c">Fulfillment</text>
+      <text x="670" y="328" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">response + action</text>
+    </g>
+
+    <!-- Fulfillment → Webhook (optional) -->
+    <line x1="740" y1="302" x2="788" y2="302" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+    <text x="764" y="296" text-anchor="middle" font-size="10" fill="#64748b">optionally</text>
+    <g id="n-webhook" onclick="highlightFlow('webhook')" style="cursor:pointer">
+      <rect x="790" y="270" width="100" height="64" rx="10" fill="#0f172a" stroke="#c084fc" stroke-width="1.5"/>
+      <text x="840" y="295" text-anchor="middle" font-size="20">🌐</text>
+      <text x="840" y="314" text-anchor="middle" font-size="12" font-weight="600" fill="#c084fc">Webhook</text>
+      <text x="840" y="328" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">your API</text>
+    </g>
+
+    <!-- Fulfillment → New Page -->
+    <line x1="670" y1="334" x2="670" y2="388" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+    <text x="694" y="368" font-size="10" fill="#38bdf8">transitions to</text>
+    <g id="n-newpage" onclick="highlightFlow('newpage')" style="cursor:pointer">
+      <rect x="600" y="390" width="140" height="64" rx="10" fill="#0f172a" stroke="#a78bfa" stroke-width="2"/>
+      <text x="670" y="415" text-anchor="middle" font-size="20">📄</text>
+      <text x="670" y="434" text-anchor="middle" font-size="12" font-weight="600" fill="#a78bfa">Next Page</text>
+      <text x="670" y="448" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">Choose Toppings</text>
+    </g>
+
+    <!-- Param also flows to Route -->
+    <path d="M550 182 Q580 182 580 214 Q580 246 600 182" stroke="#334155" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+
+    <!-- RESPONSE bubble -->
+    <g id="n-response" onclick="highlightFlow('response')" style="cursor:pointer">
+      <rect x="30" y="270" width="140" height="64" rx="10" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+      <text x="100" y="295" text-anchor="middle" font-size="20">💬</text>
+      <text x="100" y="314" text-anchor="middle" font-size="12" font-weight="600" fill="#e2e8f0">Bot Response</text>
+      <text x="100" y="328" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">"What size?"</text>
+    </g>
+    <!-- Fulfill → response -->
+    <path d="M600 302 Q220 302 170 302" stroke="#334155" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+    <text x="380" y="318" text-anchor="middle" font-size="10" fill="#64748b">sends message</text>
+
+    <!-- SESSION STATE box -->
+    <g id="n-session" onclick="highlightFlow('session')" style="cursor:pointer">
+      <rect x="30" y="390" width="140" height="64" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="100" y="415" text-anchor="middle" font-size="20">🗄️</text>
+      <text x="100" y="434" text-anchor="middle" font-size="12" font-weight="600" fill="#f59e0b">Session State</text>
+      <text x="100" y="448" text-anchor="middle" font-size="10" fill="#94a3b8" font-family="'Fira Code',monospace">persists all params</text>
+    </g>
+    <line x1="170" y1="422" x2="218" y2="422" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+    <line x1="290" y1="214" x2="290" y2="248" stroke="#334155" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <line x1="290" y1="248" x2="100" y2="388" stroke="#334155" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+    <text x="168" y="416" font-size="10" fill="#64748b">updates</text>
+
+    <!-- Cycle arrow: next page → user message again -->
+    <path d="M600 422 Q540 520 100 520 Q30 520 30 460" stroke="#1e293b" stroke-width="1.5" fill="none" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+    <text x="310" y="536" text-anchor="middle" font-size="11" fill="#334155">conversation continues → next user message</text>
+  </svg>
+  </div>
+
+  <!-- Click detail panel -->
+  <div class="detail-panel" id="flowDetail">
+    <h3 style="color:#64748b">👆 Click any node above to learn about it</h3>
+    <p>Each node in this diagram is a key Dialogflow CX concept. Click to see what it does and how it connects.</p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     VIEW 3 — STEP BY STEP STORY
+════════════════════════════════════════ -->
+<div class="view" id="view-story">
+  <div class="story-wrap">
+    <div style="text-align:center;margin-bottom:28px;">
+      <p style="font-size:13px;color:#64748b;">Follow a single user message "I want a large pepperoni pizza" through the entire system</p>
+    </div>
+
+    <div id="storySteps">
+      <!-- steps injected by JS -->
+    </div>
+
+    <div class="story-controls">
+      <button class="sc-btn prev" id="prevBtn" onclick="stepStory(-1)" disabled>← Prev</button>
+      <span id="stepCounter" style="font-size:13px;color:#64748b;align-self:center">Step 1 of 8</span>
+      <button class="sc-btn next" id="nextBtn" onclick="stepStory(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     VIEW 4 — PIZZA BOT MAP
+════════════════════════════════════════ -->
+<div class="view" id="view-pizza">
+  <div style="text-align:center;margin-bottom:16px;">
+    <p style="font-size:13px;color:#64748b;">Complete architecture of a pizza ordering bot — click any node for details</p>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#f59e0b"></div>Agent</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#38bdf8"></div>Flow</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#a78bfa"></div>Page</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f472b6"></div>Intent</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#34d399"></div>Entity</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#fb923c"></div>Fulfillment/Route</div>
+  </div>
+
+  <div id="pizzaMap" style="overflow-x:auto;">
+  <svg width="860" height="620" viewBox="0 0 860 620" style="display:block;margin:0 auto;font-family:'Space Grotesk',sans-serif;" id="pizzaSvg">
+    <defs>
+      <marker id="pa" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L7,3 z" fill="#334155"/>
+      </marker>
+      <marker id="pa-green" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L7,3 z" fill="#34d399"/>
+      </marker>
+      <marker id="pa-pink" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L7,3 z" fill="#f472b6"/>
+      </marker>
+    </defs>
+
+    <!-- AGENT wrapper -->
+    <rect x="10" y="10" width="840" height="600" rx="16" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="8,5"/>
+    <text x="24" y="32" font-size="12" fill="#f59e0b" font-weight="600" font-family="'Fira Code',monospace">🤖 AGENT: PizzaBot</text>
+
+    <!-- DEFAULT START FLOW -->
+    <rect x="30" y="48" width="200" height="120" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="130" y="68" text-anchor="middle" font-size="11" fill="#38bdf8" font-weight="600" font-family="'Fira Code',monospace">DEFAULT START FLOW</text>
+    <!-- start page -->
+    <g onclick="showPizzaDetail('start-page')" style="cursor:pointer">
+      <rect x="44" y="76" width="172" height="40" rx="8" fill="#111827" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="130" y="92" text-anchor="middle" font-size="11" font-weight="600" fill="#a78bfa">📄 Start Page</text>
+      <text x="130" y="108" text-anchor="middle" font-size="9.5" fill="#64748b" font-family="'Fira Code',monospace">entry: "Welcome!"</text>
+    </g>
+    <!-- welcome intent -->
+    <g onclick="showPizzaDetail('welcome-intent')" style="cursor:pointer">
+      <rect x="44" y="124" width="172" height="36" rx="8" fill="#111827" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="130" y="140" text-anchor="middle" font-size="11" font-weight="600" fill="#f472b6">🎯 Default Welcome</text>
+      <text x="130" y="154" text-anchor="middle" font-size="9.5" fill="#64748b" font-family="'Fira Code',monospace">triggers on WELCOME event</text>
+    </g>
+
+    <!-- Arrow: Start flow → Order flow -->
+    <line x1="230" y1="108" x2="278" y2="108" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#pa)"/>
+    <text x="254" y="102" text-anchor="middle" font-size="9" fill="#38bdf8">routes to</text>
+
+    <!-- ORDER FLOW -->
+    <rect x="280" y="48" width="560" height="560" rx="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="560" y="70" text-anchor="middle" font-size="11" fill="#38bdf8" font-weight="600" font-family="'Fira Code',monospace">ORDER FLOW</text>
+
+    <!-- PAGE 1: Choose Size -->
+    <g onclick="showPizzaDetail('page-size')" style="cursor:pointer">
+      <rect x="296" y="84" width="156" height="80" rx="10" fill="#111827" stroke="#a78bfa" stroke-width="2"/>
+      <text x="374" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#a78bfa">📄 Choose Size</text>
+      <text x="374" y="120" text-anchor="middle" font-size="10" fill="#94a3b8">Entry: "What size?"</text>
+      <text x="374" y="136" text-anchor="middle" font-size="10" fill="#94a3b8">Form: pizza_size</text>
+      <text x="374" y="152" text-anchor="middle" font-size="9" fill="#64748b" font-family="'Fira Code',monospace">@pizza-size entity</text>
+    </g>
+
+    <!-- Intents for size page -->
+    <g onclick="showPizzaDetail('intent-size')" style="cursor:pointer">
+      <rect x="296" y="178" width="156" height="32" rx="6" fill="#111827" stroke="#f472b6" stroke-width="1"/>
+      <text x="374" y="198" text-anchor="middle" font-size="10" fill="#f472b6">🎯 provide.pizza.size</text>
+    </g>
+    <line x1="374" y1="164" x2="374" y2="178" stroke="#334155" stroke-width="1.2" marker-end="url(#pa)"/>
+
+    <!-- Arrow to page 2 -->
+    <line x1="452" y1="124" x2="500" y2="124" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#pa)"/>
+    <text x="476" y="117" text-anchor="middle" font-size="9" fill="#a78bfa">form filled</text>
+
+    <!-- PAGE 2: Choose Toppings -->
+    <g onclick="showPizzaDetail('page-toppings')" style="cursor:pointer">
+      <rect x="502" y="84" width="156" height="80" rx="10" fill="#111827" stroke="#a78bfa" stroke-width="2"/>
+      <text x="580" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#a78bfa">📄 Choose Toppings</text>
+      <text x="580" y="120" text-anchor="middle" font-size="10" fill="#94a3b8">Entry: "Pick toppings"</text>
+      <text x="580" y="136" text-anchor="middle" font-size="10" fill="#94a3b8">Form: toppings[]</text>
+      <text x="580" y="152" text-anchor="middle" font-size="9" fill="#64748b" font-family="'Fira Code',monospace">@pizza-topping entity</text>
+    </g>
+
+    <!-- Intents for toppings page -->
+    <g onclick="showPizzaDetail('intent-toppings')" style="cursor:pointer">
+      <rect x="502" y="178" width="156" height="32" rx="6" fill="#111827" stroke="#f472b6" stroke-width="1"/>
+      <text x="580" y="198" text-anchor="middle" font-size="10" fill="#f472b6">🎯 provide.toppings</text>
+    </g>
+    <line x1="580" y1="164" x2="580" y2="178" stroke="#334155" stroke-width="1.2" marker-end="url(#pa)"/>
+
+    <!-- Arrow page 2 → page 3 -->
+    <line x1="658" y1="124" x2="706" y2="124" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#pa)"/>
+    <text x="682" y="117" text-anchor="middle" font-size="9" fill="#a78bfa">form filled</text>
+
+    <!-- PAGE 3: Confirm Order -->
+    <g onclick="showPizzaDetail('page-confirm')" style="cursor:pointer">
+      <rect x="708" y="84" width="118" height="80" rx="10" fill="#111827" stroke="#a78bfa" stroke-width="2"/>
+      <text x="767" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#a78bfa">📄 Confirm</text>
+      <text x="767" y="122" text-anchor="middle" font-size="10" fill="#94a3b8">Summary +</text>
+      <text x="767" y="138" text-anchor="middle" font-size="10" fill="#94a3b8">"Confirm?"</text>
+      <text x="767" y="156" text-anchor="middle" font-size="9" fill="#64748b" font-family="'Fira Code',monospace">chips: Yes/No</text>
+    </g>
+
+    <!-- confirm intent -->
+    <g onclick="showPizzaDetail('intent-confirm')" style="cursor:pointer">
+      <rect x="708" y="178" width="118" height="32" rx="6" fill="#111827" stroke="#f472b6" stroke-width="1"/>
+      <text x="767" y="198" text-anchor="middle" font-size="10" fill="#f472b6">🎯 confirm.order</text>
+    </g>
+    <line x1="767" y1="164" x2="767" y2="178" stroke="#334155" stroke-width="1.2" marker-end="url(#pa)"/>
+
+    <!-- Arrow confirm → webhook/fulfillment -->
+    <line x1="767" y1="210" x2="767" y2="258" stroke="#fb923c" stroke-width="1.5" marker-end="url(#pa)"/>
+    <text x="786" y="240" font-size="9" fill="#fb923c">on yes</text>
+
+    <!-- WEBHOOK box -->
+    <g onclick="showPizzaDetail('webhook')" style="cursor:pointer">
+      <rect x="708" y="260" width="118" height="60" rx="8" fill="#111827" stroke="#c084fc" stroke-width="1.5"/>
+      <text x="767" y="283" text-anchor="middle" font-size="18">🌐</text>
+      <text x="767" y="300" text-anchor="middle" font-size="10" font-weight="600" fill="#c084fc">Webhook</text>
+      <text x="767" y="314" text-anchor="middle" font-size="9" fill="#64748b" font-family="'Fira Code',monospace">submit order</text>
+    </g>
+    <line x1="767" y1="320" x2="767" y2="358" stroke="#334155" stroke-width="1.2" marker-end="url(#pa)"/>
+
+    <!-- PAGE 4: Order Confirmed -->
+    <g onclick="showPizzaDetail('page-done')" style="cursor:pointer">
+      <rect x="708" y="360" width="118" height="64" rx="10" fill="#111827" stroke="#34d399" stroke-width="2"/>
+      <text x="767" y="383" text-anchor="middle" font-size="11" font-weight="700" fill="#34d399">📄 Done</text>
+      <text x="767" y="400" text-anchor="middle" font-size="10" fill="#94a3b8">"Order #XYZ</text>
+      <text x="767" y="416" text-anchor="middle" font-size="10" fill="#94a3b8">confirmed!"</text>
+    </g>
+
+    <!-- ENTITIES PANEL (bottom) -->
+    <rect x="296" y="420" width="380" height="100" rx="10" fill="#0a1628" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="486" y="440" text-anchor="middle" font-size="11" fill="#34d399" font-weight="600" font-family="'Fira Code',monospace">ENTITIES (used across all pages)</text>
+    <g onclick="showPizzaDetail('entity-size')" style="cursor:pointer">
+      <rect x="306" y="450" width="90" height="30" rx="6" fill="#111827" stroke="#34d399" stroke-width="1"/>
+      <text x="351" y="469" text-anchor="middle" font-size="10" fill="#34d399">@pizza-size</text>
+    </g>
+    <g onclick="showPizzaDetail('entity-topping')" style="cursor:pointer">
+      <rect x="406" y="450" width="100" height="30" rx="6" fill="#111827" stroke="#34d399" stroke-width="1"/>
+      <text x="456" y="469" text-anchor="middle" font-size="10" fill="#34d399">@pizza-topping</text>
+    </g>
+    <g onclick="showPizzaDetail('entity-payment')" style="cursor:pointer">
+      <rect x="516" y="450" width="100" height="30" rx="6" fill="#111827" stroke="#34d399" stroke-width="1"/>
+      <text x="566" y="469" text-anchor="middle" font-size="10" fill="#34d399">@payment-type</text>
+    </g>
+    <text x="486" y="510" text-anchor="middle" font-size="10" fill="#475569" font-family="'Fira Code',monospace">extracted values → stored as $session.params.*</text>
+
+    <!-- GLOBAL ROUTE GROUP -->
+    <rect x="296" y="530" width="380" height="64" rx="10" fill="#0a1628" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="486" y="550" text-anchor="middle" font-size="11" fill="#fb923c" font-weight="600" font-family="'Fira Code',monospace">GLOBAL ROUTE GROUP (any page)</text>
+    <g onclick="showPizzaDetail('global-cancel')" style="cursor:pointer">
+      <rect x="306" y="558" width="90" height="28" rx="6" fill="#111827" stroke="#fb923c" stroke-width="1"/>
+      <text x="351" y="576" text-anchor="middle" font-size="10" fill="#fb923c">cancel.order</text>
+    </g>
+    <g onclick="showPizzaDetail('global-help')" style="cursor:pointer">
+      <rect x="406" y="558" width="70" height="28" rx="6" fill="#111827" stroke="#fb923c" stroke-width="1"/>
+      <text x="441" y="576" text-anchor="middle" font-size="10" fill="#fb923c">ask.help</text>
+    </g>
+    <g onclick="showPizzaDetail('global-restart')" style="cursor:pointer">
+      <rect x="486" y="558" width="70" height="28" rx="6" fill="#111827" stroke="#fb923c" stroke-width="1"/>
+      <text x="521" y="576" text-anchor="middle" font-size="10" fill="#fb923c">restart</text>
+    </g>
+
+    <!-- edit order arrow back to page 1 -->
+    <g onclick="showPizzaDetail('intent-edit')" style="cursor:pointer">
+      <rect x="502" y="260" width="100" height="30" rx="6" fill="#111827" stroke="#f472b6" stroke-width="1"/>
+      <text x="552" y="279" text-anchor="middle" font-size="10" fill="#f472b6">🎯 edit.order</text>
+    </g>
+    <line x1="767" y1="210" x2="552" y2="258" stroke="#f472b6" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#pa-pink)"/>
+    <path d="M552 290 Q552 320 374 320 Q374 300 374 164" stroke="#f472b6" stroke-width="1" fill="none" stroke-dasharray="4,3" marker-end="url(#pa-pink)"/>
+    <text x="460" y="315" text-anchor="middle" font-size="9" fill="#f472b6">back to start</text>
+  </svg>
+  </div>
+
+  <div class="detail-panel" id="pizzaDetail">
+    <h3 style="color:#64748b">👆 Click any element to see details</h3>
+    <p>This is the complete architecture of the pizza bot from the course. Click any node to understand its role.</p>
+  </div>
+</div>
+
+
+<script>
+// ── VIEW SWITCHING ──
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── HIERARCHY TIPS ──
+function toggleTip(id) {
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('show');
+  document.querySelectorAll('.py-tooltip').forEach(t => t.classList.remove('show'));
+  if (!wasOpen) el.classList.add('show');
+}
+
+// ── FLOW DIAGRAM CLICK DETAILS ──
+const flowDetails = {
+  user:     { title: '💬 User Message', color: '#94a3b8', desc: 'The raw text (or speech) the user sends to the bot. This is the entry point of every conversation turn. Example: "I want a large pepperoni pizza"', props: ['type: text/audio', 'language: en', 'session: session-123'] },
+  nlu:      { title: '🧠 NLU Engine', color: '#f472b6', desc: 'Natural Language Understanding — Google\'s ML model that reads the user message and decides which Intent it matches. It also detects which entities are present in the text. You don\'t configure this directly — it learns from your training phrases.', props: ['confidence score: 0.94', 'matched: order.pizza', 'model: built-in'] },
+  intent:   { title: '🎯 Intent', color: '#f472b6', desc: 'The classification of what the user WANTS. You define each intent with 10-20 example phrases. The NLU model generalizes to recognize similar inputs it has never seen before.\n\nKey rule: The same intent can behave differently on different Pages.', props: ['name: order.pizza', 'training phrases: 15', 'confidence: 0.94'] },
+  entity:   { title: '📦 Entity', color: '#34d399', desc: 'Structured data extracted from the user\'s message. Entities pull out specific values like sizes, dates, names, or cities from free-form text. They come in 3 types: System (@sys.date), Custom (@pizza-size), and Regex (@order-id).', props: ['pizza-size: "large"', 'pizza-topping: "pepperoni"', 'type: @pizza-size'] },
+  param:    { title: '📝 Parameters', color: '#67e8f9', desc: 'Extracted entity values get stored as Parameters in the session. Parameters persist for the entire conversation. You reference them anywhere with $session.params.name.\n\nExample: $session.params.pizza_size → "large"', props: ['$session.params.pizza_size', '$session.params.toppings', 'persists entire session'] },
+  page:     { title: '📄 Current Page', color: '#a78bfa', desc: 'The bot is ALWAYS on exactly one page at any moment. Pages are the states of your conversation state machine. Each page can greet the user on arrival, collect form data, and define routes to other pages.\n\nThink: "Which screen is the user on right now?"', props: ['name: Choose Size', 'entry fulfillment: "What size?"', 'form: pizza_size'] },
+  route:    { title: '🔀 Route', color: '#fb923c', desc: 'A Route is a rule that says "IF this intent fires (OR this condition is true), THEN do this fulfillment and transition to this page."\n\nRoutes can be on individual pages, or on the Flow level (making them reachable from any page).', props: ['trigger: intent OR condition', 'fires: first matching route wins', 'scope: page or flow'] },
+  fulfill:  { title: '⚡ Fulfillment', color: '#fb923c', desc: 'The actions that run when a route fires. Fulfillment can do multiple things at once:\n• Send a text/card/chips response\n• Call a Webhook\n• Set/update parameter values\n• Transition to another page or flow', props: ['send response', 'call webhook', 'set parameters', 'transition to page'] },
+  webhook:  { title: '🌐 Webhook', color: '#c084fc', desc: 'An HTTP call to YOUR backend server. This is how Dialogflow CX connects to your databases, APIs, and business logic. Dialogflow sends the session state; your server does work and returns a response + updated parameters.\n\nTimeout: 5 seconds.', props: ['POST to your URL', 'receives: session + intent', 'returns: response + params', 'timeout: 5s'] },
+  newpage:  { title: '📄 Next Page (Transition)', color: '#a78bfa', desc: 'After fulfillment runs, the bot transitions to a new page. This new page becomes the current state — it runs its Entry Fulfillment, activates its Form (if any), and its Routes become the active handlers.\n\nThis is how multi-turn conversations work: page → page → page.', props: ['name: Choose Toppings', 'becomes new current state', 'runs entry fulfillment'] },
+  response: { title: '💬 Bot Response', color: '#e2e8f0', desc: 'The message sent back to the user. Can be plain text, rich cards, suggestion chips, images, or custom JSON payloads for your frontend. The response is part of the Fulfillment step.', props: ['text: "What size pizza?"', 'chips: [Small, Medium, Large]', 'rich card support'] },
+  session:  { title: '🗄️ Session State', color: '#f59e0b', desc: 'The session holds ALL state for one conversation: current page, current flow, and all parameter values. It persists across every turn until the session ends (user closes chat or timeout).\n\nThis is what makes Dialogflow CX stateful.', props: ['current page', 'current flow', '$session.params.*', 'expires: 30 min idle'] },
+};
+
+function highlightFlow(key) {
+  const d = flowDetails[key];
+  if (!d) return;
+  const panel = document.getElementById('flowDetail');
+  panel.innerHTML = `<h3 style="color:${d.color}">${d.title}</h3><p>${d.desc.replace(/\n/g,'<br>')}</p><div class="props">${d.props.map(p=>`<span class="prop-chip">${p}</span>`).join('')}</div>`;
+}
+
+// ── PIZZA MAP DETAILS ──
+const pizzaDetails = {
+  'start-page':      { title: '📄 Start Page (Default Start Flow)', color: '#a78bfa', desc: 'The very first page the user lands on. Runs the WELCOME event handler which triggers the Default Welcome Intent, sending a greeting message. From here, the bot routes the user into the Order Flow.' },
+  'welcome-intent':  { title: '🎯 Default Welcome Intent', color: '#f472b6', desc: 'A built-in intent that fires when the WELCOME event occurs (conversation starts). You add training phrases like "Hi", "Hello", "Start" and configure a greeting response.' },
+  'page-size':       { title: '📄 Page: Choose Size', color: '#a78bfa', desc: 'First page in the Order Flow. Entry fulfillment says "What size pizza?". Has a Form with one parameter: pizza_size using the @pizza-size custom entity. Stays on this page until the form is filled, then routes to Choose Toppings.', props: ['form: pizza_size → @pizza-size', 'prompts until filled', 'transition: form complete'] },
+  'page-toppings':   { title: '📄 Page: Choose Toppings', color: '#a78bfa', desc: 'Second page. Collects one or more toppings using the @pizza-topping entity (a list parameter). Allows multiple values. Once confirmed, moves to Confirm Order page.', props: ['form: toppings[] → @pizza-topping', 'list param (multiple values)', 'transition: form complete'] },
+  'page-confirm':    { title: '📄 Page: Confirm Order', color: '#a78bfa', desc: 'Shows the order summary to the user using session parameters: "You ordered a $session.params.pizza_size pizza with $session.params.toppings. Confirm?" Shows suggestion chips for Yes/No/Edit.', props: ['entry: show order summary', 'chips: Yes / No / Edit', 'routes: confirm.order → webhook, edit.order → back'] },
+  'page-done':       { title: '📄 Page: Order Done', color: '#34d399', desc: 'Final page. Entry fulfillment displays the webhook response: "Order #PZ12345 confirmed! Ready in 25 mins." This is the END state of the happy path. The conversation can end here.', props: ['entry: "Order confirmed!"', 'shows order_id from webhook', 'END of happy path'] },
+  'intent-size':     { title: '🎯 Intent: provide.pizza.size', color: '#f472b6', desc: 'Fires when the user states a size. Training phrases: "Large please", "Make it medium", "I want a small one", "Give me the XL". The @pizza-size entity is annotated in these phrases.', props: ['training phrases: 12', 'entity: @pizza-size', 'param: pizza_size'] },
+  'intent-toppings': { title: '🎯 Intent: provide.toppings', color: '#f472b6', desc: 'Fires when user names toppings. "Add pepperoni and mushrooms", "I want extra cheese and olives". The @pizza-topping entity is annotated as a list — can extract multiple values at once.', props: ['training phrases: 14', 'entity: @pizza-topping (list)', 'param: toppings[]'] },
+  'intent-confirm':  { title: '🎯 Intent: confirm.order', color: '#f472b6', desc: 'Fires when user confirms the order. Training phrases include: "Yes", "Confirm", "That\'s correct", "Place the order", "Go ahead", "Looks good". This triggers the webhook call.', props: ['training phrases: 10', 'triggers: webhook call', 'transition: to Done page'] },
+  'intent-edit':     { title: '🎯 Intent: edit.order', color: '#f472b6', desc: 'Fires from the Confirm page when user wants to change something. "Actually...", "Wait, change the size", "I want a different topping". Routes back to Choose Size page, resetting the form.', props: ['training phrases: 8', 'transition: back to Choose Size', 'clears: pizza_size, toppings'] },
+  'webhook':         { title: '🌐 Webhook: submit-order', color: '#c084fc', desc: 'Your backend endpoint called when the user confirms the order. Receives pizza_size and toppings from session parameters. Calculates price, generates order ID, returns dynamic confirmation message and sets order_id parameter.', props: ['receives: pizza_size, toppings', 'returns: order_id, price, eta', 'timeout: 5s', 'sets: $session.params.order_id'] },
+  'entity-size':     { title: '📦 Entity: @pizza-size', color: '#34d399', desc: 'Custom entity with values: small, medium, large, xl. Each value has synonyms: small=(tiny, personal), large=(big, family, jumbo). Used on the Choose Size page to extract the desired size from natural language.', props: ['values: small, medium, large, xl', 'with synonyms', 'type: custom'] },
+  'entity-topping':  { title: '📦 Entity: @pizza-topping', color: '#34d399', desc: 'Custom entity with topping values: pepperoni, mushroom, onion, bell pepper, olive, bacon, chicken, extra-cheese. Used as a list parameter so multiple toppings can be collected in one turn.', props: ['values: 8 toppings', 'list: true (multiple)', 'used in: Choose Toppings page'] },
+  'entity-payment':  { title: '📦 Entity: @payment-type', color: '#34d399', desc: 'Custom entity for payment methods: credit-card (synonyms: card, Visa, Mastercard), cash, apple-pay, google-pay. Would be used on a Payment page if the bot was extended further.', props: ['values: card, cash, apple-pay, google-pay', 'type: custom', 'for future: Payment page'] },
+  'global-cancel':   { title: '🔀 Global Route: cancel.order', color: '#fb923c', desc: 'Part of the Global Route Group — applies to ALL pages in the Order Flow. If the user says "cancel" from ANY page (size, toppings, confirm), this fires. Clears cart and transitions to a cancellation page. Without a Route Group, you\'d have to add this to every single page.', props: ['scope: entire Order Flow', 'trigger: cancel.order intent', 'transition: Cancellation Page'] },
+  'global-help':     { title: '🔀 Global Route: ask.help', color: '#fb923c', desc: 'Available from any page in the flow. Responds with a help message listing what the user can do, then transitions back to the current page so the conversation can continue.', props: ['scope: entire Order Flow', 'response: menu of options', 'no page change'] },
+  'global-restart':  { title: '🔀 Global Route: restart', color: '#fb923c', desc: 'Allows the user to say "start over" from anywhere. Clears all session parameters and transitions back to the Order Flow Start Page. Good safety valve for confused users.', props: ['scope: entire Order Flow', 'clears: all pizza params', 'transition: Start Page'] },
+};
+
+function showPizzaDetail(key) {
+  const d = pizzaDetails[key];
+  if (!d) return;
+  const panel = document.getElementById('pizzaDetail');
+  panel.innerHTML = `<h3 style="color:${d.color}">${d.title}</h3><p>${d.desc}</p>${d.props ? '<div class="props">'+d.props.map(p=>`<span class="prop-chip">${p}</span>`).join('')+'</div>' : ''}`;
+}
+
+// ── STORY STEPS ──
+const steps = [
+  {
+    tag: 'USER', tagColor: '#94a3b8', tagBg: 'rgba(148,163,184,0.1)',
+    title: 'User types a message',
+    desc: 'The user types: "I want a large pepperoni pizza". This text is sent to the Dialogflow CX API along with a session ID that identifies this specific conversation.',
+    example: 'POST /sessions/session-abc/detectIntent\n{\n  "text": "I want a large pepperoni pizza"\n}'
+  },
+  {
+    tag: 'NLU', tagColor: '#f472b6', tagBg: 'rgba(244,114,182,0.1)',
+    title: 'NLU matches an Intent',
+    desc: 'The built-in NLU engine reads the message and compares it against all your trained intents. It finds the best match: order.pizza with 94% confidence. The confidence score is computed internally — you just see the result.',
+    example: 'Matched intent: "order.pizza"\nConfidence: 0.94\nAlternatives: start.ordering (0.71)'
+  },
+  {
+    tag: 'ENTITY', tagColor: '#34d399', tagBg: 'rgba(52,211,153,0.1)',
+    title: 'Entities are extracted',
+    desc: 'At the same time as intent matching, the NLU pulls structured data out of the text. It finds "large" → @pizza-size entity, and "pepperoni" → @pizza-topping entity. These become parameters.',
+    example: 'From: "I want a large pepperoni pizza"\n\npizza_size    = "large"    (@pizza-size)\npizza_topping = "pepperoni" (@pizza-topping)'
+  },
+  {
+    tag: 'PARAMETER', tagColor: '#67e8f9', tagBg: 'rgba(103,232,249,0.1)',
+    title: 'Parameters stored in session',
+    desc: 'The extracted entity values are stored as session parameters. They persist for the entire conversation — you can reference them from any page, webhook, or fulfillment message using $session.params.name.',
+    example: '$session.params.pizza_size    = "large"\n$session.params.pizza_topping = "pepperoni"\n\n// Use in a response:\n"You chose a $session.params.pizza_size pizza!"'
+  },
+  {
+    tag: 'PAGE', tagColor: '#a78bfa', tagBg: 'rgba(167,139,250,0.1)',
+    title: 'Current Page is checked',
+    desc: 'Dialogflow CX looks at which Page the bot is currently on. The bot is on "Choose Size" page. The intent "order.pizza" has a route defined on this page. The page + intent combination determines what happens next.',
+    example: 'Current page: "Choose Size"\nActive flow:  "Order Flow"\n\n→ checking routes on this page...'
+  },
+  {
+    tag: 'ROUTE', tagColor: '#fb923c', tagBg: 'rgba(251,146,60,0.1)',
+    title: 'A Route fires',
+    desc: 'The bot finds a matching Route: "When intent order.pizza fires AND form is complete → run fulfillment." Routes are evaluated in order — the first matching one wins. This route triggers the fulfillment action.',
+    example: 'Route found:\n  trigger:    intent = "order.pizza"\n  condition:  $page.params.status = "FINAL"\n  action:     → run fulfillment\n              → transition to "Confirm Order"'
+  },
+  {
+    tag: 'FULFILLMENT', tagColor: '#fb923c', tagBg: 'rgba(251,146,60,0.1)',
+    title: 'Fulfillment executes',
+    desc: 'The fulfillment runs. In this case it: (1) calls a webhook to calculate the price, (2) receives back the price from your server, (3) sends a response with the order summary, (4) transitions the bot to the "Confirm Order" page.',
+    example: '1. Webhook called → returns price: $16\n2. Sets: $session.params.price = 16\n3. Response: "Your large pepperoni pizza is $16. Confirm?"\n4. Transition to → "Confirm Order" page'
+  },
+  {
+    tag: 'NEXT PAGE', tagColor: '#a78bfa', tagBg: 'rgba(167,139,250,0.1)',
+    title: 'Bot moves to next Page',
+    desc: 'The bot is now on the "Confirm Order" page. The Entry Fulfillment fires (shows the order summary). The bot waits for the user\'s next message. When the user says "Yes", a new route fires — and the cycle starts again!',
+    example: 'New current page: "Confirm Order"\n\nEntry fulfillment fires:\n  → "Order summary: large pepperoni $16. Confirm?"\n  → chips: [Yes] [Edit] [Cancel]\n\nWaiting for next user input...'
+  }
+];
+
+let currentStep = 0;
+
+function buildStory() {
+  const container = document.getElementById('storySteps');
+  container.innerHTML = steps.map((s, i) => `
+    <div class="story-step ${i === 0 ? 'active' : ''}" id="step-${i}">
+      <div class="step-line">
+        <div class="step-num">${i+1}</div>
+        ${i < steps.length-1 ? '<div class="step-vline"></div>' : ''}
+      </div>
+      <div class="step-body">
+        <span class="step-tag" style="color:${s.tagColor};background:${s.tagBg}">${s.tag}</span>
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+        <div class="step-example">${s.example.replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function stepStory(dir) {
+  const prev = currentStep;
+  currentStep = Math.max(0, Math.min(steps.length-1, currentStep + dir));
+  if (prev !== currentStep) {
+    document.getElementById('step-'+prev).classList.remove('active');
+    document.getElementById('step-'+prev).classList.add('done');
+    if (dir < 0) {
+      document.getElementById('step-'+currentStep).classList.remove('done');
+    }
+    document.getElementById('step-'+currentStep).classList.add('active');
+    document.getElementById('step-'+currentStep).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.getElementById('prevBtn').disabled = currentStep === 0;
+  document.getElementById('nextBtn').disabled = currentStep === steps.length-1;
+  document.getElementById('stepCounter').textContent = `Step ${currentStep+1} of ${steps.length}`;
+}
+
+buildStory();
+</script>
+</body>
+</html>

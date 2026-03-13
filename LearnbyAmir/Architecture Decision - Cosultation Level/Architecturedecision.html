@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Architecture Decision Sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #10b981;
+    --red: #ef4444;
+    --orange: #f97316;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .back-pill {
+    position: fixed;
+    z-index: 9999;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.96);
+    border: 1px solid rgba(148,163,255,0.6);
+    color: #e5e7eb;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+  }
+
+  .back-pill span {
+    font-size: 14px;
+  }
+
+  @media (min-width: 768px) {
+    .back-pill {
+      top: 18px;
+      left: 24px;
+    }
+  }
+
+  /* HEADER */
+  header {
+    padding: 40px 48px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0b0f1a 0%, #0f172a 50%, #0b1628 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 200px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, #a8c8e8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  .header-sub {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+    max-width: 600px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .meta-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* CONTROLS */
+  .controls {
+    padding: 20px 48px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    background: var(--surface);
+  }
+  .controls-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-right: 4px;
+  }
+  .phase-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .phase-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .phase-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+  .phase-btn.prod-active { background: var(--accent2); border-color: var(--accent2); color: #fff; font-weight: 600; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .badge.mvp { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .badge.prod { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .badge.both { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.25); }
+  .badge.azure { background: rgba(0,120,212,0.15); color: #60a5fa; border: 1px solid rgba(0,120,212,0.3); }
+  .badge.oss { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+  .badge.saas { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+
+  /* MAIN LAYOUT */
+  .main { padding: 32px 48px; }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 36px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--surface2);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header:hover { background: #1f2f46; }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .section-toggle {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
+  .section.collapsed .section-body { display: none; }
+
+  /* TABLE */
+  .section-body { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+  }
+  thead tr {
+    background: #0f1c2e;
+  }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #131f30;
+    vertical-align: top;
+    font-size: 13px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .tool-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tool-desc { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .why-cell { color: #94a3b8; font-size: 12.5px; line-height: 1.55; max-width: 300px; }
+  .cost-cell { font-family: 'DM Mono', monospace; font-size: 12px; color: #a0aec0; }
+  .phase-cell { display: flex; flex-direction: column; gap: 4px; }
+  .tradeoff { color: #f87171; font-size: 11.5px; margin-top: 4px; }
+  .alt-cell { color: #7dd3fc; font-size: 12px; }
+  .stars { color: var(--accent3); font-size: 12px; }
+  .complexity { font-family: 'DM Mono', monospace; font-size: 11px; }
+  .complexity.low { color: var(--green); }
+  .complexity.med { color: var(--accent3); }
+  .complexity.high { color: var(--red); }
+
+  /* SECTION COLORS */
+  .color-blue .section-icon { background: rgba(0,212,255,0.1); }
+  .color-purple .section-icon { background: rgba(124,58,237,0.1); }
+  .color-green .section-icon { background: rgba(16,185,129,0.1); }
+  .color-orange .section-icon { background: rgba(249,115,22,0.1); }
+  .color-pink .section-icon { background: rgba(236,72,153,0.1); }
+  .color-yellow .section-icon { background: rgba(245,158,11,0.1); }
+  .color-teal .section-icon { background: rgba(20,184,166,0.1); }
+  .color-red .section-icon { background: rgba(239,68,68,0.1); }
+  .color-indigo .section-icon { background: rgba(99,102,241,0.1); }
+
+  .color-blue .section-header { border-left: 3px solid var(--accent); }
+  .color-purple .section-header { border-left: 3px solid #7c3aed; }
+  .color-green .section-header { border-left: 3px solid var(--green); }
+  .color-orange .section-header { border-left: 3px solid var(--orange); }
+  .color-pink .section-header { border-left: 3px solid #ec4899; }
+  .color-yellow .section-header { border-left: 3px solid var(--accent3); }
+  .color-teal .section-header { border-left: 3px solid #14b8a6; }
+  .color-red .section-header { border-left: 3px solid #ef4444; }
+  .color-indigo .section-header { border-left: 3px solid #6366f1; }
+
+  /* FILTER HIDDEN */
+  tr.hide-mvp.show-mvp { display: none; }
+  tr.hide-prod.show-prod { display: none; }
+  tr.filtered-out { display: none; }
+
+  /* FOOTER */
+  footer {
+    padding: 24px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  @media (max-width: 768px) {
+    header, .controls, .main, footer { padding-left: 20px; padding-right: 20px; }
+    h1 { font-size: 28px; }
+  }
+
+  .tip-box {
+    background: rgba(0,212,255,0.05);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 0 20px 16px;
+    font-size: 12.5px;
+    color: #7dd3fc;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .tip-box strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+  <span>←</span> Back to topics
+</button>
+
+<header>
+  <div class="header-label">// AI Consulting Toolkit</div>
+  <h1>Architecture Decision Sheet</h1>
+  <p class="header-sub">A comprehensive reference for selecting the right tools at each layer of an AI system — from MVP to production.</p>
+  <div class="header-meta">
+    <div class="meta-pill"><span class="dot" style="background:var(--green)"></span> MVP Phase</div>
+    <div class="meta-pill"><span class="dot" style="background:#a78bfa"></span> Production Phase</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--accent)"></span> Both Phases</div>
+    <div class="meta-pill"><span class="dot" style="background:#60a5fa"></span> Azure Stack</div>
+    <div class="meta-pill">12 Architecture Layers</div>
+  </div>
+</header>
+
+<div class="controls">
+  <span class="controls-label">Filter Phase:</span>
+  <button class="phase-btn active" onclick="filterPhase('all', this)">All Tools</button>
+  <button class="phase-btn" onclick="filterPhase('mvp', this)">MVP Only</button>
+  <button class="phase-btn" onclick="filterPhase('prod', this)">Production Only</button>
+  <div class="legend">
+    <div class="legend-item"><span class="badge mvp">MVP</span></div>
+    <div class="legend-item"><span class="badge prod">PROD</span></div>
+    <div class="legend-item"><span class="badge both">BOTH</span></div>
+    <div class="legend-item"><span class="badge azure">AZURE</span></div>
+    <div class="legend-item"><span class="badge oss">OSS</span></div>
+    <div class="legend-item"><span class="badge saas">SaaS</span></div>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+
+  <!-- ===== 1. AI BACKBONE / LLM ===== -->
+  <div class="section color-blue" id="sec-llm">
+    <div class="section-header" onclick="toggleSection('sec-llm')">
+      <div class="section-icon">🧠</div>
+      <div>
+        <div class="section-title">AI Backbone — LLM Provider</div>
+        <div class="section-desc">Core intelligence layer: model selection, API provider, deployment model</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> Choose your orchestration framework first, LLM provider second. Most frameworks are model-agnostic. For MVP, start with hosted APIs. For production, evaluate latency, cost-per-token, data sovereignty, and fine-tuning needs.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool / Model</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">GPT-4o / GPT-4.1 <span class="badge saas">SaaS</span></div><div class="tool-desc">OpenAI — multimodal, text/image/audio</div></td>
+            <td><div class="phase-cell"><span class="badge both">BOTH</span></div></td>
+            <td><span class="badge saas">SaaS API</span></td>
+            <td class="why-cell">Best-in-class reasoning, massive ecosystem, vision built-in. Go-to for complex agent tasks, code gen, document analysis.</td>
+            <td><div class="tradeoff">⚠ Data leaves your infra. Cost scales with tokens. Rate limits on free tiers.</div></td>
+            <td><span class="complexity high">LOW</span></td>
+            <td class="alt-cell">Claude 3.5, Gemini 1.5 Pro</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Claude 3.5 / Claude 4 <span class="badge saas">SaaS</span></div><div class="tool-desc">Anthropic — 200k context, strong reasoning</div></td>
+            <td><div class="phase-cell"><span class="badge both">BOTH</span></div></td>
+            <td><span class="badge saas">SaaS API</span></td>
+            <td class="why-cell">Best for long-document analysis, instruction following, and low hallucination. 200k context window is unmatched for RAG with large docs.</td>
+            <td><div class="tradeoff">⚠ No self-hosting. Limited fine-tuning options.</div></td>
+            <td><span class="complexity high">LOW</span></td>
+            <td class="alt-cell">GPT-4o, Gemini</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Azure OpenAI Service <span class="badge azure">AZURE</span></div><div class="tool-desc">GPT-4o on Azure infra — enterprise compliance</div></td>
+            <td><div class="phase-cell"><span class="badge both">BOTH</span></div></td>
+            <td><span class="badge azure">Managed</span></td>
+            <td class="why-cell">Data stays in your Azure tenant. HIPAA/SOC2 compliant. Required for enterprise/gov clients. PTU for guaranteed throughput in prod.</td>
+            <td><div class="tradeoff">⚠ Slower model updates vs OpenAI direct. Needs Azure subscription setup.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">OpenAI direct API</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Llama 3 / Mistral <span class="badge oss">OSS</span></div><div class="tool-desc">Self-hosted open-source models</div></td>
+            <td><div class="phase-cell"><span class="badge prod">PROD</span></div></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Zero per-token cost at scale. Full data sovereignty. Fine-tunable for domain-specific tasks. Deploy on your GPU infra or AKS.</td>
+            <td><div class="tradeoff">⚠ Needs GPU infra. Ops overhead. Smaller context. Weaker reasoning than GPT-4 class.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Phi-3, Gemma 2</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">vLLM / Ollama <span class="badge oss">OSS</span></div><div class="tool-desc">Self-hosted LLM inference server</div></td>
+            <td><div class="phase-cell"><span class="badge prod">PROD</span></div></td>
+            <td><span class="badge oss">Runtime</span></td>
+            <td class="why-cell">High-throughput batched inference for production. vLLM: best for multi-user APIs. Ollama: best for local dev and edge deployment.</td>
+            <td><div class="tradeoff">⚠ Infra management required. GPU costs.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">TGI (HuggingFace), LMDeploy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 2. ORCHESTRATION FRAMEWORK ===== -->
+  <div class="section color-purple" id="sec-orch">
+    <div class="section-header" onclick="toggleSection('sec-orch')">
+      <div class="section-icon">⚙️</div>
+      <div>
+        <div class="section-title">Orchestration Framework</div>
+        <div class="section-desc">The "nervous system" — agent coordination, workflow, tool use, multi-agent patterns</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> This is the FIRST architectural decision. It shapes everything else. LangGraph = stateful/cyclical agents. CrewAI = role-based teams. AutoGen = conversation-based multi-agent. Semantic Kernel = enterprise/.NET first.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">LangGraph <span class="badge oss">OSS</span></div><div class="tool-desc">LangChain — stateful graph-based agent orchestration</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best for complex, stateful agents with loops, branching, human-in-the-loop. Built-in checkpointing, memory, streaming. Most production-ready OSS option.</td>
+            <td><div class="tradeoff">⚠ Steep learning curve. Verbose graph definition.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">CrewAI, AutoGen</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">CrewAI <span class="badge oss">OSS</span></div><div class="tool-desc">Role-based multi-agent crews</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Fastest path to multi-agent MVP. Intuitive agent/task/crew abstraction. Great for sequential role delegation pipelines. Client demos well.</td>
+            <td><div class="tradeoff">⚠ Less control over state. Less flexible for non-sequential flows.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">LangGraph, n8n</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">AutoGen v0.4 <span class="badge oss">OSS</span></div><div class="tool-desc">Microsoft — conversation-based multi-agent</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best for coding agents, autonomous problem solving, multi-agent debate patterns. AgentChat API is clean. Strong Azure/Microsoft ecosystem alignment.</td>
+            <td><div class="tradeoff">⚠ Less structured workflow control than LangGraph.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">LangGraph, CrewAI</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Semantic Kernel <span class="badge azure">AZURE</span></div><div class="tool-desc">Microsoft — enterprise SDK for AI orchestration</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge azure">SDK</span></td>
+            <td class="why-cell">Best choice if client is .NET/C# shop or deep Azure tenant. Native Azure AI Foundry integration, enterprise memory patterns, plugin architecture.</td>
+            <td><div class="tradeoff">⚠ Python support lags .NET. Smaller community than LangChain.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">LangGraph + Azure OpenAI</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">n8n <span class="badge oss">OSS</span></div><div class="tool-desc">Low-code workflow automation with AI nodes</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Ideal for deterministic, operational automation (CRM sync, email triage, data pipelines). Non-dev stakeholders can edit. Fast POC delivery.</td>
+            <td><div class="tradeoff">⚠ Not suited for complex reasoning or autonomous agents. Not production-grade AI logic.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Make.com, Zapier AI</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 3. VECTOR STORE ===== -->
+  <div class="section color-green" id="sec-vector">
+    <div class="section-header" onclick="toggleSection('sec-vector')">
+      <div class="section-icon">🔍</div>
+      <div>
+        <div class="section-title">Vector Store / Semantic Search</div>
+        <div class="section-desc">Embedding storage, ANN search, retrieval backbone for RAG systems</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> Vector DB handles semantic/fuzzy search. SQL handles exact/structured retrieval. Best RAG architectures use BOTH: vector search returns candidate IDs → SQL resolves to full structured records. Choose vector DB based on data volume, filter needs, and managed vs self-hosted preference.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Scale</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">ChromaDB <span class="badge oss">OSS</span></div><div class="tool-desc">In-process or client-server vector DB</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Zero infrastructure to set up. Perfect for POC and MVP. Runs in-process in Python. Easy LangChain/LlamaIndex integration.</td>
+            <td><div class="tradeoff">⚠ Not production-grade at scale. Limited metadata filtering. No managed cloud offering.</div></td>
+            <td><span class="complexity low">LOW — &lt;1M vecs</span></td>
+            <td class="alt-cell">FAISS, Qdrant</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Qdrant <span class="badge oss">OSS</span></div><div class="tool-desc">Rust-based, high-performance vector DB</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best OSS option for production. Rich payload filtering, sparse+dense hybrid search, cloud and self-hosted. Docker-ready, fast.</td>
+            <td><div class="tradeoff">⚠ Smaller ecosystem than Pinecone. Needs infra management if self-hosted.</div></td>
+            <td><span class="complexity med">MED — millions</span></td>
+            <td class="alt-cell">Weaviate, Pinecone</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Pinecone <span class="badge saas">SaaS</span></div><div class="tool-desc">Fully managed, serverless vector DB</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge saas">Managed</span></td>
+            <td class="why-cell">Zero ops. Serverless pricing model. Strong enterprise support. Best for teams without MLOps capacity who need reliable prod vector search.</td>
+            <td><div class="tradeoff">⚠ Vendor lock-in. Data leaves infra. Cost at scale. No SQL-style joins.</div></td>
+            <td><span class="complexity low">HIGH — billions</span></td>
+            <td class="alt-cell">Weaviate Cloud, Qdrant Cloud</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure AI Search <span class="badge azure">AZURE</span></div><div class="tool-desc">Cognitive Search + vector indexing on Azure</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge azure">Managed</span></td>
+            <td class="why-cell">Best choice for Azure-native stack. Hybrid search (keyword + vector), integrated with Azure OpenAI, Cosmos DB, Blob Storage. Enterprise SLA.</td>
+            <td><div class="tradeoff">⚠ Azure lock-in. Higher cost than OSS. Slower feature velocity.</div></td>
+            <td><span class="complexity med">HIGH — enterprise</span></td>
+            <td class="alt-cell">Qdrant + AKS</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Weaviate <span class="badge oss">OSS</span></div><div class="tool-desc">GraphQL API, multi-modal, hybrid search</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best for multi-modal (text + image) retrieval. Built-in vectorizer modules, GraphQL API, object-level permissions. Strong enterprise roadmap.</td>
+            <td><div class="tradeoff">⚠ Higher resource usage. GraphQL adds learning curve.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Qdrant, Pinecone</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">pgvector <span class="badge oss">OSS</span></div><div class="tool-desc">Postgres extension for vector search</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">Extension</span></td>
+            <td class="why-cell">Keep everything in one DB (Postgres). No extra infra. Perfect when data volume is modest and you want SQL + vector in one query. Supabase includes it.</td>
+            <td><div class="tradeoff">⚠ Slower ANN at large scale vs dedicated vector DBs. Not purpose-built.</div></td>
+            <td><span class="complexity low">LOW — &lt;500k vecs</span></td>
+            <td class="alt-cell">ChromaDB, Qdrant</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 4. DATABASE ===== -->
+  <div class="section color-orange" id="sec-db">
+    <div class="section-header" onclick="toggleSection('sec-db')">
+      <div class="section-icon">🗄️</div>
+      <div>
+        <div class="section-title">Database — Structured Storage</div>
+        <div class="section-desc">Relational, NoSQL, graph, and time-series storage for operational data</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Use Case Fit</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">SQLite <span class="badge oss">OSS</span></div><div class="tool-desc">Embedded, serverless relational DB</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">Embedded</span></td>
+            <td class="why-cell">Zero setup. File-based. Perfect for agent memory, chat history, structured episodic memory stores in MVP. Pairs well with ChromaDB.</td>
+            <td><div class="tradeoff">⚠ No concurrent writes. Not for multi-user prod.</div></td>
+            <td>Agent memory, local dev</td>
+            <td class="alt-cell">PostgreSQL</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">PostgreSQL <span class="badge oss">OSS</span></div><div class="tool-desc">Gold standard relational DB + pgvector</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best all-round choice. ACID, JSON support, pgvector extension, mature ecosystem. If in doubt, choose Postgres. Scales to most production workloads.</td>
+            <td><div class="tradeoff">⚠ Needs ops at scale. Not globally distributed natively.</div></td>
+            <td>Everything structured</td>
+            <td class="alt-cell">MySQL, SQLite</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Cosmos DB <span class="badge azure">AZURE</span></div><div class="tool-desc">Globally distributed NoSQL + vector preview</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge azure">Managed</span></td>
+            <td class="why-cell">Best for globally distributed, multi-region Azure deployments. Multiple APIs (SQL, MongoDB, Cassandra). NoSQL for flexible schemas + now has vector search.</td>
+            <td><div class="tradeoff">⚠ Expensive. RU model confusing. Azure lock-in.</div></td>
+            <td>Global chatbots, IoT, sessions</td>
+            <td class="alt-cell">MongoDB Atlas, DynamoDB</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">MongoDB Atlas <span class="badge saas">SaaS</span></div><div class="tool-desc">Managed document DB with vector search</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge saas">Managed</span></td>
+            <td class="why-cell">Great for flexible schemas (chat history, agent state, unstructured docs). Atlas Vector Search = no separate vector DB needed for moderate scale.</td>
+            <td><div class="tradeoff">⚠ Not relational — joins are painful. Cost at scale.</div></td>
+            <td>Chat history, flexible records</td>
+            <td class="alt-cell">Firestore, Cosmos DB</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Neo4j <span class="badge oss">OSS</span></div><div class="tool-desc">Graph DB — knowledge graphs, entity relations</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge oss">OSS</span></td>
+            <td class="why-cell">Best for relationship-heavy data: knowledge graphs, ontologies, recommendation engines. GraphRAG uses Neo4j as graph memory store. Cypher query language.</td>
+            <td><div class="tradeoff">⚠ Niche use case. Steep Cypher learning curve. Higher ops overhead.</div></td>
+            <td>GraphRAG, knowledge base</td>
+            <td class="alt-cell">Amazon Neptune, TigerGraph</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Redis / Upstash <span class="badge oss">OSS</span></div><div class="tool-desc">In-memory key-value + vector store</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge oss">Cache</span></td>
+            <td class="why-cell">Semantic cache for LLM responses (major cost saver). Session storage, rate limiting, real-time pub/sub. Redis Stack adds vector search.</td>
+            <td><div class="tradeoff">⚠ Not a primary DB. Memory-bound. Persistence requires config.</div></td>
+            <td>Caching, sessions, rate limits</td>
+            <td class="alt-cell">Memcached, DynamoDB</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 5. MEMORY ARCHITECTURE ===== -->
+  <div class="section color-pink" id="sec-mem">
+    <div class="section-header" onclick="toggleSection('sec-mem')">
+      <div class="section-icon">🧩</div>
+      <div>
+        <div class="section-title">Agent Memory Architecture</div>
+        <div class="section-desc">Short-term, long-term, episodic, semantic, procedural memory for AI agents</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> Memory evolves: V1 = static lookup → V2 = agentic retrieval → V3 = multi-source integration → V4 = background self-updating memory. Match complexity to actual need. Most MVPs need only V1-V2.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool / Pattern</th><th>Phase</th><th>Memory Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">In-context Window <span class="badge oss">OSS</span></div><div class="tool-desc">Pass full history in system prompt</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td>Working Memory</td>
+            <td class="why-cell">Zero implementation. Works for short sessions. Sufficient for most chatbot MVPs. Claude/GPT-4o 128k+ context makes this viable longer.</td>
+            <td><div class="tradeoff">⚠ Context saturation. Token cost scales linearly. No persistence.</div></td>
+            <td><span class="complexity low">MINIMAL</span></td>
+            <td class="alt-cell">Summarization buffer</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">LangChain Memory Buffers <span class="badge oss">OSS</span></div><div class="tool-desc">ConversationBufferMemory, SummaryMemory</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td>Short-term + Summary</td>
+            <td class="why-cell">Easy plug-in memory for LangChain chains. SummaryMemory compresses old turns, solving token budget problem. Backed by any DB.</td>
+            <td><div class="tradeoff">⚠ LangChain v1 memory deprecated in v0.3+. Moving to LangGraph preferred.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">LangGraph checkpointer</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">LangGraph Checkpointer <span class="badge oss">OSS</span></div><div class="tool-desc">Built-in state persistence for LangGraph agents</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Working + Episodic</td>
+            <td class="why-cell">Native state snapshot per turn. Supports resume, rollback, human-in-the-loop. Backends: SQLite (dev), PostgreSQL/Redis (prod). Most production-ready pattern.</td>
+            <td><div class="tradeoff">⚠ LangGraph specific. Adds graph definition overhead.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">AutoGen state, custom DB</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">LangMem / LangGraph Store <span class="badge oss">OSS</span></div><div class="tool-desc">Long-term semantic memory SDK for LangGraph</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Semantic + Episodic</td>
+            <td class="why-cell">Cognitive memory model (semantic, episodic, procedural) baked into LangGraph. Cross-thread memory persistence. Best structured approach to agent long-term memory.</td>
+            <td><div class="tradeoff">⚠ Relatively new. Docs still maturing. LangGraph dependency.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Letta/MemGPT, mem0</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Letta / MemGPT <span class="badge oss">OSS</span></div><div class="tool-desc">Paged memory OS for LLM agents</div></td>
+            <td><span class="badge prod">PROD</span></div></td>
+            <td>Full cognitive model</td>
+            <td class="why-cell">Most advanced open-source agent memory system. Paged memory (core/archival/recall), self-editing memory, multi-agent support. Ideal for long-running personal AI agents.</td>
+            <td><div class="tradeoff">⚠ Complex setup. Opinionated architecture. Smaller community.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">LangMem, mem0</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">mem0 <span class="badge saas">SaaS</span></div><div class="tool-desc">Managed memory layer for AI apps</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Semantic LTM</td>
+            <td class="why-cell">Managed service — no infra. Automatically extracts, stores, retrieves memories across conversations. Good for SaaS AI products needing user-level personalization.</td>
+            <td><div class="tradeoff">⚠ SaaS cost. Data leaves infra. Early stage product.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Letta, LangMem</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 6. DATA STRATEGY / INGESTION ===== -->
+  <div class="section color-yellow" id="sec-data">
+    <div class="section-header" onclick="toggleSection('sec-data')">
+      <div class="section-icon">📦</div>
+      <div>
+        <div class="section-title">Data Strategy — Ingestion & ETL</div>
+        <div class="section-desc">Document parsing, chunking, embedding, pipeline, and data connectors for RAG</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Role</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">LlamaIndex <span class="badge oss">OSS</span></div><div class="tool-desc">Data framework for LLM — parsing, indexing, querying</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>RAG Framework</td>
+            <td class="why-cell">Best dedicated RAG toolkit. 160+ data connectors, advanced chunking strategies, query engines, reranking. Complements LangGraph for data-heavy RAG apps.</td>
+            <td><div class="tradeoff">⚠ Can be complex to configure. Some overlap with LangChain.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">LangChain loaders</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Unstructured.io <span class="badge oss">OSS</span></div><div class="tool-desc">Document parsing: PDF, Word, HTML, images</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Doc Parser</td>
+            <td class="why-cell">Best-in-class for extracting clean text from messy documents. Handles tables, headers, images in PDFs. Open-source core + managed API for scale.</td>
+            <td><div class="tradeoff">⚠ Managed API costs. Complex docs need tuning.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Azure Document Intelligence, Docling</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Document Intelligence <span class="badge azure">AZURE</span></div><div class="tool-desc">OCR + layout analysis + form extraction</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Doc Parser</td>
+            <td class="why-cell">Enterprise-grade for structured doc extraction (invoices, forms, contracts). Prebuilt models for common doc types. Tight Azure ecosystem integration.</td>
+            <td><div class="tradeoff">⚠ Pay-per-page pricing. Azure lock-in.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Unstructured, Textract</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">OpenAI / Azure Embeddings <span class="badge saas">SaaS</span></div><div class="tool-desc">text-embedding-3-small/large</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Embeddings</td>
+            <td class="why-cell">State-of-the-art embedding quality. text-embedding-3-small = best cost/quality tradeoff. Critical: embed query and docs with SAME model.</td>
+            <td><div class="tradeoff">⚠ Per-token cost. Data leaves infra. Changing models requires re-embedding.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Cohere, BGE, E5</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Apache Airflow / Prefect <span class="badge oss">OSS</span></div><div class="tool-desc">Workflow orchestration for data pipelines</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Pipeline Orchestration</td>
+            <td class="why-cell">Schedule and monitor embedding refresh pipelines. Airflow for complex DAGs. Prefect for simpler Python-native flows. Essential for keeping vector store fresh.</td>
+            <td><div class="tradeoff">⚠ Infra overhead. Overkill for simple scheduled jobs.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Azure Data Factory, Dagster</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 7. UI / FRONTEND ===== -->
+  <div class="section color-teal" id="sec-ui">
+    <div class="section-header" onclick="toggleSection('sec-ui')">
+      <div class="section-icon">🖥️</div>
+      <div>
+        <div class="section-title">UI / Frontend</div>
+        <div class="section-desc">Chat interfaces, dashboards, admin panels, streaming UX</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">Streamlit <span class="badge oss">OSS</span></div><div class="tool-desc">Python-native rapid UI for data apps</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">Python UI</span></td>
+            <td class="why-cell">Fastest time-to-demo for Python AI apps. Built-in chat components, file upload, streaming support. Perfect for internal tools and client POCs.</td>
+            <td><div class="tradeoff">⚠ Not production-grade. Limited customization. Not for customer-facing apps.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Gradio, Chainlit</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">Chainlit <span class="badge oss">OSS</span></div><div class="tool-desc">Chat UI framework built for LLM apps</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">Chat UI</span></td>
+            <td class="why-cell">Purpose-built for chatbot UIs. Step-by-step agent reasoning display, file attachments, streaming, auth. Best for quickly deploying a polished chat interface.</td>
+            <td><div class="tradeoff">⚠ Less flexible than full React app. Python-only backend.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Streamlit, Open WebUI</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Next.js + Vercel AI SDK <span class="badge oss">OSS</span></div><div class="tool-desc">React framework with streaming AI hooks</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">Full-Stack</span></td>
+            <td class="why-cell">Best for customer-facing AI products. Vercel AI SDK handles streaming SSE, useChat/useCompletion hooks, model switching. Production-ready, beautiful UX possible.</td>
+            <td><div class="tradeoff">⚠ Requires frontend dev skills. More setup than Streamlit/Chainlit.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Remix, SvelteKit</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">React + FastAPI <span class="badge oss">OSS</span></div><div class="tool-desc">Decoupled frontend + AI backend</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge oss">Custom Stack</span></td>
+            <td class="why-cell">Most flexible production architecture. FastAPI serves WebSocket / SSE streaming from Python agent. React consumes it. Full control, full customization.</td>
+            <td><div class="tradeoff">⚠ Most engineering effort. Need both Python and JS/TS skills.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Next.js + FastAPI, Django</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">Open WebUI <span class="badge oss">OSS</span></div><div class="tool-desc">Self-hosted ChatGPT-like interface</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td><span class="badge oss">Pre-built</span></td>
+            <td class="why-cell">Instant ChatGPT-like UI for any OpenAI-compatible API. Docker deploy. Supports multiple models, RAG, web browsing. Zero UI development needed.</td>
+            <td><div class="tradeoff">⚠ Hard to customize deeply. More suited for internal tools.</div></td>
+            <td><span class="complexity low">MINIMAL</span></td>
+            <td class="alt-cell">Chatbot UI, LibreChat</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 8. API / BACKEND ===== -->
+  <div class="section color-indigo" id="sec-api">
+    <div class="section-header" onclick="toggleSection('sec-api')">
+      <div class="section-icon">⚡</div>
+      <div>
+        <div class="section-title">Backend / API Layer</div>
+        <div class="section-desc">REST/WebSocket API servers, streaming, auth, rate limiting</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Type</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">FastAPI <span class="badge oss">OSS</span></div><div class="tool-desc">Modern async Python REST + WebSocket server</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td><span class="badge oss">Framework</span></td>
+            <td class="why-cell">Default choice for Python AI backends. Async-native for streaming LLM responses. Auto OpenAPI docs. SSE support built-in. Uvicorn/Gunicorn for prod.</td>
+            <td><div class="tradeoff">⚠ Python GIL limits true parallelism. Need separate worker scaling strategy.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Django REST, Flask</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Functions <span class="badge azure">AZURE</span></div><div class="tool-desc">Serverless compute for event-driven AI logic</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge azure">Serverless</span></td>
+            <td class="why-cell">Best for event-driven tasks: webhook handlers, real-time voice pipeline steps, scheduled embedding refresh. Pay-per-execution. Tight Azure integration.</td>
+            <td><div class="tradeoff">⚠ Cold start latency. Execution time limits. Azure vendor lock-in.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">AWS Lambda, Google Cloud Run</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure API Management <span class="badge azure">AZURE</span></div><div class="tool-desc">API gateway with rate limiting, auth, throttling</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td><span class="badge azure">Gateway</span></td>
+            <td class="why-cell">Enterprise API gateway: rate limiting per user/key, token quota management, load balancing across Azure OpenAI PTU pools, auth, analytics. Essential for multi-tenant AI APIs.</td>
+            <td><div class="tradeoff">⚠ Complex setup. Azure-only. Licensing cost.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Kong, AWS API Gateway</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 9. CONTAINERIZATION / DEPLOYMENT ===== -->
+  <div class="section color-red" id="sec-deploy">
+    <div class="section-header" onclick="toggleSection('sec-deploy')">
+      <div class="section-icon">🚀</div>
+      <div>
+        <div class="section-title">Containerization & Deployment</div>
+        <div class="section-desc">Docker, orchestration, CI/CD, cloud deployment targets</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Layer</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">Docker + Compose <span class="badge oss">OSS</span></div><div class="tool-desc">Container runtime + local multi-service orchestration</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Runtime</td>
+            <td class="why-cell">Universal standard. Compose for local dev with multiple services (API + vector DB + Redis). Same image promotes from dev to prod. No team should ship without this.</td>
+            <td><div class="tradeoff">⚠ Not for production orchestration at scale — use K8s or managed containers.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Podman</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Container Apps <span class="badge azure">AZURE</span></div><div class="tool-desc">Serverless K8s-based container hosting</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Hosting</td>
+            <td class="why-cell">Best managed container platform on Azure. Auto-scaling to zero, KEDA-based event scaling, Dapr integration. Much simpler than AKS for most AI app deployments.</td>
+            <td><div class="tradeoff">⚠ Less control than AKS. Not for stateful workloads or GPU inference.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Azure App Service, AKS</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">AKS (Azure Kubernetes) <span class="badge azure">AZURE</span></div><div class="tool-desc">Managed Kubernetes — full control</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Orchestration</td>
+            <td class="why-cell">Required for GPU workloads (self-hosted LLMs), complex microservice AI architectures, custom networking/security requirements, or high-throughput production AI APIs.</td>
+            <td><div class="tradeoff">⚠ High ops complexity. Requires K8s expertise. Cost.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">GKE, EKS</td>
+          </tr>
+          <tr data-phase="mvp">
+            <td><div class="tool-name">Railway / Render <span class="badge saas">SaaS</span></div><div class="tool-desc">Simple PaaS for containerized apps</div></td>
+            <td><span class="badge mvp">MVP</span></td>
+            <td>PaaS Hosting</td>
+            <td class="why-cell">Deploy FastAPI + Postgres + Redis in minutes. No Kubernetes. Git push deploys. Best for rapid MVP delivery when infra is not the focus.</td>
+            <td><div class="tradeoff">⚠ Not enterprise-grade. Limited compliance controls. Vendor dependency.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Fly.io, Heroku</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">GitHub Actions <span class="badge saas">SaaS</span></div><div class="tool-desc">CI/CD pipeline automation</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>CI/CD</td>
+            <td class="why-cell">Standard CI/CD for most projects. Build → test → push Docker image → deploy to container platform. Free for public repos, generous free tier for private.</td>
+            <td><div class="tradeoff">⚠ Complex pipelines become unwieldy. Azure DevOps better for deep Azure integration.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Azure DevOps, GitLab CI</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 10. LOGGING / MONITORING ===== -->
+  <div class="section color-blue" id="sec-monitor">
+    <div class="section-header" onclick="toggleSection('sec-monitor')">
+      <div class="section-icon">📊</div>
+      <div>
+        <div class="section-title">Logging, Monitoring & Observability</div>
+        <div class="section-desc">LLM tracing, cost tracking, latency monitoring, error alerting</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> AI observability ≠ traditional APM. You need LLM-specific tracing (prompt/response capture, token cost per run, chain step visibility). Add LangSmith or LangFuse early — you'll regret not having it in production debugging sessions.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Focus</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">LangSmith <span class="badge saas">SaaS</span></div><div class="tool-desc">LangChain's LLM observability platform</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>LLM Tracing</td>
+            <td class="why-cell">Best-in-class for LangChain/LangGraph apps. Auto-traces every chain/agent step, shows prompt/response, token cost, latency per node. Essential for debugging agent loops.</td>
+            <td><div class="tradeoff">⚠ SaaS cost at scale. LangChain ecosystem only (though SDK is broader).</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">LangFuse, Arize</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">LangFuse <span class="badge oss">OSS</span></div><div class="tool-desc">Open-source LLM observability — self-hostable</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>LLM Tracing</td>
+            <td class="why-cell">Framework-agnostic LLM observability. Self-hostable (data sovereignty). Covers traces, evals, datasets, prompt management. Best OSS alternative to LangSmith.</td>
+            <td><div class="tradeoff">⚠ Self-hosting adds ops. Smaller community than LangSmith.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">LangSmith, Helicone</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Monitor + App Insights <span class="badge azure">AZURE</span></div><div class="tool-desc">Full-stack Azure observability platform</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Platform Monitoring</td>
+            <td class="why-cell">Unified logs, metrics, traces for Azure-hosted apps. KQL queries for log analysis. Custom dashboards, alerting, distributed tracing. Required for enterprise Azure deployments.</td>
+            <td><div class="tradeoff">⚠ Not LLM-specific. KQL learning curve. Cost by data volume.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Datadog, Grafana Stack</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Prometheus + Grafana <span class="badge oss">OSS</span></div><div class="tool-desc">Metrics collection + visualization stack</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Infra Metrics</td>
+            <td class="why-cell">Standard OSS metrics stack. Instrument FastAPI/vLLM with Prometheus exporters. Grafana dashboards for throughput, latency, token rates, queue depths, GPU utilization.</td>
+            <td><div class="tradeoff">⚠ Infra overhead. Not LLM-aware out of the box — requires custom metrics.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Datadog, Azure Monitor</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Helicone <span class="badge saas">SaaS</span></div><div class="tool-desc">LLM cost + usage analytics proxy</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Cost Tracking</td>
+            <td class="why-cell">Drop-in proxy for OpenAI/Anthropic APIs. Tracks cost per user/session, caches responses, rate limits. Excellent for multi-tenant SaaS AI products where per-user cost matters.</td>
+            <td><div class="tradeoff">⚠ Sits in request path — adds latency. SaaS dependency.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">LangFuse, OpenLLMetry</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 11. VOICE AI ===== -->
+  <div class="section color-purple" id="sec-voice">
+    <div class="section-header" onclick="toggleSection('sec-voice')">
+      <div class="section-icon">🎙️</div>
+      <div>
+        <div class="section-title">Voice AI Stack</div>
+        <div class="section-desc">STT, TTS, real-time voice pipeline, telephony integration</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <div class="tip-box">💡 <div><strong>Decision principle:</strong> Voice latency perception &lt;500ms end-to-end is the target. Real-time voice = WebSocket/WebRTC throughout (no HTTP polling). STT → LLM → TTS pipeline must all support streaming. For telephony: ACS Call Automation on Azure, Twilio elsewhere.</div></div>
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Layer</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">Whisper / Azure Speech STT <span class="badge oss">OSS</span></div><div class="tool-desc">Speech-to-text transcription</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>STT</td>
+            <td class="why-cell">Whisper (OSS): best accuracy, 100+ languages, self-hostable. Azure Speech: managed, streaming, real-time, enterprise SLA. Use Azure for production voice pipelines on Azure stack.</td>
+            <td><div class="tradeoff">⚠ Whisper: not real-time by default. Azure: cost per audio hour.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Deepgram, AssemblyAI</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Deepgram <span class="badge saas">SaaS</span></div><div class="tool-desc">Real-time STT with ultra-low latency</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>STT (Real-time)</td>
+            <td class="why-cell">Best-in-class for real-time streaming STT. ~300ms latency. WebSocket API. Significantly faster than Azure Speech for live voice agent use cases.</td>
+            <td><div class="tradeoff">⚠ SaaS cost. Data leaves infra. Per-minute pricing.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Azure Speech, AssemblyAI</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">ElevenLabs / Azure TTS <span class="badge saas">SaaS</span></div><div class="tool-desc">Text-to-speech synthesis</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>TTS</td>
+            <td class="why-cell">ElevenLabs: most natural voice quality, streaming TTS, voice cloning. Azure TTS: enterprise-grade, 400+ voices, Azure integration, Neural TTS. Choose based on naturalness vs compliance needs.</td>
+            <td><div class="tradeoff">⚠ Per-character cost. Voice cloning raises ethical/legal issues.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">OpenAI TTS, PlayHT</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure ACS + Call Automation <span class="badge azure">AZURE</span></div><div class="tool-desc">Telephony + real-time voice pipeline on Azure</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Telephony</td>
+            <td class="why-cell">Enterprise telephony integration (PSTN, SIP). Call Automation API for programmatic call control, real-time transcription, media streaming to Azure Functions. ART Accelerator pattern.</td>
+            <td><div class="tradeoff">⚠ Complex setup. ACS + Functions + Event Grid architecture. Azure-only.</div></td>
+            <td><span class="complexity high">HIGH</span></td>
+            <td class="alt-cell">Twilio, Vonage</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">OpenAI Realtime API <span class="badge saas">SaaS</span></div><div class="tool-desc">End-to-end real-time voice (GPT-4o)</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Full Voice Pipeline</td>
+            <td class="why-cell">Single WebSocket API for STT + LLM + TTS in one round-trip. Dramatically simplifies voice architecture. Voice activity detection included. Best for MVP voice agents.</td>
+            <td><div class="tradeoff">⚠ Expensive. Less control over individual pipeline stages. OpenAI lock-in.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">LiveKit, Daily.co + custom</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 12. SECURITY / AUTH ===== -->
+  <div class="section color-orange" id="sec-sec">
+    <div class="section-header" onclick="toggleSection('sec-sec')">
+      <div class="section-icon">🔐</div>
+      <div>
+        <div class="section-title">Security, Auth & Guardrails</div>
+        <div class="section-desc">Identity, access control, prompt injection protection, output guardrails</div>
+      </div>
+      <div class="section-toggle">▼</div>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr>
+          <th>Tool</th><th>Phase</th><th>Layer</th><th>Why Choose It</th><th>Tradeoffs</th><th>Complexity</th><th>Alternatives</th>
+        </tr></thead>
+        <tbody>
+          <tr data-phase="both">
+            <td><div class="tool-name">Auth0 / Azure AD B2C <span class="badge saas">SaaS</span></div><div class="tool-desc">Identity and access management</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Auth/Identity</td>
+            <td class="why-cell">Auth0: fastest MVP auth, any stack, social logins, MFA. Azure AD B2C: enterprise identity for Azure-native apps, SAML/OIDC, conditional access. Don't build auth from scratch.</td>
+            <td><div class="tradeoff">⚠ Auth0 cost at scale. B2C complex config. Vendor dependency.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Clerk, Supabase Auth</td>
+          </tr>
+          <tr data-phase="both">
+            <td><div class="tool-name">Azure Key Vault <span class="badge azure">AZURE</span></div><div class="tool-desc">Secrets, keys, certificates management</div></td>
+            <td><span class="badge both">BOTH</span></td>
+            <td>Secrets Mgmt</td>
+            <td class="why-cell">Never store API keys in code or env files for client deployments. Key Vault + Managed Identity = zero-credential access pattern. Required for enterprise Azure deployments.</td>
+            <td><div class="tradeoff">⚠ Azure-specific. Adds latency if not cached.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">HashiCorp Vault, AWS Secrets Manager</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Guardrails AI / NeMo Guardrails <span class="badge oss">OSS</span></div><div class="tool-desc">Output validation and prompt safety rails</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>LLM Safety</td>
+            <td class="why-cell">Validate LLM outputs against schemas, PII detection, topic restrictions, hallucination checks. NeMo: NVIDIA's rail framework with Colang language for policy definition.</td>
+            <td><div class="tradeoff">⚠ Adds latency per call. Config overhead. False positives on edge cases.</div></td>
+            <td><span class="complexity med">MED</span></td>
+            <td class="alt-cell">Azure Content Safety, Rebuff</td>
+          </tr>
+          <tr data-phase="prod">
+            <td><div class="tool-name">Azure Content Safety <span class="badge azure">AZURE</span></div><div class="tool-desc">Harmful content detection API</div></td>
+            <td><span class="badge prod">PROD</span></td>
+            <td>Content Moderation</td>
+            <td class="why-cell">Managed API for hate speech, violence, sexual content detection in both inputs and outputs. Promptshield for jailbreak/prompt injection detection. Required for public-facing Azure AI apps.</td>
+            <td><div class="tradeoff">⚠ Per-call cost. Azure lock-in. Latency addition.</div></td>
+            <td><span class="complexity low">LOW</span></td>
+            <td class="alt-cell">Guardrails AI, OpenAI moderation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<footer>
+  <div>AI Architecture Decision Sheet · Built for Consulting Practice</div>
+  <div>12 categories · 50+ tools · MVP → Production</div>
+</footer>
+
+<script>
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('collapsed');
+  }
+
+  let currentFilter = 'all';
+
+  function filterPhase(phase, btn) {
+    currentFilter = phase;
+    document.querySelectorAll('.phase-btn').forEach(b => {
+      b.classList.remove('active', 'prod-active');
+    });
+    if (phase === 'prod') btn.classList.add('prod-active');
+    else btn.classList.add('active');
+
+    document.querySelectorAll('tr[data-phase]').forEach(row => {
+      const rowPhase = row.getAttribute('data-phase');
+      if (phase === 'all') {
+        row.classList.remove('filtered-out');
+      } else if (phase === 'mvp') {
+        row.classList.toggle('filtered-out', rowPhase === 'prod');
+      } else if (phase === 'prod') {
+        row.classList.toggle('filtered-out', rowPhase === 'mvp');
+      }
+    });
+  }
+</script>
+</body>
+</html>

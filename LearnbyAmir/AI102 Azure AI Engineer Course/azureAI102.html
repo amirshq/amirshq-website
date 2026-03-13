@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-102 Azure AI Engineer — Complete Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a1628;
+  --navy2: #0f2044;
+  --blue: #0078d4;
+  --blue-bright: #2b9be0;
+  --teal: #00b4d8;
+  --teal2: #00cfe8;
+  --cyan-glow: rgba(0,180,216,0.15);
+  --white: #ffffff;
+  --off-white: #f0f4f8;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --text-muted: #94a3b8;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,120,212,0.12);
+  --code-bg: #0d1117;
+  --code-text: #a8d8ff;
+  --green: #107c10;
+  --green-light: #dcfce7;
+  --yellow: #f59e0b;
+  --yellow-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --sidebar-w: 300px;
+  --header-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.back-pill {
+  position: fixed;
+  z-index: 9999;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15,23,42,0.96);
+  border: 1px solid rgba(148,163,255,0.6);
+  color: #e5e7eb;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+}
+
+.back-pill span {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .back-pill {
+    top: 16px;
+    left: 20px;
+  }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--navy2); }
+::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+/* ── TOP HEADER ── */
+#top-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: rgba(10,22,40,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,180,216,0.2);
+  display: flex; align-items: center; padding: 0 1.5rem;
+  gap: 1rem;
+}
+
+#hamburger {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; gap: 5px; padding: 4px;
+}
+#hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--teal); border-radius: 2px;
+  transition: all 0.3s;
+}
+#hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+#hamburger.open span:nth-child(2) { opacity: 0; }
+#hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+.header-logo {
+  display: flex; align-items: center; gap: 0.75rem; text-decoration: none;
+}
+.header-badge {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  color: white; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px;
+}
+.header-title {
+  color: var(--white); font-size: 1.05rem; font-weight: 600;
+}
+.header-title span { color: var(--teal); }
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+.progress-wrap {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.progress-bar-outer {
+  width: 120px; height: 6px; background: rgba(255,255,255,0.1);
+  border-radius: 3px; overflow: hidden;
+}
+.progress-bar-inner {
+  height: 100%; background: linear-gradient(90deg, var(--blue), var(--teal));
+  border-radius: 3px; transition: width 0.4s ease;
+  width: 0%;
+}
+#progress-label { color: var(--teal); font-weight: 600; min-width: 32px; }
+
+/* ── LAYOUT ── */
+#layout {
+  display: flex;
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy2);
+  border-right: 1px solid rgba(0,180,216,0.15);
+  position: fixed; top: var(--header-h); left: 0;
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto; overflow-x: hidden;
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  z-index: 90;
+}
+#sidebar.hidden { transform: translateX(calc(-1 * var(--sidebar-w))); }
+
+.sidebar-header {
+  padding: 1.25rem 1.25rem 0.75rem;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
+  color: var(--teal); text-transform: uppercase;
+  border-bottom: 1px solid rgba(0,180,216,0.1);
+  margin-bottom: 0.5rem;
+}
+
+.nav-module { margin-bottom: 0.25rem; }
+
+.nav-module-header {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer; transition: background 0.2s;
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+.nav-module-header:hover { background: rgba(0,120,212,0.1); }
+.nav-module-header.active-module {
+  border-left-color: var(--teal);
+  background: rgba(0,180,216,0.08);
+}
+.nav-module-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; font-weight: 600;
+  background: var(--blue); color: white;
+  width: 22px; height: 22px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-module-name {
+  font-size: 0.82rem; font-weight: 600; color: var(--off-white);
+  flex: 1; line-height: 1.3;
+}
+.nav-arrow {
+  font-size: 0.65rem; color: var(--text-muted);
+  transition: transform 0.25s;
+}
+.nav-module-header.expanded .nav-arrow { transform: rotate(90deg); }
+
+.nav-sub-list {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+.nav-sub-list.open { max-height: 600px; }
+
+.nav-sub-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.45rem 1.25rem 0.45rem 2.8rem;
+  cursor: pointer; transition: all 0.2s;
+  font-size: 0.78rem; color: var(--text-muted);
+  border-left: 3px solid transparent;
+}
+.nav-sub-item:hover { color: var(--blue-bright); background: rgba(0,120,212,0.06); }
+.nav-sub-item.active {
+  color: var(--teal);
+  border-left-color: var(--teal);
+  background: rgba(0,180,216,0.06);
+  font-weight: 500;
+}
+.nav-sub-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+.nav-sub-item.completed { color: var(--green); }
+.nav-sub-item.completed .nav-sub-dot { background: var(--green); }
+
+/* ── MAIN CONTENT ── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  background: var(--off-white);
+  transition: margin-left 0.35s cubic-bezier(0.4,0,0.2,1);
+  min-height: calc(100vh - var(--header-h));
+}
+#main.expanded { margin-left: 0; }
+
+/* ── HERO ── */
+#hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 50%, #0a1f3a 100%);
+  padding: 5rem 3rem 4rem;
+  position: relative; overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(0,180,216,0.08) 0%, transparent 60%);
+}
+#hero::after {
+  content: 'AI-102';
+  position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+  font-family: 'DM Serif Display', serif;
+  font-size: 14rem; font-weight: 400;
+  color: rgba(255,255,255,0.03);
+  line-height: 1; pointer-events: none; user-select: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(0,180,216,0.15); border: 1px solid rgba(0,180,216,0.3);
+  color: var(--teal); font-size: 0.75rem; font-weight: 600;
+  padding: 5px 12px; border-radius: 20px; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 1.25rem;
+}
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  color: var(--white); line-height: 1.15;
+  margin-bottom: 1rem;
+}
+.hero-title .accent { color: var(--teal); }
+.hero-subtitle {
+  font-size: 1.05rem; color: rgba(255,255,255,0.6);
+  max-width: 580px; line-height: 1.7; margin-bottom: 2rem;
+}
+.hero-stats {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+}
+.hero-stat {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.6rem 1.1rem; border-radius: 8px;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.hero-stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem; font-weight: 600; color: var(--teal);
+}
+.hero-stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+
+/* ── CONTENT AREA ── */
+#content-area { padding: 2.5rem 3rem 4rem; max-width: 1000px; }
+
+.section-page { display: none; }
+.section-page.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── MODULE INTRO BANNER ── */
+.module-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  border-radius: 14px; padding: 2rem 2.5rem;
+  margin-bottom: 2rem; position: relative; overflow: hidden;
+}
+.module-banner::before {
+  content: ''; position: absolute;
+  left: 0; top: 0; bottom: 0; width: 5px;
+  background: linear-gradient(to bottom, var(--teal), var(--blue));
+}
+.module-banner::after {
+  content: attr(data-num);
+  position: absolute; right: 2rem; top: 50%; transform: translateY(-50%);
+  font-family: 'DM Serif Display', serif;
+  font-size: 7rem; color: rgba(255,255,255,0.04);
+  line-height: 1; pointer-events: none;
+}
+.module-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 2px; color: var(--teal);
+  text-transform: uppercase; margin-bottom: 0.5rem;
+}
+.module-banner h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem; color: var(--white); margin-bottom: 0.5rem;
+}
+.module-banner p { color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.6; }
+
+/* ── TOPIC CARD ── */
+.topic-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px; padding: 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.topic-section:hover { box-shadow: 0 4px 20px rgba(0,120,212,0.1); }
+
+.topic-section h3 {
+  font-size: 1.15rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 1.1rem; display: flex; align-items: center; gap: 0.6rem;
+}
+.topic-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; color: white; flex-shrink: 0;
+}
+
+.info-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem; margin-bottom: 1rem;
+}
+.info-card {
+  background: var(--off-white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 10px; padding: 1rem;
+}
+.info-card-title {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--blue); margin-bottom: 0.5rem;
+}
+.info-card ul { padding-left: 1rem; }
+.info-card li { font-size: 0.88rem; color: var(--text); line-height: 1.7; }
+
+/* ── BULLETS ── */
+.lesson-list { list-style: none; padding: 0; }
+.lesson-list li {
+  padding: 0.5rem 0 0.5rem 1.6rem;
+  position: relative; font-size: 0.92rem; color: var(--text);
+  line-height: 1.6; border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.lesson-list li:last-child { border-bottom: none; }
+.lesson-list li::before {
+  content: '▸'; position: absolute; left: 0;
+  color: var(--teal); font-size: 0.7rem; top: 0.65rem;
+}
+.lesson-list li strong { color: var(--navy); }
+.lesson-list li.sub {
+  padding-left: 3rem; color: var(--text-light); font-size: 0.87rem;
+}
+.lesson-list li.sub::before { content: '–'; color: var(--text-muted); left: 1.8rem; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-radius: 10px; padding: 1rem 1.25rem;
+  margin: 1.2rem 0; display: flex; gap: 0.75rem;
+  font-size: 0.9rem; line-height: 1.6;
+}
+.callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.callout.tip { background: var(--yellow-light); border-left: 4px solid var(--yellow); }
+.callout.tip .callout-icon::before { content: '💡'; }
+.callout.warning { background: var(--red-light); border-left: 4px solid var(--red); }
+.callout.warning .callout-icon::before { content: '⚠️'; }
+.callout.success { background: var(--green-light); border-left: 4px solid var(--green); }
+.callout.success .callout-icon::before { content: '✅'; }
+.callout.info { background: #eff6ff; border-left: 4px solid var(--blue); }
+.callout.info .callout-icon::before { content: 'ℹ️'; }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  background: var(--code-bg);
+  border-radius: 10px; overflow: hidden;
+  margin: 1.2rem 0;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 1rem;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; color: var(--teal); text-transform: uppercase; letter-spacing: 1px;
+}
+.code-dots { display: flex; gap: 5px; }
+.code-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.code-dot.red { background: #ff5f57; }
+.code-dot.yellow { background: #febc2e; }
+.code-dot.green { background: #28c840; }
+.copy-btn {
+  background: rgba(255,255,255,0.08); border: none; cursor: pointer;
+  color: var(--text-muted); font-size: 0.75rem; font-family: 'Outfit', sans-serif;
+  padding: 3px 10px; border-radius: 5px; transition: all 0.2s;
+}
+.copy-btn:hover { background: rgba(0,180,216,0.2); color: var(--teal); }
+pre {
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem; line-height: 1.7;
+  color: var(--code-text);
+}
+.kw { color: #ff79c6; }
+.fn { color: #50fa7b; }
+.str { color: #f1fa8c; }
+.cm { color: #6272a4; font-style: italic; }
+.num { color: #bd93f9; }
+.cls { color: #8be9fd; }
+
+/* ── TWO COLUMN COMPARE ── */
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.2rem; margin: 1.2rem 0;
+}
+.compare-col {
+  background: var(--off-white);
+  border-radius: 10px; overflow: hidden;
+}
+.compare-col-head {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.compare-col-head.blue { background: var(--blue); color: white; }
+.compare-col-head.teal { background: var(--teal); color: white; }
+.compare-col ul { padding: 0.75rem 1rem 0.75rem 1.8rem; }
+.compare-col li { font-size: 0.87rem; color: var(--text); line-height: 1.7; }
+
+/* ── EXAM WEIGHT CHART ── */
+.exam-weights { margin: 1.2rem 0; }
+.weight-item { margin-bottom: 0.85rem; }
+.weight-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.85rem; margin-bottom: 0.3rem;
+}
+.weight-label span:first-child { font-weight: 500; color: var(--text); }
+.weight-label span:last-child { font-weight: 700; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
+.weight-bar {
+  height: 8px; background: var(--off-white);
+  border-radius: 4px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.weight-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  width: 0%;
+}
+
+/* ── Q&A SECTION ── */
+.qa-grid {
+  display: flex; flex-direction: column; gap: 1.5rem;
+}
+.qa-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.qa-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  padding: 1.1rem 1.5rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.qa-num {
+  background: var(--blue);
+  color: white; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 5px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.qa-question { font-size: 0.97rem; color: var(--white); line-height: 1.55; font-weight: 500; }
+
+.qa-options {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.6rem; padding: 1.1rem 1.5rem;
+}
+.qa-option {
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  padding: 0.65rem 0.9rem; border-radius: 8px;
+  cursor: pointer; transition: all 0.2s;
+  border: 2px solid transparent;
+  background: var(--off-white); font-size: 0.875rem; color: var(--text);
+  user-select: none;
+}
+.qa-option:hover { border-color: var(--blue-bright); background: #eff6ff; }
+.qa-option.selected-correct {
+  background: var(--green-light); border-color: var(--green); color: var(--green);
+}
+.qa-option.selected-wrong {
+  background: var(--red-light); border-color: var(--red); color: var(--red);
+}
+.qa-option.reveal-correct {
+  background: var(--green-light); border-color: var(--green); color: var(--green);
+}
+.opt-letter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem; font-weight: 700;
+  background: var(--text); color: white;
+  width: 20px; height: 20px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.2s;
+}
+.selected-correct .opt-letter { background: var(--green); }
+.selected-wrong .opt-letter { background: var(--red); }
+.reveal-correct .opt-letter { background: var(--green); }
+
+.qa-explanation {
+  margin: 0 1.5rem 1.2rem;
+  background: #eff6ff;
+  border: 1px solid rgba(0,120,212,0.2);
+  border-radius: 8px; padding: 1rem;
+  display: none;
+}
+.qa-explanation.show { display: block; animation: fadeIn 0.3s; }
+.qa-expl-title { font-size: 0.75rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+.qa-expl-text { font-size: 0.875rem; color: var(--text); line-height: 1.65; }
+
+.qa-score-banner {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  border-radius: 14px; padding: 2rem;
+  text-align: center; margin-bottom: 1.5rem;
+  display: none;
+}
+.qa-score-banner.show { display: block; }
+.score-big {
+  font-family: 'DM Serif Display', serif;
+  font-size: 4rem; color: var(--teal); line-height: 1;
+}
+.score-sub { color: rgba(255,255,255,0.6); font-size: 0.95rem; margin-top: 0.5rem; }
+
+/* ── NAV BUTTONS ── */
+.section-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 2.5rem; padding-top: 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.7rem 1.4rem; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; text-decoration: none; border: none;
+}
+.nav-btn.prev {
+  background: var(--off-white); color: var(--text);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.nav-btn.prev:hover { background: #e2e8f0; }
+.nav-btn.next {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  color: white;
+}
+.nav-btn.next:hover { opacity: 0.9; transform: translateX(2px); }
+.nav-btn:disabled { opacity: 0.35; pointer-events: none; }
+.nav-btn-label { font-size: 0.72rem; color: var(--text-muted); }
+
+/* ── TABLE ── */
+.styled-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 1rem 0; }
+.styled-table th {
+  background: var(--navy); color: white;
+  padding: 0.65rem 1rem; text-align: left;
+  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.styled-table td { padding: 0.6rem 1rem; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.styled-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+.styled-table tr:hover td { background: #eff6ff; }
+.badge {
+  display: inline-block; font-size: 0.72rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+}
+.badge.blue { background: #dbeafe; color: #1e40af; }
+.badge.green { background: var(--green-light); color: var(--green); }
+.badge.yellow { background: var(--yellow-light); color: #92400e; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
+  #sidebar.mobile-open { transform: translateX(0); }
+  #main { margin-left: 0 !important; }
+  #content-area { padding: 1.5rem 1.25rem 3rem; }
+  .info-grid, .compare-grid, .qa-options { grid-template-columns: 1fr; }
+  #hero { padding: 3rem 1.5rem 2.5rem; }
+  #hero::after { display: none; }
+}
+
+/* ── QUIZ CONTROLS ── */
+.quiz-controls {
+  display: flex; justify-content: center; gap: 1rem;
+  margin: 2rem 0 1rem;
+}
+.quiz-btn {
+  padding: 0.7rem 1.6rem; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  border: none; transition: all 0.2s;
+}
+.quiz-btn.primary {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  color: white;
+}
+.quiz-btn.secondary {
+  background: var(--off-white);
+  color: var(--text); border: 1px solid rgba(0,0,0,0.1);
+}
+.quiz-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+</style>
+</head>
+<body>
+<button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+  <span>←</span> Back to topics
+</button>
+
+<!-- TOP HEADER -->
+<header id="top-header">
+  <button id="hamburger" aria-label="Toggle sidebar" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="header-logo" href="#" onclick="showSection('home');return false;">
+    <span class="header-badge">AI-102</span>
+    <span class="header-title">Azure AI Engineer <span>Associate</span></span>
+  </a>
+  <div class="header-right">
+    <div class="progress-wrap">
+      <span>Progress</span>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar"></div></div>
+      <span id="progress-label">0%</span>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-header">Course Navigation</div>
+
+    <!-- HOME -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="showSection('home')">
+        <div class="nav-module-num">🏠</div>
+        <div class="nav-module-name">Overview & Exam Info</div>
+      </div>
+    </div>
+
+    <!-- MODULE 1 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m1-subs')">
+        <div class="nav-module-num" style="background:#0078d4">1</div>
+        <div class="nav-module-name">Plan & Manage AI Services</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m1-subs">
+        <div class="nav-sub-item" onclick="showSection('m1s1')"><span class="nav-sub-dot"></span>Azure AI Services Intro</div>
+        <div class="nav-sub-item" onclick="showSection('m1s2')"><span class="nav-sub-dot"></span>Authentication & Keys</div>
+        <div class="nav-sub-item" onclick="showSection('m1s3')"><span class="nav-sub-dot"></span>Network Security</div>
+        <div class="nav-sub-item" onclick="showSection('m1s4')"><span class="nav-sub-dot"></span>Monitoring & Diagnostics</div>
+        <div class="nav-sub-item" onclick="showSection('m1s5')"><span class="nav-sub-dot"></span>Responsible AI</div>
+      </div>
+    </div>
+
+    <!-- MODULE 2 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m2-subs')">
+        <div class="nav-module-num" style="background:#00b4d8">2</div>
+        <div class="nav-module-name">Computer Vision</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m2-subs">
+        <div class="nav-sub-item" onclick="showSection('m2s1')"><span class="nav-sub-dot"></span>Azure AI Vision</div>
+        <div class="nav-sub-item" onclick="showSection('m2s2')"><span class="nav-sub-dot"></span>Custom Vision</div>
+        <div class="nav-sub-item" onclick="showSection('m2s3')"><span class="nav-sub-dot"></span>Face API</div>
+        <div class="nav-sub-item" onclick="showSection('m2s4')"><span class="nav-sub-dot"></span>Video Indexer</div>
+      </div>
+    </div>
+
+    <!-- MODULE 3 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m3-subs')">
+        <div class="nav-module-num" style="background:#107c10">3</div>
+        <div class="nav-module-name">Natural Language Processing</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m3-subs">
+        <div class="nav-sub-item" onclick="showSection('m3s1')"><span class="nav-sub-dot"></span>Azure AI Language</div>
+        <div class="nav-sub-item" onclick="showSection('m3s2')"><span class="nav-sub-dot"></span>Question Answering & CLU</div>
+        <div class="nav-sub-item" onclick="showSection('m3s3')"><span class="nav-sub-dot"></span>Azure AI Speech</div>
+        <div class="nav-sub-item" onclick="showSection('m3s4')"><span class="nav-sub-dot"></span>Azure AI Translator</div>
+      </div>
+    </div>
+
+    <!-- MODULE 4 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m4-subs')">
+        <div class="nav-module-num" style="background:#8b5cf6">4</div>
+        <div class="nav-module-name">Knowledge Mining</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m4-subs">
+        <div class="nav-sub-item" onclick="showSection('m4s1')"><span class="nav-sub-dot"></span>Azure AI Search</div>
+        <div class="nav-sub-item" onclick="showSection('m4s2')"><span class="nav-sub-dot"></span>AI Enrichment & Skillsets</div>
+        <div class="nav-sub-item" onclick="showSection('m4s3')"><span class="nav-sub-dot"></span>Document Intelligence</div>
+      </div>
+    </div>
+
+    <!-- MODULE 5 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m5-subs')">
+        <div class="nav-module-num" style="background:#f59e0b">5</div>
+        <div class="nav-module-name">Generative AI</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m5-subs">
+        <div class="nav-sub-item" onclick="showSection('m5s1')"><span class="nav-sub-dot"></span>Azure OpenAI Service</div>
+        <div class="nav-sub-item" onclick="showSection('m5s2')"><span class="nav-sub-dot"></span>Prompt Engineering</div>
+        <div class="nav-sub-item" onclick="showSection('m5s3')"><span class="nav-sub-dot"></span>RAG Architecture</div>
+        <div class="nav-sub-item" onclick="showSection('m5s4')"><span class="nav-sub-dot"></span>DALL-E & Content Safety</div>
+      </div>
+    </div>
+
+    <!-- MODULE 6 -->
+    <div class="nav-module">
+      <div class="nav-module-header" onclick="toggleModule(this,'m6-subs')">
+        <div class="nav-module-num" style="background:#dc2626">6</div>
+        <div class="nav-module-name">50 Practice Questions</div>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub-list" id="m6-subs">
+        <div class="nav-sub-item" onclick="showSection('m6s1')"><span class="nav-sub-dot"></span>Module 1 Questions (Q1–Q10)</div>
+        <div class="nav-sub-item" onclick="showSection('m6s2')"><span class="nav-sub-dot"></span>Module 2 Questions (Q11–Q20)</div>
+        <div class="nav-sub-item" onclick="showSection('m6s3')"><span class="nav-sub-dot"></span>Module 3 Questions (Q21–Q30)</div>
+        <div class="nav-sub-item" onclick="showSection('m6s4')"><span class="nav-sub-dot"></span>Module 4 Questions (Q31–Q38)</div>
+        <div class="nav-sub-item" onclick="showSection('m6s5')"><span class="nav-sub-dot"></span>Module 5 Questions (Q39–Q50)</div>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main">
+
+    <!-- HOME -->
+    <div id="hero" class="section-page active" id-key="home">
+      <div class="hero-tag">📘 Microsoft Certification</div>
+      <h1 class="hero-title">AI-102 <span class="accent">Azure AI Engineer</span><br>Associate — Full Course</h1>
+      <p class="hero-subtitle">Master all exam domains from scratch. Learn Azure AI services with code samples, architecture patterns, and 50 interactive practice questions with instant feedback.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="hero-stat-num">5</span><span class="hero-stat-label">Core Modules</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">50</span><span class="hero-stat-label">Practice Q&amp;A</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">20+</span><span class="hero-stat-label">Code Samples</span></div>
+        <div class="hero-stat"><span class="hero-stat-num">700</span><span class="hero-stat-label">Pass Score /1000</span></div>
+      </div>
+    </div>
+
+    <div id="section-home" class="section-page active" style="padding:2rem 3rem 1rem;">
+      <div class="topic-section">
+        <h3><div class="topic-icon">📋</div>Exam At a Glance</h3>
+        <table class="styled-table">
+          <tr><th>Field</th><th>Detail</th></tr>
+          <tr><td>Full Name</td><td>Designing and Implementing a Microsoft Azure AI Solution</td></tr>
+          <tr><td>Duration</td><td>120 minutes</td></tr>
+          <tr><td>Questions</td><td>~40–60 (multiple choice, drag-and-drop, case studies)</td></tr>
+          <tr><td>Passing Score</td><td><span class="badge blue">700 / 1000</span></td></tr>
+          <tr><td>Price</td><td>$165 USD (varies by region)</td></tr>
+          <tr><td>Provider</td><td>Pearson VUE (in-person or online proctored)</td></tr>
+          <tr><td>Prerequisites</td><td>Azure portal familiarity, REST APIs, Python or C#</td></tr>
+        </table>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">📊</div>Exam Domain Weights</h3>
+        <div class="exam-weights" id="exam-weights">
+          <div class="weight-item"><div class="weight-label"><span>Plan &amp; Manage Azure AI Solutions</span><span>15–20%</span></div><div class="weight-bar"><div class="weight-fill" data-pct="17"></div></div></div>
+          <div class="weight-item"><div class="weight-label"><span>Implement Computer Vision Solutions</span><span>20–25%</span></div><div class="weight-bar"><div class="weight-fill" data-pct="22"></div></div></div>
+          <div class="weight-item"><div class="weight-label"><span>Implement NLP Solutions</span><span>20–25%</span></div><div class="weight-bar"><div class="weight-fill" data-pct="22"></div></div></div>
+          <div class="weight-item"><div class="weight-label"><span>Knowledge Mining &amp; Document Intelligence</span><span>15–20%</span></div><div class="weight-bar"><div class="weight-fill" data-pct="17"></div></div></div>
+          <div class="weight-item"><div class="weight-label"><span>Implement Generative AI Solutions</span><span>15–20%</span></div><div class="weight-bar"><div class="weight-fill" data-pct="17"></div></div></div>
+        </div>
+      </div>
+      <div class="section-nav">
+        <span></span>
+        <button class="nav-btn next" onclick="showSection('m1s1')">Start Module 1 →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 1 SECTIONS -->
+    <div id="section-m1s1" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="01">
+        <div class="module-eyebrow">Module 1 · Section 1</div>
+        <h2>Azure AI Services — The Big Picture</h2>
+        <p>Understanding the Azure AI services catalog, resource types, tiers, and endpoints.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">☁️</div>What Are Azure AI Services?</h3>
+        <ul class="lesson-list">
+          <li><strong>Azure AI Services</strong> = pre-built, cloud-hosted AI APIs from Microsoft — no model training required for most use cases</li>
+          <li><strong>Two resource types:</strong></li>
+          <li class="sub"><strong>Single-service:</strong> one endpoint, one key per service (e.g., Azure AI Vision only)</li>
+          <li class="sub"><strong>Multi-service (Cognitive Services):</strong> one key, one endpoint for ALL services — simpler billing</li>
+          <li>Always provisioned via: Azure Portal, Azure CLI, ARM templates, or Bicep</li>
+          <li><strong>Pricing tiers:</strong> Free (F0) — limited quota; Standard (S0) — pay-per-call</li>
+          <li>Endpoint format: <code>https://&lt;resource-name&gt;.cognitiveservices.azure.com/</code></li>
+        </ul>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Key Services in Scope</div>
+            <ul><li>Azure AI Vision</li><li>Face API</li><li>Azure AI Language</li><li>Azure AI Speech</li><li>Translator</li><li>Azure OpenAI</li><li>Azure AI Search</li><li>Document Intelligence</li></ul>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">Common CLI Commands</div>
+            <ul>
+              <li><code>az cognitiveservices account create</code></li>
+              <li><code>az cognitiveservices account keys list</code></li>
+              <li><code>az cognitiveservices account keys regenerate</code></li>
+              <li><code>az cognitiveservices account show</code></li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout tip"><div class="callout-icon"></div><div>The multi-service resource uses the generic endpoint <code>cognitiveservices.azure.com</code>. Individual services (Vision, Language) have their own endpoints but the key format is the same.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('home')">← Overview</button>
+        <button class="nav-btn next" onclick="showSection('m1s2')">Authentication & Keys →</button>
+      </div>
+    </div>
+
+    <div id="section-m1s2" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="01">
+        <div class="module-eyebrow">Module 1 · Section 2</div>
+        <h2>Authentication & Security</h2>
+        <p>API keys, Managed Identity, Azure Key Vault, and RBAC for AI services.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔑</div>Authentication Methods</h3>
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="compare-col-head blue">Key-Based Auth</div>
+            <ul><li>Two keys per resource (rotate without downtime)</li><li>Store in Azure Key Vault, not in code</li><li>Passed as <code>Ocp-Apim-Subscription-Key</code> header</li><li>Easy but requires key management</li></ul>
+          </div>
+          <div class="compare-col">
+            <div class="compare-col-head teal">Managed Identity (Recommended)</div>
+            <ul><li>No credentials to manage or rotate</li><li>Assign <strong>Cognitive Services User</strong> RBAC role</li><li>Works with VMs, App Service, AKS, Functions</li><li>Use <code>DefaultAzureCredential()</code> in SDK</li></ul>
+          </div>
+        </div>
+        <div class="callout warning"><div class="callout-icon"></div><div><strong>Never hard-code keys!</strong> Use environment variables or Azure Key Vault. Key Vault references in App Service settings are the standard pattern: <code>@Microsoft.KeyVault(SecretUri=...)</code></div></div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💻</div>Python Authentication Examples</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm"># ── Option 1: Key-Based Authentication ──</span>
+<span class="kw">from</span> <span class="cls">azure.cognitiveservices.vision.computervision</span> <span class="kw">import</span> ComputerVisionClient
+<span class="kw">from</span> <span class="cls">msrest.authentication</span> <span class="kw">import</span> CognitiveServicesCredentials
+
+client = <span class="cls">ComputerVisionClient</span>(
+    endpoint=<span class="str">"https://my-vision.cognitiveservices.azure.com/"</span>,
+    credentials=<span class="cls">CognitiveServicesCredentials</span>(<span class="str">"YOUR_KEY"</span>)
+)
+
+<span class="cm"># ── Option 2: Managed Identity (PRODUCTION BEST PRACTICE) ──</span>
+<span class="kw">from</span> <span class="cls">azure.identity</span> <span class="kw">import</span> DefaultAzureCredential
+<span class="kw">from</span> <span class="cls">azure.ai.textanalytics</span> <span class="kw">import</span> TextAnalyticsClient
+<span class="kw">from</span> <span class="cls">azure.core.credentials</span> <span class="kw">import</span> TokenCredential
+
+credential = <span class="cls">DefaultAzureCredential</span>()  <span class="cm"># auto-picks env/MI/CLI</span>
+client = <span class="cls">TextAnalyticsClient</span>(
+    endpoint=<span class="str">"https://my-language.cognitiveservices.azure.com/"</span>,
+    credential=credential
+)
+
+<span class="cm"># ── Key Vault integration (retrieve key at runtime) ──</span>
+<span class="kw">from</span> <span class="cls">azure.keyvault.secrets</span> <span class="kw">import</span> SecretClient
+
+kv_client = <span class="cls">SecretClient</span>(
+    vault_url=<span class="str">"https://my-vault.vault.azure.net/"</span>,
+    credential=<span class="cls">DefaultAzureCredential</span>()
+)
+api_key = kv_client.get_secret(<span class="str">"vision-api-key"</span>).value</pre>
+        </div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">👥</div>RBAC Roles for AI Services</h3>
+        <table class="styled-table">
+          <tr><th>Role</th><th>Can Read Keys?</th><th>Can Call APIs?</th><th>Can Manage Resource?</th></tr>
+          <tr><td>Owner</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Contributor</td><td>✅</td><td>✅</td><td>✅ (no RBAC assignments)</td></tr>
+          <tr><td><strong>Cognitive Services Contributor</strong></td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td><strong>Cognitive Services User</strong></td><td>❌</td><td>✅ (Entra ID only)</td><td>❌</td></tr>
+          <tr><td>Reader</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        </table>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam tip: <strong>Cognitive Services User</strong> enables calling APIs via Azure AD tokens but <em>cannot</em> read subscription keys. Use this for Managed Identity scenarios.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m1s1')">← AI Services Intro</button>
+        <button class="nav-btn next" onclick="showSection('m1s3')">Network Security →</button>
+      </div>
+    </div>
+
+    <div id="section-m1s3" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="01">
+        <div class="module-eyebrow">Module 1 · Section 3</div>
+        <h2>Network Security</h2>
+        <p>Private endpoints, VNet service endpoints, firewalls, and customer-managed keys.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔒</div>Network Isolation Options</h3>
+        <ul class="lesson-list">
+          <li><strong>Default behavior:</strong> AI Services accept traffic from any IP (public endpoint)</li>
+          <li><strong>IP Firewall rules:</strong> restrict to specific public IP ranges — still uses public endpoint</li>
+          <li><strong>VNet Service Endpoints:</strong> route traffic through Azure backbone; endpoint remains public but only accessible from specified subnets</li>
+          <li><strong>Private Endpoint (most secure):</strong> assigns a private IP inside your VNet — no public exposure</li>
+          <li class="sub">DNS: privatelink.cognitiveservices.azure.com resolves to private IP</li>
+          <li class="sub">After creating private endpoint, disable public access entirely</li>
+          <li class="sub">Requires Azure Private DNS Zone for name resolution</li>
+        </ul>
+        <div class="callout success"><div class="callout-icon"></div><div>For maximum isolation: Create Private Endpoint → Configure Private DNS Zone → Set <strong>"Allow access from: Disabled"</strong> for public network access in the Networking blade.</div></div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🗝️</div>Customer-Managed Keys (CMK)</h3>
+        <ul class="lesson-list">
+          <li><strong>Default:</strong> Microsoft manages encryption keys (platform-managed) — you cannot revoke</li>
+          <li><strong>CMK:</strong> your organization's key stored in Azure Key Vault encrypts data-at-rest</li>
+          <li><strong>Revocation:</strong> disable or delete the key in Key Vault → service data becomes immediately inaccessible</li>
+          <li><strong>Requirements:</strong> Standard pricing tier + Azure Key Vault with soft-delete + purge protection enabled</li>
+          <li><strong>Setup:</strong> Key Vault → Grant AI Service identity access → Configure CMK in AI resource settings</li>
+        </ul>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m1s2')">← Authentication</button>
+        <button class="nav-btn next" onclick="showSection('m1s4')">Monitoring →</button>
+      </div>
+    </div>
+
+    <div id="section-m1s4" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="01">
+        <div class="module-eyebrow">Module 1 · Section 4</div>
+        <h2>Monitoring & Diagnostics</h2>
+        <p>Azure Monitor, diagnostic logs, alerts, and Application Insights for AI services.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">📈</div>Azure Monitor Integration</h3>
+        <ul class="lesson-list">
+          <li><strong>Metrics (built-in, no config):</strong> TotalCalls, TotalErrors, Latency, SuccessRate</li>
+          <li><strong>Diagnostic Logs:</strong> enable via Portal → Monitoring → Diagnostic settings</li>
+          <li class="sub">Send to: Log Analytics Workspace (KQL queries), Storage Account (archive), Event Hub (stream)</li>
+          <li><strong>Alerts:</strong> trigger on metric thresholds — e.g., "TotalErrors &gt; 100 in 5 min"</li>
+          <li><strong>Application Insights:</strong> distributed tracing for SDK-based apps — trace IDs, spans, custom telemetry</li>
+        </ul>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔍</div>Useful KQL Queries</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">KQL — Log Analytics</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm">// All AI Service diagnostic logs</span>
+AzureDiagnostics
+| <span class="fn">where</span> ResourceType == <span class="str">"COGNITIVESERVICES"</span>
+| <span class="fn">project</span> TimeGenerated, OperationName, ResultType, DurationMs
+
+<span class="cm">// Error rate over time</span>
+AzureMetrics
+| <span class="fn">where</span> MetricName == <span class="str">"TotalErrors"</span>
+| <span class="fn">summarize</span> <span class="fn">sum</span>(Total) <span class="fn">by</span> <span class="fn">bin</span>(TimeGenerated, <span class="num">5m</span>)
+| <span class="fn">render</span> timechart
+
+<span class="cm">// Latency P95</span>
+AzureMetrics
+| <span class="fn">where</span> MetricName == <span class="str">"Latency"</span>
+| <span class="fn">summarize</span> <span class="fn">percentile</span>(Average, <span class="num">95</span>) <span class="fn">by</span> <span class="fn">bin</span>(TimeGenerated, <span class="num">1h</span>)</pre>
+        </div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m1s3')">← Network Security</button>
+        <button class="nav-btn next" onclick="showSection('m1s5')">Responsible AI →</button>
+      </div>
+    </div>
+
+    <div id="section-m1s5" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="01">
+        <div class="module-eyebrow">Module 1 · Section 5</div>
+        <h2>Responsible AI</h2>
+        <p>Microsoft's six principles, Content Safety service, and Limited Access features.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">⚖️</div>Microsoft's 6 Responsible AI Principles</h3>
+        <table class="styled-table">
+          <tr><th>Principle</th><th>Description</th></tr>
+          <tr><td><strong>Fairness</strong></td><td>AI systems should treat all people fairly, without discriminating by race, gender, age, etc.</td></tr>
+          <tr><td><strong>Reliability & Safety</strong></td><td>AI must perform reliably and safely, even in unexpected conditions</td></tr>
+          <tr><td><strong>Privacy & Security</strong></td><td>AI must respect privacy and protect user data</td></tr>
+          <tr><td><strong>Inclusiveness</strong></td><td>AI should empower everyone, including people with disabilities</td></tr>
+          <tr><td><strong>Transparency</strong></td><td>AI systems should be understandable; humans should be able to explain AI decisions</td></tr>
+          <tr><td><strong>Accountability</strong></td><td>Humans must be accountable for AI systems and their impacts</td></tr>
+        </table>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🛡️</div>Azure AI Content Safety</h3>
+        <ul class="lesson-list">
+          <li>Dedicated service for detecting harmful content in <strong>text AND images</strong></li>
+          <li><strong>4 harm categories:</strong> Hate, Sexual, Violence, Self-harm</li>
+          <li><strong>Severity levels:</strong> 0 (safe) to 6 (very harmful)</li>
+          <li><strong>Prompt Shield:</strong> detect jailbreak attempts and indirect prompt injection</li>
+          <li><strong>Groundedness detection:</strong> check if AI response is supported by retrieved context (RAG)</li>
+          <li><strong>Protected material detection:</strong> identify copyrighted text/code in model output</li>
+        </ul>
+        <div class="callout warning"><div class="callout-icon"></div><div><strong>Limited Access Features</strong> require Microsoft application/approval: Face API identification &amp; verification, Custom Neural Voice, Speaker Recognition. These cannot be used without an approved use case.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m1s4')">← Monitoring</button>
+        <button class="nav-btn next" onclick="showSection('m2s1')">Module 2: Computer Vision →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 2 -->
+    <div id="section-m2s1" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="02" style="background:linear-gradient(135deg,#0d2137,#0a2850);">
+        <div class="module-eyebrow">Module 2 · Section 1</div>
+        <h2>Azure AI Vision</h2>
+        <p>Image Analysis 4.0, OCR, dense captions, smart crops, and object detection.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">👁️</div>Image Analysis Features</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Visual Features</div>
+            <ul><li><strong>Caption</strong> — single natural language description</li><li><strong>Dense Captions</strong> — captions for image regions</li><li><strong>Tags</strong> — confidence-scored keywords</li><li><strong>Objects</strong> — bounding boxes + labels</li><li><strong>Read (OCR)</strong> — extract printed/handwritten text</li><li><strong>Smart Crops</strong> — thumbnail crop regions</li><li><strong>People</strong> — detect people locations</li></ul>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">API Details</div>
+            <ul><li>API Version: 2023-10-01 (Image Analysis 4.0)</li><li>Max file size: 4MB</li><li>Formats: JPEG, PNG, BMP, GIF, TIFF, WEBP</li><li>Input: image URL or binary body</li><li>Features passed as query param: <code>?features=Caption,Tags,Read</code></li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💻</div>Code Sample — Analyze Image</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="kw">from</span> <span class="cls">azure.ai.vision.imageanalysis</span> <span class="kw">import</span> ImageAnalysisClient
+<span class="kw">from</span> <span class="cls">azure.ai.vision.imageanalysis.models</span> <span class="kw">import</span> VisualFeatures
+<span class="kw">from</span> <span class="cls">azure.core.credentials</span> <span class="kw">import</span> AzureKeyCredential
+
+client = <span class="cls">ImageAnalysisClient</span>(
+    endpoint=<span class="str">"https://my-vision.cognitiveservices.azure.com/"</span>,
+    credential=<span class="cls">AzureKeyCredential</span>(<span class="str">"YOUR_KEY"</span>)
+)
+
+result = client.analyze_from_url(
+    image_url=<span class="str">"https://aka.ms/azsdk/image-analysis/sample.jpg"</span>,
+    visual_features=[
+        VisualFeatures.CAPTION,        <span class="cm"># "a dog running on grass"</span>
+        VisualFeatures.TAGS,           <span class="cm"># dog, outdoor, green, fun</span>
+        VisualFeatures.READ,           <span class="cm"># OCR text extraction</span>
+        VisualFeatures.DENSE_CAPTIONS, <span class="cm"># per-region captions</span>
+        VisualFeatures.OBJECTS,        <span class="cm"># bounding boxes</span>
+    ],
+    gender_neutral_caption=<span class="kw">True</span>,
+)
+
+<span class="cm"># Results</span>
+<span class="fn">print</span>(<span class="str">f"Caption: {result.caption.text} ({result.caption.confidence:.2f})"</span>)
+<span class="kw">for</span> tag <span class="kw">in</span> result.tags.list:
+    <span class="fn">print</span>(<span class="str">f"  Tag: {tag.name} ({tag.confidence:.2f})"</span>)
+<span class="kw">for</span> block <span class="kw">in</span> result.read.blocks:
+    <span class="kw">for</span> line <span class="kw">in</span> block.lines:
+        <span class="fn">print</span>(<span class="str">f"  OCR: {line.text}"</span>)</pre>
+        </div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m1s5')">← Responsible AI</button>
+        <button class="nav-btn next" onclick="showSection('m2s2')">Custom Vision →</button>
+      </div>
+    </div>
+
+    <div id="section-m2s2" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="02" style="background:linear-gradient(135deg,#0d2137,#0a2850);">
+        <div class="module-eyebrow">Module 2 · Section 2</div>
+        <h2>Custom Vision</h2>
+        <p>Train your own image classifiers and object detectors on custom categories.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎯</div>Custom Vision Overview</h3>
+        <ul class="lesson-list">
+          <li><strong>Two project types:</strong> Classification and Object Detection</li>
+          <li class="sub">Classification: assign one (multi-class) or many (multi-label) categories per image</li>
+          <li class="sub">Object Detection: locate and label objects with bounding boxes</li>
+          <li><strong>Minimum images:</strong> 15 per tag for classification; 15 labelled regions for detection</li>
+          <li><strong>Training modes:</strong> Quick Training (fast, less accurate) vs Advanced Training (slower, better)</li>
+          <li><strong>Domain types:</strong> determine export options</li>
+          <li class="sub"><strong>General (Compact):</strong> exportable to CoreML, TensorFlow, ONNX, Docker (edge/offline)</li>
+          <li class="sub"><strong>General (S1/A2):</strong> cloud API only — cannot be exported</li>
+          <li>Portal: <code>customvision.ai</code></li>
+        </ul>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">📤</div>Export Formats for Edge Deployment</h3>
+        <table class="styled-table">
+          <tr><th>Platform</th><th>Format</th><th>Use Case</th></tr>
+          <tr><td>iOS / macOS</td><td>CoreML</td><td>iPhone, iPad, Mac apps</td></tr>
+          <tr><td>Android / TF Lite</td><td>TensorFlow Lite</td><td>Android, Raspberry Pi</td></tr>
+          <tr><td>Windows / Cross-platform</td><td>ONNX</td><td>Windows ML, ONNX Runtime</td></tr>
+          <tr><td>Intel hardware</td><td>OpenVINO</td><td>Intel Neural Compute Stick</td></tr>
+          <tr><td>Any container host</td><td>Docker container</td><td>IoT Edge, AKS, on-prem</td></tr>
+        </table>
+        <div class="callout warning"><div class="callout-icon"></div><div>You must select a <strong>Compact domain</strong> BEFORE training if you want to export the model. You cannot export models trained with standard domains.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m2s1')">← AI Vision</button>
+        <button class="nav-btn next" onclick="showSection('m2s3')">Face API →</button>
+      </div>
+    </div>
+
+    <div id="section-m2s3" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="02" style="background:linear-gradient(135deg,#0d2137,#0a2850);">
+        <div class="module-eyebrow">Module 2 · Section 3</div>
+        <h2>Face API</h2>
+        <p>Face detection, verification, identification, and responsible use requirements.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🧑</div>Face API Operations</h3>
+        <table class="styled-table">
+          <tr><th>Operation</th><th>Description</th><th>Type</th><th>Access</th></tr>
+          <tr><td><strong>Detect</strong></td><td>Locate faces + attributes (age, emotion, blur, headpose)</td><td>1:0</td><td>Open</td></tr>
+          <tr><td><strong>Verify</strong></td><td>Are two faces the same person? Returns Boolean + confidence</td><td>1:1</td><td><span class="badge yellow">Limited</span></td></tr>
+          <tr><td><strong>Identify</strong></td><td>Who is this face? Search against a PersonGroup</td><td>1:N</td><td><span class="badge yellow">Limited</span></td></tr>
+          <tr><td><strong>Find Similar</strong></td><td>Find faces that look similar in a FaceList</td><td>1:N</td><td><span class="badge yellow">Limited</span></td></tr>
+          <tr><td><strong>Group</strong></td><td>Cluster unknown faces into groups</td><td>N:N</td><td>Open</td></tr>
+          <tr><td><strong>Liveness</strong></td><td>Anti-spoofing — real person vs photo/video</td><td>–</td><td>Open</td></tr>
+        </table>
+        <div class="callout warning"><div class="callout-icon"></div><div><strong>Limited Access:</strong> Identify, Verify, Find Similar require Microsoft application approval. Cannot be used for surveillance without explicit consent. Emotion detection results should not be used in clinical/legal decisions.</div></div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💻</div>Face Identification Flow</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python — Face Identify Workflow</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm"># 1. Create PersonGroup</span>
+face_client.person_group.create(person_group_id=<span class="str">"employees"</span>, name=<span class="str">"Employees"</span>)
+
+<span class="cm"># 2. Add persons and their face images</span>
+person = face_client.person_group_person.create(<span class="str">"employees"</span>, name=<span class="str">"Alice"</span>)
+face_client.person_group_person.add_face_from_url(
+    <span class="str">"employees"</span>, person.person_id, <span class="str">"https://example.com/alice.jpg"</span>
+)
+
+<span class="cm"># 3. Train the PersonGroup</span>
+face_client.person_group.train(<span class="str">"employees"</span>)
+
+<span class="cm"># 4. Detect faces in a new photo</span>
+detected = face_client.face.detect_with_url(<span class="str">"https://example.com/newphoto.jpg"</span>)
+face_ids = [f.face_id <span class="kw">for</span> f <span class="kw">in</span> detected]
+
+<span class="cm"># 5. Identify against the group</span>
+results = face_client.face.identify(face_ids, person_group_id=<span class="str">"employees"</span>)
+<span class="kw">for</span> r <span class="kw">in</span> results:
+    <span class="kw">if</span> r.candidates:
+        <span class="fn">print</span>(<span class="str">f"Identified: {r.candidates[0].person_id} ({r.candidates[0].confidence:.2f})"</span>)</pre>
+        </div>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam: The latest recognition model is <strong>recognition_04</strong> — use it for best accuracy. Always retrain PersonGroup after adding new face images.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m2s2')">← Custom Vision</button>
+        <button class="nav-btn next" onclick="showSection('m2s4')">Video Indexer →</button>
+      </div>
+    </div>
+
+    <div id="section-m2s4" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="02" style="background:linear-gradient(135deg,#0d2137,#0a2850);">
+        <div class="module-eyebrow">Module 2 · Section 4</div>
+        <h2>Video Indexer</h2>
+        <p>AI-powered video analysis for transcription, faces, topics, brands, and more.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎬</div>Video Indexer Insights</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Audio Insights</div>
+            <ul><li>Transcript (STT with timestamps)</li><li>Speaker diarization (who said what)</li><li>Keywords extracted from speech</li><li>Topics (Wikipedia-linked)</li><li>Emotions (joy, sadness, anger, fear)</li></ul>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">Visual Insights</div>
+            <ul><li>Faces (detect + identify)</li><li>Labels (objects/scenes)</li><li>Brands (logos, product names)</li><li>OCR (on-screen text)</li><li>Scenes &amp; shots (visual segmentation)</li></ul>
+          </div>
+        </div>
+        <ul class="lesson-list" style="margin-top:1rem;">
+          <li><strong>Account types:</strong> Trial (limited uploads, free) vs. Paid (connected to Azure Media Services)</li>
+          <li><strong>Indexing presets:</strong> Basic (audio only), Standard (audio+video), Advanced (+ deep analysis)</li>
+          <li><strong>Widgets:</strong> embed Player Widget + Insights Widget in any web app via iframe</li>
+          <li><strong>Access:</strong> <code>videoindexer.ai</code> portal or REST API with access token</li>
+        </ul>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam: If the question is about making video content <strong>searchable by spoken words</strong> → Video Indexer (transcript). If the question is about <strong>counting people in a zone</strong> or <strong>tracking movements</strong> → Azure AI Vision Spatial Analysis.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m2s3')">← Face API</button>
+        <button class="nav-btn next" onclick="showSection('m3s1')">Module 3: NLP →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 3 -->
+    <div id="section-m3s1" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="03" style="background:linear-gradient(135deg,#0a2010,#0f2d14);">
+        <div class="module-eyebrow">Module 3 · Section 1</div>
+        <h2>Azure AI Language</h2>
+        <p>Sentiment, NER, PII, key phrases, language detection — pre-built and custom.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">📝</div>Pre-built Language Features</h3>
+        <table class="styled-table">
+          <tr><th>Feature</th><th>What It Does</th><th>Key Parameter</th></tr>
+          <tr><td><strong>Sentiment Analysis</strong></td><td>Positive / Negative / Neutral + Mixed + Opinion Mining</td><td><code>show_opinion_mining=True</code></td></tr>
+          <tr><td><strong>Key Phrase Extraction</strong></td><td>Extract important topics from text</td><td>—</td></tr>
+          <tr><td><strong>NER</strong></td><td>Persons, locations, dates, orgs, phone numbers</td><td>—</td></tr>
+          <tr><td><strong>PII Detection</strong></td><td>Identify &amp; redact personal info (SSN, email, credit card)</td><td>Categories filter</td></tr>
+          <tr><td><strong>Language Detection</strong></td><td>Identify language + ISO code + confidence</td><td>—</td></tr>
+          <tr><td><strong>Text Summarization</strong></td><td>Abstractive or extractive summary</td><td><code>summary_type</code></td></tr>
+        </table>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💻</div>Code: Sentiment + Opinion Mining</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="kw">from</span> <span class="cls">azure.ai.textanalytics</span> <span class="kw">import</span> TextAnalyticsClient
+<span class="kw">from</span> <span class="cls">azure.core.credentials</span> <span class="kw">import</span> AzureKeyCredential
+
+client = <span class="cls">TextAnalyticsClient</span>(
+    endpoint=<span class="str">"https://my-language.cognitiveservices.azure.com/"</span>,
+    credential=<span class="cls">AzureKeyCredential</span>(<span class="str">"KEY"</span>)
+)
+
+docs = [<span class="str">"Azure is powerful but the pricing is confusing."</span>]
+
+<span class="cm"># Opinion mining reveals aspect-level sentiment</span>
+results = client.analyze_sentiment(docs, show_opinion_mining=<span class="kw">True</span>)
+<span class="kw">for</span> doc <span class="kw">in</span> results:
+    <span class="fn">print</span>(<span class="str">f"Overall: {doc.sentiment}"</span>)
+    <span class="kw">for</span> sentence <span class="kw">in</span> doc.sentences:
+        <span class="kw">for</span> opinion <span class="kw">in</span> sentence.mined_opinions:
+            target = opinion.target
+            <span class="fn">print</span>(<span class="str">f"  Target: {target.text} → {target.sentiment}"</span>)
+            <span class="kw">for</span> assessment <span class="kw">in</span> opinion.assessments:
+                <span class="fn">print</span>(<span class="str">f"    Assessment: {assessment.text} ({assessment.sentiment})"</span>)
+
+<span class="cm"># Output:</span>
+<span class="cm"># Overall: mixed</span>
+<span class="cm"># Target: Azure → positive  Assessment: powerful (positive)</span>
+<span class="cm"># Target: pricing → negative  Assessment: confusing (negative)</span></pre>
+        </div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m2s4')">← Video Indexer</button>
+        <button class="nav-btn next" onclick="showSection('m3s2')">Q&amp;A &amp; CLU →</button>
+      </div>
+    </div>
+
+    <div id="section-m3s2" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="03" style="background:linear-gradient(135deg,#0a2010,#0f2d14);">
+        <div class="module-eyebrow">Module 3 · Section 2</div>
+        <h2>Question Answering & CLU</h2>
+        <p>Custom Q&A knowledge bases, Conversational Language Understanding, and Orchestration Workflow.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">❓</div>Question Answering</h3>
+        <ul class="lesson-list">
+          <li><strong>Successor to QnA Maker</strong> — part of Azure AI Language</li>
+          <li>Create a knowledge base from: FAQ URLs, PDF/Word docs, or manual QA pairs</li>
+          <li><strong>Custom QA</strong> — train on your content; <strong>Prebuilt QA</strong> — no project needed</li>
+          <li>Confidence score threshold: default 0, recommend setting ≥0.5 in production</li>
+          <li><strong>Multi-turn conversations:</strong> define follow-up prompts for clarification flows</li>
+          <li><strong>Chitchat:</strong> add personality (professional, friendly, witty) for small talk</li>
+          <li>Active learning: uses low-confidence user queries to suggest new QA pairs</li>
+        </ul>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🗣️</div>Conversational Language Understanding (CLU)</h3>
+        <ul class="lesson-list">
+          <li><strong>Successor to LUIS</strong> — same concept, improved model</li>
+          <li><strong>Intents</strong> = what the user wants (e.g., BookFlight, CheckWeather)</li>
+          <li><strong>Entities</strong> = key info extracted (e.g., City, Date, FlightClass)</li>
+          <li>Minimum utterances per intent: <strong>5 recommended</strong> (15–30 for production)</li>
+          <li><strong>Orchestration Workflow</strong> — meta-project that routes to CLU, QA, or LUIS based on input</li>
+          <li>Deploy to Language endpoint → call via REST or SDK with <code>analyze_conversation()</code></li>
+        </ul>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam: "single app routing between intent recognizer and FAQ" → <strong>Orchestration Workflow</strong>. "extract what user wants and key data points" → <strong>CLU</strong>. "FAQ-style answers" → <strong>Question Answering</strong>.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m3s1')">← Azure AI Language</button>
+        <button class="nav-btn next" onclick="showSection('m3s3')">Speech Services →</button>
+      </div>
+    </div>
+
+    <div id="section-m3s3" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="03" style="background:linear-gradient(135deg,#0a2010,#0f2d14);">
+        <div class="module-eyebrow">Module 3 · Section 3</div>
+        <h2>Azure AI Speech</h2>
+        <p>STT, TTS, SSML, Custom Speech, Speaker Diarization, and Speech Translation.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎤</div>Speech-to-Text (STT)</h3>
+        <ul class="lesson-list">
+          <li><strong>Real-time recognition:</strong> live microphone or streaming audio</li>
+          <li><strong>Batch transcription:</strong> async processing of large audio files (Azure Blob) — use for 500+ hours</li>
+          <li><strong>Custom Speech:</strong> upload audio + transcripts to improve accuracy for domain-specific vocabulary</li>
+          <li><strong>Speaker Diarization:</strong> labels utterances by speaker — "who said what" — enabled via <code>diarization_config</code></li>
+          <li><strong>Keyword Recognition:</strong> detect specific wake words locally without cloud calls</li>
+        </ul>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔊</div>Text-to-Speech (TTS) & SSML</h3>
+        <ul class="lesson-list">
+          <li>400+ voices, 140+ languages. Neural voices = highly natural speech</li>
+          <li><strong>Custom Neural Voice:</strong> clone a voice from 300+ recordings — <span class="badge yellow">Limited Access</span></li>
+          <li><strong>SSML</strong> (Speech Synthesis Markup Language) — control output precisely:</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">SSML — Speech Synthesis Markup</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="str">&lt;speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"&gt;</span>
+  <span class="str">&lt;voice name="en-US-JennyNeural"&gt;</span>
+    <span class="str">&lt;prosody rate="slow" pitch="+10%"&gt;</span>
+      Welcome to the Azure AI course.
+    <span class="str">&lt;/prosody&gt;</span>
+    <span class="str">&lt;break time="2s"/&gt;</span>
+    <span class="str">&lt;emphasis level="strong"&gt;</span>This is important!<span class="str">&lt;/emphasis&gt;</span>
+  <span class="str">&lt;/voice&gt;</span>
+<span class="str">&lt;/speak&gt;</span></pre>
+        </div>
+        <div class="callout tip"><div class="callout-icon"></div><div>For simultaneous speech recognition + translation: use <strong>TranslationRecognizer</strong> with <strong>SpeechTranslationConfig</strong> — not SpeechRecognizer.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m3s2')">← Q&amp;A &amp; CLU</button>
+        <button class="nav-btn next" onclick="showSection('m3s4')">Translator →</button>
+      </div>
+    </div>
+
+    <div id="section-m3s4" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="03" style="background:linear-gradient(135deg,#0a2010,#0f2d14);">
+        <div class="module-eyebrow">Module 3 · Section 4</div>
+        <h2>Azure AI Translator</h2>
+        <p>Neural machine translation, transliteration, language detection, and custom models.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🌍</div>Translator Key Facts</h3>
+        <ul class="lesson-list">
+          <li>Neural Machine Translation for <strong>100+ languages</strong></li>
+          <li><strong>Global endpoint:</strong> <code>api.cognitive.microsofttranslator.com</code> — NOT regional!</li>
+          <li><strong>Required headers:</strong> <code>Ocp-Apim-Subscription-Key</code> AND <code>Ocp-Apim-Subscription-Region</code></li>
+          <li>Operations: Translate, Transliterate, Detect, Dictionary Lookup, Dictionary Examples, BreakSentence</li>
+          <li><strong>Custom Translator:</strong> upload parallel bilingual documents → domain-specific model</li>
+          <li><strong>Document Translation:</strong> async translation of entire files (PDF, Word, PowerPoint) maintaining formatting</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python — Translate Text</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="kw">import</span> requests, uuid
+
+url = <span class="str">"https://api.cognitive.microsofttranslator.com/translate"</span>
+params = {<span class="str">"api-version"</span>: <span class="str">"3.0"</span>, <span class="str">"from"</span>: <span class="str">"en"</span>, <span class="str">"to"</span>: [<span class="str">"fr"</span>, <span class="str">"ar"</span>]}
+headers = {
+    <span class="str">"Ocp-Apim-Subscription-Key"</span>: <span class="str">"YOUR_KEY"</span>,
+    <span class="str">"Ocp-Apim-Subscription-Region"</span>: <span class="str">"eastus"</span>,  <span class="cm"># REQUIRED!</span>
+    <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>,
+    <span class="str">"X-ClientTraceId"</span>: <span class="fn">str</span>(uuid.uuid4())
+}
+body = [{<span class="str">"text"</span>: <span class="str">"Azure AI is amazing!"</span>}]
+
+response = requests.post(url, params=params, headers=headers, json=body)
+<span class="fn">print</span>(response.json())
+<span class="cm"># [{"translations": [{"text": "Azure AI est incroyable!", "to": "fr"}, ...]}]</span></pre>
+        </div>
+        <div class="callout warning"><div class="callout-icon"></div><div>The <code>Ocp-Apim-Subscription-Region</code> header is <strong>mandatory</strong> for Translator when using a multi-service resource key. Omitting it causes a 401 error. Azure AI Language does NOT require this header.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m3s3')">← Speech</button>
+        <button class="nav-btn next" onclick="showSection('m4s1')">Module 4: Knowledge Mining →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 4 -->
+    <div id="section-m4s1" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="04" style="background:linear-gradient(135deg,#1a0f30,#2a1550);">
+        <div class="module-eyebrow">Module 4 · Section 1</div>
+        <h2>Azure AI Search</h2>
+        <p>Indexes, indexers, data sources, query types — simple, semantic, and vector.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔎</div>Azure AI Search Architecture</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Core Components</div>
+            <ul><li><strong>Index</strong> — schema: fields with types + attributes</li><li><strong>Data Source</strong> — Blob, SQL, Cosmos DB, SharePoint</li><li><strong>Indexer</strong> — automated pipeline, supports scheduling</li><li><strong>Skillset</strong> — AI enrichment pipeline (OCR, NLP)</li><li><strong>Knowledge Store</strong> — persist enrichments to Storage</li></ul>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">Field Attributes</div>
+            <ul><li><strong>searchable</strong> — full-text indexed</li><li><strong>filterable</strong> — use in $filter</li><li><strong>sortable</strong> — use in $orderby</li><li><strong>facetable</strong> — aggregate counts</li><li><strong>retrievable</strong> — returned in results</li><li><strong>key</strong> — unique document identifier</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🔬</div>Query Types</h3>
+        <table class="styled-table">
+          <tr><th>Type</th><th>How It Works</th><th>When to Use</th></tr>
+          <tr><td><strong>Simple</strong></td><td>Basic keyword matching with wildcards</td><td>Simple text search</td></tr>
+          <tr><td><strong>Full Lucene</strong></td><td>Regex, fuzzy (~), proximity, boosting</td><td>Advanced keyword search</td></tr>
+          <tr><td><strong>Semantic</strong></td><td>Re-ranks results using language models; extracts captions + answers</td><td>Natural language queries</td></tr>
+          <tr><td><strong>Vector</strong></td><td>ANN search on embedding vectors (HNSW algorithm)</td><td>Semantic similarity / RAG</td></tr>
+          <tr><td><strong>Hybrid</strong></td><td>Combines keyword + vector via Reciprocal Rank Fusion</td><td>Best overall recall</td></tr>
+        </table>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam: <strong>HNSW</strong> = Hierarchical Navigable Small World = ANN vector search algorithm (approximate, fast). <strong>EKNN</strong> = Exhaustive KNN = exact but slow. Use HNSW for production scale.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m3s4')">← Translator</button>
+        <button class="nav-btn next" onclick="showSection('m4s2')">AI Enrichment →</button>
+      </div>
+    </div>
+
+    <div id="section-m4s2" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="04" style="background:linear-gradient(135deg,#1a0f30,#2a1550);">
+        <div class="module-eyebrow">Module 4 · Section 2</div>
+        <h2>AI Enrichment & Knowledge Store</h2>
+        <p>Skillsets, built-in skills, custom WebApiSkill, and persisting enrichments.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">⚙️</div>Built-in Skills</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-title">Text Skills</div>
+            <ul><li>LanguageDetectionSkill</li><li>KeyPhraseExtractionSkill</li><li>EntityRecognitionSkill</li><li>SentimentSkill</li><li>SplitSkill (chunk documents)</li><li>MergeSkill (combine fields)</li><li>TextTranslationSkill</li></ul>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">Vision + Custom Skills</div>
+            <ul><li>OcrSkill (extract text from images)</li><li>ImageAnalysisSkill (tags, captions)</li><li>ShaperSkill (reshape into complex type)</li><li><strong>WebApiSkill</strong> — call any Azure Function or HTTP endpoint</li><li>AzureMachineLearningSkill</li></ul>
+          </div>
+        </div>
+        <div class="callout success"><div class="callout-icon"></div><div><strong>Custom Skill Pattern:</strong> WebApiSkill calls an Azure Function that accepts a JSON body with a <code>values</code> array, processes each record, and returns a <code>values</code> array with enriched output. This lets you integrate any ML model.</div></div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💾</div>Knowledge Store</h3>
+        <ul class="lesson-list">
+          <li>Persists AI enrichments from indexing to Azure Storage (outside the search index)</li>
+          <li><strong>Three projection types:</strong></li>
+          <li class="sub"><strong>Tables</strong> → Azure Table Storage (rows per document/chunk)</li>
+          <li class="sub"><strong>Objects</strong> → Azure Blob as JSON files</li>
+          <li class="sub"><strong>Files</strong> → Azure Blob as normalized images</li>
+          <li>Used for: Power BI analysis, downstream ML pipelines, audit trails</li>
+          <li><code>generatedKeyName</code> defines the RowKey field in table projections</li>
+        </ul>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m4s1')">← AI Search</button>
+        <button class="nav-btn next" onclick="showSection('m4s3')">Document Intelligence →</button>
+      </div>
+    </div>
+
+    <div id="section-m4s3" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="04" style="background:linear-gradient(135deg,#1a0f30,#2a1550);">
+        <div class="module-eyebrow">Module 4 · Section 3</div>
+        <h2>Document Intelligence</h2>
+        <p>Pre-built models, custom template/neural models, composed models, and Layout API.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">📄</div>Pre-built Models</h3>
+        <table class="styled-table">
+          <tr><th>Model</th><th>What It Extracts</th></tr>
+          <tr><td><strong>Read</strong></td><td>OCR — all text with language detection, no semantic fields</td></tr>
+          <tr><td><strong>Layout</strong></td><td>Structure: paragraphs, tables, headings, selection marks (checkboxes)</td></tr>
+          <tr><td><strong>Invoice</strong></td><td>VendorName, InvoiceTotal, LineItems, Tax, DueDate, etc.</td></tr>
+          <tr><td><strong>Receipt</strong></td><td>MerchantName, TransactionDate, Total, Items</td></tr>
+          <tr><td><strong>ID Document</strong></td><td>Name, DOB, address, document number from IDs/passports</td></tr>
+          <tr><td><strong>Business Card</strong></td><td>Name, company, email, phone, address</td></tr>
+          <tr><td><strong>W-2 / 1040</strong></td><td>US tax form fields</td></tr>
+        </table>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎓</div>Custom Models</h3>
+        <ul class="lesson-list">
+          <li><strong>Custom Template:</strong> fixed-layout forms (consistent field positions) — minimum 5 labelled samples</li>
+          <li><strong>Custom Neural:</strong> variable-layout forms — requires ~15+ labelled samples, handles diverse layouts</li>
+          <li><strong>Composed Model:</strong> bundle multiple custom models under one model ID — service picks the best match</li>
+          <li>Label using the <strong>Document Intelligence Studio</strong>: <code>documentintelligence.ai.azure.com</code></li>
+          <li><strong>selectionMarks</strong> output = checkboxes and radio buttons with selected/unselected state</li>
+        </ul>
+        <div class="callout tip"><div class="callout-icon"></div><div>Exam: "200 PDFs with same layout" → Custom Template. "Variable layout invoices" → Custom Neural. "Generic invoice extraction without training" → Pre-built Invoice model.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m4s2')">← AI Enrichment</button>
+        <button class="nav-btn next" onclick="showSection('m5s1')">Module 5: Generative AI →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 5 -->
+    <div id="section-m5s1" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="05" style="background:linear-gradient(135deg,#1f1000,#3d2000);">
+        <div class="module-eyebrow">Module 5 · Section 1</div>
+        <h2>Azure OpenAI Service</h2>
+        <p>Models, deployments, completions API, parameters, and content filtering.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🤖</div>Azure OpenAI Fundamentals</h3>
+        <div class="compare-grid">
+          <div class="compare-col">
+            <div class="compare-col-head blue">Available Models</div>
+            <ul><li>GPT-4o, GPT-4, GPT-4-Turbo (chat + vision)</li><li>GPT-3.5-Turbo (fast, economical)</li><li>text-embedding-3-small / large, ada-002</li><li>DALL-E 3 (image generation)</li><li>Whisper (speech-to-text)</li></ul>
+          </div>
+          <div class="compare-col">
+            <div class="compare-col-head teal">Key Concepts</div>
+            <ul><li>Requires application approval to access</li><li>You deploy a model → give it a <strong>deployment name</strong></li><li>API calls use <strong>deployment name</strong>, NOT model name</li><li>Quota measured in TPM (tokens per minute)</li><li>Content filtering built-in (4 harm categories)</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">💻</div>Chat Completions API</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python — Azure OpenAI</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="kw">from</span> <span class="cls">openai</span> <span class="kw">import</span> AzureOpenAI
+
+client = <span class="cls">AzureOpenAI</span>(
+    azure_endpoint=<span class="str">"https://my-openai.openai.azure.com/"</span>,
+    api_key=<span class="str">"YOUR_API_KEY"</span>,
+    api_version=<span class="str">"2024-02-01"</span>
+)
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt4o-prod"</span>,  <span class="cm"># YOUR deployment name, not "gpt-4o"!</span>
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>,  <span class="str">"content"</span>: <span class="str">"You are a helpful Azure AI expert."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>,    <span class="str">"content"</span>: <span class="str">"Explain Azure AI Search in 3 points."</span>}
+    ],
+    temperature=<span class="num">0.3</span>,    <span class="cm"># 0=deterministic, 1=creative</span>
+    max_tokens=<span class="num">500</span>,
+    top_p=<span class="num">0.9</span>,
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+<span class="fn">print</span>(<span class="str">f"Tokens used: {response.usage.total_tokens}"</span>)
+<span class="fn">print</span>(<span class="str">f"Finish reason: {response.choices[0].finish_reason}"</span>)
+<span class="cm"># finish_reason: "stop" | "length" | "tool_calls" | "content_filter"</span></pre>
+        </div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m4s3')">← Document Intelligence</button>
+        <button class="nav-btn next" onclick="showSection('m5s2')">Prompt Engineering →</button>
+      </div>
+    </div>
+
+    <div id="section-m5s2" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="05" style="background:linear-gradient(135deg,#1f1000,#3d2000);">
+        <div class="module-eyebrow">Module 5 · Section 2</div>
+        <h2>Prompt Engineering</h2>
+        <p>Zero-shot, few-shot, CoT, system prompts, and parameter tuning.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">✏️</div>Prompting Techniques</h3>
+        <table class="styled-table">
+          <tr><th>Technique</th><th>Description</th><th>Best For</th></tr>
+          <tr><td><strong>Zero-shot</strong></td><td>No examples in prompt — direct instruction only</td><td>Simple, well-defined tasks</td></tr>
+          <tr><td><strong>Few-shot</strong></td><td>2–5 input→output examples before the actual input</td><td>Formatting, classification</td></tr>
+          <tr><td><strong>Chain-of-Thought</strong></td><td>Add "Think step by step" — model explains reasoning</td><td>Math, logic, complex decisions</td></tr>
+          <tr><td><strong>System Prompt</strong></td><td>Set persona, constraints, output format, safety rules</td><td>All production applications</td></tr>
+          <tr><td><strong>Grounding</strong></td><td>Include retrieved context; instruct "only use provided context"</td><td>RAG — reduce hallucinations</td></tr>
+        </table>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎛️</div>Parameter Reference</h3>
+        <table class="styled-table">
+          <tr><th>Parameter</th><th>Range</th><th>Effect</th></tr>
+          <tr><td><code>temperature</code></td><td>0–2</td><td>0=deterministic/factual, 1=balanced, 2=creative/random</td></tr>
+          <tr><td><code>top_p</code></td><td>0–1</td><td>Nucleus sampling — 0.1=top 10% tokens only, 1=all tokens</td></tr>
+          <tr><td><code>max_tokens</code></td><td>1–model max</td><td>Maximum response length (not input length)</td></tr>
+          <tr><td><code>frequency_penalty</code></td><td>-2 to 2</td><td>Reduce repetition of frequent tokens</td></tr>
+          <tr><td><code>presence_penalty</code></td><td>-2 to 2</td><td>Encourage topic diversity (new subjects)</td></tr>
+          <tr><td><code>stop</code></td><td>string list</td><td>Stop generation at specific tokens</td></tr>
+        </table>
+        <div class="callout tip"><div class="callout-icon"></div><div>Don't set both <code>temperature</code> and <code>top_p</code> at non-default values simultaneously — they interact. Pick one to control diversity.</div></div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m5s1')">← Azure OpenAI</button>
+        <button class="nav-btn next" onclick="showSection('m5s3')">RAG Architecture →</button>
+      </div>
+    </div>
+
+    <div id="section-m5s3" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="05" style="background:linear-gradient(135deg,#1f1000,#3d2000);">
+        <div class="module-eyebrow">Module 5 · Section 3</div>
+        <h2>RAG Architecture</h2>
+        <p>Retrieval-Augmented Generation on Azure — embeddings, vector search, and grounding.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🗃️</div>RAG Pipeline on Azure</h3>
+        <ul class="lesson-list">
+          <li><strong>Step 1 — Ingest:</strong> chunk documents into ~512 token segments → generate embeddings via <code>text-embedding-3-small</code></li>
+          <li><strong>Step 2 — Store:</strong> vector index in Azure AI Search (HNSW) or Cosmos DB for MongoDB vCore</li>
+          <li><strong>Step 3 — Retrieve:</strong> embed user query → ANN search → top-K chunks</li>
+          <li><strong>Step 4 — Generate:</strong> inject chunks into prompt → GPT-4o generates grounded answer</li>
+          <li class="sub">System prompt: "Only answer from the provided context. Say 'I don't know' if not found."</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python — RAG with Azure OpenAI + AI Search</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><span class="cm"># 1. Generate embedding for the user query</span>
+embedding_response = client.embeddings.create(
+    model=<span class="str">"text-embedding-3-small"</span>,  <span class="cm"># deployment name</span>
+    input=user_query
+)
+query_vector = embedding_response.data[<span class="num">0</span>].embedding
+
+<span class="cm"># 2. Vector search in AI Search</span>
+<span class="kw">from</span> <span class="cls">azure.search.documents.models</span> <span class="kw">import</span> VectorizedQuery
+results = search_client.search(
+    search_text=<span class="kw">None</span>,
+    vector_queries=[<span class="cls">VectorizedQuery</span>(
+        vector=query_vector, k_nearest_neighbors=<span class="num">5</span>,
+        fields=<span class="str">"content_vector"</span>
+    )]
+)
+chunks = [r[<span class="str">"content"</span>] <span class="kw">for</span> r <span class="kw">in</span> results]
+
+<span class="cm"># 3. Generate grounded answer</span>
+context = <span class="str">"\n\n"</span>.join(chunks)
+response = client.chat.completions.create(
+    model=<span class="str">"gpt4o-prod"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">f"Answer ONLY from:\n\n{context}"</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>,   <span class="str">"content"</span>: user_query}
+    ]
+)</pre>
+        </div>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m5s2')">← Prompt Engineering</button>
+        <button class="nav-btn next" onclick="showSection('m5s4')">DALL-E &amp; Safety →</button>
+      </div>
+    </div>
+
+    <div id="section-m5s4" class="section-page" style="padding:2rem 3rem 1rem;">
+      <div class="module-banner" data-num="05" style="background:linear-gradient(135deg,#1f1000,#3d2000);">
+        <div class="module-eyebrow">Module 5 · Section 4</div>
+        <h2>DALL-E 3 & Content Safety</h2>
+        <p>Image generation, content filters, prompt shields, and groundedness detection.</p>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🎨</div>DALL-E 3 Image Generation</h3>
+        <ul class="lesson-list">
+          <li>Resolutions: <strong>1024×1024</strong>, 1024×1792 (portrait), 1792×1024 (landscape)</li>
+          <li>Style: <code>vivid</code> (hyperrealistic) or <code>natural</code> (softer, less saturated)</li>
+          <li>Quality: <code>standard</code> or <code>hd</code> (more detail, higher cost)</li>
+          <li>Response includes <code>revised_prompt</code> — DALL-E may rewrite for safety/quality</li>
+          <li>Image URL expires after 1 hour — download and store if needed</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot red"></div><div class="code-dot yellow"></div><div class="code-dot green"></div></div>
+            <span class="code-lang">Python — DALL-E 3</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre>result = client.images.generate(
+    model=<span class="str">"dall-e-3"</span>,   <span class="cm"># your deployment name</span>
+    prompt=<span class="str">"A futuristic Azure data center glowing blue in space"</span>,
+    n=<span class="num">1</span>,
+    size=<span class="str">"1792x1024"</span>,
+    quality=<span class="str">"hd"</span>,
+    style=<span class="str">"vivid"</span>
+)
+<span class="fn">print</span>(result.data[<span class="num">0</span>].url)            <span class="cm"># temporary URL (1 hr expiry)</span>
+<span class="fn">print</span>(result.data[<span class="num">0</span>].revised_prompt)  <span class="cm"># what DALL-E actually used</span></pre>
+        </div>
+      </div>
+      <div class="topic-section">
+        <h3><div class="topic-icon">🛡️</div>Azure AI Content Safety Features</h3>
+        <table class="styled-table">
+          <tr><th>Feature</th><th>What It Detects</th></tr>
+          <tr><td>Text/Image Moderation</td><td>Hate, Sexual, Violence, Self-harm (severity 0–6)</td></tr>
+          <tr><td>Prompt Shield</td><td>Jailbreak attacks, indirect prompt injection</td></tr>
+          <tr><td><strong>Groundedness Detection</strong></td><td>AI response contradicts or ignores retrieved context (RAG)</td></tr>
+          <tr><td>Protected Material</td><td>Copyrighted text or code in model output</td></tr>
+          <tr><td>Custom Categories</td><td>Define your own harm categories with examples</td></tr>
+        </table>
+      </div>
+      <div class="section-nav">
+        <button class="nav-btn prev" onclick="showSection('m5s3')">← RAG Architecture</button>
+        <button class="nav-btn next" onclick="showSection('m6s1')">Module 6: Practice Q&amp;A →</button>
+      </div>
+    </div>
+
+    <!-- MODULE 6 — PRACTICE QUESTIONS -->
+    <div id="section-m6s1" class="section-page" style="padding:2rem 3rem 1rem;" data-qset="1"></div>
+    <div id="section-m6s2" class="section-page" style="padding:2rem 3rem 1rem;" data-qset="2"></div>
+    <div id="section-m6s3" class="section-page" style="padding:2rem 3rem 1rem;" data-qset="3"></div>
+    <div id="section-m6s4" class="section-page" style="padding:2rem 3rem 1rem;" data-qset="4"></div>
+    <div id="section-m6s5" class="section-page" style="padding:2rem 3rem 1rem;" data-qset="5"></div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// QUESTION DATA
+// ═══════════════════════════════════════════════════
+const QUESTIONS = [
+  // Q1-10 Module 1
+  {q:"You need to call Azure AI Services from Azure VMs without storing any keys. What is the BEST authentication approach?",opts:["Store API keys in Azure Key Vault and reference at runtime","Use Managed Identity and assign the Cognitive Services User role","Hard-code keys in the application config file","Use SAS tokens generated from the Azure portal"],ans:1,expl:"Managed Identity removes credential management entirely. Assigning 'Cognitive Services User' grants access without storing any secrets. Key Vault (A) is good but still involves a secret. Hard-coding (C) is insecure. SAS tokens (D) are for Azure Storage, not AI Services."},
+  {q:"You want to create an alert when TotalErrors metric exceeds 100 in 5 minutes. Which Azure service should you configure?",opts:["Azure Service Health","Azure Monitor Alerts","Microsoft Defender for Cloud","Azure Advisor"],ans:1,expl:"Azure Monitor Alerts lets you define metric-based alert rules on any Azure resource including AI Services metrics like TotalErrors. Service Health monitors platform outages. Defender is security posture management. Advisor gives recommendations, not real-time alerts."},
+  {q:"You need data processed by Azure AI Services to be encrypted with a key YOUR org controls and can revoke. What should you configure?",opts:["Azure Defender encryption","Platform-managed key (default)","Customer-managed key (CMK) in Azure Key Vault","Double encryption with Microsoft-managed keys"],ans:2,expl:"CMK lets you store the encryption key in your Azure Key Vault. Revoking or deleting that key makes the data immediately inaccessible. Platform-managed keys (B) are managed by Microsoft — you cannot revoke them. CMK is required when revocability is a requirement."},
+  {q:"Your Azure VM needs to connect to Azure AI Vision with NO public internet exposure. What should you configure?",opts:["Set a firewall rule for the VM's public IP","Create a Private Endpoint for the AI resource in the same VNet","Enable VNet Service Endpoints and disable public access","Use CORS policy on the AI resource"],ans:1,expl:"A Private Endpoint assigns a private IP in your VNet to the AI resource — traffic never leaves the Azure backbone. Firewall IP rules (A) still use the public endpoint. Service Endpoints (C) route via Azure backbone but endpoint remains public. CORS (D) handles browser cross-origin requests, not network isolation."},
+  {q:"Which Responsible AI principle specifically addresses ensuring AI systems behave as designed and do NOT cause unintended harm?",opts:["Fairness","Reliability and Safety","Transparency","Inclusiveness"],ans:1,expl:"Reliability and Safety means AI systems must perform reliably under expected and unexpected conditions without causing harm. Fairness focuses on equal treatment. Transparency focuses on explainability. Inclusiveness ensures no group is disadvantaged."},
+  {q:"A colleague needs to READ the subscription keys from an Azure AI Services resource. Which RBAC role is sufficient?",opts:["Cognitive Services User","Reader","Cognitive Services Contributor","Storage Blob Data Reader"],ans:2,expl:"Cognitive Services Contributor grants permission to read keys and manage the resource. Cognitive Services User enables API calls via Entra ID but CANNOT read subscription keys. The generic Reader role provides read-only metadata access but no key visibility. Storage Blob Data Reader is for storage, not AI Services."},
+  {q:"You want all Azure AI Services diagnostic logs sent to a destination where you can run KQL queries. Which destination should you choose?",opts:["Azure Storage Account","Azure Event Hub","Log Analytics Workspace","Application Insights only"],ans:2,expl:"Log Analytics Workspace is the destination that supports KQL (Kusto Query Language) queries. Storage Account archives logs but is not queryable with KQL directly. Event Hub streams logs to external consumers. Application Insights supports queries but is for application telemetry, not all resource diagnostics."},
+  {q:"Your organization must comply with a regulation requiring all AI-generated content to be explainable by humans. Which Responsible AI principle does this align with?",opts:["Fairness","Accountability","Transparency","Reliability"],ans:2,expl:"Transparency means AI systems should be understandable — humans should be able to examine and explain AI behavior and decisions. Accountability covers who is responsible. Reliability covers consistent performance. Fairness covers equal treatment."},
+  {q:"Which Azure AI Content Safety feature specifically detects if a model's response is NOT supported by the retrieved context chunks in a RAG system?",opts:["Hate and Fairness detection","Groundedness detection","Jailbreak attack detection","Protected material detection"],ans:1,expl:"Groundedness detection checks whether an AI-generated response is factually grounded in the provided source context. Responses that contradict or ignore retrieved chunks are flagged as ungrounded — critical for RAG quality. The other features detect harmful content, prompt attacks, and copyrighted material."},
+  {q:"You provision an Azure AI Services multi-service resource. What is the correct endpoint hostname format?",opts:["https://<name>.openai.azure.com/","https://<name>.cognitiveservices.azure.com/","https://api.cognitive.microsofttranslator.com","https://<name>.azure-api.net/"],ans:1,expl:"Multi-service (Cognitive Services) and most single-service AI resources use the pattern <name>.cognitiveservices.azure.com. The openai.azure.com hostname is specific to Azure OpenAI Service. api.cognitive.microsofttranslator.com is the global Translator endpoint. azure-api.net is Azure API Management."},
+
+  // Q11-20 Module 2
+  {q:"You want to extract ALL text from scanned invoice images. Which Azure AI Vision feature should you use?",opts:["Tags","Caption","Read (OCR)","Objects"],ans:2,expl:"The Read feature (OCR) in Azure AI Vision is designed for text extraction from images and PDFs, handling both printed and handwritten text. Tags identify subjects. Caption generates a description. Objects detects physical objects with bounding boxes — none extract raw text."},
+  {q:"A company has 200 custom product categories not covered by any pre-built model. What should they use to classify product photos?",opts:["Azure AI Vision Image Analysis with general tags","Custom Vision classification project with Compact domain","Face API with PersonGroup","Azure AI Search with image vector index"],ans:1,expl:"Custom Vision lets you train a classifier on your own categories. No pre-built model covers 200 company-specific categories. Compact domain enables mobile/edge export. Face API is for human faces. AI Search doesn't classify images natively."},
+  {q:"You trained a Custom Vision model and want to deploy it inside an iOS app for OFFLINE use. Which domain type must you select?",opts:["General (S1)","General (Compact)","Object Detection (General)","General [A2]"],ans:1,expl:"Only Compact domain models can be exported to CoreML (iOS), TensorFlow, ONNX, etc. for offline/edge scenarios. Standard domains (S1, A2) only work via cloud API — they cannot be exported. Object Detection Compact would work for bounding-box tasks, but for classification you need General Compact."},
+  {q:"You need to determine whether two employee badge photos show the SAME person. Which Face API operation should you call?",opts:["Identify (1:N search against PersonGroup)","Find Similar","Verify (1:1 comparison)","Group"],ans:2,expl:"Verify compares two specific face IDs and returns a Boolean + confidence score for 1:1 comparison. Identify searches against a PersonGroup (1:N). Find Similar finds faces that look alike. Group clusters unknown faces. For 'are these the same person?' between two images, Verify is correct."},
+  {q:"After adding 50 new training images to Custom Vision and labelling them, what is the NEXT required step?",opts:["Republish the existing iteration","Retrain the model to create a new iteration","Export the model to ONNX","Update the prediction endpoint URL"],ans:1,expl:"Adding images does NOT automatically update the model. You must explicitly trigger training, which creates a new Iteration. Only published iterations are available for prediction. You republish AFTER training. Export and URL updates come after training and publishing."},
+  {q:"Which Video Indexer insight enables keyword search across a video's SPOKEN audio content?",opts:["Labels","Transcript","Brands","Scenes"],ans:1,expl:"The Transcript insight contains time-stamped text of everything spoken in the video, generated by Speech-to-Text. Labels detect visual objects. Brands detect company/product names. Scenes segment the video visually. For searching spoken audio, the transcript is the correct answer."},
+  {q:"You want to detect face locations in images but NOT identify who those faces belong to. Which Face API operation is available without Limited Access approval?",opts:["Identify","Verify","Detect","Find Similar"],ans:2,expl:"Face Detect locates face positions and returns basic attributes (age estimate, emotion, blur, headpose) without identifying who the person is. This operation does NOT require Limited Access approval. Identify, Verify, and Find Similar all require Microsoft approval as they involve biometric identification."},
+  {q:"An Azure AI Vision response contains 'denseCaptions' output. What does this field represent?",opts:["OCR text extracted from specific regions","Natural language descriptions generated for multiple regions within the image","Color analysis of dense pixel regions","Confidence scores for all detected tags"],ans:1,expl:"Dense Captions generates a natural language caption for the entire image AND for individual detected regions within it, providing more granular descriptions than a single caption. It is NOT OCR, color analysis, or tag scores."},
+  {q:"Which Video Indexer indexing preset analyzes BOTH audio AND video content with the deepest AI insights?",opts:["Basic Indexing","Standard Indexing","Advanced Indexing","Full Indexing"],ans:2,expl:"Advanced Indexing provides the most comprehensive analysis including all audio insights (transcript, emotions, topics), all video insights (faces, labels, brands, OCR), plus additional deep insights like observed people and emotions. Basic covers audio only. Standard covers audio + video. There is no 'Full Indexing' preset."},
+  {q:"A Custom Vision model trained with 'General (S1)' domain achieves 97% accuracy. A stakeholder requests deploying it to Android phones. What must you tell them?",opts:["Simply export as TensorFlow Lite from the portal","The model is accurate enough for mobile deployment","The S1 domain cannot be exported; you must retrain with a Compact domain","Reduce the model size before exporting"],ans:2,expl:"Standard (S1) domain models cannot be exported — they only work via the Custom Vision cloud API. To deploy to Android, the model MUST be trained with a Compact domain (which supports TensorFlow Lite export). You cannot convert an existing S1 model to Compact — retraining is required."},
+
+  // Q21-30 Module 3
+  {q:"You need overall sentiment AND aspect-level sentiment (which specific features are positive/negative). Which feature should you use?",opts:["Sentiment Analysis without opinion mining","Sentiment Analysis with opinion mining enabled","Key Phrase Extraction","Named Entity Recognition"],ans:1,expl:"Opinion mining (show_opinion_mining=True) extracts targets (aspects like 'pricing', 'support') and their associated sentiment. Without it, you only get document-level sentiment. Key Phrase Extraction finds topics but not polarity. NER extracts entities without sentiment."},
+  {q:"A company wants to migrate LUIS to the latest Azure AI Language platform. What is the direct equivalent?",opts:["Question Answering","Conversational Language Understanding (CLU)","Custom Text Classification","Custom NER"],ans:1,expl:"CLU is the direct successor to LUIS — both support intent classification and entity extraction from conversational utterances. Question Answering replaces QnA Maker. Custom Text Classification and Custom NER handle document-level tasks, not conversational understanding."},
+  {q:"You need to transcribe 500 hours of pre-recorded call center audio files efficiently. Which Speech feature is BEST?",opts:["Real-time speech recognition","Batch transcription","Custom Speech","Speech translation"],ans:1,expl:"Batch transcription processes large volumes of audio files asynchronously. You submit files to the service and retrieve results when ready. Real-time recognition requires live audio. Custom Speech improves accuracy with training data but is not a transcription mode. Translation converts speech to another language."},
+  {q:"You want TTS output to pause 2 seconds and then speak slowly. What technology controls this?",opts:["Custom Neural Voice","SSML (Speech Synthesis Markup Language)","Audio profile configuration","Batch synthesis API"],ans:1,expl:"SSML is an XML-based markup language: <break time='2s'/> for pauses, <prosody rate='slow'> for speed control. Custom Neural Voice clones voices. Audio profiles set acoustic characteristics. Batch synthesis handles large-scale TTS generation."},
+  {q:"A Translator API call fails with 401. The request has a valid API key. What is MOST LIKELY missing?",opts:["Content-Type: application/json header","Ocp-Apim-Subscription-Region header","Accept-Language header","Authorization Bearer token"],ans:1,expl:"Azure AI Translator uses a GLOBAL endpoint. When using a multi-service resource key, the Subscription-Region header is required to route billing correctly. Without it, authentication fails (401). The key goes in Ocp-Apim-Subscription-Key. Azure AI Language does NOT require the region header."},
+  {q:"A user's question should route to either a CLU model OR a QA knowledge base. Which feature enables this routing?",opts:["Language Detection","Orchestration Workflow project","Sentiment Analysis pipeline","Custom Text Classification"],ans:1,expl:"Orchestration Workflow creates a meta-project that routes input utterances to the correct downstream project (CLU, QA, or LUIS) based on content. Language Detection identifies the language. Sentiment Analysis scores polarity. Custom Text Classification assigns categories — none route between models."},
+  {q:"Support tickets need to be automatically categorized as 'billing', 'technical', or 'feature request'. Which Azure AI Language feature is BEST?",opts:["Sentiment Analysis","Custom Text Classification (single-label)","Conversational Language Understanding","Question Answering"],ans:1,expl:"Custom Text Classification trains a model to assign documents to custom categories. These three categories are company-specific — no pre-built model covers them. CLU is for conversational utterances with intents/entities. QA is for question-answering from a knowledge base. Single-label classification assigns exactly one category per document."},
+  {q:"Which Speech SDK class handles SIMULTANEOUS speech recognition AND real-time translation?",opts:["SpeechRecognizer with TranslationConfig","TranslationRecognizer with SpeechTranslationConfig","SpeechSynthesizer","IntentRecognizer"],ans:1,expl:"TranslationRecognizer initialized with SpeechTranslationConfig handles simultaneous speech recognition + translation. You specify source and target languages. SpeechRecognizer only transcribes. SpeechSynthesizer produces TTS output. IntentRecognizer integrates with CLU/LUIS for intent detection."},
+  {q:"Azure AI Language Custom Text Classification minimum recommended utterances per LABEL is:",opts:["2","5 (minimum) — 15+ for production","1 per document","50"],ans:1,expl:"For Custom Text Classification, at least 10 labelled documents per class is recommended (vs. CLU which recommends 5 utterances per intent). The absolute minimum varies, but the exam typically expects '5' as the minimum and recommends more for production accuracy."},
+  {q:"Translator Document Translation is used to translate a 200-page Word document while preserving formatting. This is a:",opts:["Synchronous operation — response includes translated document immediately","Asynchronous operation — you poll for completion or use a callback","Streaming operation — receives chunks as they are translated","Batch text operation with JSON array input"],ans:1,expl:"Document Translation in Azure AI Translator is ASYNCHRONOUS — you submit the document to a source blob container, specify a target container, trigger translation, and poll the operation status URL. The translated document is written to the target container when complete. It is not synchronous, streaming, or a JSON array operation."},
+
+  // Q31-38 Module 4
+  {q:"You want Azure AI Search to automatically index new Blob Storage files every 30 minutes. What enables this?",opts:["Search index with scheduled refresh policy","Indexer with a schedule property (e.g., PT30M)","Skillset triggered by Azure Event Grid","Logic App calling the index API"],ans:1,expl:"Indexers in Azure AI Search have a built-in schedule property using ISO 8601 duration format (PT30M = every 30 minutes). The indexer connects to the blob data source and runs on schedule. You cannot set a refresh policy on the index itself. Logic Apps and Event Grid could work but are not the native built-in solution."},
+  {q:"A skillset needs to call a custom ML model hosted as an Azure Function during indexing. Which skill type is used?",opts:["EntityRecognitionSkill","WebApiSkill","MergeSkill","ShaperSkill"],ans:1,expl:"WebApiSkill calls any external HTTP endpoint (like an Azure Function) and maps the JSON response back into the enrichment pipeline. EntityRecognitionSkill is a built-in NER skill. MergeSkill concatenates text fields. ShaperSkill reshapes enrichments into a complex type without calling any external model."},
+  {q:"You want to persist AI enrichment outputs (key phrases, sentiment) to Azure Table Storage for Power BI analysis. What feature enables this?",opts:["Search Index projections","Knowledge Store with table projections","Azure Monitor diagnostic logs","Custom skill output field mappings"],ans:1,expl:"Knowledge Store stores enriched documents as objects, tables, or files in Azure Storage. Table projections map enrichment fields to Azure Table Storage rows, making them queryable by Power BI. Diagnostic logs capture operational data. Field mappings move data within the search index only."},
+  {q:"You need to build an Azure AI Search index where 'category' can be used for FILTERING but should NOT appear in search results returned to users.",opts:["searchable:true, retrievable:false","filterable:true, retrievable:false","facetable:true, searchable:false","sortable:true, filterable:false"],ans:1,expl:"filterable:true allows use in $filter expressions. retrievable:false means the field value is NOT returned in search results. This is a common pattern for security trimming or internal classification fields. searchable enables full-text indexing. facetable enables aggregation counts."},
+  {q:"You have 200 PDFs with identical fixed layouts. You need to extract vendor name and total amount. Which Document Intelligence model?",opts:["Pre-built Layout model","Pre-built Read model","Custom Template model","Custom Neural model"],ans:2,expl:"Custom Template models handle fixed-layout forms with consistent field positions, requiring as few as 5 labelled samples. 200 PDFs with the same layout is a perfect use case. Pre-built Layout extracts structure but not semantic field names. Read is OCR only. Custom Neural handles variable layouts."},
+  {q:"An AI Search query needs to find documents based on MEANING even when users don't use exact keywords. Which query type?",opts:["Simple query syntax","Full Lucene query syntax","Semantic ranker","Fuzzy search"],ans:2,expl:"Semantic ranker uses language models to re-rank results based on meaning rather than keyword frequency, improving relevance for natural language queries. It also returns semantic captions. Simple/Full Lucene are lexical (keyword-based). Fuzzy search handles typos but doesn't understand meaning."},
+  {q:"In Document Intelligence Layout model output, what does 'selectionMarks' represent?",opts:["Bookmarks and page anchors","Checkboxes and radio buttons with checked/unchecked state","Highlighted text spans","Table cell selection ranges"],ans:1,expl:"selectionMarks in the Layout model represents checkboxes, radio buttons, and similar form selection elements, including their state (selected/unselected). This is valuable for processing forms with checkable fields. It does not refer to bookmarks, highlights, or table cell ranges."},
+  {q:"Azure AI Search vector search uses HNSW for ANN search. What does HNSW stand for and what is its key tradeoff?",opts:["Highly Normalized Search Weighting — slower but exact","Hierarchical Navigable Small World — fast/scalable but approximate (not exact)","Hybrid Neural Search Weighting — uses both keyword and neural","High-resolution Neural Semantic Weighting — highest accuracy"],ans:1,expl:"HNSW = Hierarchical Navigable Small World — a graph-based ANN algorithm that provides fast, scalable vector search. The tradeoff is that results are approximate (not guaranteed exact nearest neighbors). EKNN (Exhaustive KNN) is exact but O(n) at query time. HNSW is the right choice for production-scale vector search."},
+
+  // Q39-50 Module 5
+  {q:"A developer deploys GPT-4 with deployment name 'gpt4-prod'. What should the 'model' parameter be in the API call?",opts:["gpt-4","gpt4-prod","gpt-4-turbo","openai/gpt-4"],ans:1,expl:"In Azure OpenAI, the 'model' parameter must match your DEPLOYMENT NAME (here: 'gpt4-prod'), not the underlying model name. This is a key difference from the standard OpenAI API where you specify the model name directly. Deployment names are chosen by you when creating the deployment."},
+  {q:"Your RAG app's LLM occasionally answers from its parametric knowledge instead of retrieved context. What is the MOST EFFECTIVE fix?",opts:["Set temperature to 0","Add 'Answer ONLY from the provided context. Do not use prior knowledge.' to the system prompt","Reduce top_p to 0.1","Use the presence_penalty parameter"],ans:1,expl:"Explicitly instructing the model in the system prompt to ONLY use provided context is the most effective RAG grounding technique. Temperature=0 makes output deterministic but doesn't prevent hallucinations. top_p controls diversity. presence_penalty discourages repetition. None of these prevent the model from using parametric knowledge."},
+  {q:"Which Azure OpenAI model should you use to convert text into vectors for semantic similarity search?",opts:["gpt-4o","dall-e-3","whisper-1","text-embedding-3-small"],ans:3,expl:"Embedding models (text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002) convert text into high-dimensional vectors for semantic similarity search in RAG pipelines. GPT-4o is for chat/text generation. DALL-E 3 generates images. Whisper transcribes audio. Only embedding models produce vectors for similarity search."},
+  {q:"A DALL-E 3 response includes a 'revised_prompt' different from the submitted prompt. What does this indicate?",opts:["The API encountered an error and used a fallback","DALL-E automatically rewrote the prompt for content policy compliance or quality improvement","The model doesn't support the requested resolution","The API version is outdated"],ans:1,expl:"DALL-E 3 includes a built-in prompt rewriter that may modify your input to improve image quality, add detail, or ensure content safety compliance. The revised_prompt shows exactly what the model used. This is expected behavior, not an error. The original intent is preserved but may be enhanced."},
+  {q:"When finish_reason='tool_calls' is returned by Azure OpenAI, what should your application do NEXT?",opts:["Display the response to the user","Execute the requested function(s) and call the API again with the results","Retry the same request","Log an error — tool_calls is an error state"],ans:1,expl:"finish_reason='tool_calls' means the model wants your app to execute a specific function with the provided arguments. Your app must: execute the function(s), add the tool results to the message history, and call the API again. 'stop' = normal completion. 'length' = max_tokens hit. 'content_filter' = blocked."},
+  {q:"Azure OpenAI content filtering can be configured to block which four harm categories?",opts:["Spam, Phishing, Malware, Ransomware","Hate, Sexual, Violence, Self-harm","Bias, Misinformation, Privacy, Copyright","Profanity, Threats, Harassment, Fraud"],ans:1,expl:"Azure OpenAI's built-in content filters cover four categories: Hate, Sexual, Violence, and Self-harm. Each can be configured independently with different severity thresholds (0–6 scale). The other options describe real harms but are not the four named categories in Azure OpenAI's content filtering system."},
+  {q:"You want to use Azure OpenAI 'On Your Data' feature to add RAG capabilities. Where does it retrieve documents from?",opts:["Directly from Azure Blob Storage via indexer","Azure AI Search index (connected to your data)","Azure Cosmos DB with vector search","Any REST API endpoint you specify"],ans:1,expl:"Azure OpenAI 'On Your Data' feature connects to an Azure AI Search index as the retrieval source. The search index must already be created and populated. It handles the RAG flow automatically: embed query → search → inject context → generate answer with citations. It does not directly index blob storage or call arbitrary REST APIs."},
+  {q:"What is the key difference between 'temperature' and 'top_p' in controlling Azure OpenAI output diversity?",opts:["Temperature controls response length; top_p controls creativity","Temperature scales all token probabilities before sampling; top_p limits sampling to tokens within a cumulative probability threshold","They are identical and only one should be set","Temperature is for chat; top_p is for completions only"],ans:1,expl:"Temperature scales the softmax logits — higher values flatten the distribution making all tokens more equally likely (more random). top_p (nucleus sampling) cuts off the distribution at a cumulative probability threshold — only tokens within the top P% are considered. Both control diversity but through different mechanisms. Microsoft recommends not setting both simultaneously."},
+  {q:"Your organization needs to prevent Azure OpenAI from generating responses that contain real people's names or private data. Which combination should you implement?",opts:["Reduce max_tokens and temperature","PII detection via Azure AI Language + Content Safety filters + system prompt constraints","Enable only 'safe' topics in the Azure OpenAI resource","Use GPT-3.5-Turbo which has stricter safety by default"],ans:1,expl:"A layered approach is required: (1) run PII detection on inputs using Azure AI Language to catch data before it enters the prompt, (2) configure Azure AI Content Safety filters on outputs, (3) include system prompt instructions like 'Never mention real names or personal information.' Reducing tokens/temperature doesn't prevent PII generation. There is no 'safe topics' toggle."},
+  {q:"Semantic Kernel 'Auto Function Calling' allows the LLM to automatically decide when to call registered functions. What finish_reason indicates this is happening?",opts:["stop","length","tool_calls","function_call (deprecated)"],ans:2,expl:"When Semantic Kernel / Azure OpenAI auto function calling is active and the model decides to invoke a tool, the finish_reason is 'tool_calls'. The application must then execute the function, add the result to the conversation, and call the API again. 'stop' = completed normally. 'length' = max_tokens reached."},
+  {q:"You are building an Azure solution to moderate user-generated content in BOTH text AND images for harmful material in real time. Which service is MOST appropriate?",opts:["Azure AI Language – Sentiment Analysis","Azure AI Content Safety","Azure AI Vision – Image Analysis","Azure OpenAI Content Filters"],ans:1,expl:"Azure AI Content Safety is the dedicated cross-modal content moderation service, handling both text and images with severity scoring (0–6) for Hate, Sexual, Violence, and Self-harm categories — designed for real-time moderation pipelines. Language Sentiment is positive/negative polarity. AI Vision doesn't score harm categories. OpenAI Content Filters only apply to Azure OpenAI completions."},
+  {q:"In a RAG pipeline, after retrieving the top-5 document chunks, what is the correct message role to use when injecting the context into the Azure OpenAI chat completions request?",opts:["Always put context in the 'user' message","Put context in the 'system' message OR as a 'user' message with clear demarcation — both are acceptable patterns","Put context as an 'assistant' message to simulate the model knowing it","Context must be sent as a separate API call before the user message"],ans:1,expl:"Both patterns work: injecting context in the system prompt ('Answer only from the following context: ...') or in the user message ('Context: [chunks]\n\nQuestion: [user query]'). The system prompt is more authoritative for constraining behavior. The assistant role should represent prior model outputs. There is no separate context API call."},
+];
+
+// ═══════════════════════════════════════════════════
+// QUIZ STATE
+// ═══════════════════════════════════════════════════
+const answers = {};
+const QSETS = [[0,9],[10,19],[20,29],[30,37],[38,49]];
+const VISITED = new Set();
+
+function buildQuizSection(sectionId, setIndex) {
+  const el = document.getElementById('section-' + sectionId);
+  if (!el || el.dataset.built) return;
+  el.dataset.built = "1";
+
+  const [start, end] = QSETS[setIndex];
+  const subset = QUESTIONS.slice(start, end + 1);
+  const modNum = setIndex + 1;
+  const labels = ["Plan & Manage","Computer Vision","NLP","Knowledge Mining","Generative AI"];
+  const nextMap = ['m6s2','m6s3','m6s4','m6s5',null];
+  const prevMap = ['m5s4','m6s1','m6s2','m6s3','m6s4'];
+
+  let html = `
+    <div class="module-banner" data-num="Q${setIndex+1}" style="background:linear-gradient(135deg,#0a1a00,#152800);">
+      <div class="module-eyebrow">Module 6 · Set ${modNum}</div>
+      <h2>${labels[setIndex]} — Practice Questions</h2>
+      <p>Q${start+1}–Q${end+1} · Click an option to answer, then see the explanation.</p>
+    </div>
+    <div id="score-banner-${sectionId}" class="qa-score-banner"></div>
+    <div class="qa-grid" id="qa-grid-${sectionId}">`;
+
+  subset.forEach((q, i) => {
+    const globalIdx = start + i;
+    const qid = `q${globalIdx}`;
+    html += `
+      <div class="qa-card" id="card-${qid}">
+        <div class="qa-header">
+          <span class="qa-num">Q${globalIdx+1}</span>
+          <span class="qa-question">${q.q}</span>
+        </div>
+        <div class="qa-options" id="opts-${qid}">`;
+    q.opts.forEach((opt, j) => {
+      html += `<div class="qa-option" id="opt-${qid}-${j}" onclick="selectAnswer('${qid}',${j},${q.ans},this)"><span class="opt-letter">${'ABCD'[j]}</span>${opt}</div>`;
+    });
+    html += `</div>
+        <div class="qa-explanation" id="expl-${qid}">
+          <div class="qa-expl-title">✅ Correct Answer: ${['A','B','C','D'][q.ans]} — ${q.opts[q.ans]}</div>
+          <div class="qa-expl-text">${q.expl}</div>
+        </div>
+      </div>`;
+  });
+
+  html += `</div>
+    <div class="quiz-controls">
+      <button class="quiz-btn secondary" onclick="resetQuiz('${sectionId}',${start},${end})">🔄 Reset This Section</button>
+      <button class="quiz-btn primary" onclick="showScore('${sectionId}',${start},${end})">📊 Show My Score</button>
+    </div>
+    <div class="section-nav">
+      <button class="nav-btn prev" onclick="showSection('${prevMap[setIndex]}')">${setIndex===0?'← DALL-E &amp; Safety':'← Previous Q&amp;A'}</button>
+      ${nextMap[setIndex] ? `<button class="nav-btn next" onclick="showSection('${nextMap[setIndex]}')">Next Q&A →</button>` : `<button class="nav-btn next" onclick="showSection('home')" style="background:linear-gradient(135deg,#107c10,#00b050);">🎓 Course Complete!</button>`}
+    </div>`;
+
+  el.innerHTML = html;
+}
+
+function selectAnswer(qid, chosen, correct, clickedEl) {
+  if (answers[qid] !== undefined) return; // already answered
+  answers[qid] = chosen;
+
+  const opts = document.querySelectorAll(`#opts-${qid} .qa-option`);
+  opts.forEach((o, j) => {
+    o.style.pointerEvents = 'none';
+    if (j === correct) o.classList.add('reveal-correct');
+    if (j === chosen && chosen !== correct) o.classList.add('selected-wrong');
+    if (j === chosen && chosen === correct) o.classList.add('selected-correct');
+  });
+
+  const expl = document.getElementById(`expl-${qid}`);
+  if (expl) expl.classList.add('show');
+
+  updateProgress();
+}
+
+function showScore(sectionId, start, end) {
+  let correct = 0, answered = 0;
+  for (let i = start; i <= end; i++) {
+    if (answers[`q${i}`] !== undefined) {
+      answered++;
+      if (answers[`q${i}`] === QUESTIONS[i].ans) correct++;
+    }
+  }
+  const total = end - start + 1;
+  const pct = Math.round((correct / total) * 100);
+  const banner = document.getElementById(`score-banner-${sectionId}`);
+  const grade = pct >= 80 ? '🏆 Excellent!' : pct >= 60 ? '✅ Good Progress' : '📖 Keep Studying';
+  banner.innerHTML = `<div class="score-big">${pct}%</div><div class="score-sub">${grade} — ${correct}/${total} correct (${answered}/${total} answered)</div>`;
+  banner.classList.add('show');
+  banner.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function resetQuiz(sectionId, start, end) {
+  for (let i = start; i <= end; i++) delete answers[`q${i}`];
+  document.getElementById('section-' + sectionId).dataset.built = '';
+  buildQuizSection(sectionId, QSETS.findIndex(s => s[0] === start));
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+const SECTION_ORDER = [
+  'home','m1s1','m1s2','m1s3','m1s4','m1s5',
+  'm2s1','m2s2','m2s3','m2s4',
+  'm3s1','m3s2','m3s3','m3s4',
+  'm4s1','m4s2','m4s3',
+  'm5s1','m5s2','m5s3','m5s4',
+  'm6s1','m6s2','m6s3','m6s4','m6s5'
+];
+
+let currentSection = 'home';
+
+function showSection(id) {
+  // Hide hero if not home
+  const hero = document.getElementById('hero');
+  if (id === 'home') {
+    hero.style.display = '';
+    animateWeightBars();
+  } else {
+    hero.style.display = 'none';
+  }
+
+  // Hide all sections
+  document.querySelectorAll('.section-page').forEach(el => el.classList.remove('active'));
+
+  const target = document.getElementById('section-' + id);
+  if (target) {
+    target.classList.add('active');
+
+    // Build quiz if needed
+    const qsetMap = {m6s1:0,m6s2:1,m6s3:2,m6s4:3,m6s5:4};
+    if (qsetMap[id] !== undefined) buildQuizSection(id, qsetMap[id]);
+  }
+
+  currentSection = id;
+  VISITED.add(id);
+  updateProgress();
+  updateSidebarActive(id);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateSidebarActive(id) {
+  document.querySelectorAll('.nav-sub-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-module-header').forEach(el => el.classList.remove('active-module'));
+
+  const moduleMap = {
+    m1s1:'m1',m1s2:'m1',m1s3:'m1',m1s4:'m1',m1s5:'m1',
+    m2s1:'m2',m2s2:'m2',m2s3:'m2',m2s4:'m2',
+    m3s1:'m3',m3s2:'m3',m3s3:'m3',m3s4:'m3',
+    m4s1:'m4',m4s2:'m4',m4s3:'m4',
+    m5s1:'m5',m5s2:'m5',m5s3:'m5',m5s4:'m5',
+    m6s1:'m6',m6s2:'m6',m6s3:'m6',m6s4:'m6',m6s5:'m6',
+  };
+
+  // Find and activate sidebar item
+  document.querySelectorAll('.nav-sub-item').forEach(el => {
+    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${id}'`)) {
+      el.classList.add('active');
+    }
+  });
+
+  const mod = moduleMap[id];
+  if (mod) {
+    const subs = document.getElementById(mod + '-subs');
+    if (subs && !subs.classList.contains('open')) {
+      const header = subs.previousElementSibling;
+      if (header) { header.classList.add('expanded'); subs.classList.add('open'); }
+    }
+  }
+}
+
+function toggleModule(header, subsId) {
+  const subs = document.getElementById(subsId);
+  const isOpen = subs.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.nav-sub-list').forEach(s => s.classList.remove('open'));
+  document.querySelectorAll('.nav-module-header').forEach(h => h.classList.remove('expanded'));
+  if (!isOpen) {
+    subs.classList.add('open');
+    header.classList.add('expanded');
+  }
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  const btn = document.getElementById('hamburger');
+  const isHidden = sidebar.classList.contains('hidden');
+  sidebar.classList.toggle('hidden');
+  main.classList.toggle('expanded');
+  btn.classList.toggle('open');
+
+  // Mobile
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove('hidden');
+    sidebar.classList.toggle('mobile-open');
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((VISITED.size / SECTION_ORDER.length) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════
+// EXAM WEIGHT BARS ANIMATION
+// ═══════════════════════════════════════════════════
+function animateWeightBars() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.weight-fill').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// COPY CODE
+// ═══════════════════════════════════════════════════
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  showSection('home');
+  // Animate bars after short delay
+  setTimeout(animateWeightBars, 400);
+});
+</script>
+</body>
+</html>

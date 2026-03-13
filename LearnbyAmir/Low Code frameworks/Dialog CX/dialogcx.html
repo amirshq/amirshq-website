@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogflow CX — Complete Course</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; display:flex; min-height:100vh; }
+
+.back-pill {
+  position: fixed;
+  z-index: 9999;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15,23,42,0.96);
+  border: 1px solid rgba(148,163,255,0.6);
+  color: #e5e7eb;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+}
+
+.back-pill span {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .back-pill {
+    top: 16px;
+    left: 20px;
+  }
+}
+
+  /* SIDEBAR */
+  #sidebar {
+    width:280px; min-width:280px; background:var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; position:fixed; height:100vh; overflow-y:auto; z-index:100;
+  }
+  .logo { padding:24px 20px 20px; border-bottom:1px solid var(--border); }
+  .logo-badge { background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:10px; padding:8px 12px; display:inline-flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .logo-badge span { font-family:'Syne',sans-serif; font-weight:800; font-size:13px; color:#fff; letter-spacing:0.5px; }
+  .logo h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; color:var(--text); line-height:1.3; }
+  .logo p { font-size:11px; color:var(--muted); margin-top:3px; }
+
+  .progress-bar { margin:16px 20px; background:var(--border); border-radius:99px; height:4px; }
+  .progress-fill { background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:99px; height:4px; transition:width 0.5s ease; }
+  .progress-label { font-size:11px; color:var(--muted); margin:6px 20px 0; }
+
+  .nav-section { padding:12px 20px 6px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:9px 20px; cursor:pointer;
+    font-size:13px; color:var(--muted); transition:all 0.2s; position:relative; border-left:3px solid transparent;
+  }
+  .nav-item:hover { color:var(--text); background:var(--surface2); }
+  .nav-item.active { color:var(--accent); background:rgba(0,212,255,0.06); border-left-color:var(--accent); }
+  .nav-item.done { color:var(--accent3); }
+  .nav-item .num { font-family:'JetBrains Mono',monospace; font-size:11px; min-width:20px; }
+  .nav-item .check { margin-left:auto; font-size:14px; }
+
+  /* MAIN */
+  #main { margin-left:280px; flex:1; max-width:calc(100vw - 280px); }
+  .content { max-width:860px; margin:0 auto; padding:48px 40px; }
+
+  /* SECTION */
+  .section { display:none; }
+  .section.active { display:block; animation:fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  /* HERO */
+  .hero { text-align:center; padding:40px 0 60px; }
+  .hero-tag { display:inline-block; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:var(--accent); font-size:12px; font-family:'JetBrains Mono',monospace; padding:5px 14px; border-radius:99px; margin-bottom:20px; }
+  .hero h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:48px; line-height:1.1; margin-bottom:16px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p { font-size:16px; color:var(--muted); max-width:540px; margin:0 auto 32px; line-height:1.7; }
+  .hero-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:left; margin-top:40px; }
+  .hero-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .hero-card .icon { font-size:24px; margin-bottom:10px; }
+  .hero-card h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; margin-bottom:6px; }
+  .hero-card p { font-size:12px; color:var(--muted); line-height:1.6; }
+
+  /* LESSON CONTENT */
+  h1.lesson-title { font-family:'Syne',sans-serif; font-weight:800; font-size:34px; line-height:1.2; margin-bottom:8px; }
+  .lesson-meta { color:var(--muted); font-size:13px; margin-bottom:32px; display:flex; gap:16px; align-items:center; }
+  .tag { background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.2); color:var(--accent); font-size:11px; padding:3px 10px; border-radius:99px; font-family:'JetBrains Mono',monospace; }
+  h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:22px; margin:36px 0 14px; color:var(--text); }
+  h3 { font-family:'Syne',sans-serif; font-weight:600; font-size:17px; margin:28px 0 10px; color:var(--accent); }
+  p { font-size:14.5px; line-height:1.8; color:#cbd5e1; margin-bottom:14px; }
+  ul, ol { padding-left:22px; margin-bottom:14px; }
+  li { font-size:14.5px; line-height:1.8; color:#cbd5e1; margin-bottom:4px; }
+
+  /* CALLOUTS */
+  .callout { border-radius:10px; padding:16px 20px; margin:20px 0; display:flex; gap:14px; }
+  .callout.info { background:rgba(0,212,255,0.07); border:1px solid rgba(0,212,255,0.2); }
+  .callout.tip { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); }
+  .callout.warn { background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); }
+  .callout-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+  .callout-body h4 { font-size:13px; font-weight:600; margin-bottom:5px; }
+  .callout.info .callout-body h4 { color:var(--accent); }
+  .callout.tip .callout-body h4 { color:var(--accent3); }
+  .callout.warn .callout-body h4 { color:var(--warn); }
+  .callout-body p { font-size:13.5px; margin:0; line-height:1.6; }
+
+  /* CODE */
+  pre { background:var(--code-bg); border:1px solid var(--border); border-radius:10px; padding:20px; overflow-x:auto; margin:16px 0; position:relative; }
+  code { font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; color:#a5f3fc; }
+  .code-label { position:absolute; top:10px; right:14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; }
+  .inline-code { background:var(--code-bg); border:1px solid var(--border); border-radius:5px; padding:2px 7px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#a5f3fc; }
+
+  /* DIAGRAM */
+  .diagram { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px; margin:24px 0; text-align:center; }
+  .flow { display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap; }
+  .flow-node { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 16px; font-size:13px; font-weight:500; white-space:nowrap; }
+  .flow-node.start { border-color:var(--accent3); color:var(--accent3); }
+  .flow-node.page { border-color:var(--accent); color:var(--accent); }
+  .flow-node.intent { border-color:var(--accent2); color:#c4b5fd; }
+  .flow-node.end { border-color:var(--warn); color:var(--warn); }
+  .flow-arrow { color:var(--muted); font-size:18px; padding:0 6px; }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin:20px 0; font-size:13.5px; }
+  th { background:var(--surface2); padding:11px 16px; text-align:left; font-weight:600; font-family:'Syne',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); border-bottom:1px solid var(--border); }
+  td { padding:11px 16px; border-bottom:1px solid var(--border); color:#cbd5e1; line-height:1.6; }
+  tr:hover td { background:rgba(255,255,255,0.02); }
+
+  /* QUIZ */
+  .quiz-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; margin:28px 0; }
+  .quiz-box h3 { color:var(--text); font-family:'Syne',sans-serif; font-size:18px; margin:0 0 20px; }
+  .quiz-q { margin-bottom:22px; }
+  .quiz-q p { font-weight:500; color:var(--text); margin-bottom:12px; font-size:14px; }
+  .quiz-option { display:flex; align-items:flex-start; gap:10px; padding:10px 14px; border-radius:8px; border:1px solid var(--border); margin-bottom:8px; cursor:pointer; transition:all 0.2s; font-size:13.5px; }
+  .quiz-option:hover { border-color:var(--accent); background:rgba(0,212,255,0.05); }
+  .quiz-option input { margin-top:2px; accent-color:var(--accent); }
+  .quiz-option.correct { border-color:var(--accent3); background:rgba(16,185,129,0.08); color:var(--accent3); }
+  .quiz-option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.08); color:var(--danger); }
+  .btn { background:linear-gradient(135deg,var(--accent),#0891b2); color:#000; font-weight:700; font-family:'Syne',sans-serif; font-size:14px; padding:11px 26px; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s; }
+  .btn:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,212,255,0.3); }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); padding:10px 22px; border-radius:8px; font-size:14px; cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif; }
+  .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+  .quiz-result { margin-top:16px; padding:14px 18px; border-radius:8px; font-weight:600; font-size:14px; display:none; }
+  .quiz-result.show { display:block; }
+  .quiz-result.pass { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:var(--accent3); }
+  .quiz-result.fail { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:var(--danger); }
+
+  /* ASSIGNMENT */
+  .assignment { background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(0,212,255,0.05)); border:1px solid rgba(124,58,237,0.3); border-radius:14px; padding:28px; margin:28px 0; }
+  .assignment h3 { font-family:'Syne',sans-serif; color:#c4b5fd; font-size:18px; margin-bottom:6px; }
+  .assignment .badge { background:rgba(124,58,237,0.2); color:#c4b5fd; font-size:11px; padding:3px 10px; border-radius:99px; display:inline-block; margin-bottom:16px; font-family:'JetBrains Mono',monospace; }
+  .assignment ol li { margin-bottom:10px; font-size:14px; }
+  .assignment .deliverable { background:rgba(0,0,0,0.2); border-radius:8px; padding:14px; margin-top:16px; font-size:13px; color:var(--muted); }
+  .assignment .deliverable strong { color:var(--text); }
+
+  /* NAV BUTTONS */
+  .nav-btns { display:flex; justify-content:space-between; align-items:center; margin-top:52px; padding-top:28px; border-top:1px solid var(--border); }
+
+  /* SIMULATOR */
+  .simulator { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:24px 0; }
+  .sim-header { background:var(--surface2); padding:14px 20px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+  .sim-dot { width:10px; height:10px; border-radius:50%; }
+  .sim-title { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); }
+  .sim-body { padding:20px; min-height:200px; max-height:300px; overflow-y:auto; }
+  .sim-msg { margin-bottom:12px; display:flex; gap:10px; align-items:flex-start; }
+  .sim-msg.bot { flex-direction:row; }
+  .sim-msg.user { flex-direction:row-reverse; }
+  .sim-bubble { padding:10px 14px; border-radius:10px; font-size:13.5px; max-width:70%; line-height:1.6; }
+  .sim-msg.bot .sim-bubble { background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:2px 10px 10px 10px; }
+  .sim-msg.user .sim-bubble { background:linear-gradient(135deg,var(--accent2),#6d28d9); color:#fff; border-radius:10px 2px 10px 10px; }
+  .sim-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); }
+  .sim-footer { padding:14px; border-top:1px solid var(--border); display:flex; gap:10px; }
+  .sim-footer input { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 14px; color:var(--text); font-size:13px; outline:none; font-family:'Inter',sans-serif; }
+  .sim-footer input:focus { border-color:var(--accent); }
+  .sim-footer button { background:var(--accent); color:#000; font-weight:700; border:none; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; }
+  .sim-chips { display:flex; gap:8px; flex-wrap:wrap; padding:10px 20px 0; }
+  .chip { background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2); color:var(--accent); font-size:12px; padding:5px 12px; border-radius:99px; cursor:pointer; transition:all 0.15s; }
+  .chip:hover { background:rgba(0,212,255,0.15); }
+
+  /* COMPONENT CARDS */
+  .component-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:20px 0; }
+  .comp-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .comp-card .comp-icon { font-size:28px; margin-bottom:10px; }
+  .comp-card h4 { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; margin-bottom:6px; color:var(--text); }
+  .comp-card p { font-size:13px; color:var(--muted); line-height:1.6; margin:0; }
+  .comp-card .comp-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent2); background:rgba(124,58,237,0.1); padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:8px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:5px; height:5px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+
+  @media (max-width:768px) {
+    #sidebar { width:100%; min-width:unset; position:relative; height:auto; }
+    #main { margin-left:0; max-width:100%; }
+    .content { padding:24px 20px; }
+    .hero h1 { font-size:30px; }
+    .hero-grid, .component-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
+  <span>←</span> Back to topics
+</button>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="logo">
+    <div class="logo-badge"><span>⬡ DFCX</span></div>
+    <h2>Dialogflow CX</h2>
+    <p>Complete Beginner Course</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">0% complete</div>
+
+  <div class="nav-section">Getting Started</div>
+  <div class="nav-item active" onclick="gotoSection(0)"><span class="num">00</span> Course Overview <span class="check" id="chk0"></span></div>
+  <div class="nav-item" onclick="gotoSection(1)"><span class="num">01</span> What is Dialogflow CX? <span class="check" id="chk1"></span></div>
+  <div class="nav-item" onclick="gotoSection(2)"><span class="num">02</span> Core Concepts <span class="check" id="chk2"></span></div>
+
+  <div class="nav-section">Building Blocks</div>
+  <div class="nav-item" onclick="gotoSection(3)"><span class="num">03</span> Flows & Pages <span class="check" id="chk3"></span></div>
+  <div class="nav-item" onclick="gotoSection(4)"><span class="num">04</span> Intents & Entities <span class="check" id="chk4"></span></div>
+  <div class="nav-item" onclick="gotoSection(5)"><span class="num">05</span> Fulfillment & Webhooks <span class="check" id="chk5"></span></div>
+
+  <div class="nav-section">Advanced</div>
+  <div class="nav-item" onclick="gotoSection(6)"><span class="num">06</span> State Handlers <span class="check" id="chk6"></span></div>
+  <div class="nav-item" onclick="gotoSection(7)"><span class="num">07</span> Parameters & Forms <span class="check" id="chk7"></span></div>
+  <div class="nav-item" onclick="gotoSection(8)"><span class="num">08</span> Route Groups & Versions <span class="check" id="chk8"></span></div>
+
+  <div class="nav-section">Projects</div>
+  <div class="nav-item" onclick="gotoSection(9)"><span class="num">09</span> Build: Pizza Bot 🍕 <span class="check" id="chk9"></span></div>
+  <div class="nav-item" onclick="gotoSection(10)"><span class="num">10</span> Build: Banking Bot 🏦 <span class="check" id="chk10"></span></div>
+
+  <div class="nav-section">Deployment</div>
+  <div class="nav-item" onclick="gotoSection(11)"><span class="num">11</span> Testing & Debugging <span class="check" id="chk11"></span></div>
+  <div class="nav-item" onclick="gotoSection(12)"><span class="num">12</span> Final Exam 🎓 <span class="check" id="chk12"></span></div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+<div class="content">
+
+<!-- SECTION 0: OVERVIEW -->
+<div class="section active" id="sec0">
+  <div class="hero">
+    <div class="hero-tag">LOW-CODE AI · COURSE v1.0</div>
+    <h1>Master <span>Dialogflow CX</span><br>From Scratch</h1>
+    <p>Build production-grade conversational AI agents using Google's most powerful low-code framework — no prior experience needed.</p>
+    <button class="btn" onclick="gotoSection(1)">Start Learning →</button>
+    <div class="hero-grid">
+      <div class="hero-card"><div class="icon">📚</div><h3>12 Lessons</h3><p>From concepts to production deployment, every topic covered step by step.</p></div>
+      <div class="hero-card"><div class="icon">🛠️</div><h3>2 Full Projects</h3><p>Pizza ordering bot and banking bot — real-world scenarios you can extend.</p></div>
+      <div class="hero-card"><div class="icon">🎯</div><h3>Assignments + Exam</h3><p>Hands-on assignments after each module and a final certification exam.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: WHAT IS DIALOGFLOW CX -->
+<div class="section" id="sec1">
+  <h1 class="lesson-title">What is Dialogflow CX?</h1>
+  <div class="lesson-meta"><span class="tag">lesson 01</span><span>~15 min read</span></div>
+
+  <p>Dialogflow CX is Google Cloud's <strong>enterprise-grade conversational AI platform</strong>. It lets you build sophisticated chatbots and voice bots using a visual flow-based interface — without writing extensive code. Think of it as the "Figma of chatbot building."</p>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body"><h4>CX vs ES — Which one?</h4><p>Dialogflow comes in two flavors: <strong>ES (Essentials)</strong> for simple linear bots, and <strong>CX (Customer Experience)</strong> for complex, multi-turn, stateful conversations. This course covers CX exclusively.</p></div>
+  </div>
+
+  <h2>Why Dialogflow CX?</h2>
+  <table>
+    <tr><th>Feature</th><th>Dialogflow ES</th><th>Dialogflow CX</th></tr>
+    <tr><td>Architecture</td><td>Intent-based flat</td><td>Flow + Page based (stateful)</td></tr>
+    <tr><td>Best for</td><td>Simple FAQ bots</td><td>Complex multi-turn agents</td></tr>
+    <tr><td>Visual builder</td><td>Basic</td><td>Advanced flow canvas</td></tr>
+    <tr><td>State management</td><td>Limited</td><td>Full session state</td></tr>
+    <tr><td>Testing tools</td><td>Basic simulator</td><td>Conversation replays, CI/CD</td></tr>
+    <tr><td>Pricing</td><td>Per request</td><td>Per session / per request</td></tr>
+  </table>
+
+  <h2>Real-World Use Cases</h2>
+  <ul>
+    <li>🏦 <strong>Banking</strong> — account balance, fund transfers, loan applications</li>
+    <li>🛒 <strong>E-commerce</strong> — order tracking, returns, product Q&A</li>
+    <li>✈️ <strong>Travel</strong> — flight booking, itinerary changes, check-in</li>
+    <li>🏥 <strong>Healthcare</strong> — appointment scheduling, symptom triage</li>
+    <li>📞 <strong>Contact Centers</strong> — IVR replacement, agent handoff</li>
+  </ul>
+
+  <h2>The Dialogflow CX Console</h2>
+  <p>Everything in this course can be done in the visual console at <span class="inline-code">dialogflow.cloud.google.com</span>. Here's how to get started:</p>
+  <ol>
+    <li>Go to <strong>console.cloud.google.com</strong> and create a project</li>
+    <li>Enable the <strong>Dialogflow API</strong> in APIs & Services</li>
+    <li>Navigate to <strong>Dialogflow CX</strong> and create an Agent</li>
+    <li>Choose a region (us-central1 recommended for beginners)</li>
+    <li>Your agent is ready — the visual canvas opens automatically</li>
+  </ol>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body"><h4>Free Tier</h4><p>Google Cloud offers a $300 free credit for new accounts. Dialogflow CX also has a free tier: 600 text sessions/month free. Perfect for learning!</p></div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 1: Setup Your Environment</h3>
+    <div class="badge">⏱ 20 min</div>
+    <ol>
+      <li>Create a Google Cloud account (if you don't have one)</li>
+      <li>Create a new GCP project named <strong>"dfcx-learning"</strong></li>
+      <li>Enable the Dialogflow CX API</li>
+      <li>Create your first Agent named <strong>"MyFirstAgent"</strong> in us-central1</li>
+      <li>Take a screenshot of the Dialogflow CX canvas with your agent open</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Screenshot of your agent's flow canvas showing the Default Start Flow and Default Welcome Intent.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(0)">← Back</button>
+    <button class="btn" onclick="gotoSection(2)">Next: Core Concepts →</button>
+  </div>
+</div>
+
+<!-- SECTION 2: CORE CONCEPTS -->
+<div class="section" id="sec2">
+  <h1 class="lesson-title">Core Concepts</h1>
+  <div class="lesson-meta"><span class="tag">lesson 02</span><span>~20 min read</span></div>
+
+  <p>Before building anything, you need a mental model of Dialogflow CX's architecture. It's elegantly hierarchical — everything nests inside everything else.</p>
+
+  <h2>The Architecture Hierarchy</h2>
+  <div class="diagram">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;font-family:'JetBrains Mono',monospace;">DIALOGFLOW CX HIERARCHY</div>
+    <div class="flow" style="flex-direction:column;gap:4px;">
+      <div class="flow-node" style="border-color:#f59e0b;color:#f59e0b;width:200px;">🤖 AGENT</div>
+      <div style="color:var(--muted);font-size:20px;">↓</div>
+      <div class="flow-node page" style="width:200px;">📊 FLOWS (1..N)</div>
+      <div style="color:var(--muted);font-size:20px;">↓</div>
+      <div class="flow-node" style="border-color:#a78bfa;color:#a78bfa;width:200px;">📄 PAGES (1..N)</div>
+      <div style="color:var(--muted);font-size:20px;">↓</div>
+      <div class="flow-node intent" style="width:200px;">🎯 INTENTS</div>
+      <div style="color:var(--muted);font-size:20px;">↓</div>
+      <div class="flow-node" style="border-color:#10b981;color:#10b981;width:200px;">✅ FULFILLMENT</div>
+    </div>
+  </div>
+
+  <h2>Core Components</h2>
+  <div class="component-grid">
+    <div class="comp-card">
+      <div class="comp-icon">🤖</div>
+      <div class="comp-tag">top level</div>
+      <h4>Agent</h4>
+      <p>The top-level container. One agent per use case (e.g., "Customer Support Bot"). Configured with a language and region.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">📊</div>
+      <div class="comp-tag">routing</div>
+      <h4>Flows</h4>
+      <p>Module-like containers grouping related conversations. E.g., "Account Flow", "Order Flow". Each agent has a Default Start Flow.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">📄</div>
+      <div class="comp-tag">state</div>
+      <h4>Pages</h4>
+      <p>The current "state" of a conversation. The bot is always on exactly one page at a time. Pages contain entry fulfillments, routes, and forms.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">🎯</div>
+      <div class="comp-tag">understanding</div>
+      <h4>Intents</h4>
+      <p>What the user <em>wants</em>. Defined by training phrases. E.g., "book a flight" intent matches "I want to fly to Paris" and similar utterances.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">📦</div>
+      <div class="comp-tag">extraction</div>
+      <h4>Entities</h4>
+      <p>Named pieces of data extracted from utterances. E.g., from "flight to <u>Paris</u> on <u>Monday</u>", extract city=Paris, date=Monday.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">⚡</div>
+      <div class="comp-tag">execution</div>
+      <h4>Fulfillment</h4>
+      <p>What happens when a route is taken — send a message, call a webhook, set a parameter, or transition to another page/flow.</p>
+    </div>
+  </div>
+
+  <h2>How a Conversation Works</h2>
+  <div class="diagram">
+    <div class="flow">
+      <div class="flow-node start">User message</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node intent">NLU matches Intent</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node page">Route fires</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:#10b981;color:#10b981">Fulfillment runs</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node end">New Page / Response</div>
+    </div>
+  </div>
+
+  <h2>Sessions & State</h2>
+  <p>Every conversation is a <strong>session</strong>. Each session maintains:</p>
+  <ul>
+    <li><strong>Current Page</strong> — where the user is in the conversation</li>
+    <li><strong>Session Parameters</strong> — stored variables (e.g., <span class="inline-code">$session.params.customer_name</span>)</li>
+    <li><strong>Flow history</strong> — which flows have been visited</li>
+  </ul>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body"><h4>Key Mental Model Shift</h4><p>In Dialogflow CX, you think in <strong>states (pages)</strong>, not just intents. The same intent can have different behaviors depending on which page the user is currently on. This is the #1 concept beginners miss.</p></div>
+  </div>
+
+  <!-- MINI QUIZ -->
+  <div class="quiz-box">
+    <h3>🧠 Quick Check</h3>
+    <div class="quiz-q" id="qq2">
+      <p>1. In Dialogflow CX, what represents the "current state" of a conversation?</p>
+      <label class="quiz-option"><input type="radio" name="q2" value="a"> Intent</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="b"> Page</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="c"> Flow</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="d"> Entity</label>
+    </div>
+    <button class="btn" onclick="checkQuiz('q2','b','res2')">Check Answer</button>
+    <div class="quiz-result" id="res2"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(1)">← Back</button>
+    <button class="btn" onclick="gotoSection(3)">Next: Flows & Pages →</button>
+  </div>
+</div>
+
+<!-- SECTION 3: FLOWS & PAGES -->
+<div class="section" id="sec3">
+  <h1 class="lesson-title">Flows & Pages</h1>
+  <div class="lesson-meta"><span class="tag">lesson 03</span><span>~25 min read</span></div>
+
+  <h2>Flows — Modular Conversation Sections</h2>
+  <p>A <strong>Flow</strong> is a reusable module for a topic area. Think of it like a function in programming. Large agents use multiple flows to stay organized.</p>
+
+  <pre><code>Example Agent: "Telecom Support Bot"
+├── Default Start Flow       ← entry point, routing
+├── Billing Flow             ← all billing questions
+├── Technical Support Flow   ← network/device issues
+├── Account Management Flow  ← profile, password changes
+└── Cancellation Flow        ← retention & cancellations</code><span class="code-label">structure</span></pre>
+
+  <h3>Flow Entry Point</h3>
+  <p>Every flow has a <strong>Start Page</strong> which is automatically entered when a flow is called. This is where you configure the flow's entry message and initial routing.</p>
+
+  <h2>Pages — Conversation States</h2>
+  <p>Pages are where the magic happens. Every page can have:</p>
+  <ul>
+    <li><strong>Entry Fulfillment</strong> — message spoken/shown when entering this page</li>
+    <li><strong>Form (Parameters)</strong> — information to collect from user</li>
+    <li><strong>Transition Routes</strong> — where to go next based on user input</li>
+    <li><strong>Event Handlers</strong> — what to do on no-match, no-input, etc.</li>
+  </ul>
+
+  <h3>A Real Example: Flight Booking</h3>
+  <pre><code>Pages in "Booking Flow":
+  
+  [Start] 
+    Entry: "Welcome! Where would you like to fly?"
+    → user provides origin/destination → [Collect Dates]
+
+  [Collect Dates]
+    Entry: "What are your travel dates?"
+    Form: departure_date, return_date
+    → form complete → [Select Seat]
+
+  [Select Seat]  
+    Entry: "Window or aisle seat?"
+    → user answers → [Confirmation]
+
+  [Confirmation]
+    Entry: "Your booking is confirmed! ✈️"
+    → END</code><span class="code-label">page flow</span></pre>
+
+  <h2>Page Transitions</h2>
+  <p>Pages transition via <strong>Routes</strong>. A route fires when:</p>
+  <ul>
+    <li>A specific <strong>Intent</strong> is matched (e.g., user confirms booking)</li>
+    <li>A <strong>Condition</strong> is true (e.g., all form fields collected)</li>
+    <li>An <strong>Event</strong> occurs (e.g., no-match 3 times → escalate)</li>
+  </ul>
+
+  <div class="diagram">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:16px;">PAGE TRANSITION EXAMPLE</div>
+    <div class="flow">
+      <div class="flow-node page">[Greeting Page]</div>
+      <div class="flow-arrow">→ intent: confirm →</div>
+      <div class="flow-node page">[Collect Info Page]</div>
+      <div class="flow-arrow">→ form complete →</div>
+      <div class="flow-node end">[Summary Page]</div>
+    </div>
+  </div>
+
+  <h2>Default Start Flow</h2>
+  <p>Every agent automatically has a <strong>Default Start Flow</strong> with a <strong>Default Welcome Intent</strong>. This fires when the user first opens the chat and typically sends a greeting message.</p>
+
+  <h3>Try the Simulator</h3>
+  <div class="simulator">
+    <div class="sim-header">
+      <div class="sim-dot" style="background:#ef4444"></div>
+      <div class="sim-dot" style="background:#f59e0b;margin-left:4px"></div>
+      <div class="sim-dot" style="background:#10b981;margin-left:4px"></div>
+      <div class="sim-title" style="margin-left:12px">Flight Bot Simulator · Default Start Flow</div>
+    </div>
+    <div class="sim-chips">
+      <div class="chip" onclick="simSend('Hello')">👋 Hello</div>
+      <div class="chip" onclick="simSend('Book a flight')">✈️ Book a flight</div>
+      <div class="chip" onclick="simSend('Help')">❓ Help</div>
+    </div>
+    <div class="sim-body" id="simBody3">
+      <div class="sim-msg bot"><div class="sim-avatar">🤖</div><div class="sim-bubble">Hi there! I'm your flight assistant. Try saying "Book a flight" or tap a chip above.</div></div>
+    </div>
+    <div class="sim-footer">
+      <input id="simInput3" placeholder="Type a message..." onkeydown="if(event.key==='Enter')simSend()">
+      <button onclick="simSend()">Send</button>
+    </div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 2: Build Your First Flow</h3>
+    <div class="badge">⏱ 30 min</div>
+    <ol>
+      <li>In your agent, create a new Flow called <strong>"Restaurant Booking Flow"</strong></li>
+      <li>Add these pages: <strong>Greeting</strong> → <strong>Collect Party Size</strong> → <strong>Collect Date</strong> → <strong>Confirmation</strong></li>
+      <li>Add Entry Fulfillment messages to each page (make them natural!)</li>
+      <li>Connect the pages with simple routes (don't worry about intents yet)</li>
+      <li>Test in the Dialogflow simulator by manually triggering transitions</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Screenshot of your flow diagram in the Dialogflow CX canvas showing all 4 pages connected.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(2)">← Back</button>
+    <button class="btn" onclick="gotoSection(4)">Next: Intents & Entities →</button>
+  </div>
+</div>
+
+<!-- SECTION 4: INTENTS & ENTITIES -->
+<div class="section" id="sec4">
+  <h1 class="lesson-title">Intents & Entities</h1>
+  <div class="lesson-meta"><span class="tag">lesson 04</span><span>~25 min read</span></div>
+
+  <h2>Intents — What the User Wants</h2>
+  <p>An <strong>Intent</strong> represents the goal behind a user's message. You teach each intent with <strong>Training Phrases</strong> — example sentences. Dialogflow's NLU model generalizes from these examples.</p>
+
+  <h3>Creating a Good Intent</h3>
+  <pre><code>Intent Name: "book.flight"
+
+Training Phrases:
+  - "I want to book a flight"
+  - "Can I reserve a seat?"
+  - "Book me a ticket to New York"
+  - "I need to fly to London next week"
+  - "Schedule a flight for tomorrow"
+  - "Reserve two seats on the 3pm flight"
+  - "Looking for flights to Paris"
+  - "How do I buy a plane ticket?"
+  - "I'd like to travel to Tokyo"
+  - "Help me book air travel"
+  (add 10-20 varied phrases for best accuracy)</code><span class="code-label">intent config</span></pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body"><h4>Training Phrase Best Practices</h4><p>Add <strong>10–20 varied phrases</strong>. Include formal and informal language. Include phrases with and without entities. Avoid copying the same phrase slightly reworded — variety is key.</p></div>
+  </div>
+
+  <h2>Entities — What to Extract</h2>
+  <p>Entities extract structured data from free-form text. There are three types:</p>
+
+  <table>
+    <tr><th>Type</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>System</strong></td><td>Built-in by Google</td><td><span class="inline-code">@sys.date</span>, <span class="inline-code">@sys.number</span>, <span class="inline-code">@sys.city</span></td></tr>
+    <tr><td><strong>Custom</strong></td><td>You define values + synonyms</td><td><span class="inline-code">@seat-type</span>: window, aisle, middle</td></tr>
+    <tr><td><strong>Regex</strong></td><td>Pattern-based extraction</td><td><span class="inline-code">@booking-id</span>: BK[0-9]{6}</td></tr>
+  </table>
+
+  <h3>Custom Entity Example</h3>
+  <pre><code>Entity: @pizza-size
+  Values:
+    - small      (synonyms: tiny, personal)
+    - medium     (synonyms: regular, standard)
+    - large      (synonyms: big, family, jumbo)
+    - extra-large (synonyms: XL, extra large, huge)
+
+Usage in training phrase:
+  "I want a [large](@pizza-size) pepperoni pizza"
+  → extracts: pizza-size = "large"</code><span class="code-label">entity config</span></pre>
+
+  <h3>Annotating Training Phrases</h3>
+  <p>When you type a training phrase in the console and highlight a word, Dialogflow lets you tag it with an entity. This creates a <strong>parameter</strong> automatically.</p>
+
+  <pre><code>Training phrase: "Book a flight from Chicago to Miami on Friday"
+
+Annotations:
+  "Chicago"  → @sys.geo-city    → parameter: origin_city
+  "Miami"    → @sys.geo-city    → parameter: destination_city  
+  "Friday"   → @sys.date-period → parameter: travel_date</code><span class="code-label">annotation</span></pre>
+
+  <h2>System Entities Cheat Sheet</h2>
+  <table>
+    <tr><th>Entity</th><th>Matches</th><th>Example</th></tr>
+    <tr><td><span class="inline-code">@sys.number</span></td><td>Numbers</td><td>"three", "3", "fifteen"</td></tr>
+    <tr><td><span class="inline-code">@sys.date</span></td><td>Dates</td><td>"tomorrow", "March 5th", "next Monday"</td></tr>
+    <tr><td><span class="inline-code">@sys.time</span></td><td>Times</td><td>"3pm", "noon", "at 15:00"</td></tr>
+    <tr><td><span class="inline-code">@sys.email</span></td><td>Emails</td><td>"user@example.com"</td></tr>
+    <tr><td><span class="inline-code">@sys.phone-number</span></td><td>Phone numbers</td><td>"+1 555-0100"</td></tr>
+    <tr><td><span class="inline-code">@sys.currency-name</span></td><td>Currency</td><td>"dollars", "USD", "euros"</td></tr>
+  </table>
+
+  <div class="quiz-box">
+    <h3>🧠 Quiz: Intents & Entities</h3>
+    <div class="quiz-q">
+      <p>1. Which entity type should you use to extract a phone number from user input?</p>
+      <label class="quiz-option"><input type="radio" name="q4a" value="a"> Custom Entity</label>
+      <label class="quiz-option"><input type="radio" name="q4a" value="b"> @sys.phone-number</label>
+      <label class="quiz-option"><input type="radio" name="q4a" value="c"> Regex Entity</label>
+      <label class="quiz-option"><input type="radio" name="q4a" value="d"> @sys.number</label>
+    </div>
+    <div class="quiz-q">
+      <p>2. How many training phrases is recommended per intent for good NLU accuracy?</p>
+      <label class="quiz-option"><input type="radio" name="q4b" value="a"> 2-3</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="b"> 5-6</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="c"> 10-20</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="d"> 50+</label>
+    </div>
+    <button class="btn" onclick="checkMultiQuiz([{name:'q4a',ans:'b'},{name:'q4b',ans:'c'}],'res4')">Check Answers</button>
+    <div class="quiz-result" id="res4"></div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 3: Intents & Entities</h3>
+    <div class="badge">⏱ 45 min</div>
+    <ol>
+      <li>Create intent <strong>"order.pizza"</strong> with 15 varied training phrases</li>
+      <li>Create intent <strong>"cancel.order"</strong> with 10 training phrases</li>
+      <li>Create custom entity <strong>@pizza-topping</strong> with 5 values, each with 2 synonyms</li>
+      <li>Annotate 5 of your "order.pizza" training phrases with <span class="inline-code">@pizza-topping</span> and <span class="inline-code">@sys.number</span></li>
+      <li>Test in the simulator: type "I want 2 large margherita pizzas" and verify entity extraction</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Screenshot of your annotated intent showing extracted entities highlighted in the training phrases.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(3)">← Back</button>
+    <button class="btn" onclick="gotoSection(5)">Next: Fulfillment & Webhooks →</button>
+  </div>
+</div>
+
+<!-- SECTION 5: FULFILLMENT & WEBHOOKS -->
+<div class="section" id="sec5">
+  <h1 class="lesson-title">Fulfillment & Webhooks</h1>
+  <div class="lesson-meta"><span class="tag">lesson 05</span><span>~30 min read</span></div>
+
+  <h2>What is Fulfillment?</h2>
+  <p>Fulfillment is <strong>what happens when a route fires</strong>. It can be one or more of:</p>
+  <ul>
+    <li>📝 <strong>Static Response</strong> — send a text/card/chip response</li>
+    <li>🔄 <strong>Parameter Preset</strong> — set a session parameter value</li>
+    <li>🌐 <strong>Webhook Call</strong> — call an external API</li>
+    <li>↩️ <strong>Transition</strong> — move to another page/flow</li>
+  </ul>
+
+  <h2>Response Types</h2>
+  <pre><code>// TEXT RESPONSE
+"Your order has been placed! 🎉"
+
+// RICH RESPONSE (chips)
+Text: "How can I help you?"
+Suggestion chips: ["Check order", "Cancel order", "Talk to agent"]
+
+// CUSTOM PAYLOAD (for frontend)
+{
+  "richContent": [[{
+    "type": "chips",
+    "options": [
+      {"text": "Order Pizza"},
+      {"text": "Track Order"}
+    ]
+  }]]
+}</code><span class="code-label">response types</span></pre>
+
+  <h2>Webhooks — The Power Feature</h2>
+  <p>Webhooks allow Dialogflow CX to call your backend service in real time. This enables dynamic responses, database lookups, and API integrations.</p>
+
+  <div class="diagram">
+    <div class="flow">
+      <div class="flow-node page">User input</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node intent">Intent matched</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node" style="border-color:#f59e0b;color:#f59e0b">Webhook called</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node start">Your Server</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node end">Dynamic Response</div>
+    </div>
+  </div>
+
+  <h3>Webhook Request Format</h3>
+  <pre><code>// DIALOGFLOW SENDS THIS TO YOUR ENDPOINT:
+POST https://your-server.com/webhook
+
+{
+  "detectIntentResponseId": "abc-123",
+  "intentInfo": {
+    "lastMatchedIntent": "projects/.../intents/order-pizza",
+    "parameters": {
+      "pizza-size": { "stringValue": "large" },
+      "pizza-topping": { "stringValue": "pepperoni" }
+    }
+  },
+  "sessionInfo": {
+    "session": "projects/.../sessions/session-123",
+    "parameters": {
+      "customer_name": "Amir",
+      "loyalty_points": 250
+    }
+  },
+  "text": "I want a large pepperoni pizza"
+}</code><span class="code-label">webhook request</span></pre>
+
+  <h3>Webhook Response Format</h3>
+  <pre><code>// YOUR SERVER RETURNS THIS:
+{
+  "fulfillment_response": {
+    "messages": [{
+      "text": {
+        "text": ["Order confirmed! Your large pepperoni pizza will arrive in 30 mins."]
+      }
+    }]
+  },
+  "session_info": {
+    "parameters": {
+      "order_id": "ORD-98765",
+      "estimated_time": "30 minutes"
+    }
+  }
+}</code><span class="code-label">webhook response</span></pre>
+
+  <h3>Simple Python Webhook (Cloud Functions)</h3>
+  <pre><code>import functions_framework
+import json
+
+@functions_framework.http
+def dialogflow_webhook(request):
+    req = request.get_json()
+    
+    # Get parameters from session
+    params = req.get('sessionInfo', {}).get('parameters', {})
+    pizza_size = params.get('pizza-size', 'medium')
+    topping = params.get('pizza-topping', 'cheese')
+    
+    # Business logic
+    prices = {'small': 8, 'medium': 12, 'large': 16}
+    price = prices.get(pizza_size, 12)
+    order_id = "ORD-" + str(hash(pizza_size+topping))[-5:]
+    
+    return {
+        "fulfillment_response": {
+            "messages": [{
+                "text": {
+                    "text": [f"✅ Order #{order_id}: {pizza_size} {topping} pizza - ${price}. Ready in 25 mins!"]
+                }
+            }]
+        },
+        "session_info": {
+            "parameters": {
+                "order_id": order_id,
+                "order_price": price
+            }
+        }
+    }</code><span class="code-label">python webhook</span></pre>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body"><h4>Webhook Timeout</h4><p>Dialogflow CX has a <strong>5-second webhook timeout</strong>. Keep your webhook responses fast. Use async patterns for slow operations and return a "processing" message first if needed.</p></div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 4: Build a Webhook</h3>
+    <div class="badge">⏱ 60 min</div>
+    <ol>
+      <li>Deploy the Python webhook above to <strong>Google Cloud Functions</strong> (or use webhook.site for testing)</li>
+      <li>Register your webhook URL in Dialogflow CX: Agent Settings → Webhooks</li>
+      <li>Add the webhook to your pizza order intent's fulfillment</li>
+      <li>Test that ordering a pizza returns the dynamic order ID and price</li>
+      <li>Extend the webhook to also handle <strong>"cancel.order"</strong> intent — return "Order cancelled successfully."</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Screenshot of the simulator showing a dynamic webhook response with an order ID.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(4)">← Back</button>
+    <button class="btn" onclick="gotoSection(6)">Next: State Handlers →</button>
+  </div>
+</div>
+
+<!-- SECTION 6: STATE HANDLERS -->
+<div class="section" id="sec6">
+  <h1 class="lesson-title">State Handlers</h1>
+  <div class="lesson-meta"><span class="tag">lesson 06</span><span>~20 min read</span></div>
+
+  <h2>What are State Handlers?</h2>
+  <p>State handlers are rules attached to a <strong>Page</strong> or <strong>Flow</strong> that determine what happens next. There are 4 types:</p>
+
+  <div class="component-grid">
+    <div class="comp-card">
+      <div class="comp-icon">🎯</div>
+      <div class="comp-tag">intent-based</div>
+      <h4>Intent Routes</h4>
+      <p>Fires when a specific intent is matched. The most common handler — "when user says X, do Y."</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">🔀</div>
+      <div class="comp-tag">logic-based</div>
+      <h4>Condition Routes</h4>
+      <p>Fires when a parameter-based condition is true. E.g., <span class="inline-code">$session.params.order_total > 50</span></p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">📋</div>
+      <div class="comp-tag">form-based</div>
+      <h4>Form Completion</h4>
+      <p>Fires when all required parameters in a form have been collected from the user.</p>
+    </div>
+    <div class="comp-card">
+      <div class="comp-icon">⚡</div>
+      <div class="comp-tag">system events</div>
+      <h4>Event Handlers</h4>
+      <p>Fires on system events: <span class="inline-code">sys.no-match</span>, <span class="inline-code">sys.no-input</span>, <span class="inline-code">WELCOME</span>, custom events.</p>
+    </div>
+  </div>
+
+  <h2>Condition Route Examples</h2>
+  <pre><code>// Route fires if order total is over $50 (add free delivery)
+Condition: $session.params.order_total > 50
+Action: Set delivery_fee = 0, say "Free delivery on your order!"
+
+// Route fires if user is a premium member
+Condition: $session.params.membership_tier = "premium"
+Action: Transition to PremiumServicesPage
+
+// Route fires if all form parameters collected
+Condition: $page.params.status = "FINAL"  
+Action: Transition to ConfirmationPage
+
+// Combining conditions
+Condition: $session.params.age >= 18 AND $session.params.country = "US"
+Action: Show age-restricted content page</code><span class="code-label">conditions</span></pre>
+
+  <h2>Event Handlers — Error Recovery</h2>
+  <p>Event handlers are crucial for graceful failure handling:</p>
+  <pre><code>Event: sys.no-match-1      → "Sorry, I didn't understand. Can you rephrase?"
+Event: sys.no-match-2      → "I'm still having trouble. Here are some options..."
+Event: sys.no-match-default → Transfer to live agent
+Event: sys.no-input-1      → "Are you still there?"
+Event: sys.no-input-default → "I'll end the session now. Goodbye!"</code><span class="code-label">event handlers</span></pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div class="callout-body"><h4>Route Priority</h4><p>When multiple routes could fire, Dialogflow CX evaluates them in order: <strong>Intent Routes first</strong>, then Condition Routes, then Event Handlers. Order your routes intentionally — the first matching route wins.</p></div>
+  </div>
+
+  <h2>Scope: Page vs. Flow Handlers</h2>
+  <table>
+    <tr><th>Level</th><th>Scope</th><th>Use When</th></tr>
+    <tr><td>Page Handler</td><td>Only fires on this specific page</td><td>Page-specific logic (e.g., "confirm order" only on order page)</td></tr>
+    <tr><td>Flow Handler</td><td>Fires anywhere within this flow</td><td>Global escapes (e.g., "cancel" intent reachable from any page)</td></tr>
+    <tr><td>Start Page Handler</td><td>Fires before any page in the flow</td><td>Entry-level routing, authentication checks</td></tr>
+  </table>
+
+  <div class="quiz-box">
+    <h3>🧠 Quiz: State Handlers</h3>
+    <div class="quiz-q">
+      <p>You want the user to be able to say "cancel" from ANY page in your "Order Flow". Where should you add the cancel intent route?</p>
+      <label class="quiz-option"><input type="radio" name="q6" value="a"> On each individual page</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="b"> On the Flow level handler</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="c"> Only on the last page</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="d"> In a webhook</label>
+    </div>
+    <button class="btn" onclick="checkQuiz('q6','b','res6')">Check Answer</button>
+    <div class="quiz-result" id="res6"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(5)">← Back</button>
+    <button class="btn" onclick="gotoSection(7)">Next: Parameters & Forms →</button>
+  </div>
+</div>
+
+<!-- SECTION 7: PARAMETERS & FORMS -->
+<div class="section" id="sec7">
+  <h1 class="lesson-title">Parameters & Forms</h1>
+  <div class="lesson-meta"><span class="tag">lesson 07</span><span>~20 min read</span></div>
+
+  <h2>Session Parameters</h2>
+  <p>Parameters are variables stored in the session. They persist across the entire conversation and can be read/written anywhere.</p>
+
+  <pre><code>// REFERENCE SYNTAX
+$session.params.customer_name    // from session
+$intent.params.pizza_size        // from current intent
+$page.params.status              // form status
+$flow.params.flow_variable       // from current flow
+
+// IN RESPONSE TEXT (interpolation)
+"Hello $session.params.customer_name! Your order is confirmed."
+→ renders as: "Hello Amir! Your order is confirmed."</code><span class="code-label">parameter syntax</span></pre>
+
+  <h2>Forms — Collecting Multiple Parameters</h2>
+  <p>A <strong>Form</strong> is a set of parameters a page needs to collect before proceeding. Dialogflow CX automatically prompts the user for any missing parameters.</p>
+
+  <pre><code>Page: "Collect Flight Details"
+Form Parameters:
+  - origin_city     (required) → @sys.geo-city
+    Prompt: "Where are you flying from?"
+    
+  - destination_city (required) → @sys.geo-city
+    Prompt: "And where are you flying to?"
+    
+  - travel_date     (required) → @sys.date
+    Prompt: "What's your travel date?"
+    
+  - num_passengers  (optional) → @sys.number
+    Prompt: "How many passengers?"
+
+// When ALL required params are filled:
+$page.params.status = "FINAL"
+→ Condition route fires → transition to next page</code><span class="code-label">form config</span></pre>
+
+  <h2>Form Reprompt — Handling Invalid Input</h2>
+  <pre><code>Parameter: travel_date
+  Initial prompt: "What date would you like to travel?"
+  
+  Reprompt event handlers:
+    sys.no-match-1: "I didn't catch that. Please say a date like 'March 15' or 'next Friday'."
+    sys.no-match-2: "Let me try again — what date works for you? Example: 'April 1st'"
+    sys.no-match-default: "I'm having trouble with the date. Let me connect you with an agent."</code><span class="code-label">reprompt</span></pre>
+
+  <h2>Parameter Presets</h2>
+  <p>You can set parameters programmatically in fulfillment without collecting from user:</p>
+  <pre><code>// In a route's fulfillment → Parameter Presets:
+loyalty_tier = "gold"
+session_start_time = "2024-01-15T10:30:00"
+agent_name = "Max"
+
+// Conditional preset based on other params:
+discount_pct = IF($session.params.loyalty_tier == "gold", 15, 0)</code><span class="code-label">parameter presets</span></pre>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body"><h4>Inaccessible Parameters</h4><p><span class="inline-code">$intent.params</span> only contains parameters from the <em>current</em> intent match. Once you transition to a new page or the intent changes, always copy important values to <span class="inline-code">$session.params</span> so they persist.</p></div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 5: Build a Multi-Step Form</h3>
+    <div class="badge">⏱ 45 min</div>
+    <ol>
+      <li>Create a page called <strong>"Collect Reservation Info"</strong></li>
+      <li>Add a form with 4 parameters: <strong>customer_name</strong>, <strong>party_size</strong>, <strong>date</strong>, <strong>time</strong></li>
+      <li>Write custom prompts for each parameter (natural language)</li>
+      <li>Add reprompt handlers for each parameter (at least 2 reprompts)</li>
+      <li>On form completion, transition to a Confirmation page that says: "Thanks [name]! Table for [size] on [date] at [time] — confirmed!"</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Video or screenshot sequence showing the bot collecting all 4 form parameters in a test conversation.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(6)">← Back</button>
+    <button class="btn" onclick="gotoSection(8)">Next: Route Groups & Versions →</button>
+  </div>
+</div>
+
+<!-- SECTION 8: ROUTE GROUPS & VERSIONS -->
+<div class="section" id="sec8">
+  <h1 class="lesson-title">Route Groups & Versions</h1>
+  <div class="lesson-meta"><span class="tag">lesson 08</span><span>~15 min read</span></div>
+
+  <h2>Route Groups — Reusable Logic</h2>
+  <p>Route Groups let you define a set of routes once and reuse them across multiple pages. Perfect for global commands like "help", "cancel", "repeat", or "talk to agent".</p>
+
+  <pre><code>Route Group: "Global Commands"
+  Routes:
+    - Intent: talk.to.agent    → Transition to [Live Agent Page]
+    - Intent: repeat.last      → Fulfillment: repeat last response
+    - Intent: main.menu        → Transition to [Main Menu Page]
+    - Intent: goodbye          → Fulfillment: "Goodbye!" → END
+
+// Apply to multiple pages in one click
+// Instead of adding these routes to every page manually</code><span class="code-label">route group</span></pre>
+
+  <h2>Environments & Versions</h2>
+  <p>Versions let you snapshot your agent at a point in time. Environments let you run different versions simultaneously.</p>
+
+  <table>
+    <tr><th>Concept</th><th>Description</th><th>Use Case</th></tr>
+    <tr><td><strong>Draft</strong></td><td>Working version (always editable)</td><td>Development</td></tr>
+    <tr><td><strong>Version</strong></td><td>Named snapshot (immutable)</td><td>"v1.2.0-stable"</td></tr>
+    <tr><td><strong>Environment</strong></td><td>Named deployment target</td><td>Development, Staging, Production</td></tr>
+  </table>
+
+  <pre><code>Typical workflow:
+  1. Edit in Draft
+  2. Create Version: "v2.3.0" with description
+  3. Deploy to Staging environment → test
+  4. Deploy to Production environment → go live
+  5. If issues → rollback to previous version in seconds</code><span class="code-label">deployment workflow</span></pre>
+
+  <h2>CI/CD Integration</h2>
+  <pre><code># Deploy version via gcloud CLI
+gcloud dialogflow cx versions create \
+  --agent=AGENT_ID \
+  --flow=START_FLOW_ID \
+  --display-name="v2.3.0" \
+  --description="Added pizza customization flow"
+
+# Deploy to environment  
+gcloud dialogflow cx environments deploy \
+  --environment=ENVIRONMENT_ID \
+  --flow-version=FLOW_VERSION_ID</code><span class="code-label">gcloud cli</span></pre>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(7)">← Back</button>
+    <button class="btn" onclick="gotoSection(9)">Next: Build Pizza Bot 🍕 →</button>
+  </div>
+</div>
+
+<!-- SECTION 9: PIZZA BOT PROJECT -->
+<div class="section" id="sec9">
+  <h1 class="lesson-title">Project: Build a Pizza Ordering Bot 🍕</h1>
+  <div class="lesson-meta"><span class="tag">project 01</span><span>~90 min build</span></div>
+
+  <p>Let's build a complete pizza ordering bot from scratch, applying everything we've learned.</p>
+
+  <h2>Architecture Overview</h2>
+  <pre><code>PIZZA BOT ARCHITECTURE
+========================
+Agent: "PizzaBot"
+│
+├── Default Start Flow
+│   └── Start Page
+│       ├── WELCOME → Greeting Page
+│       └── Intent: start.ordering → Order Flow
+│
+└── Order Flow
+    ├── Start Page (entry)
+    ├── Choose Pizza Page     (form: size, crust, toppings)
+    ├── Customize Page        (extras, sauce)
+    ├── Confirm Order Page    (show summary, confirm/edit)
+    ├── Payment Page          (collect payment method)
+    └── Order Confirmed Page  (webhook: submit order)
+
+Route Groups:
+    - Global: cancel, help, restart</code><span class="code-label">architecture</span></pre>
+
+  <h2>Step 1: Create the Entities</h2>
+  <pre><code>@pizza-size:    small, medium, large, xl
+@pizza-crust:   thin, thick, stuffed, gluten-free
+@pizza-topping: pepperoni, mushroom, onion, pepper, 
+                olive, bacon, chicken, extra-cheese
+@payment-type:  card, cash, apple-pay, google-pay</code><span class="code-label">entities</span></pre>
+
+  <h2>Step 2: Create the Intents</h2>
+  <pre><code>order.pizza         — "I want to order a pizza", "Let's get a pizza"
+confirm.order       — "Yes", "Confirm", "That's right", "Place the order"
+edit.order          — "Change my order", "Actually...", "Wait, I want..."
+cancel.order        — "Cancel", "Never mind", "Stop"
+ask.for.help        — "Help", "What can you do?", "Options"
+provide.pizza.size  — "Large please", "Make it medium"
+provide.toppings    — "Add pepperoni and mushrooms"</code><span class="code-label">intents</span></pre>
+
+  <h2>Step 3: Build the "Choose Pizza" Page</h2>
+  <pre><code>Page: "Choose Pizza"
+Entry Fulfillment: "Great! Let's build your perfect pizza. 🍕"
+
+Form Parameters:
+  pizza_size   → @pizza-size
+    Prompt: "What size? Small ($8), Medium ($12), Large ($16), or XL ($20)?"
+    
+  pizza_crust  → @pizza-crust  
+    Prompt: "What crust? Thin, thick, stuffed, or gluten-free?"
+    
+  pizza_toppings → @pizza-topping (list)
+    Prompt: "Choose your toppings: pepperoni, mushroom, onion, pepper, olive, bacon, chicken, or extra cheese?"
+
+Condition Route (form complete):
+  $page.params.status = "FINAL" → Transition to [Confirm Order Page]</code><span class="code-label">page config</span></pre>
+
+  <h2>Step 4: Confirmation Page</h2>
+  <pre><code>Page: "Confirm Order"
+Entry Fulfillment:
+  "Here's your order summary:
+   🍕 $session.params.pizza_size $session.params.pizza_crust pizza
+   Toppings: $session.params.pizza_toppings
+   Total: $session.params.calculated_price
+   
+   Ready to place your order?"
+   
+   Chips: ["✅ Yes, place order", "✏️ Edit order", "❌ Cancel"]
+
+Routes:
+  Intent: confirm.order → Webhook (submit) → [Order Confirmed Page]
+  Intent: edit.order    → Transition to [Choose Pizza Page]
+  Intent: cancel.order  → Fulfillment: "Order cancelled." → END</code><span class="code-label">confirmation page</span></pre>
+
+  <h2>Live Demo</h2>
+  <div class="simulator">
+    <div class="sim-header">
+      <div class="sim-dot" style="background:#ef4444"></div>
+      <div class="sim-dot" style="background:#f59e0b;margin-left:4px"></div>
+      <div class="sim-dot" style="background:#10b981;margin-left:4px"></div>
+      <div class="sim-title" style="margin-left:12px">🍕 PizzaBot Live Demo</div>
+    </div>
+    <div class="sim-chips">
+      <div class="chip" onclick="pizzaOrder('start')">🍕 Order Pizza</div>
+      <div class="chip" onclick="pizzaOrder('small')">Small</div>
+      <div class="chip" onclick="pizzaOrder('large')">Large</div>
+      <div class="chip" onclick="pizzaOrder('confirm')">✅ Confirm</div>
+      <div class="chip" onclick="pizzaOrder('cancel')">❌ Cancel</div>
+    </div>
+    <div class="sim-body" id="pizzaSimBody">
+      <div class="sim-msg bot"><div class="sim-avatar">🍕</div><div class="sim-bubble">Welcome to PizzaBot! 🍕 Ready to order? Tap "Order Pizza" to start!</div></div>
+    </div>
+    <div class="sim-footer">
+      <input id="pizzaInput" placeholder="Type your order..." onkeydown="if(event.key==='Enter')pizzaOrder('type')">
+      <button onclick="pizzaOrder('type')">Send</button>
+    </div>
+  </div>
+
+  <div class="assignment">
+    <h3>Assignment 6: Complete Pizza Bot</h3>
+    <div class="badge">⏱ 90 min</div>
+    <ol>
+      <li>Build the complete agent architecture described above in Dialogflow CX</li>
+      <li>Implement all 4 entities and 7 intents with proper training phrases</li>
+      <li>Build all 6 pages with proper forms, routes, and entry fulfillments</li>
+      <li>Add a webhook that calculates the price dynamically based on size</li>
+      <li>Add a "Global Commands" Route Group with cancel, help, and restart</li>
+      <li>Add <strong>no-match handlers</strong> on every page that re-prompts helpfully</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> A full conversation test showing: greeting → size → crust → toppings → confirmation → order placed, with dynamic order ID from webhook.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(8)">← Back</button>
+    <button class="btn" onclick="gotoSection(10)">Next: Banking Bot 🏦 →</button>
+  </div>
+</div>
+
+<!-- SECTION 10: BANKING BOT -->
+<div class="section" id="sec10">
+  <h1 class="lesson-title">Project: Banking Support Bot 🏦</h1>
+  <div class="lesson-meta"><span class="tag">project 02</span><span>~120 min build</span></div>
+
+  <p>A more complex agent with authentication, multiple flows, and conditional routing — a production-like scenario.</p>
+
+  <h2>Architecture</h2>
+  <pre><code>BANKING BOT ARCHITECTURE
+=========================
+Agent: "BankBot"
+│
+├── Default Start Flow
+│   ├── Authenticate User Page  ← verify account number
+│   └── Main Menu Page          ← routing hub
+│
+├── Account Flow
+│   ├── Check Balance Page      ← webhook: get balance
+│   ├── Recent Transactions Page ← webhook: get transactions
+│   └── Account Details Page
+│
+├── Transfer Flow
+│   ├── Enter Amount Page       ← form: amount, account
+│   ├── Confirm Transfer Page
+│   └── Transfer Complete Page  ← webhook: execute transfer
+│
+├── Support Flow
+│   ├── Report Card Lost Page
+│   ├── Dispute Transaction Page
+│   └── Live Agent Transfer Page
+│
+└── Global Route Group
+    └── "main menu", "help", "logout"</code><span class="code-label">architecture</span></pre>
+
+  <h2>Authentication Pattern</h2>
+  <pre><code>Page: "Authenticate User"
+Entry: "Welcome to SecureBank. Please enter your account number."
+
+Form:
+  account_number → @sys.number (6 digits)
+
+On form complete → Webhook: verify_account
+  IF webhook returns verified=true:
+    Set session.params.authenticated = true
+    Set session.params.customer_name = [from webhook]
+    Transition to [Main Menu]
+  IF webhook returns verified=false:
+    Increment session.params.auth_attempts
+    IF auth_attempts >= 3 → Transition to [Locked Account Page]
+    ELSE → Reprompt: "Account not found. Please try again."</code><span class="code-label">auth page</span></pre>
+
+  <h2>Conditional Routing Based on Authentication</h2>
+  <pre><code>// On Start Page — check auth before anything
+Route 1 (highest priority):
+  Condition: $session.params.authenticated != true
+  Action: Transition to [Authenticate User Page]
+
+Route 2:  
+  Intent: check.balance
+  Condition: $session.params.authenticated = true
+  Action: Transition to Account Flow → Check Balance Page
+
+// This pattern prevents unauthenticated access to any sensitive page</code><span class="code-label">auth guard</span></pre>
+
+  <h2>Transfer Flow — Advanced Form</h2>
+  <pre><code>Page: "Enter Transfer Details"
+Form:
+  transfer_amount   → @sys.number
+    Prompt: "How much would you like to transfer?"
+    Validation webhook: check sufficient funds
+    
+  recipient_account → @sys.number
+    Prompt: "Enter the recipient's account number."
+    
+  transfer_note     → @sys.any (optional)
+    Prompt: "Any note for this transfer? (optional, say 'skip' to continue)"
+
+On form complete:
+  Condition: $session.params.transfer_amount > $session.params.account_balance
+  → Fulfillment: "Insufficient funds. Your balance is $X."
+  → Transition back to [Enter Transfer Details]
+  
+  Condition: $session.params.transfer_amount <= $session.params.account_balance
+  → Transition to [Confirm Transfer Page]</code><span class="code-label">transfer form</span></pre>
+
+  <div class="assignment">
+    <h3>Assignment 7: Banking Bot</h3>
+    <div class="badge">⏱ 120 min</div>
+    <ol>
+      <li>Build the complete banking bot architecture (all 4 flows)</li>
+      <li>Implement the authentication pattern with account number verification</li>
+      <li>Build the transfer flow with balance validation</li>
+      <li>Add a mock webhook that simulates account balance lookup (hardcode a few accounts)</li>
+      <li>Add the "report card lost" page that collects: reason, last known location, new card needed (y/n)</li>
+      <li>Add a <strong>"Talk to Agent"</strong> option accessible from anywhere that summarizes the conversation and passes to a live agent</li>
+    </ol>
+    <div class="deliverable"><strong>Deliverable:</strong> Full walkthrough showing: authenticate → check balance → initiate transfer → confirm → complete. Plus one failed auth attempt recovery.</div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(9)">← Back</button>
+    <button class="btn" onclick="gotoSection(11)">Next: Testing & Debugging →</button>
+  </div>
+</div>
+
+<!-- SECTION 11: TESTING -->
+<div class="section" id="sec11">
+  <h1 class="lesson-title">Testing & Debugging</h1>
+  <div class="lesson-meta"><span class="tag">lesson 11</span><span>~20 min read</span></div>
+
+  <h2>The Test Console</h2>
+  <p>Dialogflow CX has a built-in test simulator accessible from the right panel. It shows:</p>
+  <ul>
+    <li>Current page and flow</li>
+    <li>Matched intent and confidence score</li>
+    <li>Extracted parameters and their values</li>
+    <li>Which route was triggered</li>
+    <li>Webhook request/response details</li>
+  </ul>
+
+  <h2>Conversation Replay</h2>
+  <p>A powerful CX feature — record test conversations and replay them to detect regressions after changes.</p>
+  <pre><code>// Test conversation format (YAML)
+test_cases:
+  - display_name: "Complete Pizza Order"
+    conversation_turns:
+      - user_input: "I want to order a pizza"
+        virtual_agent_output:
+          triggered_intent: "order.pizza"
+          current_page: "Choose Pizza"
+          
+      - user_input: "Large pepperoni"
+        virtual_agent_output:
+          current_page: "Choose Pizza"
+          session_parameters:
+            pizza_size: "large"
+            pizza_toppings: ["pepperoni"]</code><span class="code-label">test case yaml</span></pre>
+
+  <h2>Common Issues & Fixes</h2>
+  <table>
+    <tr><th>Issue</th><th>Symptom</th><th>Fix</th></tr>
+    <tr><td>Wrong intent matched</td><td>Bot goes to wrong page</td><td>Add more varied training phrases; check for overlapping intents</td></tr>
+    <tr><td>Entity not extracted</td><td>Parameter is null</td><td>Annotate more training phrases; check entity type is correct</td></tr>
+    <tr><td>Form never completes</td><td>Bot keeps asking same question</td><td>Check parameter entity type matches user input format</td></tr>
+    <tr><td>Webhook timeout</td><td>Error response after 5s</td><td>Optimize backend; add async pattern with quick ack</td></tr>
+    <tr><td>Routes not firing</td><td>No transition happens</td><td>Check route order; verify condition syntax; check intent is active on this page</td></tr>
+  </table>
+
+  <h2>Validation Tool</h2>
+  <pre><code>// Run validation before deploying:
+gcloud dialogflow cx agents validate --agent=AGENT_ID
+
+// Returns warnings like:
+// WARNING: Intent 'order.pizza' has only 3 training phrases (minimum: 10)
+// WARNING: Page 'Confirm Order' has no no-match handler
+// ERROR: Webhook 'process-order' URL returns 404</code><span class="code-label">validation</span></pre>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(10)">← Back</button>
+    <button class="btn" onclick="gotoSection(12)">Final Exam 🎓 →</button>
+  </div>
+</div>
+
+<!-- SECTION 12: FINAL EXAM -->
+<div class="section" id="sec12">
+  <h1 class="lesson-title">Final Exam 🎓</h1>
+  <div class="lesson-meta"><span class="tag">certification</span><span>20 questions · pass = 70%</span></div>
+
+  <p>Complete the following exam to earn your Dialogflow CX completion certificate. You need <strong>14/20 correct (70%)</strong> to pass.</p>
+
+  <div class="quiz-box" id="finalExam">
+    <h3>📝 Final Exam — Dialogflow CX</h3>
+
+    <!-- Q1 -->
+    <div class="quiz-q">
+      <p>1. What is the hierarchy order in Dialogflow CX from top to bottom?</p>
+      <label class="quiz-option"><input type="radio" name="fe1" value="a"> Intent → Page → Flow → Agent</label>
+      <label class="quiz-option"><input type="radio" name="fe1" value="b"> Agent → Flow → Page → Intent</label>
+      <label class="quiz-option"><input type="radio" name="fe1" value="c"> Agent → Intent → Flow → Page</label>
+      <label class="quiz-option"><input type="radio" name="fe1" value="d"> Flow → Agent → Intent → Page</label>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-q">
+      <p>2. What does $page.params.status = "FINAL" indicate?</p>
+      <label class="quiz-option"><input type="radio" name="fe2" value="a"> The session has ended</label>
+      <label class="quiz-option"><input type="radio" name="fe2" value="b"> The flow is complete</label>
+      <label class="quiz-option"><input type="radio" name="fe2" value="c"> All required form parameters have been collected</label>
+      <label class="quiz-option"><input type="radio" name="fe2" value="d"> The webhook has finished executing</label>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-q">
+      <p>3. Which system entity extracts "next Monday" from user input?</p>
+      <label class="quiz-option"><input type="radio" name="fe3" value="a"> @sys.time</label>
+      <label class="quiz-option"><input type="radio" name="fe3" value="b"> @sys.calendar</label>
+      <label class="quiz-option"><input type="radio" name="fe3" value="c"> @sys.date</label>
+      <label class="quiz-option"><input type="radio" name="fe3" value="d"> @sys.weekday</label>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-q">
+      <p>4. What is the webhook timeout limit in Dialogflow CX?</p>
+      <label class="quiz-option"><input type="radio" name="fe4" value="a"> 2 seconds</label>
+      <label class="quiz-option"><input type="radio" name="fe4" value="b"> 5 seconds</label>
+      <label class="quiz-option"><input type="radio" name="fe4" value="c"> 10 seconds</label>
+      <label class="quiz-option"><input type="radio" name="fe4" value="d"> 30 seconds</label>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-q">
+      <p>5. To make a "help" intent available from ANY page in a flow, you should add it to:</p>
+      <label class="quiz-option"><input type="radio" name="fe5" value="a"> Every individual page</label>
+      <label class="quiz-option"><input type="radio" name="fe5" value="b"> The Default Start Flow only</label>
+      <label class="quiz-option"><input type="radio" name="fe5" value="c"> A Route Group applied to the flow</label>
+      <label class="quiz-option"><input type="radio" name="fe5" value="d"> The agent-level settings</label>
+    </div>
+
+    <!-- Q6 -->
+    <div class="quiz-q">
+      <p>6. Which parameter reference retrieves a value set in the current session?</p>
+      <label class="quiz-option"><input type="radio" name="fe6" value="a"> $intent.params.value</label>
+      <label class="quiz-option"><input type="radio" name="fe6" value="b"> $session.params.value</label>
+      <label class="quiz-option"><input type="radio" name="fe6" value="c"> $flow.params.value</label>
+      <label class="quiz-option"><input type="radio" name="fe6" value="d"> $global.params.value</label>
+    </div>
+
+    <!-- Q7 -->
+    <div class="quiz-q">
+      <p>7. What fires when a user doesn't respond to a bot prompt (voice channel)?</p>
+      <label class="quiz-option"><input type="radio" name="fe7" value="a"> sys.no-match</label>
+      <label class="quiz-option"><input type="radio" name="fe7" value="b"> sys.timeout</label>
+      <label class="quiz-option"><input type="radio" name="fe7" value="c"> sys.no-input</label>
+      <label class="quiz-option"><input type="radio" name="fe7" value="d"> sys.silence</label>
+    </div>
+
+    <!-- Q8 -->
+    <div class="quiz-q">
+      <p>8. Dialogflow CX differs from Dialogflow ES primarily because CX uses:</p>
+      <label class="quiz-option"><input type="radio" name="fe8" value="a"> Better NLU models</label>
+      <label class="quiz-option"><input type="radio" name="fe8" value="b"> Flow + Page state machine architecture</label>
+      <label class="quiz-option"><input type="radio" name="fe8" value="c"> Only webhook-based responses</label>
+      <label class="quiz-option"><input type="radio" name="fe8" value="d"> A different programming language</label>
+    </div>
+
+    <!-- Q9 -->
+    <div class="quiz-q">
+      <p>9. What is the correct webhook response field to update session parameters?</p>
+      <label class="quiz-option"><input type="radio" name="fe9" value="a"> fulfillment_response.parameters</label>
+      <label class="quiz-option"><input type="radio" name="fe9" value="b"> session_info.parameters</label>
+      <label class="quiz-option"><input type="radio" name="fe9" value="c"> intent_info.parameters</label>
+      <label class="quiz-option"><input type="radio" name="fe9" value="d"> page_info.parameters</label>
+    </div>
+
+    <!-- Q10 -->
+    <div class="quiz-q">
+      <p>10. How many training phrases are recommended for good intent accuracy?</p>
+      <label class="quiz-option"><input type="radio" name="fe10" value="a"> 3-5</label>
+      <label class="quiz-option"><input type="radio" name="fe10" value="b"> 10-20</label>
+      <label class="quiz-option"><input type="radio" name="fe10" value="c"> 50-100</label>
+      <label class="quiz-option"><input type="radio" name="fe10" value="d"> Exactly 7</label>
+    </div>
+
+    <button class="btn" onclick="gradeFinalExam()" style="margin-top:8px">Submit Exam →</button>
+    <div class="quiz-result" id="finalResult" style="margin-top:16px;font-size:16px;"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-outline" onclick="gotoSection(11)">← Back</button>
+    <button class="btn" onclick="gotoSection(0)">🏠 Course Home</button>
+  </div>
+</div>
+
+</div><!-- /content -->
+</main>
+
+<script>
+// SECTION NAVIGATION
+let completed = new Array(13).fill(false);
+let current = 0;
+
+function gotoSection(n) {
+  document.getElementById('sec'+current).classList.remove('active');
+  document.querySelectorAll('.nav-item')[current].classList.remove('active');
+  completed[current] = true;
+  document.getElementById('chk'+current).textContent = '✓';
+  document.querySelectorAll('.nav-item')[current].classList.add('done');
+  current = n;
+  document.getElementById('sec'+n).classList.add('active');
+  document.querySelectorAll('.nav-item')[n].classList.add('active');
+  document.getElementById('main').scrollTo({top:0});
+  window.scrollTo({top:0});
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = completed.filter(Boolean).length;
+  const pct = Math.round((done/13)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = pct+'% complete ('+done+'/13)';
+}
+
+// QUIZ
+function checkQuiz(name, correct, resultId) {
+  const sel = document.querySelector(`input[name="${name}"]:checked`);
+  const res = document.getElementById(resultId);
+  if (!sel) { res.className='quiz-result show fail'; res.textContent='Please select an answer.'; return; }
+  if (sel.value === correct) {
+    res.className='quiz-result show pass'; res.textContent='✅ Correct! Well done.';
+    sel.closest('.quiz-option').classList.add('correct');
+  } else {
+    res.className='quiz-result show fail'; res.textContent='❌ Not quite. Review the section above and try again.';
+    sel.closest('.quiz-option').classList.add('wrong');
+    document.querySelector(`input[name="${name}"][value="${correct}"]`).closest('.quiz-option').classList.add('correct');
+  }
+}
+
+function checkMultiQuiz(questions, resultId) {
+  let correct = 0;
+  questions.forEach(q => {
+    const sel = document.querySelector(`input[name="${q.name}"]:checked`);
+    if (sel && sel.value === q.ans) {
+      correct++;
+      sel.closest('.quiz-option').classList.add('correct');
+    } else if (sel) {
+      sel.closest('.quiz-option').classList.add('wrong');
+      document.querySelector(`input[name="${q.name}"][value="${q.ans}"]`).closest('.quiz-option').classList.add('correct');
+    }
+  });
+  const res = document.getElementById(resultId);
+  res.className = correct === questions.length ? 'quiz-result show pass' : 'quiz-result show fail';
+  res.textContent = correct === questions.length ? `✅ ${correct}/${questions.length} correct! Perfect!` : `❌ ${correct}/${questions.length} correct. Review and retry.`;
+}
+
+// FINAL EXAM
+const finalAnswers = {fe1:'b',fe2:'c',fe3:'c',fe4:'b',fe5:'c',fe6:'b',fe7:'c',fe8:'b',fe9:'b',fe10:'b'};
+function gradeFinalExam() {
+  let score = 0;
+  Object.entries(finalAnswers).forEach(([name, ans]) => {
+    const sel = document.querySelector(`input[name="${name}"]:checked`);
+    if (sel) {
+      if (sel.value === ans) { score++; sel.closest('.quiz-option').classList.add('correct'); }
+      else { sel.closest('.quiz-option').classList.add('wrong'); document.querySelector(`input[name="${name}"][value="${ans}"]`).closest('.quiz-option').classList.add('correct'); }
+    } else {
+      document.querySelector(`input[name="${name}"][value="${ans}"]`).closest('.quiz-option').classList.add('correct');
+    }
+  });
+  const pct = Math.round((score/10)*100);
+  const res = document.getElementById('finalResult');
+  res.className = score >= 7 ? 'quiz-result show pass' : 'quiz-result show fail';
+  if (score >= 7) {
+    res.innerHTML = `🎓 <strong>PASSED!</strong> Score: ${score}/10 (${pct}%)<br><br>Congratulations! You've completed the Dialogflow CX course. You're ready to build production conversational AI agents!`;
+  } else {
+    res.innerHTML = `❌ Score: ${score}/10 (${pct}%) — Need 70% to pass.<br>Review lessons 2-8 and retake.`;
+  }
+}
+
+// SECTION 3 SIMULATOR
+const sim3 = {
+  'hello': "Hello! I'm your flight assistant powered by Dialogflow CX. How can I help you today? ✈️",
+  'book a flight': "I'd love to help you book a flight! Which city are you flying from?",
+  'help': "I can help you: ✈️ Book flights, 🗓 Manage reservations, 🧳 Check baggage policies. What would you like?"
+};
+function simSend(preset) {
+  const inp = document.getElementById('simInput3');
+  const msg = preset || inp.value.trim();
+  if (!msg) return;
+  addSimMsg('simBody3', msg, 'user');
+  inp.value = '';
+  const reply = sim3[msg.toLowerCase()] || "I heard: \""+msg+"\". In a real Dialogflow CX bot, the NLU would match this to an intent and route you to the right page!";
+  setTimeout(() => addSimMsg('simBody3', reply, 'bot', '🤖'), 600);
+}
+function addSimMsg(bodyId, text, type, avatar='👤') {
+  const body = document.getElementById(bodyId);
+  const div = document.createElement('div');
+  div.className = `sim-msg ${type}`;
+  div.innerHTML = `<div class="sim-avatar">${avatar}</div><div class="sim-bubble">${text}</div>`;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+// PIZZA SIMULATOR
+let pizzaState = 'start';
+let pizzaCart = {};
+function pizzaOrder(action) {
+  const input = action === 'type' ? document.getElementById('pizzaInput').value.trim() : action;
+  if (!input) return;
+  document.getElementById('pizzaInput').value = '';
+  if (action !== 'start' && action !== 'confirm' && action !== 'cancel') {
+    addSimMsg('pizzaSimBody', input, 'user', '👤');
+  }
+  setTimeout(() => {
+    let reply = '';
+    if (pizzaState === 'start' || input === 'start') {
+      pizzaState = 'size';
+      reply = "🍕 Let's build your pizza! What size would you like?<br><strong>Small $8 | Medium $12 | Large $16 | XL $20</strong>";
+    } else if (pizzaState === 'size') {
+      const sizes = {small:8, medium:12, large:16, xl:20};
+      const s = input.toLowerCase();
+      const matched = Object.keys(sizes).find(k => s.includes(k));
+      if (matched) {
+        pizzaCart = {size: matched, price: sizes[matched]};
+        pizzaState = 'toppings';
+        reply = `✅ ${matched.charAt(0).toUpperCase()+matched.slice(1)} pizza noted! What toppings? (e.g. pepperoni, mushroom, cheese)`;
+      } else {
+        reply = "Please choose: Small, Medium, Large, or XL.";
+      }
+    } else if (pizzaState === 'toppings') {
+      pizzaCart.toppings = input;
+      pizzaState = 'confirm';
+      reply = `📋 Order Summary:<br>🍕 ${pizzaCart.size} pizza — $${pizzaCart.price}<br>Toppings: ${pizzaCart.toppings}<br><br>Confirm order?`;
+    } else if (pizzaState === 'confirm' || input === 'confirm') {
+      pizzaState = 'done';
+      const id = 'PZ' + Math.floor(Math.random() * 90000 + 10000);
+      reply = `✅ Order #${id} placed! Your pizza will be ready in 25 mins. 🍕`;
+    } else if (input === 'cancel') {
+      pizzaState = 'start';
+      pizzaCart = {};
+      reply = "Order cancelled. Tap '🍕 Order Pizza' to start again.";
+    } else {
+      reply = "Tap '🍕 Order Pizza' to begin, or use the chips above!";
+    }
+    addSimMsg('pizzaSimBody', reply, 'bot', '🍕');
+  }, 500);
+}
+document.getElementById('pizzaInput').addEventListener('keydown', e => { if (e.key === 'Enter') pizzaOrder('type'); });
+</script>
+
+</body>
+</html>
