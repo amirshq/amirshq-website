@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photography · Amir Sh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-950: #04080f;
+      --navy-900: #070d1a;
+      --navy-800: #0c1528;
+      --navy-700: #111e38;
+      --navy-600: #172545;
+      --teal-400: #2dd4bf;
+      --teal-300: #5eead4;
+      --glass-bg: rgba(14, 22, 45, 0.8);
+      --glass-border: rgba(255,255,255,0.08);
+      --glass-border-soft: rgba(255,255,255,0.04);
+      --text-primary: #f0f4ff;
+      --text-secondary: rgba(200, 215, 255, 0.7);
+      --text-muted: rgba(150, 170, 220, 0.5);
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--navy-950);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .bg-layer::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(45,212,191,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(129,140,248,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(14,22,45,0.9) 0%, transparent 100%);
+    }
+
+    .site-wrap {
+      position: relative; z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 20px 72px;
+    }
+
+    /* NAV */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .nav-left {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--teal-300); }
+    .nav-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+    .nav-link-back {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid var(--glass-border-soft);
+      background: rgba(4,8,15,0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-link-back span {
+      font-size: 14px;
+    }
+    .nav-link-back:hover {
+      border-color: rgba(45,212,191,0.4);
+      color: var(--teal-300);
+    }
+
+    /* HERO STORY */
+    .story-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 26px;
+      margin-bottom: 34px;
+    }
+
+    .story-photo-wrap {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.8);
+      background: radial-gradient(circle at top, rgba(148,163,255,0.4), transparent 55%);
+    }
+    .story-photo-wrap img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .story-photo-label {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: rgba(4,8,20,0.78);
+      color: var(--text-secondary);
+      border: 1px solid rgba(249,250,251,0.16);
+      backdrop-filter: blur(12px);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .story-photo-label-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #f97316;
+      box-shadow: 0 0 0 4px rgba(248, 150, 60, 0.3);
+    }
+
+    .story-copy {
+      align-self: center;
+      padding: 18px 18px 18px 4px;
+    }
+    .story-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--teal-300);
+      margin-bottom: 8px;
+    }
+    .story-title {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3vw, 30px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+    .story-title span {
+      color: var(--teal-300);
+    }
+    .story-lede {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+    .story-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .story-meta-pill {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border-soft);
+      color: var(--text-muted);
+      background: rgba(10,16,30,0.9);
+    }
+    .story-meta-pill strong {
+      color: var(--text-secondary);
+    }
+    .story-caption {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* TIMELINE / STORIES LIST */
+    .section-heading {
+      margin-top: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .story-list {
+      border-radius: 18px;
+      border: 1px solid var(--glass-border-soft);
+      background: radial-gradient(circle at top, rgba(45,212,191,0.08), rgba(6,10,24,0.96));
+      padding: 14px 16px;
+    }
+    .story-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1.4fr) minmax(0, 2.4fr);
+      gap: 14px;
+      padding: 10px 6px;
+      border-radius: 12px;
+      align-items: flex-start;
+    }
+    .story-item + .story-item {
+      border-top: 1px dashed rgba(148,163,255,0.25);
+      padding-top: 14px;
+      margin-top: 8px;
+    }
+    .story-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+    .story-location {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .story-location span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .story-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15,23,42,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    footer a {
+      color: var(--teal-300);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* RESPONSIVE */
+    @media (max-width: 840px) {
+      .story-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .story-copy {
+        padding: 12px 4px 4px;
+      }
+      .story-item {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+
+  <main class="site-wrap">
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="../index.html" class="nav-logo">Amir <span>Sh.</span></a>
+        <span class="nav-sub">Photography Stories</span>
+      </div>
+      <a href="../index.html#photography" class="nav-link-back">
+        <span>←</span> Back to landing page
+      </a>
+    </header>
+
+    <section class="story-shell">
+      <figure class="story-photo-wrap">
+        <img src="photos/me majichal.jpg" alt="Night sky long exposure above a snowy village with two photographers in the foreground">
+        <figcaption class="story-photo-label">
+          <span class="story-photo-label-dot"></span>
+          Majichal · Star trails
+        </figcaption>
+      </figure>
+
+      <article class="story-copy">
+        <div class="story-eyebrow">Portfolio · Story 01</div>
+        <h1 class="story-title">Under the spinning sky in <span>Majichal</span>.</h1>
+        <p class="story-lede">
+          This is how I like to remember winter: quiet mountains, a sleeping village,
+          and the sky slowly painting circles above our heads while the shutter stays open.
+        </p>
+        <div class="story-meta-row">
+          <div class="story-meta-pill"><strong>Theme</strong> · Night sky &amp; friendship</div>
+          <div class="story-meta-pill"><strong>Technique</strong> · Long‑exposure star trails</div>
+          <div class="story-meta-pill"><strong>Feeling</strong> · Cold air, warm company</div>
+        </div>
+        <p class="story-caption">
+          We hiked up before midnight with tripods, thermoses, and too many batteries.
+          By the time the exposure finished, the village lights had softened and the sky
+          had turned into a time‑lapse on a single frame. What I try to capture in nights
+          like this is less about the stars and more about the people who decide to stand
+          in the snow and wait for them.
+        </p>
+      </article>
+    </section>
+
+    <section aria-label="More photography stories">
+      <div class="section-heading">
+        <h2 class="section-title">Upcoming stories</h2>
+        <p class="section-sub">I’ll grow this section as I publish more series from Québec and beyond.</p>
+      </div>
+
+      <div class="story-list">
+        <div class="story-item">
+          <div class="story-date">Soon</div>
+          <div class="story-location">
+            Old Québec at blue hour
+            <span>Streets, fog, and warm windows</span>
+          </div>
+          <p class="story-text">
+            A small series about how the city feels just after sunset in winter — when
+            the sky is still electric blue, the snow reflects every color, and people
+            move quickly between cafés to escape the cold.
+          </p>
+        </div>
+
+        <div class="story-item">
+          <div class="story-date">Soon</div>
+          <div class="story-location">
+            Everyday corners
+            <span>Little details around home</span>
+          </div>
+          <p class="story-text">
+            Not every frame needs a mountain. I’m building a small collection of quiet
+            photographs from daily walks — staircases, reflections in windows, and
+            objects that only look interesting when you slow down enough to see them.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Amir Shah · Photography &amp; AI.</span>
+      <span>Back to <a href="../index.html">amirshq-website</a></span>
+    </footer>
+  </main>
+</body>
+</html>
+
