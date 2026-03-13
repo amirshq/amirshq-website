@@ -265,6 +265,51 @@
       line-height: 1.75;
     }
 
+    /* LIGHTBOX MODAL */
+    .photo-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .photo-modal.open {
+      display: flex;
+    }
+    .photo-modal-inner {
+      max-width: 90vw;
+      max-height: 90vh;
+      position: relative;
+    }
+    .photo-modal-inner img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      display: block;
+    }
+    .photo-modal-caption {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .photo-modal-close {
+      position: absolute;
+      top: -38px;
+      right: 0;
+      padding: 6px 10px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
     /* FOOTER */
     footer {
       margin-top: 32px;
@@ -844,46 +889,58 @@
       </article>
     </section>
 
-    <section aria-label="More photography stories">
-      <div class="section-heading">
-        <h2 class="section-title">Upcoming stories</h2>
-        <p class="section-sub">I’ll grow this section as I publish more series from Montréal and beyond.</p>
-      </div>
-
-      <div class="story-list">
-        <div class="story-item">
-          <div class="story-date">Soon</div>
-          <div class="story-location">
-            Old Montréal at blue hour
-            <span>Streets, fog, and warm windows</span>
-          </div>
-          <p class="story-text">
-            A small series about how the city feels just after sunset in winter — when
-            the sky is still electric blue, the snow reflects every color, and people
-            move quickly between cafés to escape the cold.
-          </p>
-        </div>
-
-        <div class="story-item">
-          <div class="story-date">Soon</div>
-          <div class="story-location">
-            Everyday corners
-            <span>Little details around home</span>
-          </div>
-          <p class="story-text">
-            Not every frame needs a mountain. I’m building a small collection of quiet
-            photographs from daily walks — staircases, reflections in windows, and
-            objects that only look interesting when you slow down enough to see them.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <footer>
       <span>© 2026 Amir Shah · Photography &amp; AI.</span>
       <span>Back to <a href="../index.html">amirshq-website</a></span>
     </footer>
   </main>
+
+  <div class="photo-modal" id="photo-modal">
+    <div class="photo-modal-inner">
+      <button class="photo-modal-close" type="button">Close ✕</button>
+      <img src="" alt="">
+      <div class="photo-modal-caption"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const modal = document.getElementById('photo-modal');
+      if (!modal) return;
+      const modalImg = modal.querySelector('img');
+      const modalCaption = modal.querySelector('.photo-modal-caption');
+      const closeBtn = modal.querySelector('.photo-modal-close');
+
+      const links = document.querySelectorAll('.story-photo-wrap a');
+      links.forEach(link => {
+        const img = link.querySelector('img');
+        if (!img) return;
+        img.style.cursor = 'zoom-in';
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const src = link.getAttribute('href');
+          modalImg.src = src;
+          modalImg.alt = img.alt || '';
+          const fig = link.closest('figure');
+          const label = fig ? fig.querySelector('.story-photo-label') : null;
+          modalCaption.textContent = label ? label.textContent.trim() : (img.alt || '');
+          modal.classList.add('open');
+        });
+      });
+
+      function closeModal() {
+        modal.classList.remove('open');
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+    })();
+  </script>
 </body>
 </html>
 
