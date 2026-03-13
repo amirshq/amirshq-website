@@ -5,8 +5,8 @@ This repository contains the source for my broader personal website, which now i
 ### Structure
 
 - **Landing page (`index.html`)**: Introduction to me as an AI engineer and photographer, explaining how the site is split between my AI learning path and photography stories.
-- **AI Career**: Space for short notes from the field, projects, patterns that ship, and how I work with modern AI tools in practice.
-- **Photography (`photography/`)**: A portfolio-style section where each series combines images with short narratives (e.g., Majichal star trails and future stories from Québec and beyond).
+- **AI Career (`career/`)**: Space for short notes from the field, projects, patterns that ship, and how I work with modern AI tools in practice.
+- **Photography (`photography/`)**: A portfolio-style section where each series combines images with short narratives (e.g., Majichal star trails and future stories from Montréal and beyond).
 - **LearnAIbyAmir (`LearnbyAmir/`)**: A learning area where I experiment with and document AI tooling and cloud services using interactive, highly-styled HTML “notebooks” (e.g., AutoGen, LangGraph/LangChain, Azure AI-102).
 
 ### How to Use This Repo

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career · Amir Sh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --page-bg: #0e1117;
+      --card-bg: #161b26;
+      --card-bg-soft: #181b23;
+      --border-subtle: rgba(255,255,255,0.09);
+      --border-strong: rgba(94,234,212,0.25);
+      --text-primary: #f9fafb;
+      --text-secondary: rgba(200,215,255,0.55);
+      --text-muted: rgba(148,163,184,0.7);
+      --accent: #2dd4bf;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--page-bg);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-repeat: no-repeat;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .site-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 24px 72px;
+    }
+
+    /* NAV */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-link-back {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .nav-link-back span {
+      font-size: 14px;
+    }
+    .nav-link-back:hover {
+      border-color: var(--border-strong);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* HEADER CARD */
+    .intro-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      padding: 24px 22px 24px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.4),
+        0 0 0 0.5px rgba(255,255,255,0.04) inset;
+      margin-bottom: 24px;
+    }
+    .intro-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .intro-tag::before {
+      content: '';
+      width: 18px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .intro-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .intro-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .intro-body {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-left: 2px solid rgba(45,212,191,0.25);
+      padding-left: 14px;
+      max-width: 520px;
+    }
+    .intro-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .pill {
+      font-size: 11px;
+      color: rgba(190,205,240,0.6);
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(255,255,255,0.08);
+      padding: 4px 11px;
+      border-radius: 100px;
+    }
+    .pill-dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 5px;
+      box-shadow: 0 0 4px var(--accent);
+    }
+
+    /* TIMELINE */
+    .timeline {
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg-soft);
+      padding: 18px 20px 20px;
+    }
+    .timeline-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 140px minmax(0, 1fr);
+      gap: 14px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(15,23,42,0.9);
+    }
+    .timeline-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+    .ti-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .ti-meta strong {
+      display: block;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .ti-body {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .ti-tags {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .ti-tag {
+      font-size: 10px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 720px) {
+      .timeline-item {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site-wrap">
+    <header class="top-nav">
+      <a href="../index.html" class="nav-logo">Amir <span>Sh.</span></a>
+      <a href="../index.html" class="nav-link-back">
+        <span>←</span> Back to landing
+      </a>
+    </header>
+
+    <section class="intro-card">
+      <div class="intro-tag">AI Career</div>
+      <h1 class="intro-title">Senior AI consultant &amp; builder.</h1>
+      <p class="intro-sub">I help teams ship LLM systems that are reliable enough for production.</p>
+      <p class="intro-body">
+        I design and implement LLM pipelines, RAG systems, and agent workflows end to end — from
+        data ingestion and retrieval design to evaluation, deployment, and monitoring. My work
+        sits at the intersection of software engineering and machine learning, with a strong focus
+        on clear trade‑offs, observability, and keeping complexity under control.
+      </p>
+      <div class="intro-pills">
+        <span class="pill"><span class="pill-dot"></span>LangGraph · LangChain · MCP</span>
+        <span class="pill">RAG architectures &amp; vector search</span>
+        <span class="pill">Agents, tool use, integrations</span>
+        <span class="pill">Azure · OpenAI · Supabase</span>
+      </div>
+    </section>
+
+    <section class="timeline" aria-label="AI career timeline">
+      <div class="timeline-title">Recent work &amp; focus areas</div>
+      <div class="timeline-list">
+        <div class="timeline-item">
+          <div class="ti-meta">
+            <strong>Senior AI Consultant · SBI</strong>
+            Montréal, Canada · 3+ years
+          </div>
+          <div class="ti-body">
+            Lead and advise on AI initiatives for clients: from discovery and architecture to hands‑on
+            implementation. Typical work includes designing LLM‑powered assistants, evaluation loops,
+            and data pipelines that connect existing systems to new models.
+            <div class="ti-tags">
+              <span class="ti-tag">solution design</span>
+              <span class="ti-tag">LLM strategy</span>
+              <span class="ti-tag">stakeholder coaching</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="ti-meta">
+            <strong>LLM &amp; RAG Systems</strong>
+            2023–today
+          </div>
+          <div class="ti-body">
+            Build retrieval‑augmented generation flows that turn internal knowledge (docs, tickets,
+            code, PDFs) into useful answers. Focus on chunking strategies, evaluation datasets, and
+            guardrails so systems stay robust as data and prompts change.
+            <div class="ti-tags">
+              <span class="ti-tag">RAG</span>
+              <span class="ti-tag">vector databases</span>
+              <span class="ti-tag">observability</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="ti-meta">
+            <strong>Agents &amp; Tooling</strong>
+            AutoGen, LangGraph, MCP
+          </div>
+          <div class="ti-body">
+            Experiment with multi‑agent patterns and the Model Context Protocol to connect LLMs to
+            tools safely — databases, APIs, code execution, and external services — while keeping
+            a clear map of dependencies and technical debt.
+            <div class="ti-tags">
+              <span class="ti-tag">agents</span>
+              <span class="ti-tag">MCP</span>
+              <span class="ti-tag">tool orchestration</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="ti-meta">
+            <strong>Teaching &amp; LearnByAmir</strong>
+            Ongoing
+          </div>
+          <div class="ti-body">
+            Turn real project experience into public notebooks, architecture guides, and visual maps
+            on LearnByAmir — so other builders can move faster without getting lost in the tool
+            landscape.
+            <div class="ti-tags">
+              <span class="ti-tag">education</span>
+              <span class="ti-tag">documentation</span>
+              <span class="ti-tag">visual maps</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
