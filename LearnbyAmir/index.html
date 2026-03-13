@@ -7,16 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #050712;
-      --surface: #0f1020;
-      --surface-soft: #151731;
-      --border: #25264a;
-      --accent: #7c6af7;
-      --accent-soft: rgba(124,106,247,0.14);
-      --accent2: #f97373;
-      --text: #f5f5ff;
-      --muted: #9b9bb7;
-      --shadow-soft: 0 18px 60px rgba(0,0,0,0.6);
+      --page-bg: #111318;
+      --card-bg: #1a1d27;
+      --card-bg-soft: #181b23;
+      --border-subtle: rgba(255,255,255,0.07);
+      --border-strong: rgba(45,212,191,0.3);
+      --text: #f9fafb;
+      --muted: rgba(148,163,184,0.7);
+      --accent: #2dd4bf;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,7 +22,7 @@
     body {
       min-height: 100vh;
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top left, #1e1635 0, #050712 50%, #020308 100%);
+      background-color: var(--page-bg);
       color: var(--text);
       display: flex;
       align-items: stretch;
@@ -35,12 +33,10 @@
     .shell {
       width: 100%;
       max-width: 1120px;
-      background: radial-gradient(circle at top, rgba(124,106,247,0.22), transparent 55%) var(--surface);
-      border-radius: 28px;
-      border: 1px solid rgba(124,106,247,0.35);
-      box-shadow: var(--shadow-soft);
-      padding: 28px 26px 30px;
-      backdrop-filter: blur(26px);
+      background-color: var(--card-bg);
+      border-radius: 24px;
+      border: 1px solid var(--border-subtle);
+      padding: 26px 24px 28px;
     }
 
     @media (min-width: 840px) {
@@ -66,10 +62,7 @@
     }
 
     .title-block h1 span {
-      background: linear-gradient(120deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      color: var(--accent);
     }
 
     .title-block p {
@@ -86,8 +79,8 @@
       color: var(--accent);
       padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(124,106,247,0.55);
-      background: rgba(5,7,18,0.7);
+      border: 1px solid var(--border-subtle);
+      background: rgba(15,23,42,0.9);
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -138,7 +131,7 @@
       position: relative;
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.04);
-      background: radial-gradient(circle at top left, rgba(124,106,247,0.12), rgba(10,11,30,0.94));
+      background: var(--card-bg-soft);
       padding: 16px 15px 16px;
       display: flex;
       flex-direction: column;
@@ -146,15 +139,14 @@
       cursor: pointer;
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 14px 40px rgba(0,0,0,0.5);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      box-shadow: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
     }
 
     .topic-card:hover {
-      transform: translateY(-3px) translateZ(0);
-      border-color: rgba(124,106,247,0.8);
-      background: radial-gradient(circle at top left, rgba(124,106,247,0.25), rgba(7,8,24,0.98));
-      box-shadow: 0 22px 55px rgba(0,0,0,0.7);
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      background-color: var(--card-bg);
     }
 
     .topic-tag {
@@ -191,9 +183,9 @@
       font-size: 11px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(18,22,60,0.9);
-      border: 1px solid rgba(71,85,225,0.4);
-      color: #c7d2ff;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.35);
+      color: #e5e7eb;
     }
 
     .topic-arrow {
@@ -203,8 +195,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(148,163,255,0.6);
-      background: radial-gradient(circle at top, rgba(248,250,252,0.15), rgba(15,23,42,0.9));
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at top, rgba(248,250,252,0.08), rgba(15,23,42,0.98));
       font-size: 14px;
     }
 
