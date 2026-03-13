@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact · Amir Sh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --page-bg: #0e1117;
+      --card-bg: #161b26;
+      --card-bg-soft: #181b23;
+      --border-subtle: rgba(255,255,255,0.09);
+      --border-strong: rgba(94,234,212,0.25);
+      --text-primary: #f9fafb;
+      --text-secondary: rgba(200,215,255,0.55);
+      --text-muted: rgba(148,163,184,0.7);
+      --accent: #2dd4bf;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--page-bg);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-repeat: no-repeat;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .site-wrap {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-link-back {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .nav-link-back span {
+      font-size: 14px;
+    }
+    .nav-link-back:hover {
+      border-color: var(--border-strong);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      padding: 26px 22px 24px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.4),
+        0 0 0 0.5px rgba(255,255,255,0.04) inset;
+    }
+
+    .card-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-tag::before {
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--border-subtle);
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+    .card-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: var(--card-bg-soft);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 13px;
+      transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    }
+    .contact-btn:hover {
+      border-color: var(--border-strong);
+      background-color: #111827;
+      transform: translateY(-1px);
+    }
+    .contact-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .contact-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .contact-label-main {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .contact-label-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .contact-arrow {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(15,23,42,0.9);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .site-wrap {
+        padding-inline: 18px;
+      }
+      .card-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site-wrap">
+    <header class="top-nav">
+      <a href="../index.html" class="nav-logo">Amir <span>Sh.</span></a>
+      <a href="../index.html" class="nav-link-back">
+        <span>←</span> Back to landing
+      </a>
+    </header>
+
+    <section class="card">
+      <div class="card-tag">Contact</div>
+      <h1 class="card-title">Let’s get in touch.</h1>
+      <p class="card-body">
+        Whether you’re curious about AI projects, my LearnByAmir material, or a photography collaboration,
+        these are the two best ways to reach me directly.
+      </p>
+
+      <div class="contact-actions">
+        <a class="contact-btn" href="mailto:amir.shahcheraghian@gmail.com">
+          <span class="contact-btn-left">
+            <span class="contact-icon">✉️</span>
+            <span>
+              <span class="contact-label-main">Email</span><br>
+              <span class="contact-label-sub">amir.shahcheraghian@gmail.com</span>
+            </span>
+          </span>
+          <span class="contact-arrow">↗</span>
+        </a>
+
+        <a class="contact-btn" href="https://www.instagram.com/amirshq?igsh=MWg5NXIxbmVkYzY4" target="_blank" rel="noopener noreferrer">
+          <span class="contact-btn-left">
+            <span class="contact-icon">📷</span>
+            <span>
+              <span class="contact-label-main">Instagram</span><br>
+              <span class="contact-label-sub">@amirshq</span>
+            </span>
+          </span>
+          <span class="contact-arrow">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Amir Shah.</span>
+      <span><a href="../index.html">amirshq.com</a></span>
+    </footer>
+  </main>
+</body>
+</html>
+
