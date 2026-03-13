@@ -11,11 +11,11 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --page-bg: #111318;
-    --card-bg: #1a1d27;
+    --page-bg: #0e1117;
+    --card-bg: #161b26;
     --card-bg-soft: #181b23;
-    --border-subtle: rgba(255,255,255,0.07);
-    --border-strong: rgba(45,212,191,0.3);
+    --border-subtle: rgba(255,255,255,0.09);
+    --border-strong: rgba(94,234,212,0.25);
     --text-primary: #f9fafb;
     --text-secondary: rgba(200,215,255,0.55);
     --text-muted: rgba(148,163,184,0.7);
@@ -30,6 +30,8 @@
   body {
     font-family: var(--font-body);
     background-color: var(--page-bg);
+    background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+    background-repeat: no-repeat;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -123,7 +125,7 @@
 
   /* HERO */
   .hero {
-    padding: 20px 0 54px;
+    padding: 20px 0 48px;
     max-width: 720px;
   }
   .hero-eyebrow {
@@ -154,8 +156,8 @@
   }
   .hero h1 em {
     font-style: normal;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--accent);
+    color: rgba(45,212,191,0.7);
+    text-shadow: 0 0 40px rgba(45,212,191,0.4);
   }
   .hero-sub {
     font-size: 15px;
@@ -195,7 +197,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 14px;
+    gap: 16px;
     margin-top: 8px;
   }
 
@@ -208,6 +210,9 @@
     position: relative;
     overflow: hidden;
     transition: border-color 0.22s ease, transform 0.22s ease, background-color 0.22s ease;
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.4),
+      0 0 0 0.5px rgba(255,255,255,0.04) inset;
     cursor: default;
     text-decoration: none;
     color: inherit;
@@ -260,7 +265,7 @@
     font-size: 13px;
     font-weight: 300;
     color: var(--text-secondary);
-    line-height: 1.7;
+    line-height: 1.75;
   }
 
   /* CARD: PHOTOGRAPHY */
@@ -271,13 +276,16 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #181520;
   }
   .card-photo::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(120deg, rgba(15,23,42,0.2) 0, rgba(15,23,42,0.9) 40%, transparent 60%),
+      linear-gradient(180deg, transparent 50%, rgba(10,14,22,0.7) 100%),
       url('photography/photos/me majichal.jpg') no-repeat center right;
     background-size: auto 120%, cover;
     opacity: 0.32;
@@ -290,6 +298,7 @@
     grid-column: 3;
     grid-row: 1;
     min-height: 200px;
+    background-color: #141b24;
   }
 
   /* CARD: LEARNBYAMIR */
@@ -321,6 +330,7 @@
     border-radius: 10px;
     background-color: rgba(10,12,18,0.6);
     border: 1px solid rgba(148,163,184,0.22);
+    border-left: 2px solid rgba(45,212,191,0.3);
     transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
   }
   .course-item:hover {

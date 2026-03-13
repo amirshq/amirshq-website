@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --page-bg: #111318;
-      --card-bg: #1a1d27;
+      --page-bg: #0e1117;
+      --card-bg: #161b26;
       --card-bg-soft: #181b23;
-      --border-subtle: rgba(255,255,255,0.07);
-      --border-strong: rgba(45,212,191,0.3);
+      --border-subtle: rgba(255,255,255,0.09);
+      --border-strong: rgba(94,234,212,0.25);
       --text: #f9fafb;
       --muted: rgba(148,163,184,0.7);
       --accent: #2dd4bf;
@@ -23,6 +23,8 @@
       min-height: 100vh;
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--page-bg);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-repeat: no-repeat;
       color: var(--text);
       display: flex;
       align-items: stretch;
@@ -37,6 +39,9 @@
       border-radius: 24px;
       border: 1px solid var(--border-subtle);
       padding: 26px 24px 28px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.4),
+        0 0 0 0.5px rgba(255,255,255,0.04) inset;
     }
 
     @media (min-width: 840px) {
@@ -130,7 +135,7 @@
     .topic-card {
       position: relative;
       border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.04);
+      border: 1px solid var(--border-subtle);
       background: var(--card-bg-soft);
       padding: 16px 15px 16px;
       display: flex;
@@ -139,7 +144,9 @@
       cursor: pointer;
       text-decoration: none;
       color: inherit;
-      box-shadow: none;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.4),
+        0 0 0 0.5px rgba(255,255,255,0.04) inset;
       transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
     }
 
