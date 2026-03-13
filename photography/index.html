@@ -120,6 +120,8 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-origin: center;
     }
     .cover-caption {
       position: absolute;
@@ -140,6 +142,10 @@
       font-weight: 700;
       letter-spacing: -0.03em;
       color: #f9fafb;
+    }
+    .cover-photo:hover img {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 26px 60px rgba(0,0,0,0.9);
     }
 
     /* HERO STORY */
@@ -165,6 +171,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-origin: center;
     }
     .story-photo-label {
       position: absolute;
@@ -189,6 +197,11 @@
       border-radius: 999px;
       background: #f97316;
       box-shadow: 0 0 0 4px rgba(248,150,60,0.35);
+    }
+
+    .story-photo-wrap:hover img {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.8);
     }
 
     .story-copy {
