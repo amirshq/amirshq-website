@@ -306,6 +306,16 @@
     background: transparent;
     transition: background 0.2s;
   }
+  .sec::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.16;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
   .sec:last-child {
     border-right: none;
   }
@@ -327,6 +337,15 @@
   }
   .sec-3 .sec-accent {
     background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent);
+  }
+  .sec-1::before {
+    background-image: url('photography/banner/Semnan%20milkyway.jpg');
+  }
+  .sec-2::before {
+    background-image: url('photography/banner/Career.jpg');
+  }
+  .sec-3::before {
+    background-image: url('photography/banner/AI.jpg');
   }
   .sec-num {
     font-size: 10px;
@@ -459,12 +478,13 @@
       <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
       <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
       <p class="hero-sub">
-        This site is my personal landing page. I share my life in two parts:
-        my AI engineer journey and learning path (through LearnByAmir),
-        and my photography work as I explore nature, night skies and life.
+        I am Amir Shahcheraghian, a PhD graduate from École de Technologie Supérieure (ÉTS), Montréal, Canada, and a seasoned AI Developer and Data Scientist with deep expertise in designing and deploying intelligent systems. My work spans large language model (LLM) integration, retrieval‑augmented generation (RAG) architectures, and autonomous AI agents — bringing cutting‑edge research to real‑world enterprise solutions. Based in Québec, I currently serve as a Senior AI Consultant, where I lead MLOps and LLMOps pipelines, mentor technical teams, and help organizations navigate the rapidly evolving AI landscape.
+        <br><br>
+        Beyond my professional life, I am a passionate night sky photographer and seasoned world traveler, driven by a singular mission: to capture the breathtaking beauty of the cosmos from every corner of the globe. From remote deserts to mountaintop observatories, I chase clear dark skies and rare celestial events — including solar eclipses — blending scientific precision with artistic vision. My photography is a testament to the wonder that exists at the intersection of technology, nature, and human curiosity.
+        <br><br>
+        This site is my personal landing page. I share my life in two parts: my AI engineer journey and learning path (through LearnByAmir), and my photography work as I explore nature, night skies and life.
       </p>
       <div class="hero-badges">
-        <span class="badge"><span class="badge-dot"></span>Available for projects</span>
         <span class="badge">Based in Montréal, Canada</span>
         <span class="badge">LangGraph · RAG · MLOps</span>
       </div>
