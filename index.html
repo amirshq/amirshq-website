@@ -125,8 +125,21 @@
 
   /* HERO */
   .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+    gap: 32px;
     padding: 20px 0 48px;
-    max-width: 720px;
+    max-width: 880px;
+    align-items: center;
+  }
+  .hero-left {
+    max-width: 520px;
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -171,6 +184,40 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+  }
+  .hero-photo-frame {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(45,212,191,0.3);
+    overflow: hidden;
+    background: linear-gradient(135deg,#1c2e40 0%,#243b52 50%,#182840 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .hero-photo-frame::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 0.5px solid rgba(45,212,191,0.16);
+  }
+  .hero-photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-photo-caption {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
   }
   .badge {
     display: inline-flex;
@@ -482,18 +529,27 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-eyebrow">AI Engineer &amp; Photographer · Québec</div>
-    <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
-    <p class="hero-sub">
-      This site is my personal landing page. I share my life in two parts:
-      my AI engineer journey and learning path (through LearnByAmir),
-      and my photography work as I explore nature, night skies and life.
-    </p>
-    <div class="hero-badges">
-      <span class="badge"><span class="badge-dot"></span>Available for projects</span>
-      <span class="badge">Based in Québec, Canada</span>
-      <span class="badge">LangGraph · RAG · MLOps</span>
+    <div class="hero-left">
+      <div class="hero-eyebrow">AI Engineer &amp; Photographer · Québec</div>
+      <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
+      <p class="hero-sub">
+        This site is my personal landing page. I share my life in two parts:
+        my AI engineer journey and learning path (through LearnByAmir),
+        and my photography work as I explore nature, night skies and life.
+      </p>
+      <div class="hero-badges">
+        <span class="badge"><span class="badge-dot"></span>Available for projects</span>
+        <span class="badge">Based in Québec, Canada</span>
+        <span class="badge">LangGraph · RAG · MLOps</span>
+      </div>
     </div>
+
+    <aside class="hero-right">
+      <div class="hero-photo-frame">
+        <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
+      </div>
+      <p class="hero-photo-caption">Amir Shahcheraghian · Québec, Canada</p>
+    </aside>
   </section>
 
   <!-- MAIN SECTIONS -->
@@ -559,19 +615,6 @@
           </div>
           <span class="course-badge cb-new">Updated weekly</span>
         </div>
-      </div>
-    </div>
-
-    <!-- Contact -->
-    <div class="card card-contact" id="contact">
-      <div class="card-tag">Contact</div>
-      <div class="card-title">Say hello</div>
-      <div class="card-body">
-        If you’d like to talk about AI projects, learning, or photography, you can reach me directly:
-        <br><br>
-        Email: <a href="mailto:amir.shahcheraghian@gmail.com">amir.shahcheraghian@gmail.com</a>
-        <br>
-        Instagram: <a href="https://www.instagram.com/amirshq?igsh=MWg5NXIxbmVkYzY4" target="_blank" rel="noopener noreferrer">@amirshq</a>
       </div>
     </div>
 
