@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-M40T258NB2');
-  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hosting & Infrastructure Tool Selector</title>
@@ -350,6 +342,13 @@ const TOOLS = [
   {name:"Railway",provider:"Railway",cat:"Backend",cloud:true,selfhost:false,free:true,personal:true,production:false,maxUsers:5000,note:"Great DX, $5 free credit/month, easy deploys"},
   {name:"DigitalOcean Droplets",provider:"DigitalOcean",cat:"Backend",cloud:true,selfhost:false,free:false,personal:true,production:true,maxUsers:99999,note:"Simple VPS starting at $6/month, great docs"},
   {name:"Hetzner VPS",provider:"Hetzner",cat:"Backend",cloud:true,selfhost:false,free:false,personal:true,production:true,maxUsers:99999,note:"Cheapest production VPS, European data centers"},
+  {name:"Dokku",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Self-hosted Heroku alternative, Git push deploy, Docker-based"},
+  {name:"Coolify",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Modern self-hosted PaaS, supports any language or framework"},
+  {name:"CapRover",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Easy self-hosted app platform with web UI and one-click apps"},
+  {name:"Portainer",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Docker/Kubernetes management UI for self-hosted deployments"},
+  {name:"Gunicorn + Nginx",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Industry standard Python WSGI server for FastAPI, Django, Flask"},
+  {name:"PM2 + Node.js",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Production process manager for Node.js apps, auto-restart, clustering"},
+  {name:"Traefik",provider:"Open Source",cat:"Backend",cloud:false,selfhost:true,free:true,personal:true,production:true,maxUsers:99999,note:"Modern reverse proxy and load balancer, auto HTTPS, Docker-native"},
   {name:"Supabase",provider:"Supabase",cat:"Database",cloud:true,selfhost:false,free:true,personal:true,production:true,maxUsers:99999,note:"Managed Postgres + Auth + Storage + Edge Functions"},
   {name:"Neon",provider:"Neon",cat:"Database",cloud:true,selfhost:false,free:true,personal:true,production:true,maxUsers:99999,note:"Serverless Postgres, scales to zero, branching"},
   {name:"PlanetScale",provider:"PlanetScale",cat:"Database",cloud:true,selfhost:false,free:false,personal:true,production:true,maxUsers:99999,note:"Serverless MySQL, database branching feature"},
