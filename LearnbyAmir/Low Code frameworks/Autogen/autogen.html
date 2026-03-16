@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoGen — From Scratch</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>AutoGen — From Scratch + Pizza Bot Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fraunces:wght@700;900&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0a0f;
@@ -16,565 +16,372 @@
     --text: #e2e2f0;
     --muted: #6b6b8a;
     --code-bg: #0d0d16;
+    /* pizza palette */
+    --pz-accent: #e8842c;
+    --pz-accent2: #f0c060;
+    --pz-accent3: #6fcf97;
+    --pz-accent4: #56b4e9;
+    --pz-surface: #161410;
+    --pz-surface2: #1c1a16;
+    --pz-border: #2a2620;
+    --pz-code: #0a0908;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  .back-pill {
-    position: fixed;
-    z-index: 9999;
-    top: 12px;
-    left: 12px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.96);
-    border: 1px solid rgba(148,163,255,0.6);
-    color: #e5e7eb;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    backdrop-filter: blur(14px);
-  }
-
-  .back-pill span {
-    font-size: 14px;
-  }
-
-  @media (min-width: 768px) {
-    .back-pill {
-      top: 16px;
-      left: 18px;
-    }
-  }
-
-  /* LAYOUT */
+  /* ── LAYOUT ── */
   .layout { display: flex; min-height: 100vh; }
 
-  /* SIDEBAR */
+  /* ── SIDEBAR ── */
   .sidebar {
-    width: 280px;
-    min-width: 280px;
+    width: 280px; min-width: 280px;
     background: var(--surface);
     border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
+    display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
 
-  .sidebar-logo {
-    padding: 28px 24px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .sidebar-logo .logo-tag {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .sidebar-logo h1 {
-    font-size: 22px;
-    font-weight: 800;
-    color: #fff;
-  }
-
+  .sidebar-logo { padding: 24px 24px 18px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo .logo-tag { font-size: 9px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
+  .sidebar-logo h1 { font-size: 21px; font-weight: 800; color: #fff; }
   .sidebar-logo h1 span { color: var(--accent); }
+  .sidebar-logo .logo-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
 
-  .progress-bar-wrap {
-    margin: 16px 24px 0;
-    background: var(--border);
-    border-radius: 99px;
-    height: 4px;
-  }
-  .progress-bar-fill {
-    height: 4px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 99px;
-    transition: width 0.4s ease;
-    width: 0%;
-  }
-  .progress-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin: 8px 24px 20px;
-  }
+  .progress-bar-wrap { margin: 14px 24px 0; background: var(--border); border-radius: 99px; height: 4px; }
+  .progress-bar-fill { height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-size: 10px; color: var(--muted); margin: 6px 24px 16px; font-family: 'JetBrains Mono', monospace; }
 
-  .nav { flex: 1; padding: 8px 12px; }
+  .nav { flex: 1; padding: 6px 12px; }
+  .nav-section-label { font-size: 9px; letter-spacing: 2.5px; color: var(--muted); text-transform: uppercase; padding: 12px 12px 5px; }
 
-  .nav-section-label {
-    font-size: 9px;
-    letter-spacing: 2.5px;
-    color: var(--muted);
-    text-transform: uppercase;
-    padding: 14px 12px 6px;
+  /* course separator in sidebar */
+  .nav-project-divider {
+    margin: 10px 12px 4px;
+    padding: 10px 12px 8px;
+    border-top: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(232,132,44,0.06);
+    border: 1px solid rgba(232,132,44,0.15);
   }
+  .nav-project-divider .label { font-size: 9px; letter-spacing: 2px; color: var(--pz-accent); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
+  .nav-project-divider .sublabel { font-size: 11px; color: #d0c8c0; font-weight: 700; }
 
   .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 600;
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; font-size: 13px; color: var(--muted); font-weight: 600;
     position: relative;
   }
-
   .nav-item:hover { background: var(--border); color: var(--text); }
-
-  .nav-item.active {
-    background: rgba(124, 106, 247, 0.12);
-    color: var(--accent);
-  }
-
+  .nav-item.active { background: rgba(124,106,247,0.12); color: var(--accent); }
   .nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 60%;
-    background: var(--accent);
-    border-radius: 0 2px 2px 0;
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 60%; background: var(--accent); border-radius: 0 2px 2px 0;
   }
+  /* pizza nav items */
+  .nav-item.pz-item { font-family: 'DM Sans', sans-serif; }
+  .nav-item.pz-item:hover { background: rgba(232,132,44,0.08); color: var(--pz-accent); }
+  .nav-item.pz-item.active { background: rgba(232,132,44,0.12); color: var(--pz-accent); }
+  .nav-item.pz-item.active::before { background: var(--pz-accent); }
 
   .nav-item .nav-num {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    flex-shrink: 0;
-    font-family: 'JetBrains Mono', monospace;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
   }
+  .nav-item.active .nav-num { background: var(--accent); color: #fff; }
+  .nav-item.pz-item.active .nav-num { background: var(--pz-accent); color: #fff; }
+  .nav-item.done .nav-num { background: var(--accent3); color: #000; }
+  .nav-icon { font-size: 14px; flex-shrink: 0; }
 
-  .nav-item.active .nav-num {
-    background: var(--accent);
-    color: #fff;
-  }
+  /* ── MAIN ── */
+  .main { flex: 1; max-width: 840px; padding: 56px 64px; overflow-y: auto; }
 
-  .nav-item.done .nav-num {
-    background: var(--accent3);
-    color: #000;
-  }
-
-  /* MAIN */
-  .main {
-    flex: 1;
-    max-width: 820px;
-    padding: 60px 64px;
-    overflow-y: auto;
-  }
-
-  /* LESSON */
+  /* ── LESSONS (course) ── */
   .lesson { display: none; animation: fadeIn 0.3s ease; }
   .lesson.active { display: block; }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  /* ── SECTIONS (pizza project) ── */
+  .pz-section { display: none; animation: fadeIn 0.3s ease; }
+  .pz-section.active { display: block; }
 
-  .lesson-header {
-    margin-bottom: 40px;
-  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .lesson-tag {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-family: 'JetBrains Mono', monospace;
+  /* ── PROJECT BANNER ── shown when switching to pizza section ── */
+  .project-banner {
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(135deg, rgba(232,132,44,0.1), rgba(111,207,151,0.06));
+    border: 1px solid rgba(232,132,44,0.25);
+    border-radius: 12px; padding: 18px 22px; margin-bottom: 36px;
   }
+  .project-banner .pb-icon { font-size: 32px; flex-shrink: 0; }
+  .project-banner .pb-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--pz-accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+  .project-banner .pb-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 900; color: #fff; }
+  .project-banner .pb-desc { font-size: 12px; color: #a09880; margin-top: 3px; }
 
-  .lesson-title {
-    font-size: 36px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.15;
-    margin-bottom: 14px;
-  }
+  /* ── COURSE TYPOGRAPHY ── */
+  .lesson-header { margin-bottom: 36px; }
+  .lesson-tag { font-size: 10px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+  .lesson-title { font-size: 34px; font-weight: 800; color: #fff; line-height: 1.15; margin-bottom: 12px; }
+  .lesson-subtitle { font-size: 15px; color: var(--muted); line-height: 1.7; font-weight: 400; }
 
-  .lesson-subtitle {
-    font-size: 15px;
-    color: var(--muted);
-    line-height: 1.7;
-    font-weight: 400;
-  }
+  /* ── PIZZA TYPOGRAPHY ── */
+  .section-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--pz-accent); text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-family: 'Fraunces', serif; font-size: 38px; font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 14px; }
+  .section-lead { font-size: 15px; color: #8a8070; line-height: 1.75; margin-bottom: 36px; max-width: 600px; font-weight: 300; font-family: 'DM Sans', sans-serif; }
 
-  /* CONTENT BLOCKS */
+  /* ── PROSE ── */
   .prose { font-size: 15px; line-height: 1.8; color: #b8b8d0; font-weight: 400; }
-  .prose p { margin-bottom: 18px; }
+  .prose p { margin-bottom: 16px; }
   .prose strong { color: var(--text); font-weight: 700; }
+  .prose.pz { font-family: 'DM Sans', sans-serif; color: #b0a898; }
+  .prose.pz strong { color: #f0ebe4; }
+  .prose code {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: #1c1a16; border: 1px solid #2a2620;
+    padding: 2px 6px; border-radius: 4px; color: var(--pz-accent2);
+  }
 
+  /* ── HEADINGS ── */
   h3.section-heading {
-    font-size: 17px;
-    font-weight: 700;
-    color: #fff;
-    margin: 36px 0 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 17px; font-weight: 700; color: #fff; margin: 32px 0 12px;
+    display: flex; align-items: center; gap: 10px;
   }
-
-  h3.section-heading::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+  h3.section-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  h3.sh {
+    font-family: 'Fraunces', serif; font-size: 19px; font-weight: 700; color: #fff;
+    margin: 32px 0 12px; display: flex; align-items: center; gap: 12px;
   }
+  h3.sh::after { content: ''; flex: 1; height: 1px; background: var(--pz-border); }
 
-  /* CODE BLOCK */
-  .code-block {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin: 20px 0;
-    overflow: hidden;
-  }
-
+  /* ── CODE BLOCKS ── */
+  .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; margin: 18px 0; overflow: hidden; }
+  .code-block.pz { background: var(--pz-code); border-color: var(--pz-border); }
   .code-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background: #0f0f1a;
-    border-bottom: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 16px; background: #0f0f1a; border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted);
   }
-
+  .code-header.pz { background: #0d0c0a; border-bottom-color: var(--pz-border); }
   .code-header .dots { display: flex; gap: 5px; }
-  .code-header .dots span {
-    width: 10px; height: 10px; border-radius: 50%;
-  }
+  .code-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
   .code-header .dots span:nth-child(1) { background: #ff5f56; }
   .code-header .dots span:nth-child(2) { background: #ffbd2e; }
   .code-header .dots span:nth-child(3) { background: #27c93f; }
-
   .code-block pre {
-    padding: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    line-height: 1.7;
-    overflow-x: auto;
-    color: #abb2bf;
+    padding: 18px 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; line-height: 1.7; overflow-x: auto; color: #abb2bf;
   }
+  .code-block.pz pre { color: #a09880; }
 
-  .kw { color: #c678dd; }
-  .fn { color: #61afef; }
-  .str { color: #98c379; }
-  .cmt { color: #5c6370; font-style: italic; }
-  .cls { color: #e5c07b; }
-  .num { color: #d19a66; }
-  .var { color: #e06c75; }
+  .kw { color: #c678dd; } .fn { color: #61afef; } .str { color: #98c379; }
+  .cmt { color: #5c6370; font-style: italic; } .cls { color: #e5c07b; }
+  .num { color: #d19a66; } .var { color: #e06c75; }
+  .dec { color: #e06c75; } .param { color: #56b4e9; }
 
-  /* INFO CARDS */
-  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px;
-  }
-  .card .card-icon { font-size: 22px; margin-bottom: 10px; }
-  .card .card-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .card .card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  /* ── CARDS ── */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .card.pz { background: var(--pz-surface2); border-color: var(--pz-border); }
+  .card .card-icon, .card .ci { font-size: 20px; margin-bottom: 9px; }
+  .card .card-title, .card .ct { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .card .card-desc, .card .cd { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .card.pz .cd { color: #8a8070; }
 
-  /* CALLOUTS */
-  .callout {
-    display: flex;
-    gap: 14px;
-    padding: 16px 18px;
-    border-radius: 10px;
-    margin: 20px 0;
-    font-size: 13.5px;
-    line-height: 1.65;
-  }
-  .callout.tip { background: rgba(52, 211, 153, 0.07); border: 1px solid rgba(52, 211, 153, 0.2); color: #a7f3d0; }
-  .callout.warn { background: rgba(249, 112, 102, 0.07); border: 1px solid rgba(249, 112, 102, 0.2); color: #fca5a5; }
-  .callout.info { background: rgba(124, 106, 247, 0.07); border: 1px solid rgba(124, 106, 247, 0.2); color: #c4bbfa; }
-  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  /* ── CALLOUTS ── */
+  .callout { display: flex; gap: 12px; padding: 14px 18px; border-radius: 10px; margin: 16px 0; font-size: 13.5px; line-height: 1.65; }
+  .callout.tip { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); color: #a7f3d0; }
+  .callout.warn { background: rgba(249,112,102,0.07); border: 1px solid rgba(249,112,102,0.2); color: #fca5a5; }
+  .callout.info { background: rgba(124,106,247,0.07); border: 1px solid rgba(124,106,247,0.2); color: #c4bbfa; }
+  .callout.orange { background: rgba(232,132,44,0.06); border: 1px solid rgba(232,132,44,0.2); color: #fed7aa; }
+  .callout-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
 
-  /* COMPARE TABLE */
-  .compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
-  .compare-table th {
-    text-align: left;
-    padding: 10px 14px;
-    background: var(--surface);
-    color: var(--accent);
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
+  /* ── TABLES ── */
+  .compare-table, .compare { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  .compare-table th, .compare th {
+    text-align: left; padding: 9px 14px; background: var(--surface);
+    color: var(--accent); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace;
   }
-  .compare-table td {
-    padding: 11px 14px;
-    border-bottom: 1px solid #1a1a28;
-    color: #b8b8d0;
-    line-height: 1.5;
-  }
-  .compare-table tr:hover td { background: rgba(124, 106, 247, 0.04); }
-  .compare-table td:first-child { color: #fff; font-weight: 600; }
+  .compare th { background: var(--pz-surface2); color: var(--pz-accent); border-bottom-color: var(--pz-border); }
+  .compare-table td, .compare td { padding: 10px 14px; border-bottom: 1px solid #1a1a28; color: #b8b8d0; line-height: 1.5; vertical-align: top; }
+  .compare td { border-bottom-color: #1e1c18; color: #a09880; }
+  .compare-table tr:hover td { background: rgba(124,106,247,0.04); }
+  .compare tr:hover td { background: rgba(232,132,44,0.03); }
+  .compare-table td:first-child, .compare td:first-child { color: #fff; font-weight: 600; }
 
-  /* DIAGRAM */
-  .diagram {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px;
-    margin: 20px 0;
-    text-align: center;
-  }
-  .diagram svg { max-width: 100%; }
-
-  /* QUIZ */
-  .quiz-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin: 30px 0;
-  }
-  .quiz-q { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 18px; }
-  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  /* ── QUIZ ── */
+  .quiz-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin: 28px 0; }
+  .quiz-q { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 9px; }
   .quiz-opt {
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13.5px;
-    color: var(--muted);
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 11px 15px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    font-size: 13.5px; color: var(--muted); transition: all 0.15s; display: flex; align-items: center; gap: 10px;
   }
   .quiz-opt:hover { border-color: var(--accent); color: var(--text); }
-  .quiz-opt.correct { border-color: var(--accent3); background: rgba(52, 211, 153, 0.08); color: var(--accent3); }
-  .quiz-opt.wrong { border-color: var(--accent2); background: rgba(249, 112, 102, 0.08); color: var(--accent2); }
-  .quiz-opt .opt-key {
-    width: 24px; height: 24px;
-    border-radius: 6px;
-    background: var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    flex-shrink: 0;
-  }
-  .quiz-feedback { margin-top: 14px; font-size: 13px; color: var(--muted); display: none; }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(52,211,153,0.08); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: var(--accent2); background: rgba(249,112,102,0.08); color: var(--accent2); }
+  .quiz-opt .opt-key { width: 24px; height: 24px; border-radius: 6px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .quiz-feedback { margin-top: 12px; font-size: 13px; color: var(--muted); display: none; }
 
-  /* BOTTOM NAV */
-  .lesson-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 60px;
-    padding-top: 28px;
-    border-top: 1px solid var(--border);
-  }
+  /* ── DIAGRAM / FLOW ── */
+  .diagram { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin: 18px 0; text-align: center; }
+  .flow { display: flex; align-items: center; gap: 0; margin: 20px 0; flex-wrap: wrap; }
+  .flow-node { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 11px 15px; font-size: 12.5px; font-weight: 600; color: var(--text); text-align: center; min-width: 100px; }
+  .flow-node.highlight { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,0.07); }
+  .flow-arrow { color: var(--muted); font-size: 18px; padding: 0 7px; }
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 22px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: none;
-    font-family: 'Syne', sans-serif;
-  }
+  /* ── PIZZA ARCH DIAGRAM ── */
+  .arch-diagram { background: var(--pz-surface2); border: 1px solid var(--pz-border); border-radius: 12px; padding: 24px 28px; margin: 18px 0; }
+  .arch-row { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; margin-bottom: 10px; }
+  .arch-node { background: var(--pz-surface); border: 1px solid var(--pz-border); border-radius: 8px; padding: 9px 14px; font-size: 12px; font-weight: 600; color: var(--text); text-align: center; min-width: 110px; }
+  .arch-node.orange { border-color: var(--pz-accent); color: var(--pz-accent); background: rgba(232,132,44,0.07); }
+  .arch-node.green { border-color: var(--pz-accent3); color: var(--pz-accent3); background: rgba(111,207,151,0.07); }
+  .arch-node.blue { border-color: var(--pz-accent4); color: var(--pz-accent4); background: rgba(86,180,233,0.07); }
+  .arch-node.yellow { border-color: var(--pz-accent2); color: var(--pz-accent2); background: rgba(240,192,96,0.07); }
+  .arch-node.small { min-width: 85px; font-size: 11px; padding: 6px 10px; }
+  .arch-arrow { color: #4a4840; font-size: 15px; padding: 0 5px; }
+  .arch-label { font-size: 10px; color: #4a4840; font-family: 'JetBrains Mono', monospace; text-align: center; margin-top: 4px; }
 
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-  }
-  .btn-primary:hover { background: #9080ff; transform: translateY(-1px); }
+  /* ── PIZZA CONVO MOCK ── */
+  .convo { background: var(--pz-code); border: 1px solid var(--pz-border); border-radius: 10px; padding: 18px; margin: 16px 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.8; }
+  .convo-line { display: flex; gap: 10px; margin-bottom: 6px; }
+  .convo-speaker { flex-shrink: 0; font-weight: 500; min-width: 120px; }
+  .sp-user { color: var(--pz-accent4); } .sp-order { color: var(--pz-accent); }
+  .sp-validator { color: var(--pz-accent2); } .sp-proxy { color: var(--pz-accent3); }
+  .convo-msg { color: #7a7060; }
 
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { color: var(--text); border-color: #333350; }
+  /* ── FILE TREE ── */
+  .file-tree { background: var(--pz-code); border: 1px solid var(--pz-border); border-radius: 10px; padding: 18px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 2; margin: 14px 0; }
+  .ft-dir { color: var(--pz-accent4); } .ft-py { color: var(--pz-accent3); } .ft-txt { color: #4a4840; }
 
-  .lesson-counter {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
+  /* ── TIMELINE ── */
+  .timeline { margin: 18px 0; }
+  .timeline-item { display: flex; gap: 14px; position: relative; }
+  .timeline-item::before { content: ''; position: absolute; left: 15px; top: 34px; bottom: -4px; width: 2px; background: var(--pz-border); }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--pz-surface2); border: 2px solid var(--pz-border); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  .timeline-dot.orange { border-color: var(--pz-accent); color: var(--pz-accent); background: rgba(232,132,44,0.1); }
+  .timeline-dot.green { border-color: var(--pz-accent3); color: var(--pz-accent3); background: rgba(111,207,151,0.1); }
+  .timeline-dot.blue { border-color: var(--pz-accent4); color: var(--pz-accent4); background: rgba(86,180,233,0.1); }
+  .timeline-body { padding: 4px 0 22px; }
+  .timeline-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; font-family: 'DM Sans', sans-serif; }
+  .timeline-desc { font-size: 12.5px; color: #6a6050; line-height: 1.6; font-family: 'DM Sans', sans-serif; }
 
-  /* PILL BADGES */
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 600;
-    margin: 0 3px;
-  }
+  /* ── BADGES ── */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 600; margin: 0 2px; }
   .badge-purple { background: rgba(124,106,247,0.15); color: var(--accent); }
   .badge-green { background: rgba(52,211,153,0.15); color: var(--accent3); }
   .badge-red { background: rgba(249,112,102,0.15); color: var(--accent2); }
+  .badge-orange { background: rgba(232,132,44,0.15); color: var(--pz-accent); font-family: 'JetBrains Mono', monospace; }
+  .badge-blue { background: rgba(86,180,233,0.15); color: var(--pz-accent4); font-family: 'JetBrains Mono', monospace; }
 
-  /* FLOW DIAGRAM */
-  .flow { display: flex; align-items: center; gap: 0; margin: 24px 0; flex-wrap: wrap; }
-  .flow-node {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text);
-    text-align: center;
-    min-width: 100px;
+  /* ── FOOTER NAV ── */
+  .lesson-footer, .section-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 52px; padding-top: 24px; border-top: 1px solid var(--border);
   }
-  .flow-node.highlight { border-color: var(--accent); color: var(--accent); background: rgba(124,106,247,0.07); }
-  .flow-arrow { color: var(--muted); font-size: 18px; padding: 0 8px; }
+  .section-footer { border-top-color: var(--pz-border); }
+  .lesson-counter, .step-counter { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; border: none; font-family: 'Syne', sans-serif; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #9080ff; transform: translateY(-1px); }
+  .btn-primary.pz { background: var(--pz-accent); font-family: 'DM Sans', sans-serif; }
+  .btn-primary.pz:hover { background: #f09040; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #333350; }
+  .btn-ghost.pz { border-color: var(--pz-border); font-family: 'DM Sans', sans-serif; }
+  .btn-ghost.pz:hover { color: var(--text); border-color: #3a3630; }
+  .btn-ghost:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* SCROLLBAR */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
 <body>
-  <button class="back-pill" onclick="(history.length > 1 ? history.back() : window.location.href = '../index.html')">
-    <span>←</span> Back to topics
-  </button>
-
 <div class="layout">
-  <!-- SIDEBAR -->
+
+  <!-- ══════════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-tag">Interactive Course</div>
       <h1>Auto<span>Gen</span></h1>
+      <div class="logo-sub">From scratch · 8 lessons + 1 project</div>
     </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="progressFill"></div>
-    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
     <div class="progress-label" id="progressLabel">0 / 8 complete</div>
     <nav class="nav">
       <div class="nav-section-label">Foundations</div>
-      <div class="nav-item active" onclick="goTo(0)" id="nav-0">
-        <span class="nav-num">1</span> What is AutoGen?
-      </div>
-      <div class="nav-item" onclick="goTo(1)" id="nav-1">
-        <span class="nav-num">2</span> Core Concepts
-      </div>
-      <div class="nav-item" onclick="goTo(2)" id="nav-2">
-        <span class="nav-num">3</span> Your First Agents
-      </div>
+      <div class="nav-item active" onclick="goTo(0)" id="nav-0"><span class="nav-num">1</span> What is AutoGen?</div>
+      <div class="nav-item" onclick="goTo(1)" id="nav-1"><span class="nav-num">2</span> Core Concepts</div>
+      <div class="nav-item" onclick="goTo(2)" id="nav-2"><span class="nav-num">3</span> Your First Agents</div>
       <div class="nav-section-label">Patterns</div>
-      <div class="nav-item" onclick="goTo(3)" id="nav-3">
-        <span class="nav-num">4</span> Conversation Patterns
-      </div>
-      <div class="nav-item" onclick="goTo(4)" id="nav-4">
-        <span class="nav-num">5</span> Tool Use & Functions
-      </div>
-      <div class="nav-item" onclick="goTo(5)" id="nav-5">
-        <span class="nav-num">6</span> Group Chat
-      </div>
+      <div class="nav-item" onclick="goTo(3)" id="nav-3"><span class="nav-num">4</span> Conversation Patterns</div>
+      <div class="nav-item" onclick="goTo(4)" id="nav-4"><span class="nav-num">5</span> Tool Use & Functions</div>
+      <div class="nav-item" onclick="goTo(5)" id="nav-5"><span class="nav-num">6</span> Group Chat</div>
       <div class="nav-section-label">Production</div>
-      <div class="nav-item" onclick="goTo(6)" id="nav-6">
-        <span class="nav-num">7</span> Memory & RAG
+      <div class="nav-item" onclick="goTo(6)" id="nav-6"><span class="nav-num">7</span> Memory & RAG</div>
+      <div class="nav-item" onclick="goTo(7)" id="nav-7"><span class="nav-num">8</span> vs. Other Frameworks</div>
+
+      <!-- PROJECT DIVIDER -->
+      <div class="nav-project-divider">
+        <div class="label">🍕 Hands-On Project</div>
+        <div class="sublabel">Pizza Order Bot</div>
       </div>
-      <div class="nav-item" onclick="goTo(7)" id="nav-7">
-        <span class="nav-num">8</span> vs. Other Frameworks
-      </div>
+      <div class="nav-item pz-item" onclick="goToPz(0)" id="pz-nav-0"><span class="nav-icon">🗺️</span> Architecture</div>
+      <div class="nav-item pz-item" onclick="goToPz(1)" id="pz-nav-1"><span class="nav-icon">🤖</span> The Agents</div>
+      <div class="nav-item pz-item" onclick="goToPz(2)" id="pz-nav-2"><span class="nav-icon">📁</span> Project Setup</div>
+      <div class="nav-item pz-item" onclick="goToPz(3)" id="pz-nav-3"><span class="nav-icon">🧱</span> Menu & Tools</div>
+      <div class="nav-item pz-item" onclick="goToPz(4)" id="pz-nav-4"><span class="nav-icon">🤖</span> Order Agent</div>
+      <div class="nav-item pz-item" onclick="goToPz(5)" id="pz-nav-5"><span class="nav-icon">✅</span> Validator Agent</div>
+      <div class="nav-item pz-item" onclick="goToPz(6)" id="pz-nav-6"><span class="nav-icon">🔗</span> Wiring It Together</div>
+      <div class="nav-item pz-item" onclick="goToPz(7)" id="pz-nav-7"><span class="nav-icon">🧪</span> Running & Testing</div>
+      <div class="nav-item pz-item" onclick="goToPz(8)" id="pz-nav-8"><span class="nav-icon">⬆️</span> Extensions</div>
     </nav>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="main">
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main class="main" id="mainArea">
 
-    <!-- LESSON 0: What is AutoGen -->
+    <!-- ────────────────────────────────────────
+         COURSE LESSONS (0–7)
+    ──────────────────────────────────────────── -->
+
+    <!-- LESSON 0 -->
     <div class="lesson active" id="lesson-0">
       <div class="lesson-header">
         <div class="lesson-tag">Module 01 · Foundations</div>
         <h2 class="lesson-title">What is AutoGen?</h2>
         <p class="lesson-subtitle">Microsoft Research's framework for building multi-agent AI systems that can reason, collaborate, and execute code.</p>
       </div>
-
       <div class="prose">
         <p>AutoGen is an open-source framework from Microsoft Research that lets you build systems where <strong>multiple AI agents work together</strong> to solve complex tasks. Think of it as a runtime for AI teamwork — agents can talk to each other, use tools, write and execute code, and ask humans for input.</p>
         <p>Unlike workflow tools (n8n, Zapier) that execute deterministic steps, AutoGen agents reason autonomously. They decide <em>how</em> to solve a problem, not just follow a pre-written path.</p>
       </div>
-
       <h3 class="section-heading">Why does AutoGen exist?</h3>
       <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">🧩</div>
-          <div class="card-title">Single LLM Limits</div>
-          <div class="card-desc">One LLM has a limited context window and can hallucinate. Multiple agents can verify each other, split tasks, and specialize.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🔁</div>
-          <div class="card-title">Iterative Refinement</div>
-          <div class="card-desc">Agents can critique and improve each other's outputs — a critic agent reviewing a writer agent's code, for instance.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🛠️</div>
-          <div class="card-title">Tool Execution</div>
-          <div class="card-desc">Agents can write Python, run it in a sandbox, see the result, fix bugs — closing the loop between planning and execution.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🧑‍💻</div>
-          <div class="card-title">Human in the Loop</div>
-          <div class="card-desc">You control how much autonomy agents have. Inject human approval at any step, or let them run fully automated.</div>
-        </div>
+        <div class="card"><div class="card-icon">🧩</div><div class="card-title">Single LLM Limits</div><div class="card-desc">One LLM has a limited context window and can hallucinate. Multiple agents can verify each other, split tasks, and specialize.</div></div>
+        <div class="card"><div class="card-icon">🔁</div><div class="card-title">Iterative Refinement</div><div class="card-desc">Agents can critique and improve each other's outputs — a critic agent reviewing a writer agent's code, for instance.</div></div>
+        <div class="card"><div class="card-icon">🛠️</div><div class="card-title">Tool Execution</div><div class="card-desc">Agents can write Python, run it in a sandbox, see the result, fix bugs — closing the loop between planning and execution.</div></div>
+        <div class="card"><div class="card-icon">🧑‍💻</div><div class="card-title">Human in the Loop</div><div class="card-desc">You control how much autonomy agents have. Inject human approval at any step, or let them run fully automated.</div></div>
       </div>
-
       <h3 class="section-heading">The Big Picture</h3>
       <div class="diagram">
         <div class="flow" style="justify-content:center;">
-          <div class="flow-node">Human / Task</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-node highlight">UserProxy Agent</div>
-          <div class="flow-arrow">↔</div>
-          <div class="flow-node highlight">AssistantAgent</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-node">Code Executor</div>
-          <div class="flow-arrow">→</div>
+          <div class="flow-node">Human / Task</div><div class="flow-arrow">→</div>
+          <div class="flow-node highlight">UserProxy Agent</div><div class="flow-arrow">↔</div>
+          <div class="flow-node highlight">AssistantAgent</div><div class="flow-arrow">→</div>
+          <div class="flow-node">Code Executor</div><div class="flow-arrow">→</div>
           <div class="flow-node">Result</div>
         </div>
       </div>
-
-      <div class="callout info">
-        <span class="callout-icon">💡</span>
-        <div><strong>AutoGen v0.4 (AgentChat)</strong> is the current stable API. It introduced a cleaner async-first design with <code>AssistantAgent</code>, <code>UserProxyAgent</code>, and <code>GroupChat</code>. This course uses v0.4 patterns.</div>
-      </div>
-
+      <div class="callout info"><span class="callout-icon">💡</span><div><strong>AutoGen v0.4 (AgentChat)</strong> is the current stable API. It introduced a cleaner async-first design with <code>AssistantAgent</code>, <code>UserProxyAgent</code>, and <code>GroupChat</code>. This course uses v0.4 patterns.</div></div>
       <h3 class="section-heading">AutoGen vs. The World</h3>
       <table class="compare-table">
         <thead><tr><th>Framework</th><th>Paradigm</th><th>Best For</th></tr></thead>
@@ -585,125 +392,73 @@
           <tr><td>n8n</td><td>Deterministic workflow automation</td><td>Integrating SaaS tools with predictable logic</td></tr>
         </tbody>
       </table>
-
       <div class="quiz-block">
         <div class="quiz-q">🧠 Quick Check: What fundamentally distinguishes AutoGen from n8n?</div>
         <div class="quiz-options">
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> AutoGen is newer and faster</div>
-          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> AutoGen agents reason autonomously; n8n executes deterministic steps</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> n8n can't use AI; AutoGen can</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> AutoGen only works with OpenAI models</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">A</span> AutoGen is newer and faster</div>
+          <div class="quiz-opt" onclick="quiz(this,true)"><span class="opt-key">B</span> AutoGen agents reason autonomously; n8n executes deterministic steps</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">C</span> n8n can't use AI; AutoGen can</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">D</span> AutoGen only works with OpenAI models</div>
         </div>
-        <div class="quiz-feedback" id="quiz-feedback-0"></div>
+        <div class="quiz-feedback"></div>
       </div>
-
       <div class="lesson-footer">
         <button class="btn btn-ghost" disabled>← Previous</button>
-        <span class="lesson-counter" id="counter-0">1 / 8</span>
+        <span class="lesson-counter">1 / 8</span>
         <button class="btn btn-primary" onclick="goTo(1)">Next: Core Concepts →</button>
       </div>
     </div>
 
-    <!-- LESSON 1: Core Concepts -->
+    <!-- LESSON 1 -->
     <div class="lesson" id="lesson-1">
       <div class="lesson-header">
         <div class="lesson-tag">Module 02 · Foundations</div>
         <h2 class="lesson-title">Core Concepts</h2>
         <p class="lesson-subtitle">The building blocks: agents, conversations, termination, and the LLM config pattern.</p>
       </div>
-
       <h3 class="section-heading">The Two Primary Agents</h3>
-      <div class="prose">
-        <p>Every AutoGen system is built from two fundamental agent types. Understanding these is the most important thing in this entire course.</p>
-      </div>
       <div class="card-grid">
-        <div class="card" style="border-color: rgba(124,106,247,0.3);">
-          <div class="card-icon">🤖</div>
-          <div class="card-title">AssistantAgent</div>
-          <div class="card-desc">Powered by an LLM. Receives messages, reasons, and replies. It can suggest code, call functions, and generate plans. <strong>Doesn't execute code by default.</strong></div>
-        </div>
-        <div class="card" style="border-color: rgba(52,211,153,0.3);">
-          <div class="card-icon">👤</div>
-          <div class="card-title">UserProxyAgent</div>
-          <div class="card-desc">Represents a human or an executor. <strong>Can run code</strong> that the AssistantAgent produces, then feed results back. May prompt a real human for approval.</div>
-        </div>
+        <div class="card" style="border-color:rgba(124,106,247,0.3);"><div class="card-icon">🤖</div><div class="card-title">AssistantAgent</div><div class="card-desc">Powered by an LLM. Receives messages, reasons, and replies. It can suggest code, call functions, and generate plans. <strong>Doesn't execute code by default.</strong></div></div>
+        <div class="card" style="border-color:rgba(52,211,153,0.3);"><div class="card-icon">👤</div><div class="card-title">UserProxyAgent</div><div class="card-desc">Represents a human or an executor. <strong>Can run code</strong> that the AssistantAgent produces, then feed results back. May prompt a real human for approval.</div></div>
       </div>
-
       <h3 class="section-heading">LLM Configuration</h3>
-      <div class="prose"><p>All agents that use an LLM require a config dict. This is where you define the model and API key.</p></div>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>llm_config.py</div>
-        <pre><span class="kw">import</span> autogen
-
-<span class="cmt"># Define your LLM config</span>
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>llm_config.py</div>
+      <pre><span class="kw">import</span> autogen
 <span class="var">llm_config</span> = {
-    <span class="str">"config_list"</span>: [
-        {
-            <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
-            <span class="str">"api_key"</span>: <span class="str">"sk-..."</span>,  <span class="cmt"># or use env var</span>
-        }
-    ],
-    <span class="str">"temperature"</span>: <span class="num">0.1</span>,      <span class="cmt"># low = more deterministic</span>
-    <span class="str">"cache_seed"</span>: <span class="num">42</span>,        <span class="cmt"># reproducible runs (optional)</span>
+    <span class="str">"config_list"</span>: [{ <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"sk-..."</span> }],
+    <span class="str">"temperature"</span>: <span class="num">0.1</span>,
+    <span class="str">"cache_seed"</span>: <span class="num">42</span>,
 }
-
-<span class="cmt"># Or load from a JSON file (recommended for production)</span>
-<span class="var">config_list</span> = autogen.<span class="fn">config_list_from_json</span>(
-    <span class="str">"OAI_CONFIG_LIST"</span>
-)</pre>
-      </div>
-
+<span class="var">config_list</span> = autogen.<span class="fn">config_list_from_json</span>(<span class="str">"OAI_CONFIG_LIST"</span>)</pre></div>
       <h3 class="section-heading">Conversations & Termination</h3>
-      <div class="prose">
-        <p>A conversation begins when one agent <strong>initiates</strong> a chat with another. Agents take turns. This continues until a <strong>termination condition</strong> is met.</p>
-      </div>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>termination.py</div>
-        <pre><span class="cmt"># Termination methods:</span>
-
-<span class="cmt"># 1. Max turns</span>
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>termination.py</div>
+      <pre><span class="cmt"># 1. Max turns</span>
 <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(assistant, max_turns=<span class="num">5</span>)
-
-<span class="cmt"># 2. Keyword in reply ("TERMINATE")</span>
-<span class="var">assistant</span> = autogen.<span class="cls">AssistantAgent</span>(
-    system_message=<span class="str">"""...(your instructions)...
-    When done, reply with: TERMINATE"""</span>
-)
-
+<span class="cmt"># 2. Keyword</span>
+<span class="var">assistant</span> = autogen.<span class="cls">AssistantAgent</span>(system_message=<span class="str">"...reply TERMINATE when done"</span>)
 <span class="cmt"># 3. Custom function</span>
-<span class="kw">def</span> <span class="fn">my_termination</span>(msg):
-    <span class="kw">return</span> <span class="str">"task_complete"</span> <span class="kw">in</span> msg[<span class="str">"content"</span>].lower()
-
-<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
-    is_termination_msg=my_termination
-)</pre>
-      </div>
-
+<span class="kw">def</span> <span class="fn">my_term</span>(msg): <span class="kw">return</span> <span class="str">"task_complete"</span> <span class="kw">in</span> (msg[<span class="str">"content"</span>] <span class="kw">or</span> <span class="str">""</span>).lower()
+<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(is_termination_msg=my_term)</pre></div>
       <h3 class="section-heading">Human Input Modes</h3>
       <table class="compare-table">
         <thead><tr><th>Mode</th><th>Behavior</th><th>Use Case</th></tr></thead>
         <tbody>
-          <tr><td><span class="badge badge-red">ALWAYS</span></td><td>Asks a human to reply at every step</td><td>Interactive sessions, demos</td></tr>
-          <tr><td><span class="badge badge-purple">TERMINATE</span></td><td>Asks human only when termination is triggered</td><td>Approval gate at the end</td></tr>
-          <tr><td><span class="badge badge-green">NEVER</span></td><td>Fully autonomous — no human prompting</td><td>Production pipelines</td></tr>
+          <tr><td><span class="badge badge-red">ALWAYS</span></td><td>Asks human at every step</td><td>Interactive sessions, demos</td></tr>
+          <tr><td><span class="badge badge-purple">TERMINATE</span></td><td>Asks human only on termination</td><td>Approval gate at the end</td></tr>
+          <tr><td><span class="badge badge-green">NEVER</span></td><td>Fully autonomous</td><td>Production pipelines</td></tr>
         </tbody>
       </table>
-
-      <div class="callout warn">
-        <span class="callout-icon">⚠️</span>
-        <div><strong>Code Execution Safety:</strong> UserProxyAgent can execute code. Always set <code>code_execution_config</code> with a Docker sandbox or a restricted local path in production. Never run untrusted agent code on bare metal.</div>
-      </div>
-
+      <div class="callout warn"><span class="callout-icon">⚠️</span><div><strong>Code Execution Safety:</strong> Always use Docker sandbox or restricted paths in production. Never run untrusted agent code on bare metal.</div></div>
       <div class="quiz-block">
         <div class="quiz-q">🧠 Which agent actually <em>runs</em> Python code that the other agent writes?</div>
         <div class="quiz-options">
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> AssistantAgent</div>
-          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> UserProxyAgent</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> Both run code equally</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> Neither — AutoGen can't execute code</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">A</span> AssistantAgent</div>
+          <div class="quiz-opt" onclick="quiz(this,true)"><span class="opt-key">B</span> UserProxyAgent</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">C</span> Both equally</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">D</span> Neither</div>
         </div>
+        <div class="quiz-feedback"></div>
       </div>
-
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(0)">← Previous</button>
         <span class="lesson-counter">2 / 8</span>
@@ -711,106 +466,44 @@
       </div>
     </div>
 
-    <!-- LESSON 2: First Agents -->
+    <!-- LESSON 2 -->
     <div class="lesson" id="lesson-2">
       <div class="lesson-header">
         <div class="lesson-tag">Module 03 · Foundations</div>
         <h2 class="lesson-title">Your First Agents</h2>
         <p class="lesson-subtitle">Build a working two-agent system from 15 lines of Python.</p>
       </div>
-
       <h3 class="section-heading">Installation</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>terminal</div>
-        <pre><span class="cmt"># Install AutoGen (v0.4+)</span>
-pip install pyautogen
-
-<span class="cmt"># For code execution in Docker (recommended)</span>
-pip install pyautogen[docker]
-
-<span class="cmt"># Set your API key</span>
-<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-..."</span></pre>
-      </div>
-
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>terminal</div>
+      <pre>pip install pyautogen
+pip install pyautogen[docker]  <span class="cmt"># for Docker sandbox</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-..."</span></pre></div>
       <h3 class="section-heading">Hello World: Two-Agent System</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>hello_autogen.py</div>
-        <pre><span class="kw">import</span> autogen
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>hello_autogen.py</div>
+      <pre><span class="kw">import</span> autogen
+<span class="var">llm_config</span> = {<span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"sk-..."</span>}]}
 
-<span class="cmt"># 1. LLM config</span>
-<span class="var">llm_config</span> = {
-    <span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"sk-..."</span>}]
-}
-
-<span class="cmt"># 2. The AI assistant agent</span>
 <span class="var">assistant</span> = autogen.<span class="cls">AssistantAgent</span>(
-    name=<span class="str">"assistant"</span>,
-    llm_config=<span class="var">llm_config</span>,
-    system_message=<span class="str">"""You are a helpful Python expert.
-    When you finish the task, reply with: TERMINATE"""</span>
+    name=<span class="str">"assistant"</span>, llm_config=<span class="var">llm_config</span>,
+    system_message=<span class="str">"You are a Python expert. When done, reply: TERMINATE"</span>
 )
-
-<span class="cmt"># 3. The user proxy (executes code, no human input)</span>
 <span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
-    name=<span class="str">"user_proxy"</span>,
-    human_input_mode=<span class="str">"NEVER"</span>,
-    is_termination_msg=<span class="kw">lambda</span> x: <span class="str">"TERMINATE"</span> <span class="kw">in</span> x.get(<span class="str">"content"</span>, <span class="str">""</span>),
-    code_execution_config={
-        <span class="str">"work_dir"</span>: <span class="str">"coding"</span>,
-        <span class="str">"use_docker"</span>: <span class="num">False</span>,  <span class="cmt"># set True in production</span>
-    }
+    name=<span class="str">"user_proxy"</span>, human_input_mode=<span class="str">"NEVER"</span>,
+    is_termination_msg=<span class="kw">lambda</span> x: <span class="str">"TERMINATE"</span> <span class="kw">in</span> (x.get(<span class="str">"content"</span>) <span class="kw">or</span> <span class="str">""</span>),
+    code_execution_config={<span class="str">"work_dir"</span>: <span class="str">"coding"</span>, <span class="str">"use_docker"</span>: <span class="num">False</span>}
 )
-
-<span class="cmt"># 4. Start the conversation!</span>
-<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    <span class="var">assistant</span>,
-    message=<span class="str">"Write a Python script that prints the first 10 Fibonacci numbers."</span>
-)</pre>
-      </div>
-
-      <h3 class="section-heading">What Happens Step by Step</h3>
-      <div class="flow" style="flex-direction:column; align-items:flex-start; gap:10px; padding: 10px 0;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="flow-node highlight" style="min-width:160px;">user_proxy sends task</div>
-          <div style="font-size:13px; color:var(--muted);">→ "Write Fibonacci script"</div>
-        </div>
-        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="flow-node highlight" style="min-width:160px;">assistant reasons</div>
-          <div style="font-size:13px; color:var(--muted);">→ LLM generates Python code block</div>
-        </div>
-        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="flow-node" style="min-width:160px;">user_proxy executes</div>
-          <div style="font-size:13px; color:var(--muted);">→ Runs the code, captures stdout/stderr</div>
-        </div>
-        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="flow-node" style="min-width:160px;">result sent back</div>
-          <div style="font-size:13px; color:var(--muted);">→ Output fed to assistant as next message</div>
-        </div>
-        <div style="padding-left:20px; color:var(--muted); font-size:20px;">↓</div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="flow-node highlight" style="min-width:160px;">assistant replies TERMINATE</div>
-          <div style="font-size:13px; color:var(--muted);">→ Conversation ends</div>
-        </div>
-      </div>
-
-      <div class="callout tip">
-        <span class="callout-icon">✅</span>
-        <div><strong>No code to execute?</strong> If the message contains no code block, user_proxy sends a canned reply like "There is no code from the last message, provide the code." — this automatically nudges the assistant to write code.</div>
-      </div>
-
+<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(<span class="var">assistant</span>, message=<span class="str">"Print the first 10 Fibonacci numbers."</span>)</pre></div>
+      <div class="callout tip"><span class="callout-icon">✅</span><div><strong>No code block?</strong> If the reply contains no code, user_proxy sends "There is no code from the last message, provide the code." — automatically nudging the assistant.</div></div>
       <div class="quiz-block">
-        <div class="quiz-q">🧠 In the example above, what triggers the conversation to stop?</div>
+        <div class="quiz-q">🧠 What triggers the conversation to stop in the example above?</div>
         <div class="quiz-options">
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> A max_turns limit of 10</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">B</span> The code executing successfully</div>
-          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">C</span> The assistant including "TERMINATE" in its reply</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> AutoGen detects the task is done automatically</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">A</span> A max_turns limit of 10</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">B</span> Code executing successfully</div>
+          <div class="quiz-opt" onclick="quiz(this,true)"><span class="opt-key">C</span> The assistant including "TERMINATE" in its reply</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">D</span> AutoGen auto-detects task completion</div>
         </div>
+        <div class="quiz-feedback"></div>
       </div>
-
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(1)">← Previous</button>
         <span class="lesson-counter">3 / 8</span>
@@ -818,81 +511,33 @@ pip install pyautogen[docker]
       </div>
     </div>
 
-    <!-- LESSON 3: Conversation Patterns -->
+    <!-- LESSON 3 -->
     <div class="lesson" id="lesson-3">
       <div class="lesson-header">
         <div class="lesson-tag">Module 04 · Patterns</div>
         <h2 class="lesson-title">Conversation Patterns</h2>
-        <p class="lesson-subtitle">Two-agent, sequential chaining, nested chats, and when to use each.</p>
+        <p class="lesson-subtitle">Two-agent, sequential chaining, nested chats, Swarm — and when to use each.</p>
       </div>
-
       <h3 class="section-heading">Pattern 1: Two-Agent (Default)</h3>
-      <div class="prose"><p>You've seen this. One user_proxy, one assistant. Best for focused single tasks: code generation, Q&A, analysis.</p></div>
-
+      <div class="prose"><p>One user_proxy, one assistant. Best for focused single tasks: code generation, Q&A, analysis.</p></div>
       <h3 class="section-heading">Pattern 2: Sequential Chaining</h3>
-      <div class="prose"><p>Run multiple two-agent conversations where the output of one feeds into the next. Useful for pipelines (write → review → deploy).</p></div>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>sequential.py</div>
-        <pre><span class="cmt"># Step 1: Writer agent creates a blog post</span>
-<span class="var">result1</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    writer, message=<span class="str">"Write a blog post about RAG systems"</span>
-)
-<span class="var">draft</span> = <span class="var">result1</span>.summary
-
-<span class="cmt"># Step 2: Critic reviews it</span>
-<span class="var">result2</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    critic, message=<span class="str">f"Review this blog post:\n\n{draft}"</span>
-)
-
-<span class="cmt"># Step 3: Editor applies improvements</span>
-<span class="var">result3</span> = <span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    editor, message=<span class="str">f"Apply this feedback:\n{result2.summary}"</span>
-)</pre>
-      </div>
-
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>sequential.py</div>
+      <pre><span class="var">r1</span> = user_proxy.<span class="fn">initiate_chat</span>(writer, message=<span class="str">"Write a blog post about RAG"</span>)
+<span class="var">r2</span> = user_proxy.<span class="fn">initiate_chat</span>(critic, message=<span class="str">f"Review:\n{r1.summary}"</span>)
+<span class="var">r3</span> = user_proxy.<span class="fn">initiate_chat</span>(editor, message=<span class="str">f"Apply feedback:\n{r2.summary}"</span>)</pre></div>
       <h3 class="section-heading">Pattern 3: Nested Chats</h3>
-      <div class="prose"><p>An agent can <strong>spawn a sub-conversation</strong> mid-conversation. This is powerful for tasks that require a specialist to handle a sub-task before the main flow continues.</p></div>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>nested.py</div>
-        <pre><span class="cmt"># Register a nested chat — when assistant gets a coding task,</span>
-<span class="cmt"># it spawns a full sub-conversation with a coding specialist</span>
-<span class="var">assistant</span>.<span class="fn">register_nested_chats</span>(
-    trigger=<span class="var">user_proxy</span>,
-    chat_queue=[
-        {
-            <span class="str">"recipient"</span>: coding_specialist,
-            <span class="str">"message"</span>: <span class="str">"Please implement this: "</span>,
-            <span class="str">"summary_method"</span>: <span class="str">"last_msg"</span>,
-            <span class="str">"max_turns"</span>: <span class="num">3</span>,
-        }
-    ]
-)</pre>
-      </div>
-
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>nested.py</div>
+      <pre>assistant.<span class="fn">register_nested_chats</span>(
+    trigger=user_proxy,
+    chat_queue=[{ <span class="str">"recipient"</span>: specialist, <span class="str">"summary_method"</span>: <span class="str">"last_msg"</span>, <span class="str">"max_turns"</span>: <span class="num">3</span> }]
+)</pre></div>
       <h3 class="section-heading">Pattern 4: Swarm (v0.4)</h3>
-      <div class="prose"><p>AutoGen 0.4 introduced a <strong>Swarm</strong> pattern — agents can hand off to each other dynamically based on context, like a call-routing system.</p></div>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>swarm.py</div>
-        <pre><span class="kw">from</span> autogen <span class="kw">import</span> <span class="cls">SwarmAgent</span>, <span class="fn">initiate_swarm_chat</span>
-
-<span class="cmt"># Each agent defines who it can hand off to</span>
-<span class="var">triage</span> = <span class="cls">SwarmAgent</span>(
-    name=<span class="str">"triage"</span>,
-    handoffs=[<span class="str">"billing_agent"</span>, <span class="str">"tech_support"</span>, <span class="str">"sales"</span>]
-)
-
-<span class="fn">initiate_swarm_chat</span>(
-    initial_agent=<span class="var">triage</span>,
-    agents=[<span class="var">triage</span>, billing, tech_support, sales],
-    messages=<span class="str">"I can't access my account after payment failed"</span>
-)</pre>
-      </div>
-
-      <div class="callout info">
-        <span class="callout-icon">🗺️</span>
-        <div><strong>Choosing a pattern:</strong> Single focused task → Two-agent. Sequential pipeline → Chaining. Complex orchestration with sub-tasks → Nested chats. Dynamic routing by context → Swarm. Team collaboration → Group Chat (next module).</div>
-      </div>
-
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>swarm.py</div>
+      <pre><span class="kw">from</span> autogen <span class="kw">import</span> <span class="cls">SwarmAgent</span>, <span class="fn">initiate_swarm_chat</span>
+<span class="var">triage</span> = <span class="cls">SwarmAgent</span>(name=<span class="str">"triage"</span>, handoffs=[<span class="str">"billing"</span>, <span class="str">"tech"</span>, <span class="str">"sales"</span>])
+<span class="fn">initiate_swarm_chat</span>(initial_agent=triage, agents=[triage, billing, tech, sales],
+    messages=<span class="str">"Can't access account after payment failed"</span>)</pre></div>
+      <div class="callout info"><span class="callout-icon">🗺️</span><div>Single task → Two-agent. Pipeline → Chaining. Sub-tasks → Nested. Dynamic routing → Swarm. Team collaboration → Group Chat.</div></div>
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(2)">← Previous</button>
         <span class="lesson-counter">4 / 8</span>
@@ -900,87 +545,43 @@ pip install pyautogen[docker]
       </div>
     </div>
 
-    <!-- LESSON 4: Tool Use -->
+    <!-- LESSON 4 -->
     <div class="lesson" id="lesson-4">
       <div class="lesson-header">
         <div class="lesson-tag">Module 05 · Patterns</div>
         <h2 class="lesson-title">Tool Use & Function Calling</h2>
         <p class="lesson-subtitle">Give agents real-world capabilities: web search, database queries, API calls.</p>
       </div>
-
-      <div class="prose">
-        <p>By default, agents can only reason and write code. <strong>Tools</strong> give them real-world capabilities. AutoGen wraps OpenAI function calling — agents decide when and how to call tools.</p>
-      </div>
-
       <h3 class="section-heading">Defining Tools with Decorators</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>tools.py</div>
-        <pre><span class="kw">import</span> autogen
-<span class="kw">from</span> autogen <span class="kw">import</span> <span class="cls">AssistantAgent</span>, <span class="cls">UserProxyAgent</span>
-
-<span class="var">llm_config</span> = {<span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"..."</span>}]}
-
-<span class="var">assistant</span> = <span class="cls">AssistantAgent</span>(name=<span class="str">"assistant"</span>, llm_config=<span class="var">llm_config</span>)
-<span class="var">user_proxy</span> = <span class="cls">UserProxyAgent</span>(
-    name=<span class="str">"user_proxy"</span>, human_input_mode=<span class="str">"NEVER"</span>,
-    code_execution_config=<span class="num">False</span>  <span class="cmt"># disable code exec, use tools instead</span>
-)
-
-<span class="cmt"># ✨ Register a tool — function is callable by user_proxy,</span>
-<span class="cmt">#    description is shown to the LLM to know when to call it</span>
-<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>tools.py</div>
+      <pre><span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
 <span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Get current weather for a city"</span>)
 <span class="kw">def</span> <span class="fn">get_weather</span>(city: str) -> str:
-    <span class="cmt"># Call a real weather API here</span>
     <span class="kw">return</span> <span class="str">f"Weather in {city}: 22°C, sunny"</span>
 
 <span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
 <span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Search the web for current info"</span>)
 <span class="kw">def</span> <span class="fn">web_search</span>(query: str) -> str:
-    <span class="cmt"># Integrate with Serper, Tavily, or Bing here</span>
-    <span class="kw">return</span> <span class="str">f"Results for '{query}': ..."</span>
-
-<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    <span class="var">assistant</span>,
-    message=<span class="str">"What's the weather in Tokyo and is there a tech conference there this week?"</span>
-)</pre>
-      </div>
-
+    <span class="kw">return</span> <span class="str">f"Results for '{query}': ..."</span></pre></div>
       <h3 class="section-heading">How Tool Calling Works</h3>
-      <div class="flow" style="justify-content:center; flex-wrap:wrap; gap:0;">
-        <div class="flow-node">Task message</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node highlight">LLM decides to call tool</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node">user_proxy executes fn</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node highlight">Result injected as tool_result</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node">LLM uses result in reply</div>
+      <div class="flow" style="justify-content:center; flex-wrap:wrap;">
+        <div class="flow-node">Task</div><div class="flow-arrow">→</div>
+        <div class="flow-node highlight">LLM decides to call</div><div class="flow-arrow">→</div>
+        <div class="flow-node">proxy executes fn</div><div class="flow-arrow">→</div>
+        <div class="flow-node highlight">result injected</div><div class="flow-arrow">→</div>
+        <div class="flow-node">LLM uses result</div>
       </div>
-
-      <h3 class="section-heading">Tool Best Practices</h3>
-      <div class="prose">
-        <p><strong>Type hints matter.</strong> AutoGen uses Python type hints to generate the JSON schema for the LLM. Always annotate your function arguments and return type.</p>
-        <p><strong>Descriptions are prompts.</strong> The description string is what the LLM reads to decide when to call your tool. Write it like a clear instruction, not a comment.</p>
-        <p><strong>Return strings.</strong> Tool functions should return strings (or JSON-serializable types that AutoGen will stringify). The LLM reads this as text.</p>
-      </div>
-
-      <div class="callout tip">
-        <span class="callout-icon">🔧</span>
-        <div><strong>Common integrations:</strong> Web search (Tavily, Serper), DB queries (SQLAlchemy), REST APIs (requests/httpx), file system ops, sending emails/Slack messages, calling other microservices.</div>
-      </div>
-
+      <div class="callout tip"><span class="callout-icon">🔧</span><div><strong>Type hints matter</strong> — AutoGen uses them to generate JSON schema. <strong>Descriptions are prompts</strong> — the LLM reads them to decide when to call. <strong>Return strings</strong> — tools should return str or JSON-serializable values.</div></div>
       <div class="quiz-block">
-        <div class="quiz-q">🧠 When you register a tool, why does the <em>assistant</em> need <code>register_for_llm</code> and the <em>user_proxy</em> needs <code>register_for_execution</code>?</div>
+        <div class="quiz-q">🧠 Why does the <em>assistant</em> need <code>register_for_llm</code> and user_proxy needs <code>register_for_execution</code>?</div>
         <div class="quiz-options">
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> It's just boilerplate — they're identical under the hood</div>
-          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">B</span> The LLM needs to know about the tool to decide to call it; the executor actually runs it</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">C</span> Both agents run the function independently</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> register_for_llm is only needed for GPT-4, not other models</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">A</span> Just boilerplate — identical under the hood</div>
+          <div class="quiz-opt" onclick="quiz(this,true)"><span class="opt-key">B</span> LLM needs to know about the tool; executor actually runs it</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">C</span> Both agents run it independently</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">D</span> Only needed for GPT-4</div>
         </div>
+        <div class="quiz-feedback"></div>
       </div>
-
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(3)">← Previous</button>
         <span class="lesson-counter">5 / 8</span>
@@ -988,101 +589,38 @@ pip install pyautogen[docker]
       </div>
     </div>
 
-    <!-- LESSON 5: Group Chat -->
+    <!-- LESSON 5 -->
     <div class="lesson" id="lesson-5">
       <div class="lesson-header">
         <div class="lesson-tag">Module 06 · Patterns</div>
         <h2 class="lesson-title">Group Chat</h2>
         <p class="lesson-subtitle">Orchestrate 3+ specialized agents collaborating on a shared task.</p>
       </div>
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>group_chat.py</div>
+      <pre><span class="var">planner</span> = autogen.<span class="cls">AssistantAgent</span>(name=<span class="str">"Planner"</span>, llm_config=llm_config,
+    system_message=<span class="str">"Break tasks into subtasks and assign them."</span>)
+<span class="var">coder</span> = autogen.<span class="cls">AssistantAgent</span>(name=<span class="str">"Coder"</span>, llm_config=llm_config,
+    system_message=<span class="str">"Write high-quality Python. No prose, just code."</span>)
+<span class="var">critic</span> = autogen.<span class="cls">AssistantAgent</span>(name=<span class="str">"Critic"</span>, llm_config=llm_config,
+    system_message=<span class="str">"Review code for bugs, edge cases, style."</span>)
 
-      <div class="prose">
-        <p>Group chat is where AutoGen really shines for complex tasks. You assemble a <strong>team of specialized agents</strong> (researcher, coder, critic, planner) and a <strong>GroupChatManager</strong> decides which agent speaks next.</p>
-      </div>
-
-      <h3 class="section-heading">Setting Up a Group Chat</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>group_chat.py</div>
-        <pre><span class="kw">import</span> autogen
-
-<span class="var">llm_config</span> = {<span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: <span class="str">"..."</span>}]}
-
-<span class="cmt"># Specialized agents with distinct system messages</span>
-<span class="var">planner</span> = autogen.<span class="cls">AssistantAgent</span>(
-    name=<span class="str">"Planner"</span>, llm_config=<span class="var">llm_config</span>,
-    system_message=<span class="str">"You break complex tasks into subtasks and assign them."</span>
-)
-
-<span class="var">coder</span> = autogen.<span class="cls">AssistantAgent</span>(
-    name=<span class="str">"Coder"</span>, llm_config=<span class="var">llm_config</span>,
-    system_message=<span class="str">"You write high-quality Python code. No prose, just code."</span>
-)
-
-<span class="var">critic</span> = autogen.<span class="cls">AssistantAgent</span>(
-    name=<span class="str">"Critic"</span>, llm_config=<span class="var">llm_config</span>,
-    system_message=<span class="str">"Review code for bugs, edge cases, and style. Be concise."</span>
-)
-
-<span class="var">user_proxy</span> = autogen.<span class="cls">UserProxyAgent</span>(
-    name=<span class="str">"User"</span>, human_input_mode=<span class="str">"NEVER"</span>,
-    code_execution_config={<span class="str">"work_dir"</span>: <span class="str">"coding"</span>}
-)
-
-<span class="cmt"># Assemble the group chat</span>
 <span class="var">groupchat</span> = autogen.<span class="cls">GroupChat</span>(
-    agents=[<span class="var">user_proxy</span>, <span class="var">planner</span>, <span class="var">coder</span>, <span class="var">critic</span>],
-    messages=[],
-    max_round=<span class="num">12</span>,
-    speaker_selection_method=<span class="str">"auto"</span>  <span class="cmt"># LLM picks next speaker</span>
+    agents=[user_proxy, planner, coder, critic],
+    messages=[], max_round=<span class="num">12</span>, speaker_selection_method=<span class="str">"auto"</span>
 )
-
-<span class="cmt"># The manager orchestrates the conversation</span>
-<span class="var">manager</span> = autogen.<span class="cls">GroupChatManager</span>(
-    groupchat=<span class="var">groupchat</span>,
-    llm_config=<span class="var">llm_config</span>
-)
-
-<span class="var">user_proxy</span>.<span class="fn">initiate_chat</span>(
-    <span class="var">manager</span>,
-    message=<span class="str">"Build a FastAPI endpoint that analyzes sentiment in text"</span>
-)</pre>
-      </div>
-
-      <h3 class="section-heading">Speaker Selection Methods</h3>
+<span class="var">manager</span> = autogen.<span class="cls">GroupChatManager</span>(groupchat=groupchat, llm_config=llm_config)
+user_proxy.<span class="fn">initiate_chat</span>(manager, message=<span class="str">"Build a FastAPI sentiment endpoint"</span>)</pre></div>
+      <h3 class="section-heading">Speaker Selection</h3>
       <table class="compare-table">
-        <thead><tr><th>Method</th><th>How It Works</th><th>Best For</th></tr></thead>
+        <thead><tr><th>Method</th><th>How</th><th>Best For</th></tr></thead>
         <tbody>
-          <tr><td><code>auto</code></td><td>GroupChatManager (LLM) picks the most relevant agent</td><td>General purpose, flexible tasks</td></tr>
-          <tr><td><code>round_robin</code></td><td>Agents take turns in order</td><td>Structured review loops</td></tr>
-          <tr><td><code>random</code></td><td>Random selection each turn</td><td>Exploration, diversity of views</td></tr>
-          <tr><td><code>manual</code></td><td>Human picks each time</td><td>Interactive debugging</td></tr>
-          <tr><td><em>custom fn</em></td><td>Your function selects the speaker</td><td>Complex routing logic</td></tr>
+          <tr><td><code>auto</code></td><td>LLM picks most relevant agent</td><td>General purpose</td></tr>
+          <tr><td><code>round_robin</code></td><td>Agents take turns in order</td><td>Structured loops</td></tr>
+          <tr><td><code>random</code></td><td>Random each turn</td><td>Diverse perspectives</td></tr>
+          <tr><td><em>custom fn</em></td><td>Your function decides</td><td>Complex routing</td></tr>
         </tbody>
       </table>
-
-      <h3 class="section-heading">Custom Speaker Selection</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>custom_speaker.py</div>
-        <pre><span class="kw">def</span> <span class="fn">custom_speaker_selector</span>(last_speaker, groupchat):
-    <span class="cmt"># Always follow coder with critic</span>
-    <span class="kw">if</span> last_speaker.name == <span class="str">"Coder"</span>:
-        <span class="kw">return</span> <span class="fn">next</span>(a <span class="kw">for</span> a <span class="kw">in</span> groupchat.agents <span class="kw">if</span> a.name == <span class="str">"Critic"</span>)
-    <span class="cmt"># Always follow critic with user_proxy (to run fixed code)</span>
-    <span class="kw">if</span> last_speaker.name == <span class="str">"Critic"</span>:
-        <span class="kw">return</span> <span class="fn">next</span>(a <span class="kw">for</span> a <span class="kw">in</span> groupchat.agents <span class="kw">if</span> a.name == <span class="str">"User"</span>)
-    <span class="kw">return</span> <span class="str">"auto"</span>  <span class="cmt"># let LLM decide otherwise</span>
-
-<span class="var">groupchat</span> = autogen.<span class="cls">GroupChat</span>(
-    ...,
-    speaker_selection_method=<span class="fn">custom_speaker_selector</span>
-)</pre>
-      </div>
-
-      <div class="callout warn">
-        <span class="callout-icon">⚠️</span>
-        <div><strong>Token cost warning:</strong> Each agent in a group chat sees the <em>full conversation history</em>. With many agents and long conversations, costs scale quickly. Use <code>max_round</code> limits, concise system messages, and consider <code>GroupChat(messages=[], send_introductions=False)</code> to keep context lean.</div>
-      </div>
-
+      <div class="callout warn"><span class="callout-icon">⚠️</span><div><strong>Token costs:</strong> Each agent sees the full history. Use <code>max_round</code> limits and concise system messages.</div></div>
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(4)">← Previous</button>
         <span class="lesson-counter">6 / 8</span>
@@ -1090,199 +628,445 @@ pip install pyautogen[docker]
       </div>
     </div>
 
-    <!-- LESSON 6: Memory & RAG -->
+    <!-- LESSON 6 -->
     <div class="lesson" id="lesson-6">
       <div class="lesson-header">
         <div class="lesson-tag">Module 07 · Production</div>
         <h2 class="lesson-title">Memory & RAG</h2>
         <p class="lesson-subtitle">Give agents long-term memory with vector stores and retrieval-augmented generation.</p>
       </div>
-
-      <div class="prose">
-        <p>By default, AutoGen agents have no memory between conversations. Every <code>initiate_chat</code> call starts fresh. For production systems, you need <strong>persistent memory</strong> — and AutoGen provides <code>RetrieveUserProxyAgent</code> and hooks for external vector stores.</p>
-      </div>
-
       <h3 class="section-heading">Built-in RAG: RetrieveUserProxyAgent</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>rag_agent.py</div>
-        <pre><span class="kw">from</span> autogen.agentchat.contrib.retrieve_user_proxy_agent <span class="kw">import</span> <span class="cls">RetrieveUserProxyAgent</span>
-
-<span class="var">rag_agent</span> = <span class="cls">RetrieveUserProxyAgent</span>(
-    name=<span class="str">"rag_agent"</span>,
-    retrieve_config={
-        <span class="str">"task"</span>: <span class="str">"qa"</span>,
-        <span class="str">"docs_path"</span>: [<span class="str">"./my_docs/"</span>, <span class="str">"https://example.com/api-docs"</span>],
-        <span class="str">"chunk_token_size"</span>: <span class="num">2000</span>,
-        <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
-        <span class="str">"vector_db"</span>: <span class="str">"chroma"</span>,   <span class="cmt"># or "pgvector", "qdrant"</span>
-        <span class="str">"collection_name"</span>: <span class="str">"my_docs"</span>,
-        <span class="str">"get_or_create"</span>: <span class="num">True</span>,     <span class="cmt"># reuse existing collection</span>
-    },
-    code_execution_config=<span class="num">False</span>,
-    human_input_mode=<span class="str">"NEVER"</span>
-)
-
-<span class="var">rag_agent</span>.<span class="fn">initiate_chat</span>(
-    assistant,
-    problem=<span class="str">"What does our API return when authentication fails?"</span>
-)</pre>
-      </div>
-
+      <div class="code-block"><div class="code-header"><div class="dots"><span></span><span></span><span></span></div>rag_agent.py</div>
+      <pre><span class="kw">from</span> autogen.agentchat.contrib.retrieve_user_proxy_agent <span class="kw">import</span> <span class="cls">RetrieveUserProxyAgent</span>
+<span class="var">rag</span> = <span class="cls">RetrieveUserProxyAgent</span>(name=<span class="str">"rag"</span>, retrieve_config={
+    <span class="str">"task"</span>: <span class="str">"qa"</span>, <span class="str">"docs_path"</span>: [<span class="str">"./docs/"</span>],
+    <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"vector_db"</span>: <span class="str">"chroma"</span>,
+    <span class="str">"collection_name"</span>: <span class="str">"my_docs"</span>, <span class="str">"get_or_create"</span>: <span class="kw">True</span>,
+}, code_execution_config=<span class="kw">False</span>, human_input_mode=<span class="str">"NEVER"</span>)
+rag.<span class="fn">initiate_chat</span>(assistant, problem=<span class="str">"What does our API return on auth failure?"</span>)</pre></div>
       <h3 class="section-heading">Memory Architecture Patterns</h3>
       <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">🔍</div>
-          <div class="card-title">Vector DB (Semantic Memory)</div>
-          <div class="card-desc">Store embeddings of past conversations, docs, or facts. Retrieve semantically similar content. Best for: knowledge bases, long-term recall.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🗄️</div>
-          <div class="card-title">SQL DB (Structured Memory)</div>
-          <div class="card-desc">Store structured facts: user preferences, task history, entities. Query with precise filters. Best for: user profiles, audit trails.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">🕸️</div>
-          <div class="card-title">Graph DB (Relational Memory)</div>
-          <div class="card-desc">Model relationships between entities. Best for: knowledge graphs, dependency tracking, multi-hop reasoning over connected facts.</div>
-        </div>
-        <div class="card">
-          <div class="card-icon">⚡</div>
-          <div class="card-title">In-Context (Short-term)</div>
-          <div class="card-desc">Conversation history in the context window. AutoGen manages this automatically. Limited by token budget — summarize old messages.</div>
-        </div>
+        <div class="card"><div class="card-icon">🔍</div><div class="card-title">Vector DB (Semantic)</div><div class="card-desc">Embeddings of past conversations, docs, or facts. Retrieve by meaning. Best for knowledge bases, long-term recall.</div></div>
+        <div class="card"><div class="card-icon">🗄️</div><div class="card-title">SQL DB (Structured)</div><div class="card-desc">Store structured facts: preferences, task history, entities. Best for user profiles, audit trails.</div></div>
+        <div class="card"><div class="card-icon">🕸️</div><div class="card-title">Graph DB (Relational)</div><div class="card-desc">Model relationships between entities. Best for knowledge graphs, multi-hop reasoning.</div></div>
+        <div class="card"><div class="card-icon">⚡</div><div class="card-title">In-Context (Short-term)</div><div class="card-desc">AutoGen manages conversation history automatically. Limited by token budget — summarize old turns.</div></div>
       </div>
-
-      <h3 class="section-heading">Custom Memory via Tools</h3>
-      <div class="code-block">
-        <div class="code-header"><div class="dots"><span></span><span></span><span></span></div>custom_memory.py</div>
-        <pre><span class="kw">import</span> chromadb
-
-<span class="var">chroma_client</span> = chromadb.<span class="fn">Client</span>()
-<span class="var">memory_collection</span> = <span class="var">chroma_client</span>.<span class="fn">get_or_create_collection</span>(<span class="str">"agent_memory"</span>)
-
-<span class="cmt"># Give agents tools to read/write memory</span>
-<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
-<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Save a fact to long-term memory"</span>)
-<span class="kw">def</span> <span class="fn">save_memory</span>(key: str, value: str) -> str:
-    <span class="var">memory_collection</span>.<span class="fn">add</span>(
-        documents=[value],
-        ids=[key]
-    )
-    <span class="kw">return</span> <span class="str">f"Saved: {key}"</span>
-
-<span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
-<span class="kw">@assistant</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Search memory for relevant facts"</span>)
-<span class="kw">def</span> <span class="fn">search_memory</span>(query: str) -> str:
-    results = <span class="var">memory_collection</span>.<span class="fn">query</span>(query_texts=[query], n_results=<span class="num">3</span>)
-    <span class="kw">return</span> str(results[<span class="str">"documents"</span>])</pre>
-      </div>
-
-      <div class="callout info">
-        <span class="callout-icon">🏗️</span>
-        <div><strong>Production pattern:</strong> Use Vector DB for semantic long-term memory + SQL for structured facts + in-context summarization for recent turns. This tri-layer architecture handles the full spectrum of memory needs for production chatbots and agentic pipelines.</div>
-      </div>
-
+      <div class="callout info"><span class="callout-icon">🏗️</span><div><strong>Production pattern:</strong> Vector DB for semantic recall + SQL for structured facts + in-context summarization for recent turns. Tri-layer architecture handles the full spectrum.</div></div>
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(5)">← Previous</button>
         <span class="lesson-counter">7 / 8</span>
-        <button class="btn btn-primary" onclick="goTo(7)">Next: vs. Other Frameworks →</button>
+        <button class="btn btn-primary" onclick="goTo(7)">Next: vs. Frameworks →</button>
       </div>
     </div>
 
-    <!-- LESSON 7: vs Other Frameworks -->
+    <!-- LESSON 7 -->
     <div class="lesson" id="lesson-7">
       <div class="lesson-header">
         <div class="lesson-tag">Module 08 · Production</div>
         <h2 class="lesson-title">AutoGen vs. Other Frameworks</h2>
         <p class="lesson-subtitle">When to use AutoGen, when to use something else, and how to combine them.</p>
       </div>
-
-      <h3 class="section-heading">Decision Framework</h3>
       <table class="compare-table">
         <thead><tr><th>Scenario</th><th>Best Pick</th><th>Why</th></tr></thead>
         <tbody>
-          <tr><td>AI writes & debugs code autonomously</td><td>AutoGen</td><td>Code execution loop + multi-agent review is AutoGen's sweet spot</td></tr>
-          <tr><td>Research: gather, analyze, synthesize</td><td>AutoGen</td><td>Autonomous reasoning + tool use + multi-agent collaboration</td></tr>
-          <tr><td>Strict step-by-step business workflow</td><td>LangGraph / n8n</td><td>Deterministic control flow with explicit state management</td></tr>
+          <tr><td>AI writes & debugs code autonomously</td><td>AutoGen</td><td>Code execution loop + multi-agent review</td></tr>
+          <tr><td>Research: gather, analyze, synthesize</td><td>AutoGen</td><td>Autonomous reasoning + tool use</td></tr>
+          <tr><td>Strict step-by-step workflow</td><td>LangGraph / n8n</td><td>Deterministic control flow</td></tr>
           <tr><td>Role-based teams (PM, dev, QA)</td><td>CrewAI</td><td>First-class role/goal/task primitives</td></tr>
-          <tr><td>SaaS integration automation</td><td>n8n</td><td>500+ no-code connectors, trigger-based workflows</td></tr>
-          <tr><td>Complex RAG over many data sources</td><td>LlamaIndex + AutoGen</td><td>LlamaIndex handles retrieval; AutoGen handles agentic reasoning</td></tr>
+          <tr><td>SaaS integration automation</td><td>n8n</td><td>500+ no-code connectors</td></tr>
+          <tr><td>Complex RAG + reasoning</td><td>LlamaIndex + AutoGen</td><td>Best of both</td></tr>
         </tbody>
       </table>
-
-      <h3 class="section-heading">Complementary Architectures</h3>
-      <div class="prose"><p>The real power comes from <strong>combining</strong> these frameworks, not choosing one.</p></div>
-      <div class="diagram">
-        <div style="text-align:left; font-family:'JetBrains Mono',monospace; font-size:12px; color:#b8b8d0; line-height:2;">
-          <span style="color:#7c6af7;">n8n</span> trigger (email arrives)<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#34d399;">LlamaIndex</span> retrieves relevant docs<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#f97066;">AutoGen</span> multi-agent reasons + writes response<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#7c6af7;">n8n</span> sends reply via Gmail connector<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;→ <span style="color:#34d399;">SQL DB</span> logs outcome
-        </div>
+      <div class="card-grid" style="margin-top:24px;">
+        <div class="card" style="border-color:rgba(52,211,153,0.3);"><div class="card-icon">✅</div><div class="card-title">Strengths</div><div class="card-desc">• Autonomous code writing + execution<br>• Flexible conversation patterns<br>• Human-in-the-loop at any granularity<br>• Active research + rapid updates</div></div>
+        <div class="card" style="border-color:rgba(249,112,102,0.3);"><div class="card-icon">⚠️</div><div class="card-title">Weaknesses</div><div class="card-desc">• Less deterministic than graph tools<br>• Token costs escalate in group chats<br>• Multi-agent debugging is hard<br>• v0.4 API still maturing</div></div>
       </div>
-
-      <h3 class="section-heading">AutoGen Strengths & Weaknesses</h3>
-      <div class="card-grid">
-        <div class="card" style="border-color:rgba(52,211,153,0.3);">
-          <div class="card-icon">✅</div>
-          <div class="card-title">Strengths</div>
-          <div class="card-desc">
-            • Autonomous code writing + execution loop<br>
-            • Flexible conversation patterns<br>
-            • Strong Microsoft ecosystem integration<br>
-            • Human-in-the-loop at any granularity<br>
-            • Active research + rapid updates
-          </div>
-        </div>
-        <div class="card" style="border-color:rgba(249,112,102,0.3);">
-          <div class="card-icon">⚠️</div>
-          <div class="card-title">Weaknesses</div>
-          <div class="card-desc">
-            • Less deterministic than graph-based tools<br>
-            • Token costs can escalate in group chats<br>
-            • Debugging multi-agent loops is hard<br>
-            • v0.4 API still maturing<br>
-            • Less enterprise-grade tooling than LangGraph
-          </div>
-        </div>
-      </div>
-
-      <h3 class="section-heading">Key Takeaways</h3>
-      <div class="callout tip">
-        <span class="callout-icon">🎯</span>
-        <div>
-          <strong>Use AutoGen when the task requires genuine AI judgment</strong> — where the steps can't be pre-defined. For operational automation with predictable steps, use deterministic tools. The best production systems often combine both.
-        </div>
-      </div>
-
-      <div class="callout info">
-        <span class="callout-icon">📚</span>
-        <div>
-          <strong>Next steps:</strong> Try <a href="https://microsoft.github.io/autogen/" style="color:var(--accent);" target="_blank">microsoft.github.io/autogen</a> for official docs. The AutoGen Studio UI lets you prototype multi-agent systems visually. For production, explore AutoGen + Azure AI Foundry for managed execution.
-        </div>
-      </div>
-
       <div class="quiz-block">
-        <div class="quiz-q">🧠 Final Check: A company wants to automatically route customer emails to billing, tech, or sales teams using AI. Which combination is best?</div>
+        <div class="quiz-q">🧠 Final: Route customer emails to billing/tech/sales using AI. Best combo?</div>
         <div class="quiz-options">
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">A</span> Pure AutoGen group chat for everything</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">B</span> Pure n8n with keyword filtering</div>
-          <div class="quiz-opt" onclick="quiz(this, true)"><span class="opt-key">C</span> n8n triggers email → AutoGen Swarm routes intelligently → n8n sends response</div>
-          <div class="quiz-opt" onclick="quiz(this, false)"><span class="opt-key">D</span> CrewAI with three specialized agents</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">A</span> Pure AutoGen group chat</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">B</span> Pure n8n with keyword filtering</div>
+          <div class="quiz-opt" onclick="quiz(this,true)"><span class="opt-key">C</span> n8n triggers → AutoGen Swarm routes → n8n sends</div>
+          <div class="quiz-opt" onclick="quiz(this,false)"><span class="opt-key">D</span> CrewAI with three agents</div>
         </div>
+        <div class="quiz-feedback"></div>
       </div>
 
-      <div style="margin-top:40px; padding:28px; background: linear-gradient(135deg, rgba(124,106,247,0.1), rgba(52,211,153,0.07)); border-radius:14px; border:1px solid rgba(124,106,247,0.2); text-align:center;">
-        <div style="font-size:32px; margin-bottom:12px;">🎓</div>
-        <div style="font-size:20px; font-weight:800; color:#fff; margin-bottom:8px;">Course Complete!</div>
-        <div style="font-size:13px; color:var(--muted); line-height:1.7;">You've covered: agent types, conversation patterns, tool use, group chat, memory/RAG, and framework selection. You're ready to build production AutoGen systems.</div>
+      <!-- BRIDGE TO PROJECT -->
+      <div style="margin-top:40px; padding:28px; background:linear-gradient(135deg,rgba(232,132,44,0.1),rgba(111,207,151,0.06)); border-radius:14px; border:1px solid rgba(232,132,44,0.25); text-align:center;">
+        <div style="font-size:32px; margin-bottom:10px;">🎓</div>
+        <div style="font-size:18px; font-weight:800; color:#fff; margin-bottom:8px;">Course Complete — Now Build Something Real</div>
+        <div style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:18px;">You've covered all 8 modules. Time to apply everything in a full project — the Pizza Order Bot.</div>
+        <button class="btn btn-primary" onclick="goToPz(0)" style="font-size:14px; padding:12px 28px;">🍕 Start the Pizza Bot Project →</button>
       </div>
 
       <div class="lesson-footer">
         <button class="btn btn-ghost" onclick="goTo(6)">← Previous</button>
         <span class="lesson-counter">8 / 8</span>
-        <button class="btn btn-primary" onclick="goTo(0)">↩ Start Over</button>
+        <button class="btn btn-primary" onclick="goToPz(0)">🍕 Go to Project →</button>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────
+         PIZZA BOT PROJECT SECTIONS (pz-0 to pz-8)
+    ──────────────────────────────────────────── -->
+
+    <!-- PZ-0: Architecture -->
+    <div class="pz-section" id="pz-0">
+      <div class="project-banner">
+        <div class="pb-icon">🍕</div>
+        <div><div class="pb-label">Hands-On Project</div><div class="pb-title">Pizza Order Bot</div><div class="pb-desc">Multi-agent ordering system built with AutoGen v0.4 — applying everything from the course</div></div>
+      </div>
+      <div class="section-eyebrow">Section 01 · Design</div>
+      <h1 class="section-title">Architecture</h1>
+      <p class="section-lead">Why multi-agent for a pizza bot? What each agent does. How this differs from Dialogflow CX or Amazon Lex.</p>
+      <div class="prose pz">
+        <p>You've already built this bot in <strong>Dialogflow CX</strong> (state machine + NLU) and <strong>Amazon Lex</strong> (slots + Lambda). The AutoGen version works completely differently — instead of a pre-wired state machine, you have <strong>agents that reason their way</strong> through the conversation.</p>
+        <p>No pages, no routes, no explicit state transitions. The agents decide what to ask, when to validate, and when to submit.</p>
+      </div>
+      <h3 class="sh">Dialogflow CX vs AutoGen — Same Bot, Different Soul</h3>
+      <table class="compare">
+        <thead><tr><th>Dimension</th><th>Dialogflow CX</th><th>AutoGen</th></tr></thead>
+        <tbody>
+          <tr><td>Flow control</td><td>State machine (Pages → Routes)</td><td>Agents reason and decide</td></tr>
+          <tr><td>Input handling</td><td>Slot filling + entity types</td><td>LLM extracts intent + entities</td></tr>
+          <tr><td>Validation</td><td>Regex on slot values</td><td>Validator agent checks order object</td></tr>
+          <tr><td>Flexibility</td><td>Rigid — changes need flow redesign</td><td>High — change system prompt</td></tr>
+          <tr><td>Debugging</td><td>Visual flow trace in console</td><td>Agent message log, print statements</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sh">System Architecture</h3>
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div><div class="arch-node blue">👤 Customer</div><div class="arch-label">natural language</div></div>
+          <div class="arch-arrow">⟺</div>
+          <div><div class="arch-node orange">🤖 OrderAgent</div><div class="arch-label">AssistantAgent (LLM)</div></div>
+          <div class="arch-arrow">⟺</div>
+          <div><div class="arch-node green">🛡️ ValidatorAgent</div><div class="arch-label">AssistantAgent (LLM)</div></div>
+        </div>
+        <div style="text-align:center; color:#4a4840; font-size:16px; margin:8px 0;">↓</div>
+        <div class="arch-row"><div><div class="arch-node yellow">🔧 UserProxyAgent</div><div class="arch-label">executes tools</div></div></div>
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:12px;">
+          <div><div class="arch-node small">get_menu()</div></div>
+          <div><div class="arch-node small">calc_price()</div></div>
+          <div><div class="arch-node small">validate_order()</div></div>
+          <div><div class="arch-node small">submit_order()</div></div>
+        </div>
+      </div>
+      <h3 class="sh">Conversation Flow</h3>
+      <div class="convo">
+        <div class="convo-line"><span class="convo-speaker sp-user">Customer:</span><span class="convo-msg">"Large margherita, extra cheese, no olives"</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">[calls get_menu()] → confirms items exist</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">[calls calc_price(size="large", pizza="margherita", extras=["extra_cheese"])]</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">[calls validate_order()] → ValidatorAgent returns "VALID"</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent→Customer:</span><span class="convo-msg">"Large Margherita, extra cheese, no olives — $20.00. Confirm?"</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-user">Customer:</span><span class="convo-msg">"Yes please"</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-proxy">UserProxy:</span><span class="convo-msg">[calls submit_order()] → ORD-48291</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">"Order #ORD-48291 placed! Ready at 14:35. TERMINATE"</span></div>
+      </div>
+      <div class="callout orange"><span class="callout-icon">🍕</span><div><strong>Key insight:</strong> The OrderAgent never follows a fixed script. It reasons about what's missing, asks naturally, and uses tools when ready. "I want a large, actually XL, pepperoni, and can I add mushrooms?" — handled naturally.</div></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goTo(7)">← Back to Course</button>
+        <span class="step-counter">Project 1 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(1)">Next: The Agents →</button>
+      </div>
+    </div>
+
+    <!-- PZ-1: Agents -->
+    <div class="pz-section" id="pz-1">
+      <div class="project-banner"><div class="pb-icon">🤖</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">The Agents</div><div class="pb-desc">Three agents, distinct roles, system prompts that are the soul of the system</div></div></div>
+      <div class="section-eyebrow">Section 02 · Design</div>
+      <h1 class="section-title">The Agents</h1>
+      <p class="section-lead">Three agents with distinct roles. The soul of the system lives in the prompts.</p>
+      <div class="card-grid">
+        <div class="card pz" style="border-color:rgba(232,132,44,0.3); grid-column:1/-1;"><div class="ci">🤖</div><div class="ct">OrderAgent — <span class="badge badge-orange">AssistantAgent</span></div><div class="cd">Customer-facing. Conducts the conversation, collects pizza details, calls tools for prices, passes a structured order to ValidatorAgent, then submits on confirmation.</div></div>
+        <div class="card pz" style="border-color:rgba(111,207,151,0.3);"><div class="ci">🛡️</div><div class="ct">ValidatorAgent — <span class="badge badge-green" style="font-family:'JetBrains Mono',monospace;">AssistantAgent</span></div><div class="cd">Called as a tool. Receives order fields, checks pizza type, size, crust, toppings, and price plausibility. Returns VALID or INVALID: [issues].</div></div>
+        <div class="card pz" style="border-color:rgba(86,180,233,0.3);"><div class="ci">🔧</div><div class="ct">UserProxy — <span class="badge badge-blue">UserProxyAgent</span></div><div class="cd">Executes all tools. human_input_mode=NEVER for automation, or uses smart_human_reply for interactive terminal sessions.</div></div>
+      </div>
+      <h3 class="sh">OrderAgent System Prompt (key excerpt)</h3>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">ORDER_AGENT_PROMPT</div></div>
+      <pre><span class="str">Your job flow:
+1. Greet the customer warmly
+2. Call get_menu() once (silently) to know what's available
+3. Collect: pizza type, size, crust (default: thin), extras, removals
+4. Call calc_price() once you have all details
+5. Call validate_order() — read VALID or INVALID response
+6. If VALID → present summary + ask for confirmation
+7. If INVALID → fix issues, recalculate, re-validate
+8. On confirmation → call submit_order()
+9. Reply with order ID + ETA, then: TERMINATE</span></pre></div>
+      <div class="callout tip"><span class="callout-icon">💡</span><div><strong>Why a separate ValidatorAgent?</strong> The OrderAgent focuses on conversation and can make small reasoning errors assembling the final order. The Validator is a second LLM pass with a narrow, strict task — catching issues before they reach the kitchen. Classic critic-agent pattern.</div></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(0)">← Previous</button>
+        <span class="step-counter">Project 2 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(2)">Next: Project Setup →</button>
+      </div>
+    </div>
+
+    <!-- PZ-2: Setup -->
+    <div class="pz-section" id="pz-2">
+      <div class="project-banner"><div class="pb-icon">📁</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Project Setup</div><div class="pb-desc">File structure, installation, and environment config</div></div></div>
+      <div class="section-eyebrow">Section 03 · Build</div>
+      <h1 class="section-title">Project Setup</h1>
+      <p class="section-lead">Install dependencies, create the project structure, configure your API key.</p>
+      <h3 class="sh">File Structure</h3>
+      <div class="file-tree">
+        <span class="ft-dir">pizza_bot/</span><br>
+        &nbsp;&nbsp;<span class="ft-py">├── main.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># entry point — two modes: automated + interactive</span><br>
+        &nbsp;&nbsp;<span class="ft-py">├── agents.py</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># agent definitions, prompts, tool registration</span><br>
+        &nbsp;&nbsp;<span class="ft-py">├── tools.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># get_menu, calc_price, submit_order</span><br>
+        &nbsp;&nbsp;<span class="ft-py">├── menu.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># pizza data — prices, toppings, crusts</span><br>
+        &nbsp;&nbsp;<span class="ft-py">├── config.py</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># LLM_CONFIG from .env</span><br>
+        &nbsp;&nbsp;<span class="ft-txt">├── .env</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-txt"># OPENAI_API_KEY=sk-...</span><br>
+        &nbsp;&nbsp;<span class="ft-txt">└── requirements.txt</span>
+      </div>
+      <h3 class="sh">Installation</h3>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">terminal</div></div>
+      <pre>python -m venv .venv
+source .venv/bin/activate
+pip install pyautogen python-dotenv</pre></div>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">config.py</div></div>
+      <pre><span class="kw">import</span> os
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+load_dotenv()
+<span class="dec">LLM_CONFIG</span> = {
+    <span class="str">"config_list"</span>: [{<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>, <span class="str">"api_key"</span>: os.<span class="fn">getenv</span>(<span class="str">"OPENAI_API_KEY"</span>)}],
+    <span class="str">"temperature"</span>: <span class="num">0.2</span>, <span class="str">"cache_seed"</span>: <span class="kw">None</span>,
+}</pre></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(1)">← Previous</button>
+        <span class="step-counter">Project 3 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(3)">Next: Menu & Tools →</button>
+      </div>
+    </div>
+
+    <!-- PZ-3: Menu & Tools -->
+    <div class="pz-section" id="pz-3">
+      <div class="project-banner"><div class="pb-icon">🧱</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Menu & Tools</div><div class="pb-desc">The data layer and the tool functions agents call</div></div></div>
+      <div class="section-eyebrow">Section 04 · Build</div>
+      <h1 class="section-title">Menu & Tools</h1>
+      <p class="section-lead">The pizza data and the four tool functions agents use to interact with it.</p>
+      <h3 class="sh">menu.py</h3>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">menu.py</div></div>
+      <pre><span class="dec">PIZZAS</span> = {
+    <span class="str">"margherita"</span>:  {<span class="str">"base_price"</span>: {<span class="str">"small"</span>:<span class="num">10</span>,<span class="str">"medium"</span>:<span class="num">14</span>,<span class="str">"large"</span>:<span class="num">18</span>,<span class="str">"xl"</span>:<span class="num">22</span>},
+                    <span class="str">"default_toppings"</span>: [<span class="str">"mozzarella"</span>,<span class="str">"tomato_sauce"</span>,<span class="str">"basil"</span>]},
+    <span class="str">"pepperoni"</span>:   {<span class="str">"base_price"</span>: {<span class="str">"small"</span>:<span class="num">12</span>,<span class="str">"medium"</span>:<span class="num">16</span>,<span class="str">"large"</span>:<span class="num">20</span>,<span class="str">"xl"</span>:<span class="num">24</span>},
+                    <span class="str">"default_toppings"</span>: [<span class="str">"mozzarella"</span>,<span class="str">"tomato_sauce"</span>,<span class="str">"pepperoni"</span>]},
+    <span class="str">"bbq_chicken"</span>: { <span class="cmt">... </span>},
+    <span class="str">"veggie"</span>:      { <span class="cmt">... </span>},
+}
+<span class="dec">EXTRA_TOPPINGS</span> = {<span class="str">"extra_cheese"</span>:<span class="num">2.0</span>, <span class="str">"mushroom"</span>:<span class="num">1.5</span>, <span class="str">"bacon"</span>:<span class="num">2.5</span>, <span class="cmt">...</span>}
+<span class="dec">CRUSTS</span> = [<span class="str">"thin"</span>, <span class="str">"thick"</span>, <span class="str">"stuffed"</span>, <span class="str">"gluten_free"</span>]
+<span class="dec">CRUST_UPCHARGE</span> = {<span class="str">"stuffed"</span>: <span class="num">3.0</span>, <span class="str">"gluten_free"</span>: <span class="num">2.0</span>}</pre></div>
+      <h3 class="sh">Key Tool Functions</h3>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">tools.py</div></div>
+      <pre><span class="kw">def</span> <span class="fn">get_menu</span>() -> str:
+    <span class="str">"""Return full menu as JSON string."""</span>
+    <span class="kw">return</span> json.<span class="fn">dumps</span>({<span class="str">"pizzas"</span>: ..., <span class="str">"extra_toppings"</span>: ..., <span class="str">"crusts"</span>: ...})
+
+<span class="kw">def</span> <span class="fn">calc_price</span>(pizza_type: str, size: str, crust: str=<span class="str">"thin"</span>, extra_toppings: list=<span class="kw">None</span>) -> str:
+    <span class="str">"""Calculate total price. Returns JSON with total + breakdown."""</span>
+    total = <span class="dec">PIZZAS</span>[pizza_type][<span class="str">"base_price"</span>][size] + <span class="dec">CRUST_UPCHARGE</span>.<span class="fn">get</span>(crust, <span class="num">0</span>)
+    <span class="kw">for</span> t <span class="kw">in</span> (extra_toppings <span class="kw">or</span> []): total += <span class="dec">EXTRA_TOPPINGS</span>[t]
+    <span class="kw">return</span> json.<span class="fn">dumps</span>({<span class="str">"total"</span>: <span class="fn">round</span>(total, <span class="num">2</span>), <span class="str">"breakdown"</span>: {...}})
+
+<span class="kw">def</span> <span class="fn">submit_order</span>(pizza_type, size, crust, extra_toppings, remove_toppings, total_price, customer_name=<span class="str">"Guest"</span>) -> str:
+    <span class="str">"""Submit order to kitchen. Returns order_id + ETA."""</span>
+    order_id = <span class="str">f"ORD-{random.randint(10000,99999)}"</span>
+    <span class="cmt"># In production: write to DB, call kitchen API, send SMS...</span>
+    <span class="kw">return</span> json.<span class="fn">dumps</span>({<span class="str">"order_id"</span>: order_id, <span class="str">"eta"</span>: eta, <span class="str">"message"</span>: <span class="str">"Confirmed!"</span>})</pre></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(2)">← Previous</button>
+        <span class="step-counter">Project 4 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(4)">Next: Order Agent →</button>
+      </div>
+    </div>
+
+    <!-- PZ-4: Order Agent -->
+    <div class="pz-section" id="pz-4">
+      <div class="project-banner"><div class="pb-icon">🤖</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Order Agent</div><div class="pb-desc">Tool registration — the key wiring pattern</div></div></div>
+      <div class="section-eyebrow">Section 05 · Build</div>
+      <h1 class="section-title">Order Agent</h1>
+      <p class="section-lead">Creating the OrderAgent and registering tools with the two-decorator pattern.</p>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">agents.py — register_tools()</div></div>
+      <pre><span class="kw">def</span> <span class="fn">register_tools</span>(order_agent, validator_agent, user_proxy):
+
+    <span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+    <span class="kw">@order_agent</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Fetch the full pizza menu"</span>)
+    <span class="kw">def</span> <span class="fn">_get_menu</span>() -> str: <span class="kw">return</span> <span class="fn">get_menu</span>()
+
+    <span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+    <span class="kw">@order_agent</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Calculate total price"</span>)
+    <span class="kw">def</span> <span class="fn">_calc_price</span>(<span class="param">pizza_type</span>: str, <span class="param">size</span>: str, <span class="param">crust</span>: str=<span class="str">"thin"</span>, <span class="param">extra_toppings</span>: list=<span class="kw">None</span>) -> str:
+        <span class="kw">return</span> <span class="fn">calc_price</span>(pizza_type, size, crust, extra_toppings)
+
+    <span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+    <span class="kw">@order_agent</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Validate order before confirming with customer"</span>)
+    <span class="kw">def</span> <span class="fn">_validate_order</span>(<span class="param">pizza_type</span>: str, <span class="param">size</span>: str, <span class="param">crust</span>: str,
+        <span class="param">extra_toppings</span>: list, <span class="param">remove_toppings</span>: list, <span class="param">price</span>: float) -> str:
+        <span class="cmt"># Spins up a one-shot ValidatorAgent chat, returns "VALID" or "INVALID: ..."</span>
+        order_str = json.<span class="fn">dumps</span>({<span class="str">"pizza_type"</span>: pizza_type, <span class="str">"size"</span>: size, ...})
+        vproxy = autogen.<span class="cls">UserProxyAgent</span>(name=<span class="str">"vp"</span>, human_input_mode=<span class="str">"NEVER"</span>,
+            is_termination_msg=<span class="kw">lambda</span> x: <span class="kw">True</span>, code_execution_config=<span class="kw">False</span>)
+        vproxy.<span class="fn">initiate_chat</span>(validator_agent,
+            message=<span class="str">f"Validate:\n{order_str}"</span>, max_turns=<span class="num">1</span>, silent=<span class="kw">True</span>)
+        history = validator_agent.chat_messages.<span class="fn">get</span>(vproxy, [])
+        <span class="kw">for</span> m <span class="kw">in</span> <span class="fn">reversed</span>(history):
+            <span class="kw">if</span> m[<span class="str">"role"</span>] == <span class="str">"assistant"</span>: <span class="kw">return</span> m[<span class="str">"content"</span>]
+
+    <span class="kw">@user_proxy</span>.<span class="fn">register_for_execution</span>()
+    <span class="kw">@order_agent</span>.<span class="fn">register_for_llm</span>(description=<span class="str">"Submit confirmed order. Call ONLY after customer says yes."</span>)
+    <span class="kw">def</span> <span class="fn">_submit_order</span>(<span class="param">pizza_type</span>, <span class="param">size</span>, <span class="param">crust</span>, <span class="param">extra_toppings</span>, <span class="param">remove_toppings</span>, <span class="param">total_price</span>, <span class="param">customer_name</span>=<span class="str">"Guest"</span>) -> str:
+        <span class="kw">return</span> <span class="fn">submit_order</span>(pizza_type, size, crust, extra_toppings, remove_toppings, total_price, customer_name)</pre></div>
+      <div class="callout info"><span class="callout-icon">🔍</span><div><strong>Why wrap the functions?</strong> The <code>@</code> decorators must be applied at definition time in the function scope so AutoGen can capture correct references and bind them to the right agents.</div></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(3)">← Previous</button>
+        <span class="step-counter">Project 5 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(5)">Next: Validator Agent →</button>
+      </div>
+    </div>
+
+    <!-- PZ-5: Validator -->
+    <div class="pz-section" id="pz-5">
+      <div class="project-banner"><div class="pb-icon">✅</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Validator Agent</div><div class="pb-desc">A strict second-pass LLM call that catches errors before the kitchen</div></div></div>
+      <div class="section-eyebrow">Section 06 · Build</div>
+      <h1 class="section-title">Validator Agent</h1>
+      <p class="section-lead">Called as a tool by the OrderAgent — a one-shot LLM check on the assembled order.</p>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">VALIDATOR_PROMPT</div></div>
+      <pre><span class="str">You are a strict pizza order validator for PizzaLab.
+
+Check ALL of the following:
+1. pizza_type is one of: margherita, pepperoni, bbq_chicken, veggie
+2. size is one of: small, medium, large, xl
+3. crust is one of: thin, thick, stuffed, gluten_free
+4. All extra_toppings are on the extras menu
+5. Price is plausible for size + extras
+
+Respond with EXACTLY one of:
+- "VALID"
+- "INVALID: [issue 1]; [issue 2]"
+
+No extra text. Be terse.</span></pre></div>
+      <div class="callout warn"><span class="callout-icon">⚠️</span><div><strong>Learned lesson — don't use nested chats here.</strong> We tried <code>register_nested_chats</code> — it fired on every turn and couldn't reliably find the order JSON. The fix: <code>validate_order()</code> is a regular tool that spins up a one-shot <code>initiate_chat</code> internally. Explicit, deterministic, visible in the tool log.</div></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(4)">← Previous</button>
+        <span class="step-counter">Project 6 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(6)">Next: Wiring It Together →</button>
+      </div>
+    </div>
+
+    <!-- PZ-6: Main.py -->
+    <div class="pz-section" id="pz-6">
+      <div class="project-banner"><div class="pb-icon">🔗</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Wiring It Together</div><div class="pb-desc">main.py — two modes: automated test + smart interactive</div></div></div>
+      <div class="section-eyebrow">Section 07 · Build</div>
+      <h1 class="section-title">Wiring It Together</h1>
+      <p class="section-lead">main.py assembles all agents and handles both automated testing and real interactive sessions cleanly.</p>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">main.py — interactive mode (the tricky part)</div></div>
+      <pre><span class="cmt"># KEY LESSON: human_input_mode="ALWAYS" prompts on EVERY turn</span>
+<span class="cmt"># including tool-call turns. Fix: use NEVER + a smart reply function.</span>
+
+<span class="kw">def</span> <span class="fn">smart_human_reply</span>(recipient, messages, sender, config):
+    last = messages[-<span class="num">1</span>] <span class="kw">if</span> messages <span class="kw">else</span> {}
+    role = last.<span class="fn">get</span>(<span class="str">"role"</span>, <span class="str">""</span>)
+
+    <span class="kw">if</span> role == <span class="str">"tool"</span>:          <span class="cmt"># tool result turn — pass through</span>
+        <span class="kw">return</span> <span class="kw">False</span>, <span class="kw">None</span>
+    <span class="kw">if</span> last.<span class="fn">get</span>(<span class="str">"tool_calls"</span>):  <span class="cmt"># tool call turn — pass through</span>
+        <span class="kw">return</span> <span class="kw">False</span>, <span class="kw">None</span>       <span class="cmt"># ← CRITICAL: prevents 400 BadRequestError</span>
+
+    <span class="cmt"># Genuine conversational turn — ask the human</span>
+    human_input = <span class="fn">input</span>(<span class="str">"You: "</span>).<span class="fn">strip</span>()
+    <span class="kw">if</span> human_input.lower() == <span class="str">"exit"</span>: <span class="kw">return</span> <span class="kw">True</span>, <span class="str">"exit"</span>
+    <span class="kw">return</span> <span class="kw">True</span>, human_input
+
+user_proxy = autogen.<span class="cls">UserProxyAgent</span>(name=<span class="str">"customer"</span>, human_input_mode=<span class="str">"NEVER"</span>, ...)
+user_proxy.<span class="fn">register_reply</span>(trigger=[autogen.<span class="cls">AssistantAgent</span>, <span class="kw">None</span>],
+    reply_func=smart_human_reply, position=<span class="num">0</span>)</pre></div>
+      <h3 class="sh">Three Bugs We Fixed Building This</h3>
+      <table class="compare">
+        <thead><tr><th>Bug</th><th>Root Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Infinite validation loop</td><td>register_nested_chats fires on every turn</td><td>validate_order() as a regular tool</td></tr>
+          <tr><td>TypeError: NoneType not iterable</td><td>content=None on tool-call messages</td><td><code>(x.get("content") or "")</code></td></tr>
+          <tr><td>400 BadRequestError</td><td>Empty reply inserted between tool_call and tool_result</td><td>Guard on <code>last.get("tool_calls")</code></td></tr>
+        </tbody>
+      </table>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(5)">← Previous</button>
+        <span class="step-counter">Project 7 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(7)">Next: Running & Testing →</button>
+      </div>
+    </div>
+
+    <!-- PZ-7: Running -->
+    <div class="pz-section" id="pz-7">
+      <div class="project-banner"><div class="pb-icon">🧪</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Running & Testing</div><div class="pb-desc">Two modes, expected output, edge case test matrix</div></div></div>
+      <div class="section-eyebrow">Section 08 · Production</div>
+      <h1 class="section-title">Running & Testing</h1>
+      <p class="section-lead">Two ways to run the bot. What to expect. What to test.</p>
+      <h3 class="sh">Run Commands</h3>
+      <div class="code-block pz"><div class="code-header pz"><div class="code-filename">terminal</div></div>
+      <pre><span class="cmt"># Automated test (scripted replies, no typing needed)</span>
+python main.py
+
+<span class="cmt"># Interactive mode (you type each customer reply)</span>
+INTERACTIVE=1 python main.py</pre></div>
+      <h3 class="sh">Interactive Session Preview</h3>
+      <div class="convo">
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">Welcome to PizzaLab! What can I get for you today?</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-user">You:</span><span class="convo-msg">I'd like a margherita pizza</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">Great choice! What size — small, medium, large, or XL?</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-user">You:</span><span class="convo-msg">Large please</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">Thin, thick, stuffed, or gluten-free crust?</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-user">You:</span><span class="convo-msg">Stuffed crust, and add extra cheese</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">Large margherita, stuffed crust, extra cheese — $23.00. Shall I place this order?</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-user">You:</span><span class="convo-msg">Yes!</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-proxy">UserProxy:</span><span class="convo-msg">[submit_order() → ORD-58291]</span></div>
+        <div class="convo-line"><span class="convo-speaker sp-order">OrderAgent:</span><span class="convo-msg">Order #ORD-58291 confirmed! Ready at 14:35. TERMINATE</span></div>
+      </div>
+      <h3 class="sh">Edge Cases to Test</h3>
+      <table class="compare">
+        <thead><tr><th>Input</th><th>Expected</th></tr></thead>
+        <tbody>
+          <tr><td>"I want a Hawaiian pizza"</td><td>Agent says not on menu, suggests alternatives</td></tr>
+          <tr><td>"XL margherita stuffed crust + pineapple + bacon"</td><td>Prices stuffed upcharge ($3) + 2 extras ($4) correctly</td></tr>
+          <tr><td>"Actually change it to medium"</td><td>Recalculates from scratch</td></tr>
+          <tr><td>"No" to confirmation</td><td>Agent asks what to change, doesn't submit</td></tr>
+        </tbody>
+      </table>
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(6)">← Previous</button>
+        <span class="step-counter">Project 8 / 9</span>
+        <button class="btn btn-primary pz" onclick="goToPz(8)">Next: Extensions →</button>
+      </div>
+    </div>
+
+    <!-- PZ-8: Extensions -->
+    <div class="pz-section" id="pz-8">
+      <div class="project-banner"><div class="pb-icon">⬆️</div><div><div class="pb-label">Hands-On Project</div><div class="pb-title">Extensions</div><div class="pb-desc">Voice, memory, multi-order, Azure deployment, MCP</div></div></div>
+      <div class="section-eyebrow">Section 09 · Production</div>
+      <h1 class="section-title">Extensions</h1>
+      <p class="section-lead">Where to take this next — production-grade enhancements.</p>
+      <div class="card-grid">
+        <div class="card pz" style="border-color:rgba(86,180,233,0.3);"><div class="ci">🎤</div><div class="ct">Real-Time Voice</div><div class="cd">Azure ACS Call Automation + Azure OpenAI Realtime API. OrderAgent becomes a phone voice agent. Same logic, different I/O layer.</div></div>
+        <div class="card pz" style="border-color:rgba(111,207,151,0.3);"><div class="ci">🧠</div><div class="ct">Order History Memory</div><div class="cd">Add <code>get_past_orders(customer_id)</code> tool backed by ChromaDB. Agent can offer "Same as last time?"</div></div>
+        <div class="card pz" style="border-color:rgba(232,132,44,0.3);"><div class="ci">👥</div><div class="ct">Group Order</div><div class="cd">GroupChat with a CustomerAgent per person + one OrderCoordinatorAgent. Handles "ordering for 4 people" naturally.</div></div>
+        <div class="card pz" style="border-color:rgba(240,192,96,0.3);"><div class="ci">☁️</div><div class="ct">Azure Deployment</div><div class="cd">Wrap <code>main()</code> in an Azure Function (HTTP trigger). Deploy to Container Apps. Swap OpenAI for Azure OpenAI endpoint.</div></div>
+        <div class="card pz" style="border-color:rgba(224,80,80,0.3);"><div class="ci">📊</div><div class="ct">Observability</div><div class="cd">Add LangFuse or OpenTelemetry. Trace every agent turn, tool call, and token count. Essential for catching LLM drift in production.</div></div>
+        <div class="card pz" style="border-color:rgba(167,139,250,0.3);"><div class="ci">🔌</div><div class="ct">MCP Tools</div><div class="cd">Replace manual tool registration with an MCP server. One server, plug into any AutoGen, LangGraph, or Claude agent.</div></div>
+      </div>
+
+      <div style="margin-top:44px; padding:32px; background:linear-gradient(135deg,rgba(232,132,44,0.08),rgba(111,207,151,0.06)); border-radius:14px; border:1px solid rgba(232,132,44,0.2); text-align:center;">
+        <div style="font-size:36px; margin-bottom:12px;">🎓🍕</div>
+        <div style="font-family:'Fraunces',serif; font-size:22px; font-weight:900; color:#fff; margin-bottom:10px;">Course + Project Complete</div>
+        <div style="font-size:13px; color:#8a8070; line-height:1.8; max-width:520px; margin:0 auto;">You've covered all 8 AutoGen modules and built a working multi-agent pizza ordering system — with tool use, validation, interactive mode, and three real bugs debugged. The same pattern scales to any transactional chatbot domain.</div>
+      </div>
+
+      <div class="section-footer">
+        <button class="btn btn-ghost pz" onclick="goToPz(7)">← Previous</button>
+        <span class="step-counter">Project 9 / 9</span>
+        <button class="btn btn-primary pz" onclick="goTo(0)">↩ Back to Course Start</button>
       </div>
     </div>
 
@@ -1290,46 +1074,72 @@ pip install pyautogen[docker]
 </div>
 
 <script>
-  let current = 0;
-  const total = 8;
+  let current = 0;          // lesson index (0–7)
+  let currentPz = -1;       // pizza section (-1 = not in project)
+  const TOTAL = 8;
   const done = new Set();
 
   function goTo(n) {
-    done.add(current);
+    // hide pizza if active
+    if (currentPz >= 0) {
+      document.getElementById('pz-' + currentPz).classList.remove('active');
+      document.getElementById('pz-nav-' + currentPz).classList.remove('active');
+      currentPz = -1;
+    }
+    // hide current lesson
     document.getElementById('lesson-' + current).classList.remove('active');
     document.getElementById('nav-' + current).classList.remove('active');
-    if (done.has(current)) {
-      document.getElementById('nav-' + current).classList.add('done');
-      document.getElementById('nav-' + current).querySelector('.nav-num').textContent = '✓';
-    }
+    done.add(current);
+    document.getElementById('nav-' + current).classList.add('done');
+    document.getElementById('nav-' + current).querySelector('.nav-num').textContent = '✓';
+    // show new lesson
     current = n;
     document.getElementById('lesson-' + n).classList.add('active');
     document.getElementById('nav-' + n).classList.remove('done');
     document.getElementById('nav-' + n).classList.add('active');
     document.getElementById('nav-' + n).querySelector('.nav-num').textContent = n + 1;
-    // Update progress
-    const pct = Math.round((done.size / total) * 100);
+    // progress
+    const pct = Math.round((done.size / TOTAL) * 100);
     document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressLabel').textContent = done.size + ' / ' + total + ' complete';
-    window.scrollTo(0,0);
+    document.getElementById('progressLabel').textContent = done.size + ' / ' + TOTAL + ' complete';
+    document.getElementById('mainArea').scrollTop = 0;
+  }
+
+  function goToPz(n) {
+    // hide course lesson if active
+    if (currentPz < 0) {
+      document.getElementById('lesson-' + current).classList.remove('active');
+      document.getElementById('nav-' + current).classList.remove('active');
+      done.add(current);
+      document.getElementById('nav-' + current).classList.add('done');
+      document.getElementById('nav-' + current).querySelector('.nav-num').textContent = '✓';
+      const pct = Math.round((done.size / TOTAL) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = done.size + ' / ' + TOTAL + ' complete';
+    } else {
+      // hide previous pizza section
+      document.getElementById('pz-' + currentPz).classList.remove('active');
+      document.getElementById('pz-nav-' + currentPz).classList.remove('active');
+    }
+    currentPz = n;
+    document.getElementById('pz-' + n).classList.add('active');
+    document.getElementById('pz-nav-' + n).classList.add('active');
+    document.getElementById('mainArea').scrollTop = 0;
   }
 
   function quiz(el, correct) {
     const block = el.closest('.quiz-block');
-    const opts = block.querySelectorAll('.quiz-opt');
-    opts.forEach(o => o.style.pointerEvents = 'none');
+    block.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
     el.classList.add(correct ? 'correct' : 'wrong');
     if (!correct) {
-      opts.forEach(o => { if (o.dataset.correct) o.classList.add('correct'); });
-    }
-    // mark correct answer
-    if (!correct) {
-      opts.forEach(o => { if (o.onclick.toString().includes('true')) o.classList.add('correct'); });
+      block.querySelectorAll('.quiz-opt').forEach(o => {
+        if (o.onclick && o.onclick.toString().includes(',true)')) o.classList.add('correct');
+      });
     }
     const fb = block.querySelector('.quiz-feedback');
     if (fb) {
       fb.style.display = 'block';
-      fb.textContent = correct ? '✅ Correct! Well done.' : '❌ Not quite — the correct answer is highlighted above.';
+      fb.textContent = correct ? '✅ Correct!' : '❌ Not quite — correct answer highlighted above.';
       fb.style.color = correct ? 'var(--accent3)' : 'var(--accent2)';
     }
   }
