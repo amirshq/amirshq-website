@@ -15,14 +15,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --page-bg: #0e1117;
-      --card-bg: #161b26;
-      --card-bg-soft: #181b23;
-      --border-subtle: rgba(255,255,255,0.09);
-      --border-strong: rgba(94,234,212,0.25);
-      --text: #f9fafb;
-      --muted: rgba(148,163,184,0.7);
-      --accent: #2dd4bf;
+      --page-bg: #f6f8fa;
+      --card-bg: #ffffff;
+      --card-bg-soft: #f0f2f5;
+      --border-subtle: rgba(31,35,40,0.12);
+      --border-strong: rgba(13,148,136,0.35);
+      --text: #1f2328;
+      --muted: #636c76;
+      --accent: #0d9488;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,7 +31,7 @@
       min-height: 100vh;
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--page-bg);
-      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(13,148,136,0.06) 0%, transparent 60%);
       background-repeat: no-repeat;
       color: var(--text);
       display: flex;
@@ -48,8 +48,8 @@
       border: 1px solid var(--border-subtle);
       padding: 26px 24px 28px;
       box-shadow:
-        0 1px 3px rgba(0,0,0,0.4),
-        0 0 0 0.5px rgba(255,255,255,0.04) inset;
+        0 1px 3px rgba(31,35,40,0.08),
+        0 0 0 0.5px rgba(31,35,40,0.04) inset;
     }
 
     @media (min-width: 840px) {
@@ -93,7 +93,7 @@
       padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid var(--border-subtle);
-      background: rgba(15,23,42,0.9);
+      background: rgba(246,248,250,0.95);
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -153,8 +153,8 @@
       text-decoration: none;
       color: inherit;
       box-shadow:
-        0 1px 3px rgba(0,0,0,0.4),
-        0 0 0 0.5px rgba(255,255,255,0.04) inset;
+        0 1px 3px rgba(31,35,40,0.08),
+        0 0 0 0.5px rgba(31,35,40,0.04) inset;
       transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
     }
 
@@ -198,9 +198,9 @@
       font-size: 11px;
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.35);
-      color: #e5e7eb;
+      background: #eaeef2;
+      border: 1px solid rgba(31,35,40,0.14);
+      color: #1f2328;
     }
 
     .topic-arrow {
@@ -211,14 +211,14 @@
       align-items: center;
       justify-content: center;
       border: 1px solid var(--border-subtle);
-      background: radial-gradient(circle at top, rgba(248,250,252,0.08), rgba(15,23,42,0.98));
+      background: radial-gradient(circle at top, rgba(248,250,252,0.95), rgba(240,242,245,0.98));
       font-size: 14px;
     }
 
     .footer {
       margin-top: 24px;
       padding-top: 12px;
-      border-top: 1px dashed rgba(148,163,255,0.28);
+      border-top: 1px dashed rgba(31,35,40,0.2);
       display: flex;
       flex-wrap: wrap;
       gap: 10px;

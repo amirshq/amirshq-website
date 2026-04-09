@@ -9,22 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #0d0f14;
-  --surface: #141720;
-  --surface2: #1c2030;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #e8eaf0;
-  --muted: #7a7f96;
-  --accent: #4f8ef7;
-  --accent-dim: rgba(79,142,247,0.12);
-  --amber: #e9a23b;
-  --amber-dim: rgba(233,162,59,0.12);
-  --green: #3ecf8e;
-  --green-dim: rgba(62,207,142,0.10);
-  --coral: #f06a6a;
-  --coral-dim: rgba(240,106,106,0.10);
-  --purple: #a78bfa;
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --surface2: #f0f2f5;
+  --border: rgba(31,35,40,0.12);
+  --border2: rgba(31,35,40,0.18);
+  --text: #1f2328;
+  --muted: #636c76;
+  --accent: #1d6aaa;
+  --accent-dim: rgba(29,106,170,0.08);
+  --amber: #a56514;
+  --amber-dim: rgba(165,101,20,0.10);
+  --green: #1a7f4e;
+  --green-dim: rgba(26,127,78,0.10);
+  --coral: #c5341b;
+  --coral-dim: rgba(197,52,27,0.10);
+  --purple: #6e40c9;
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'Sora', sans-serif;
 }
@@ -76,7 +76,7 @@ body {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.03em;
-  color: #fff;
+  color: #1f2328;
   margin-bottom: 20px;
 }
 .hero h1 span { color: var(--accent); }
@@ -132,7 +132,7 @@ body {
 .concept-card h3 {
   font-size: 15px;
   font-weight: 600;
-  color: #fff;
+  color: #1f2328;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
@@ -144,10 +144,10 @@ body {
 .concept-card code {
   font-family: var(--mono);
   font-size: 12px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(175,184,193,0.2);
   padding: 1px 5px;
   border-radius: 3px;
-  color: var(--text);
+  color: #0550ae;
 }
 
 /* ── FLOW DIAGRAM ── */
@@ -179,7 +179,7 @@ body {
 .flow-node .fn-label {
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: #1f2328;
   margin-bottom: 2px;
 }
 .flow-node .fn-sub {
@@ -203,8 +203,8 @@ body {
 
 /* ── KEY INSIGHT BOX ── */
 .insight-box {
-  background: linear-gradient(135deg, rgba(79,142,247,0.08) 0%, rgba(167,139,250,0.06) 100%);
-  border: 1px solid rgba(79,142,247,0.25);
+  background: linear-gradient(135deg, rgba(29,106,170,0.06) 0%, rgba(110,64,201,0.04) 100%);
+  border: 1px solid rgba(29,106,170,0.2);
   border-radius: 12px;
   padding: 24px 28px;
   margin-bottom: 48px;
@@ -240,10 +240,10 @@ body {
 .insight-box code {
   font-family: var(--mono);
   font-size: 12px;
-  background: rgba(255,255,255,0.07);
+  background: rgba(175,184,193,0.2);
   padding: 2px 6px;
   border-radius: 4px;
-  color: var(--green);
+  color: #1a7f4e;
 }
 
 /* ── DEMO SHELL ── */
@@ -310,7 +310,7 @@ body {
   color: var(--muted);
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.preset-btn:hover { background: rgba(79,142,247,0.12); color: var(--accent); border-color: rgba(79,142,247,0.3); }
+.preset-btn:hover { background: rgba(29,106,170,0.08); color: var(--accent); border-color: rgba(29,106,170,0.3); }
 
 /* Input row */
 .input-row { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -326,7 +326,7 @@ body {
   outline: none;
   transition: border-color 0.15s;
 }
-.input-row input:focus { border-color: rgba(79,142,247,0.5); }
+.input-row input:focus { border-color: rgba(29,106,170,0.5); }
 .input-row input::placeholder { color: var(--muted); }
 .input-row button {
   background: var(--accent);
@@ -357,7 +357,7 @@ body {
   align-self: flex-end;
   background: var(--accent-dim);
   color: var(--accent);
-  border: 1px solid rgba(79,142,247,0.25);
+  border: 1px solid rgba(29,106,170,0.25);
 }
 .bubble.agent {
   align-self: flex-start;
@@ -369,7 +369,7 @@ body {
   align-self: flex-start;
   background: var(--amber-dim);
   color: var(--amber);
-  border: 1px solid rgba(233,162,59,0.25);
+  border: 1px solid rgba(165,101,20,0.25);
   font-family: var(--mono);
   font-size: 11.5px;
   max-width: 100%;
@@ -378,7 +378,7 @@ body {
   align-self: flex-start;
   background: var(--green-dim);
   color: var(--green);
-  border: 1px solid rgba(62,207,142,0.2);
+  border: 1px solid rgba(26,127,78,0.2);
   font-family: var(--mono);
   font-size: 11.5px;
   max-width: 100%;

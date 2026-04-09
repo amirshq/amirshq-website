@@ -7,23 +7,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Crimson+Text:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark:       #0b0f1a;
-            --bg-mid:        #111827;
-            --bg-card:       #161d2e;
-            --bg-card2:      #1a2236;
-            --border:        #253047;
-            --border-light:  #2e3d5e;
-            --accent-gold:   #c9993a;
-            --accent-gold2:  #e6b84a;
-            --accent-blue:   #4a8fff;
-            --accent-blue2:  #6aa8ff;
-            --text-bright:   #f0f4ff;
-            --text-mid:      #b8c4d8;
-            --text-dim:      #7a8ba8;
-            --red:           #e05555;
-            --green:         #4db87a;
-            --amber:         #d4853a;
-            --purple:        #8b6fd8;
+            --bg-dark:       #f6f8fa;
+            --bg-mid:        #f0f2f5;
+            --bg-card:       #ffffff;
+            --bg-card2:      #f0f2f5;
+            --border:        rgba(31,35,40,0.12);
+            --border-light:  rgba(31,35,40,0.18);
+            --accent-gold:   #a56514;
+            --accent-gold2:  #a56514;
+            --accent-blue:   #1d6aaa;
+            --accent-blue2:  #1d6aaa;
+            --text-bright:   #1f2328;
+            --text-mid:      #1f2328;
+            --text-dim:      #636c76;
+            --red:           #c5341b;
+            --green:         #1a7f4e;
+            --amber:         #a56514;
+            --purple:        #6e40c9;
             --font-display:  'Syne', sans-serif;
             --font-body:     'Crimson Text', serif;
             --font-mono:     'JetBrains Mono', monospace;
@@ -94,7 +94,7 @@
             transition: all 0.2s;
         }
         .nav-link:hover, .nav-link.active {
-            background: rgba(74,143,255,0.1);
+            background: rgba(29,106,170,0.08);
             color: var(--accent-blue2);
         }
         .nav-link .num {
@@ -117,7 +117,7 @@
 
         /* ─── HERO ────────────────────────────────────────── */
         .hero {
-            background: linear-gradient(135deg, #0b0f1a 0%, #111827 60%, #12203a 100%);
+            background: linear-gradient(135deg, #f6f8fa 0%, #f0f2f5 60%, #eaeef2 100%);
             border-bottom: 2px solid var(--border);
             padding: 80px 60px 70px;
             position: relative;
@@ -128,7 +128,7 @@
             position: absolute;
             top: -100px; right: -100px;
             width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(201,153,58,0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(165,101,20,0.06) 0%, transparent 70%);
             pointer-events: none;
         }
         .hero-eyebrow {
@@ -279,7 +279,7 @@
         .scenario p { color: var(--text-mid); margin-bottom: 8px; }
         .scenario strong { color: var(--text-bright); }
         .constraint {
-            background: rgba(74,143,255,0.06);
+            background: rgba(110,64,201,0.06);
             border-left: 3px solid var(--purple);
             padding: 10px 14px;
             border-radius: 4px;
@@ -386,11 +386,11 @@
             border: 1px solid;
         }
         .cmp-box.avoid {
-            background: rgba(224,85,85,0.05);
+            background: rgba(197,52,27,0.05);
             border-color: var(--red);
         }
         .cmp-box.do {
-            background: rgba(77,184,122,0.05);
+            background: rgba(26,127,78,0.05);
             border-color: var(--green);
         }
         .cmp-box h4 {
@@ -407,7 +407,7 @@
         /* ─── BADGES ──────────────────────────────────────── */
         .badge-avoid {
             display: inline-block;
-            background: rgba(224,85,85,0.15);
+            background: rgba(197,52,27,0.12);
             color: var(--red);
             padding: 2px 8px;
             border-radius: 4px;
@@ -419,7 +419,7 @@
         }
         .badge-do {
             display: inline-block;
-            background: rgba(77,184,122,0.15);
+            background: rgba(26,127,78,0.12);
             color: var(--green);
             padding: 2px 8px;
             border-radius: 4px;
@@ -441,8 +441,8 @@
             margin-bottom: 8px;
         }
         pre {
-            background: #080d18;
-            color: #b8d4ff;
+            background: #eaeef2;
+            color: #1f2328;
             padding: 22px 24px;
             border-radius: 8px;
             overflow-x: auto;
@@ -454,8 +454,8 @@
             line-height: 1.6;
         }
         code {
-            background: rgba(74,143,255,0.1);
-            color: var(--accent-blue2);
+            background: rgba(175,184,193,0.2);
+            color: #0550ae;
             padding: 1px 6px;
             border-radius: 3px;
             font-family: var(--font-mono);
@@ -492,7 +492,7 @@
             color: var(--text-mid);
         }
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(74,143,255,0.04); }
+        tr:hover td { background: rgba(29,106,170,0.04); }
         .cat-label {
             font-family: var(--font-display);
             font-weight: 700;
@@ -502,29 +502,29 @@
 
         /* ─── CALLOUT BOXES ───────────────────────────────── */
         .box-success {
-            background: rgba(77,184,122,0.07);
+            background: rgba(26,127,78,0.06);
             border-left: 3px solid var(--green);
             padding: 18px 22px;
             border-radius: 6px;
             margin: 20px 0;
-            color: #8febb8;
+            color: #1f2328;
         }
         .box-success strong { color: var(--green); }
         .box-success ul { margin-left: 20px; margin-top: 8px; }
         .box-success li { margin-bottom: 6px; font-size: 0.95em; }
 
         .box-warn {
-            background: rgba(224,85,85,0.07);
+            background: rgba(197,52,27,0.06);
             border-left: 3px solid var(--red);
             padding: 15px 20px;
             border-radius: 6px;
             margin: 16px 0;
-            color: #f0a0a0;
+            color: #1f2328;
             font-size: 0.95em;
         }
 
         .box-info {
-            background: rgba(74,143,255,0.06);
+            background: rgba(29,106,170,0.06);
             border-left: 3px solid var(--accent-blue);
             padding: 18px 22px;
             border-radius: 6px;
@@ -588,20 +588,20 @@
         }
         .tradeoff-lose {
             flex: 1;
-            background: rgba(224,85,85,0.07);
+            background: rgba(197,52,27,0.06);
             border-left: 2px solid var(--red);
             padding: 10px 14px;
             border-radius: 4px;
-            color: #f0a0a0;
+            color: #1f2328;
             font-size: 0.9em;
         }
         .tradeoff-gain {
             flex: 1;
-            background: rgba(77,184,122,0.07);
+            background: rgba(26,127,78,0.06);
             border-left: 2px solid var(--green);
             padding: 10px 14px;
             border-radius: 4px;
-            color: #8febb8;
+            color: #1f2328;
             font-size: 0.9em;
         }
 
@@ -636,7 +636,7 @@
 
         /* ─── AI PATTERN BOXES ────────────────────────────── */
         .ai-pattern {
-            background: rgba(201,153,58,0.05);
+            background: rgba(165,101,20,0.05);
             border-left: 4px solid var(--accent-gold);
             padding: 22px 26px;
             border-radius: 6px;
@@ -684,7 +684,7 @@
             font-family: var(--font-display);
             font-weight: 800;
             font-size: 0.85em;
-            color: #0b0f1a;
+            color: #ffffff;
         }
         .tl-body {}
         .tl-body h4 {
@@ -698,7 +698,7 @@
 
         /* ─── SUMMARY BOX ─────────────────────────────────── */
         .summary-box {
-            background: linear-gradient(135deg, rgba(30,60,140,0.2), rgba(18,32,60,0.2));
+            background: linear-gradient(135deg, rgba(29,106,170,0.06), rgba(29,106,170,0.04));
             border: 2px solid var(--accent-blue);
             padding: 28px 35px;
             border-radius: 10px;
@@ -767,13 +767,13 @@
 
         /* ─── MENTAL MODEL ────────────────────────────────── */
         .mental-model {
-            background: var(--bg-dark);
+            background: #eaeef2;
             border: 1px solid var(--border);
             padding: 24px;
             border-radius: 8px;
             font-family: var(--font-mono);
             font-size: 0.85em;
-            color: var(--accent-blue2);
+            color: #1d6aaa;
             line-height: 2;
             margin: 20px 0;
         }
