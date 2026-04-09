@@ -1,6 +1,9 @@
 # Developer Learning Guide: Building a Production Chatbot with RAG
 
-This guide walks you through every component of this project in the order you should build them. Each section explains the concept, the pattern used here, and a minimal working example to get you started.
+This guide is the main and core codes for every single parts of a RAG / Chatbot project.
+For Example when you wanna see how a LLM Core were implemented, you can follow the code in this repo and learn the most important core of the LLM core.
+Lots of topics were covered here and you can use them to learn the core of each one.
+Each section explains the concept, the pattern used here, and a minimal working example to get you started.
 
 ---
 
