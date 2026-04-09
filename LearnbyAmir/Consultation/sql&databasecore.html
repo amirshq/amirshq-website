@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL/Database Concepts for AI Engineers</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+      color: #e0e0e0;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4da6ff;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .controls {
+      margin-bottom: 2rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #444;
+      background: transparent;
+      color: #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      border-color: #666;
+      background: rgba(77, 166, 255, 0.1);
+    }
+
+    .filter-btn.active {
+      background: #4da6ff;
+      color: #0f0f1e;
+      border-color: #4da6ff;
+    }
+
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .concepts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .concept-card {
+      background: rgba(30, 30, 45, 0.8);
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .concept-card:hover {
+      border-color: #4da6ff;
+      background: rgba(30, 30, 45, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(77, 166, 255, 0.15);
+    }
+
+    .concept-card.hidden {
+      display: none;
+    }
+
+    .concept-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .concept-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #fff;
+      flex: 1;
+    }
+
+    .concept-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .impact-badge {
+      display: inline-block;
+      padding: 0.35rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .impact-critical {
+      background: rgba(255, 72, 72, 0.2);
+      color: #ff4848;
+      border: 1px solid rgba(255, 72, 72, 0.3);
+    }
+
+    .impact-high {
+      background: rgba(255, 159, 64, 0.2);
+      color: #ff9f40;
+      border: 1px solid rgba(255, 159, 64, 0.3);
+    }
+
+    .impact-medium {
+      background: rgba(77, 166, 255, 0.2);
+      color: #4da6ff;
+      border: 1px solid rgba(77, 166, 255, 0.3);
+    }
+
+    .concept-category {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      background: rgba(77, 166, 255, 0.1);
+      color: #4da6ff;
+      border: 1px solid rgba(77, 166, 255, 0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .concept-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #b0b0b0;
+      margin-bottom: 1rem;
+    }
+
+    .production-note {
+      padding: 1rem;
+      background: rgba(77, 166, 255, 0.1);
+      border-left: 3px solid #4da6ff;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: #e0e0e0;
+      margin-bottom: 1rem;
+    }
+
+    .production-note strong {
+      color: #4da6ff;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .example-code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-radius: 6px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #7ae582;
+      overflow-x: auto;
+      border: 1px solid #333;
+      line-height: 1.5;
+    }
+
+    .example-code::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .example-code::-webkit-scrollbar-track {
+      background: rgba(77, 166, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .example-code::-webkit-scrollbar-thumb {
+      background: #4da6ff;
+      border-radius: 3px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #333;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+      padding: 0.75rem 1rem;
+      width: 100%;
+      max-width: 400px;
+      background: rgba(77, 166, 255, 0.1);
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+    }
+
+    .search-box input::placeholder {
+      color: #666;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #4da6ff;
+      background: rgba(77, 166, 255, 0.15);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #666;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>SQL & Database Concepts</h1>
+    <p class="subtitle">Critical Knowledge for AI Engineers Building Production Systems</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-value" id="total-count">24</span>
+      <span class="stat-label">Concepts</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">6</span>
+      <span class="stat-label">Categories</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">3</span>
+      <span class="stat-label">Impact Tiers</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search concepts by name or keyword...">
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">All Concepts</button>
+      <button class="filter-btn" data-filter="query-performance">Query Performance</button>
+      <button class="filter-btn" data-filter="indexing">Indexing</button>
+      <button class="filter-btn" data-filter="data-design">Data Design</button>
+      <button class="filter-btn" data-filter="concurrency">Concurrency</button>
+      <button class="filter-btn" data-filter="ml-specific">ML-Specific</button>
+    </div>
+  </div>
+
+  <div class="concepts-grid" id="grid">
+    <!-- Concepts injected by JavaScript -->
+  </div>
+
+  <div class="no-results" id="no-results" style="display: none;">
+    No concepts found matching your criteria.
+  </div>
+
+  <div class="footer">
+    <p>Build faster, debug smarter. Profile early, optimize late. Test on production-like data.</p>
+  </div>
+</div>
+
+<script>
+const concepts = [
+  {
+    category: "query-performance",
+    title: "Correlated subqueries",
+    impact: "critical",
+    desc: "A subquery that references columns from the outer query. Executes once per outer row — catastrophic on large datasets.",
+    production: "Replace with a JOIN or window function. Always profile if you see CROSS APPLY or dependent subqueries.",
+    example: "-- BAD: executes M times for M rows\nSELECT * FROM Orders o\nWHERE Amount > (SELECT AVG(Amount) FROM Orders WHERE CustomerID = o.CustomerID)"
+  },
+  {
+    category: "query-performance",
+    title: "Table scans on large tables",
+    impact: "critical",
+    desc: "Reading every row when an index exists. Common from missing WHERE clauses, OR conditions on non-indexed columns, or implicit conversions.",
+    production: "Check execution plans. Use STATISTICS IO in SQL Server. Add indexes on filter/join columns, watch for type coercion.",
+    example: "-- Causes scan if ProductID is indexed\nSELECT * FROM OrderItems WHERE CAST(ProductID AS VARCHAR) = '123'"
+  },
+  {
+    category: "indexing",
+    title: "Missing clustered key on heap tables",
+    impact: "critical",
+    desc: "Tables without a clustered index (heaps) force row lookups via RID. Every non-clustered index lookup becomes a two-step operation.",
+    production: "Every production table should have a clustered index, usually the primary key. SQL Server forces it on most enterprise tables.",
+    example: "CREATE TABLE ProductCache (ID INT NOT NULL, Data NVARCHAR(MAX));\n-- MISSING: CREATE CLUSTERED INDEX..."
+  },
+  {
+    category: "indexing",
+    title: "Non-selective indexes",
+    impact: "high",
+    desc: "Indexes on low-cardinality columns (Status, IsActive, Flag). Optimizer often ignores them because table scan is faster.",
+    production: "Avoid indexing boolean fields. Use filtered indexes if you need them. Check actual cardinality: if < 10 distinct values, reconsider.",
+    example: "-- Poor index: 2 distinct values\nCREATE INDEX idx_Status ON Orders(Status);\n-- Better: filtered index\nCREATE INDEX idx_ActiveOrders ON Orders(OrderDate) WHERE Status = 'Active'"
+  },
+  {
+    category: "indexing",
+    title: "Index bloat and fragmentation",
+    impact: "high",
+    desc: "Fragmented indexes cause more page reads and slower seeks. Common from frequent updates/deletes without maintenance.",
+    production: "Monitor DMV sys.dm_db_index_physical_stats. Rebuild (fragmentation > 30%) or reorganize (10–30%) weekly on high-churn tables.",
+    example: "SELECT * FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'LIMITED')\nWHERE avg_fragmentation_in_percent > 10"
+  },
+  {
+    category: "query-performance",
+    title: "N+1 query pattern",
+    impact: "critical",
+    desc: "1 query returns M rows, then N separate queries for related data. Your app loops and fires a query per row.",
+    production: "Use JOINs or batch loads. In ORMs (SQLAlchemy, EF), enable eager loading, explicit joins, or batch queries. Profile slow ORM queries.",
+    example: "# BAD: N+1\nfor order in orders:\n    customer = db.query(Customer).filter(id=order.customer_id).first()\n# GOOD: Single join\norders = db.query(Order).join(Customer).all()"
+  },
+  {
+    category: "data-design",
+    title: "Wide tables without partitioning",
+    impact: "high",
+    desc: "Tables with billions of rows and no partitioning. Scans are slow, index maintenance is slow, backups are slow.",
+    production: "Partition by date/range on columns you filter by (CreatedDate, Year). Use RANGE partitioning for time-series data.",
+    example: "CREATE TABLE Events (EventID INT, CreatedDate DATE, Data NVARCHAR(MAX))\nPARTITION BY RANGE(CreatedDate)"
+  },
+  {
+    category: "data-design",
+    title: "Denormalization without refresh strategy",
+    impact: "high",
+    desc: "Storing pre-computed aggregates (SUM, AVG, COUNT) in a separate table but forgetting to refresh them. Data goes stale.",
+    production: "Use materialized views with defined refresh schedules, or trigger-based updates. Document the SLA for staleness.",
+    example: "-- Materialized view refreshed nightly\nCREATE MATERIALIZED VIEW Sales_By_Region AS\nSELECT Region, SUM(Amount) as Total FROM Orders GROUP BY Region"
+  },
+  {
+    category: "concurrency",
+    title: "Row-level locking deadlocks",
+    impact: "high",
+    desc: "Two transactions lock rows in opposite order (Tx1 locks A then B; Tx2 locks B then A). System detects circular wait and kills one.",
+    production: "Always acquire locks in the same order. Use READCOMMITTED isolation by default; upgrade to SERIALIZABLE only if needed.",
+    example: "-- Deadlock risk: tx1 locks ProductA then ProductB; tx2 locks ProductB then ProductA\nUPDATE Inventory SET Qty = Qty - 1 WHERE ProductID IN (CAST(@id1 AS INT), CAST(@id2 AS INT))"
+  },
+  {
+    category: "concurrency",
+    title: "Dirty reads and phantom rows (isolation level misconfig)",
+    impact: "medium",
+    desc: "READUNCOMMITTED allows dirty reads. READCOMMITTED allows phantom rows. SERIALIZABLE is slow but bulletproof.",
+    production: "SQL Server default is READCOMMITTED — adequate for most workloads. Use REPEATABLE READ for consistent snapshots.",
+    example: "SET TRANSACTION ISOLATION LEVEL SNAPSHOT;\n-- Optimistic multi-version concurrency control"
+  },
+  {
+    category: "query-performance",
+    title: "Implicit conversions in predicates",
+    impact: "high",
+    desc: "WHERE VARCHAR_col = 123 (int literal). SQL Server converts, breaks index seek, forces scan.",
+    production: "Match data types in WHERE clauses. Use CAST/CONVERT explicitly. Check execution plan for CONVERT_IMPLICIT warnings.",
+    example: "-- Bad: ProductID is INT, you compare to string\nWHERE ProductID = '123'  -- Implicit conversion\n-- Good:\nWHERE ProductID = 123"
+  },
+  {
+    category: "query-performance",
+    title: "Functions in WHERE clauses",
+    impact: "high",
+    desc: "WHERE YEAR(CreatedDate) = 2024 prevents index usage on CreatedDate. Same for SUBSTRING, UPPER, etc.",
+    production: "Use range predicates instead: WHERE CreatedDate >= '2024-01-01' AND CreatedDate < '2025-01-01'. Pre-compute derived columns.",
+    example: "-- Bad: function disables index\nWHERE UPPER(Email) LIKE 'A%'\n-- Good: use index directly\nWHERE Email COLLATE Latin1_General_CS_AS LIKE 'A%'"
+  },
+  {
+    category: "data-design",
+    title: "Missing surrogate keys (using natural keys as PK)",
+    impact: "medium",
+    desc: "Using (CustomerID, OrderDate, ItemNo) as PK when a single INT identity is cleaner. Wastes storage on foreign keys.",
+    production: "Use INT/BIGINT surrogate PK for main tables. Keep natural keys as UNIQUE NONCLUSTERED if needed. Cluster on the surrogate.",
+    example: "-- Bad: multi-column clustering\nALTER TABLE OrderItems ADD CONSTRAINT pk_items PRIMARY KEY (OrderID, ItemNo);\n-- Good:\nALTER TABLE OrderItems ADD CONSTRAINT pk_items PRIMARY KEY (ItemID);"
+  },
+  {
+    category: "ml-specific",
+    title: "Feature engineering queries returning inconsistent data types",
+    impact: "high",
+    desc: "ML pipelines expect numeric/text columns. SQL returns NULL, FLOAT precision issues, or unexpected string encodings.",
+    production: "Use CAST/COALESCE explicitly. Use ISNULL() for NULL handling. Document data types in feature schema. Validate output shape before ML.",
+    example: "-- Inconsistent type\nSELECT CustomerID, Amount, Notes FROM Orders;  -- Notes is NVARCHAR, may have NULLs\n-- Safe version for ML:\nSELECT CustomerID, CAST(Amount AS FLOAT), ISNULL(Notes, 'UNKNOWN') FROM Orders"
+  },
+  {
+    category: "ml-specific",
+    title: "Unbounded time-series joins for training data",
+    impact: "critical",
+    desc: "Joining events with all future labels without a temporal cutoff. Model sees future information; evaluation leaks.",
+    production: "Always apply a cutoff window: labels must be from [event_time, event_time + 30_days]. Use this in train/test splits.",
+    example: "-- Leaks future data\nSELECT e.EventID, l.Label FROM Events e LEFT JOIN Labels l ON e.UserID = l.UserID\n-- Correct:\nWHERE l.LabelDate BETWEEN e.EventDate AND DATEADD(DAY, 30, e.EventDate)"
+  },
+  {
+    category: "ml-specific",
+    title: "Class imbalance not reflected in WHERE clause",
+    impact: "medium",
+    desc: "Your data is 95% negative class; you query without stratification. Training set mirrors production skew, model learns majority class.",
+    production: "Undersample majority or oversample minority in SQL. Use TABLESAMPLE or TOP N ... ORDER BY NEWID() to randomize.",
+    example: "-- Balanced sample\nSELECT * FROM ClickEvents WHERE Label = 1\nUNION ALL\nSELECT TOP (100) * FROM ClickEvents WHERE Label = 0 ORDER BY NEWID()"
+  },
+  {
+    category: "data-design",
+    title: "Excessive VARCHAR(MAX) columns",
+    impact: "medium",
+    desc: "Using MAX for everything. Forces out-of-row storage (LOB), slower than fixed-width columns, wastes I/O.",
+    production: "Use VARCHAR(N) with a reasonable upper bound (256, 512, 2000). Only use MAX for truly unbounded data (JSON, documents).",
+    example: "-- Over-broad\nCREATE TABLE Products (ID INT, Description VARCHAR(MAX));\n-- Better:\nCREATE TABLE Products (ID INT, Description VARCHAR(2000));"
+  },
+  {
+    category: "concurrency",
+    title: "Missing unique constraints",
+    impact: "high",
+    desc: "No UNIQUE constraint on email, username, or SKU. Duplicate data sneaks in via concurrent inserts. Business logic assumes 1:1.",
+    production: "Add UNIQUE NONCLUSTERED indexes on all candidate keys. Test concurrent inserts to verify.",
+    example: "CREATE UNIQUE NONCLUSTERED INDEX uq_email ON Users(Email);\nCREATE UNIQUE NONCLUSTERED INDEX uq_sku ON Products(SKU);"
+  },
+  {
+    category: "query-performance",
+    title: "UNION instead of UNION ALL",
+    impact: "high",
+    desc: "UNION removes duplicates — requires a costly SORT operation. Use UNION ALL if duplicates are acceptable.",
+    production: "Prefer UNION ALL. Only use UNION if you're certain duplicates exist and must be removed. Profile the difference.",
+    example: "-- Unnecessary SORT\nSELECT UserID FROM Orders UNION SELECT UserID FROM Payments;\n-- Faster if OK with dupes:\nSELECT UserID FROM Orders UNION ALL SELECT UserID FROM Payments;"
+  },
+  {
+    category: "data-design",
+    title: "No partitioning strategy for time-series data",
+    impact: "high",
+    desc: "Time-series tables (events, logs, metrics) grow unbounded. Queries slow down; backups take forever.",
+    production: "Partition by date (weekly, monthly). Use RANGE partitioning on CreatedDate. Archive/purge old partitions monthly.",
+    example: "PARTITION BY RANGE(CreatedDate) (\n  PARTITION pf_2024_01 VALUES LESS THAN ('2024-02-01'),\n  PARTITION pf_2024_02 VALUES LESS THAN ('2024-03-01')\n)"
+  },
+  {
+    category: "ml-specific",
+    title: "Time-series features without lag/shift handling",
+    impact: "high",
+    desc: "Computing rolling aggregates without shifting by 1 row. Your training label is leaked into the feature.",
+    production: "Use LAG() window function with an explicit frame. Shift features by at least 1 period before the label date.",
+    example: "-- Leaks label\nSELECT UserID, EventDate, AVG(Amount) OVER (PARTITION BY UserID ORDER BY EventDate) as AvgAmount, Label\n-- Safe:\nSELECT UserID, EventDate, LAG(AVG(Amount)) OVER (PARTITION BY UserID ORDER BY EventDate) as AvgAmount, Label"
+  },
+  {
+    category: "indexing",
+    title: "Composite index column order matters",
+    impact: "high",
+    desc: "Index on (Status, CreatedDate) works for WHERE Status = 'Active' AND CreatedDate > X. Reversed order (CreatedDate, Status) is useless.",
+    production: "Follow: Equality columns first, then range columns, then covering columns. Test actual query performance.",
+    example: "-- Optimal for queries like WHERE Status = 'Active' AND CreatedDate > @date\nCREATE INDEX idx_orders ON Orders(Status, CreatedDate) INCLUDE (Amount);"
+  },
+  {
+    category: "query-performance",
+    title: "No query hints / runaway optimizer decisions",
+    impact: "medium",
+    desc: "Optimizer guesses wrong on complex queries. A table join that should use a seek does a scan instead.",
+    production: "Use OPTION(RECOMPILE) or hint (LOOP, HASH, MERGE) sparingly. First: check statistics, update stats. Then hint.",
+    example: "SELECT * FROM Orders o JOIN Customers c ON o.CustomerID = c.ID\nWHERE o.CreatedDate > @date\nOPTION(LOOP JOIN);  -- Force loop join if optimizer picks hash"
+  },
+  {
+    category: "data-design",
+    title: "Null-heavy columns without strategic indexing",
+    impact: "medium",
+    desc: "Columns with 50% NULLs indexed. Index stores NULLs. Queries with IS NOT NULL are slower.",
+    production: "Use filtered indexes: CREATE INDEX idx_col ON tbl(col) WHERE col IS NOT NULL. Saves space, speeds up seeks.",
+    example: "-- Full index includes NULLs\nCREATE INDEX idx_middle_name ON Users(MiddleName);\n-- Better: exclude NULLs\nCREATE INDEX idx_middle_name ON Users(MiddleName) WHERE MiddleName IS NOT NULL"
+  }
+];
+
+const grid = document.getElementById('grid');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const searchInput = document.getElementById('search-input');
+const totalCount = document.getElementById('total-count');
+const noResults = document.getElementById('no-results');
+let activeFilter = 'all';
+let activeSearch = '';
+
+function formatCategoryLabel(cat) {
+  return cat.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+function render(filter = 'all', search = '') {
+  let filtered = filter === 'all' 
+    ? concepts 
+    : concepts.filter(c => c.category === filter);
+
+  if (search.trim()) {
+    const searchLower = search.toLowerCase();
+    filtered = filtered.filter(c => 
+      c.title.toLowerCase().includes(searchLower) ||
+      c.desc.toLowerCase().includes(searchLower) ||
+      c.production.toLowerCase().includes(searchLower)
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    noResults.style.display = 'block';
+    totalCount.textContent = '0';
+    return;
+  }
+
+  noResults.style.display = 'none';
+  grid.innerHTML = filtered.map((concept, idx) => `
+    <div class="concept-card">
+      <div class="concept-header">
+        <div style="flex: 1;">
+          <div class="concept-title">${escapeHtml(concept.title)}</div>
+        </div>
+      </div>
+      <div class="concept-badges">
+        <span class="concept-category">${formatCategoryLabel(concept.category)}</span>
+        <span class="impact-badge impact-${concept.impact}">${concept.impact.toUpperCase()}</span>
+      </div>
+      <p class="concept-desc">${escapeHtml(concept.desc)}</p>
+      <div class="production-note">
+        <strong>Production:</strong> ${escapeHtml(concept.production)}
+      </div>
+      <div class="example-code">${escapeHtml(concept.example)}</div>
+    </div>
+  `).join('');
+
+  totalCount.textContent = filtered.length;
+}
+
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    render(activeFilter, activeSearch);
+  });
+});
+
+searchInput.addEventListener('input', (e) => {
+  activeSearch = e.target.value;
+  render(activeFilter, activeSearch);
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>

@@ -400,6 +400,150 @@ table { width:100%; border-collapse:collapse; }
 .autogen-term    { background:rgba(239,68,68,0.12);  color:#f87171; }
 .crewai-term     { background:rgba(20,184,166,0.12); color:#2dd4bf; }
 
+/* ── SHEET 6 — CORE RULE / DECISION TREE ─────────────────────────── */
+#s6 .s6-scroll { padding:24px 36px 48px; }
+
+#s6 .s6-core-banner {
+  background:linear-gradient(135deg,rgba(74,144,217,0.12),rgba(168,85,247,0.08));
+  border:1px solid rgba(74,144,217,0.25); border-radius:12px;
+  padding:24px 28px; margin-bottom:28px; position:relative; overflow:hidden;
+}
+#s6 .s6-core-banner::before {
+  content:''; position:absolute; top:-30px; right:-30px;
+  width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle,rgba(74,144,217,0.15),transparent 70%);
+  pointer-events:none;
+}
+#s6 .s6-core-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  color:var(--sky); text-transform:uppercase; letter-spacing:3px; margin-bottom:12px;
+}
+#s6 .s6-rule-row {
+  display:flex; align-items:center; gap:10px; margin-top:10px; font-size:14px; font-weight:700;
+}
+#s6 .s6-rule-if { color:var(--muted); font-weight:400; }
+#s6 .s6-rule-arrow { color:var(--sky); font-size:18px; }
+#s6 .s6-rule-then { color:#fff; }
+#s6 .s6-rule-then .s6-fw { padding:3px 10px; border-radius:4px; font-size:12px; font-weight:700; }
+.s6-fw-dialog { background:rgba(34,197,94,0.15); color:var(--dialogflow); border:1px solid rgba(34,197,94,0.3); }
+.s6-fw-lex    { background:rgba(245,158,11,0.15); color:var(--lex);       border:1px solid rgba(245,158,11,0.3); }
+.s6-fw-auto   { background:rgba(239,68,68,0.15);  color:var(--autogen);   border:1px solid rgba(239,68,68,0.3); }
+.s6-fw-crew   { background:rgba(20,184,166,0.15);  color:var(--crewai);   border:1px solid rgba(20,184,166,0.3); }
+.s6-fw-hybrid { background:rgba(168,85,247,0.12); color:var(--langchain); border:1px solid rgba(168,85,247,0.25); }
+
+#s6 .s6-section-title {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:var(--sky);
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+#s6 .s6-section-title .s6-icon { font-size:16px; }
+
+#s6 .s6-tree {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:12px; margin-bottom:32px;
+}
+#s6 .s6-tree-card {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:18px 20px; position:relative;
+  transition:border-color 0.2s, transform 0.2s;
+}
+#s6 .s6-tree-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+#s6 .s6-tree-num {
+  font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800;
+  position:absolute; top:14px; right:18px; opacity:0.12;
+}
+#s6 .s6-tree-q { font-size:13px; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.4; }
+#s6 .s6-tree-a {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600; color:var(--sky);
+}
+#s6 .s6-tree-a .s6-fw { font-size:11px; }
+
+#s6 .s6-rules-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:14px; margin-bottom:32px;
+}
+#s6 .s6-rule-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; transition:border-color 0.2s, transform 0.2s;
+}
+#s6 .s6-rule-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+#s6 .s6-rule-card-head {
+  padding:10px 16px; font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.5px; border-bottom:1px solid var(--border);
+  color:var(--muted);
+}
+#s6 .s6-mini-table { width:100%; border-collapse:collapse; }
+#s6 .s6-mini-table td {
+  padding:9px 16px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04);
+  vertical-align:middle;
+}
+#s6 .s6-mini-table tr:last-child td { border-bottom:none; }
+#s6 .s6-mini-table td:first-child { color:var(--muted); font-size:11.5px; }
+#s6 .s6-mini-table td:last-child { text-align:right; }
+
+#s6 .s6-insight {
+  background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.2);
+  border-left:3px solid rgba(168,85,247,0.5); border-radius:8px;
+  padding:18px 22px; margin-bottom:28px; line-height:1.7; font-size:13px;
+}
+#s6 .s6-insight-title {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:#c084fc; margin-bottom:8px;
+}
+
+#s6 .s6-mapping-table { width:100%; border-collapse:collapse; margin-bottom:28px; }
+#s6 .s6-mapping-table th {
+  padding:12px 18px; text-align:left;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1.5px;
+  background:var(--surface2); border-bottom:2px solid var(--border2);
+  color:var(--muted);
+}
+#s6 .s6-mapping-table td {
+  padding:11px 18px; font-size:12.5px; border-bottom:1px solid var(--border);
+}
+#s6 .s6-mapping-table tr:hover td { background:rgba(255,255,255,0.025); }
+
+#s6 .s6-heuristic {
+  background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(45,212,191,0.06));
+  border:1px solid rgba(34,197,94,0.2); border-left:3px solid var(--dialogflow);
+  border-radius:8px; padding:18px 22px; margin-bottom:28px;
+  font-size:14px; font-weight:600; color:#fff; line-height:1.6;
+}
+#s6 .s6-heuristic-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:var(--dialogflow); margin-bottom:8px;
+}
+
+#s6 .s6-mistake {
+  background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.2);
+  border-left:3px solid #f87171; border-radius:8px;
+  padding:18px 22px; margin-bottom:28px; font-size:13px; line-height:1.6;
+}
+#s6 .s6-mistake-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2px; color:#f87171; margin-bottom:8px;
+}
+#s6 .s6-mistake li { margin-left:18px; margin-top:4px; color:var(--muted); }
+
+#s6 .s6-final {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px; margin-bottom:16px;
+}
+#s6 .s6-final-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:14px 18px; text-align:center;
+  transition:border-color 0.2s, transform 0.2s;
+}
+#s6 .s6-final-item:hover { border-color:var(--border2); transform:translateY(-2px); }
+#s6 .s6-final-need {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:6px;
+}
+#s6 .s6-final-pick { font-size:13px; font-weight:700; }
+
 /* ── SEARCH HIGHLIGHT ─────────────────────────────────────────────── */
 mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 
@@ -465,6 +609,11 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
       <span class="nav-label">Cheat Sheet — Term Map</span>
       <span class="nav-badge">20</span>
     </button>
+    <button class="nav-item" onclick="switchSheet('s6',this)">
+      <span class="nav-icon">🧩</span>
+      <span class="nav-label">CORE RULE / Decision Tree</span>
+      <span class="nav-badge">1</span>
+    </button>
   </nav>
   <div class="sidebar-footer">
     Covers 6 frameworks<br>
@@ -482,7 +631,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 ════════════════════════════════════════════════════════════════════ -->
 <section class="sheet active" id="s1">
   <div class="sheet-header">
-    <span class="sheet-tag">// Sheet 1 of 5</span>
+    <span class="sheet-tag">// Sheet 1 of 6</span>
     <h1>AI Chatbot &amp; Agent Framework — Selection Guide</h1>
     <p>Covers: Copilot Studio • Dialogflow CX • Amazon Lex • LangChain/LangGraph • AutoGen • CrewAI</p>
   </div>
@@ -525,7 +674,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 ════════════════════════════════════════════════════════════════════ -->
 <section class="sheet" id="s2">
   <div class="sheet-header">
-    <span class="sheet-tag">// Sheet 2 of 5</span>
+    <span class="sheet-tag">// Sheet 2 of 6</span>
     <h1>Decision Matrix</h1>
     <p>Score each criterion for your project. ✅ = Strong fit &nbsp;⚠️ = Partial fit &nbsp;❌ = Poor fit</p>
   </div>
@@ -565,7 +714,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 ════════════════════════════════════════════════════════════════════ -->
 <section class="sheet" id="s3">
   <div class="sheet-header">
-    <span class="sheet-tag">// Sheet 3 of 5</span>
+    <span class="sheet-tag">// Sheet 3 of 6</span>
     <h1>Real-World Use-Case Scenarios</h1>
     <p>Each scenario shows which framework to choose first (Primary), a fallback option (Secondary), and what to avoid.</p>
   </div>
@@ -602,7 +751,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 ════════════════════════════════════════════════════════════════════ -->
 <section class="sheet" id="s4">
   <div class="sheet-header">
-    <span class="sheet-tag">// Sheet 4 of 5</span>
+    <span class="sheet-tag">// Sheet 4 of 6</span>
     <h1>Quick Reference Card</h1>
     <p>IF your situation → THEN use this framework. Instant decision guide.</p>
   </div>
@@ -626,7 +775,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
 ════════════════════════════════════════════════════════════════════ -->
 <section class="sheet" id="s5">
   <div class="sheet-header">
-    <span class="sheet-tag">// Sheet 5 of 5</span>
+    <span class="sheet-tag">// Sheet 5 of 6</span>
     <h1>Cross-Framework Cheat Sheet — Same Concept, Different Names</h1>
     <p>Every major AI chatbot / agent concept mapped across all 6 frameworks.</p>
   </div>
@@ -665,6 +814,110 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
       </thead>
       <tbody id="s5body"></tbody>
     </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHEET 6 — CORE RULE + DECISION TREE
+════════════════════════════════════════════════════════════════════ -->
+<section class="sheet" id="s6">
+  <div class="sheet-header">
+    <span class="sheet-tag">// Sheet 6 of 6</span>
+    <h1>CORE RULE + Decision Tree (Fast Mental Model)</h1>
+    <p>Cheat sheet for quick platform selection: deterministic vs reasoning vs multi-agent workflows.</p>
+  </div>
+  <div class="table-area">
+    <div style="padding: 18px 36px 30px;">
+      <pre style="font-family:'JetBrains Mono', monospace; white-space:pre-wrap; line-height:1.55; font-size:12px; color:var(--text); margin:0;">
+CORE RULE (1-liner)
+
+If the problem is deterministic → use Dialogflow / Lex
+If the problem requires reasoning → use Autogen / CrewAI
+
+⚡ DECISION TREE (Fast Mental Model)
+1. Is it simple Q&amp;A or intent matching?
+   → YES → Dialogflow CX
+
+2. Is it voice-first?
+   → YES → Amazon Lex
+
+3. Does it require multi-step reasoning / tools / workflows?
+   → YES → Autogen
+
+4. Does it involve multiple roles (planner, executor, reviewer)?
+   → YES → CrewAI
+
+🔍 RULES BY SYSTEM CHARACTERISTICS
+1. Determinism vs Intelligence
+System Type	Use
+Predictable, rule-based	Dialogflow CX
+Adaptive, reasoning-based	Autogen / CrewAI
+
+2. Interaction Modality
+Modality	Platform
+Chat UI	Dialogflow CX
+Voice / call center	Amazon Lex
+Multi-channel + agents	Hybrid
+
+3. Complexity Threshold
+Complexity	Platform
+Simple (FAQ, routing)	Dialogflow CX
+Medium (API calls, workflows)	Dialogflow + backend
+High (autonomous agents)	Autogen / CrewAI
+
+4. Orchestration Need
+Need	Platform
+Single-step response	Dialogflow
+Multi-step pipeline	Autogen
+Multi-agent collaboration	CrewAI
+
+5. Data Dependency
+Data Pattern	Platform
+Predefined answers	Dialogflow CX
+RAG / document search	Autogen / CrewAI
+Real-time DB queries	Hybrid
+
+🧠 INTUITION (Consultant-Level Insight)
+
+Think in layers:
+
+Dialogflow CX / Lex = Interface layer (NLU router)
+Autogen / CrewAI = Reasoning &amp; orchestration layer
+
+👉 Most real systems = combination
+
+🧪 REAL-WORLD MAPPING
+Use Case	Choice
+FAQ chatbot	Dialogflow CX
+Call center voice bot	Amazon Lex
+AI research assistant	Autogen
+AI project manager agent	CrewAI
+Enterprise support system	Dialogflow + Autogen
+
+🚀 GOLDEN HEURISTIC (Use in Interviews)
+
+“Start with the simplest deterministic system. Only introduce agents when you hit limits in reasoning, orchestration, or dynamic data handling.”
+
+⚠️ COMMON MISTAKE
+
+❌ Using Autogen/CrewAI for FAQ
+→ leads to:
+
+higher latency
+higher cost
+unpredictable answers
+
+✅ FINAL CHEAT SHEET
+FAQ / Intent → Dialogflow CX
+Voice → Amazon Lex
+Reasoning → Autogen
+Multi-agent → CrewAI
+
+If you want, I can next:
+Build a real client scenario → platform selection breakdown
+Or give you a system design template (interview-ready)
+      </pre>
+    </div>
   </div>
 </section>
 

@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior AI Consultant: Complete Playbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Crimson+Text:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark:       #0b0f1a;
+            --bg-mid:        #111827;
+            --bg-card:       #161d2e;
+            --bg-card2:      #1a2236;
+            --border:        #253047;
+            --border-light:  #2e3d5e;
+            --accent-gold:   #c9993a;
+            --accent-gold2:  #e6b84a;
+            --accent-blue:   #4a8fff;
+            --accent-blue2:  #6aa8ff;
+            --text-bright:   #f0f4ff;
+            --text-mid:      #b8c4d8;
+            --text-dim:      #7a8ba8;
+            --red:           #e05555;
+            --green:         #4db87a;
+            --amber:         #d4853a;
+            --purple:        #8b6fd8;
+            --font-display:  'Syne', sans-serif;
+            --font-body:     'Crimson Text', serif;
+            --font-mono:     'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-dark);
+            color: var(--text-mid);
+            line-height: 1.75;
+            font-size: 17px;
+        }
+
+        /* ─── NAV ─────────────────────────────────────────── */
+        .sidenav {
+            position: fixed;
+            top: 0; left: 0;
+            width: 230px; height: 100vh;
+            background: var(--bg-mid);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+            padding: 30px 0 60px;
+        }
+        .sidenav-brand {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .sidenav-brand span {
+            display: block;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.78em;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.4;
+        }
+        .nav-group {
+            padding: 6px 20px;
+        }
+        .nav-group-label {
+            font-family: var(--font-display);
+            font-size: 0.65em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            margin-top: 14px;
+        }
+        .nav-link {
+            display: block;
+            width: 100%;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-align: left;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(74,143,255,0.1);
+            color: var(--accent-blue2);
+        }
+        .nav-link .num {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--border);
+            font-size: 0.8em;
+            margin-right: 6px;
+        }
+
+        /* ─── MAIN ────────────────────────────────────────── */
+        .main {
+            margin-left: 230px;
+            min-height: 100vh;
+        }
+
+        /* ─── HERO ────────────────────────────────────────── */
+        .hero {
+            background: linear-gradient(135deg, #0b0f1a 0%, #111827 60%, #12203a 100%);
+            border-bottom: 2px solid var(--border);
+            padding: 80px 60px 70px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(201,153,58,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            font-family: var(--font-display);
+            font-size: 0.7em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-gold);
+            margin-bottom: 18px;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 3em;
+            font-weight: 800;
+            color: var(--text-bright);
+            line-height: 1.12;
+            letter-spacing: -1.5px;
+            max-width: 820px;
+            margin-bottom: 20px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent-gold2);
+        }
+        .hero-sub {
+            font-size: 1.2em;
+            color: var(--text-dim);
+            max-width: 640px;
+            font-style: italic;
+        }
+        .hero-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .pill {
+            font-family: var(--font-display);
+            font-size: 0.68em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid;
+        }
+        .pill-gold  { border-color: var(--accent-gold);  color: var(--accent-gold); }
+        .pill-blue  { border-color: var(--accent-blue);  color: var(--accent-blue); }
+        .pill-green { border-color: var(--green);  color: var(--green); }
+
+        /* ─── CONTENT WRAPPER ─────────────────────────────── */
+        .content {
+            padding: 60px;
+            max-width: 1100px;
+        }
+
+        /* ─── CHAPTER HEADERS ─────────────────────────────── */
+        .chapter {
+            margin-bottom: 100px;
+        }
+        .chapter-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 22px;
+            margin-bottom: 50px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border);
+        }
+        .chapter-num {
+            font-family: var(--font-display);
+            font-size: 4em;
+            font-weight: 800;
+            color: var(--border);
+            line-height: 1;
+            min-width: 80px;
+        }
+        .chapter-title-block {}
+        .chapter-eyebrow {
+            font-family: var(--font-display);
+            font-size: 0.65em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+        .chapter-title {
+            font-family: var(--font-display);
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--text-bright);
+            line-height: 1.2;
+        }
+        .chapter-desc {
+            font-size: 1.05em;
+            color: var(--text-dim);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* ─── SECTION TITLES ──────────────────────────────── */
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--accent-blue2);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 3px;
+            height: 18px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        h3.sub {
+            font-family: var(--font-display);
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin: 28px 0 12px;
+        }
+
+        /* ─── SCENARIO BOX ────────────────────────────────── */
+        .scenario {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 30px 35px;
+            margin-bottom: 50px;
+        }
+        .scenario h2 {
+            font-family: var(--font-display);
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--accent-gold2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+        }
+        .scenario p { color: var(--text-mid); margin-bottom: 8px; }
+        .scenario strong { color: var(--text-bright); }
+        .constraint {
+            background: rgba(74,143,255,0.06);
+            border-left: 3px solid var(--purple);
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin: 8px 0;
+            color: var(--text-mid);
+            font-size: 0.95em;
+        }
+
+        /* ─── FLOW STEPS ──────────────────────────────────── */
+        .flow-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 35px 40px;
+            margin: 30px 0;
+        }
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 36px;
+            position: relative;
+        }
+        .flow-step:not(:last-child)::after {
+            content: '↓';
+            position: absolute;
+            left: 28px;
+            top: calc(100% + 4px);
+            font-size: 1.4em;
+            color: var(--border);
+        }
+        .flow-number {
+            font-family: var(--font-display);
+            font-size: 1.6em;
+            font-weight: 800;
+            min-width: 60px;
+            color: var(--accent-gold);
+            padding-top: 2px;
+        }
+        .flow-content {}
+        .flow-title {
+            font-family: var(--font-display);
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+        }
+        .flow-description { color: var(--text-mid); margin-bottom: 12px; font-size: 0.97em; }
+        .flow-example {
+            background: var(--bg-dark);
+            border-left: 3px solid var(--accent-gold);
+            padding: 14px 18px;
+            border-radius: 5px;
+            color: var(--text-mid);
+            font-size: 0.92em;
+        }
+        .flow-example strong { color: var(--text-bright); }
+
+        /* ─── STEP CARDS (4-moves style) ──────────────────── */
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            transition: border-color 0.2s;
+        }
+        .step-card:hover { border-color: var(--border-light); }
+        .step-card-header {
+            background: var(--bg-mid);
+            padding: 22px 28px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .step-card-num {
+            font-family: var(--font-display);
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--accent-blue2);
+            min-width: 50px;
+        }
+        .step-card-title h2 {
+            font-family: var(--font-display);
+            font-size: 1.25em;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+        .step-card-subtitle { color: var(--text-dim); font-size: 0.92em; }
+        .step-card-body { padding: 32px 35px; }
+
+        /* ─── VIBE VS SENIOR ──────────────────────────────── */
+        .vibe-vs-senior {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        .cmp-box {
+            padding: 22px;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+        .cmp-box.avoid {
+            background: rgba(224,85,85,0.05);
+            border-color: var(--red);
+        }
+        .cmp-box.do {
+            background: rgba(77,184,122,0.05);
+            border-color: var(--green);
+        }
+        .cmp-box h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+        .cmp-box.avoid h4 { color: var(--red); }
+        .cmp-box.do h4 { color: var(--green); }
+        .cmp-box p, .cmp-box li { color: var(--text-mid); font-size: 0.92em; margin-bottom: 6px; }
+        .cmp-box ul { margin-left: 18px; }
+
+        /* ─── BADGES ──────────────────────────────────────── */
+        .badge-avoid {
+            display: inline-block;
+            background: rgba(224,85,85,0.15);
+            color: var(--red);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .badge-do {
+            display: inline-block;
+            background: rgba(77,184,122,0.15);
+            color: var(--green);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 700;
+            font-family: var(--font-display);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* ─── CODE BLOCKS ─────────────────────────────────── */
+        .code-label {
+            font-family: var(--font-display);
+            font-size: 0.72em;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        pre {
+            background: #080d18;
+            color: #b8d4ff;
+            padding: 22px 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 14px 0 24px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-blue);
+            font-family: var(--font-mono);
+            font-size: 0.82em;
+            line-height: 1.6;
+        }
+        code {
+            background: rgba(74,143,255,0.1);
+            color: var(--accent-blue2);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+        }
+
+        /* ─── TABLES ──────────────────────────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+        }
+        th {
+            background: var(--bg-dark);
+            color: var(--accent-blue2);
+            padding: 14px 16px;
+            text-align: left;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.82em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.93em;
+            color: var(--text-mid);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(74,143,255,0.04); }
+        .cat-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--accent-gold);
+            font-size: 0.85em;
+        }
+
+        /* ─── CALLOUT BOXES ───────────────────────────────── */
+        .box-success {
+            background: rgba(77,184,122,0.07);
+            border-left: 3px solid var(--green);
+            padding: 18px 22px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: #8febb8;
+        }
+        .box-success strong { color: var(--green); }
+        .box-success ul { margin-left: 20px; margin-top: 8px; }
+        .box-success li { margin-bottom: 6px; font-size: 0.95em; }
+
+        .box-warn {
+            background: rgba(224,85,85,0.07);
+            border-left: 3px solid var(--red);
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+            color: #f0a0a0;
+            font-size: 0.95em;
+        }
+
+        .box-info {
+            background: rgba(74,143,255,0.06);
+            border-left: 3px solid var(--accent-blue);
+            padding: 18px 22px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: var(--text-mid);
+        }
+        .box-info h4 {
+            font-family: var(--font-display);
+            color: var(--accent-blue2);
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .box-info p { margin-bottom: 8px; font-size: 0.95em; }
+        .box-info strong { color: var(--text-bright); }
+
+        .checkpoint {
+            background: var(--bg-card2);
+            border: 2px dashed var(--accent-gold);
+            padding: 22px 26px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .checkpoint h4 {
+            font-family: var(--font-display);
+            color: var(--accent-gold2);
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .checkpoint ol { margin-left: 20px; }
+        .checkpoint li { color: var(--text-mid); margin-bottom: 8px; font-size: 0.95em; }
+        .checkpoint li strong { color: var(--text-bright); }
+
+        /* ─── ADR / DECISION DOC ──────────────────────────── */
+        .adr {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 28px 32px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .adr h4 {
+            font-family: var(--font-display);
+            color: var(--accent-blue2);
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .adr hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+        .adr p { color: var(--text-mid); margin-bottom: 8px; font-size: 0.95em; }
+        .adr p strong { color: var(--text-bright); }
+        .adr ul { margin-left: 22px; color: var(--text-mid); font-size: 0.95em; }
+        .adr ul li { margin-bottom: 6px; }
+        .tradeoff-row {
+            display: flex;
+            gap: 16px;
+            margin: 12px 0;
+        }
+        .tradeoff-lose {
+            flex: 1;
+            background: rgba(224,85,85,0.07);
+            border-left: 2px solid var(--red);
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: #f0a0a0;
+            font-size: 0.9em;
+        }
+        .tradeoff-gain {
+            flex: 1;
+            background: rgba(77,184,122,0.07);
+            border-left: 2px solid var(--green);
+            padding: 10px 14px;
+            border-radius: 4px;
+            color: #8febb8;
+            font-size: 0.9em;
+        }
+
+        /* ─── METRIC CARDS ────────────────────────────────── */
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .metric-card .label {
+            font-family: var(--font-display);
+            font-size: 0.68em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .metric-card .value {
+            font-family: var(--font-display);
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--accent-blue2);
+        }
+
+        /* ─── AI PATTERN BOXES ────────────────────────────── */
+        .ai-pattern {
+            background: rgba(201,153,58,0.05);
+            border-left: 4px solid var(--accent-gold);
+            padding: 22px 26px;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+        .ai-pattern h4 {
+            font-family: var(--font-display);
+            color: var(--accent-gold2);
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .ai-pattern p { color: var(--text-mid); margin-bottom: 8px; font-size: 0.95em; }
+        .ai-pattern strong { color: var(--text-bright); }
+        .ai-pattern ol { margin-left: 20px; color: var(--text-mid); }
+        .ai-pattern ol li { margin-bottom: 6px; font-size: 0.95em; }
+
+        /* ─── TIMELINE ────────────────────────────────────── */
+        .timeline { padding: 10px 0 10px 20px; }
+        .tl-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .tl-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% + 12px);
+            background: var(--border);
+        }
+        .tl-dot {
+            width: 40px; height: 40px;
+            min-width: 40px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.85em;
+            color: #0b0f1a;
+        }
+        .tl-body {}
+        .tl-body h4 {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+        .tl-body p { color: var(--text-mid); font-size: 0.92em; }
+
+        /* ─── SUMMARY BOX ─────────────────────────────────── */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(30,60,140,0.2), rgba(18,32,60,0.2));
+            border: 2px solid var(--accent-blue);
+            padding: 28px 35px;
+            border-radius: 10px;
+            margin: 40px 0;
+        }
+        .summary-box h3 {
+            font-family: var(--font-display);
+            color: var(--accent-blue2);
+            margin-bottom: 16px;
+            font-size: 1.05em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .summary-box ul { margin-left: 22px; }
+        .summary-box li { color: var(--text-mid); margin-bottom: 10px; font-size: 0.97em; }
+        .summary-box li strong { color: var(--text-bright); }
+
+        /* ─── HANDOFF FOLDER ──────────────────────────────── */
+        .handoff-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 28px 32px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .handoff-box h3 {
+            font-family: var(--font-display);
+            color: var(--accent-blue2);
+            margin-bottom: 14px;
+            font-size: 1em;
+            font-weight: 700;
+        }
+        .handoff-box p { color: var(--text-mid); margin-bottom: 14px; font-size: 0.95em; }
+        .handoff-box ul { margin-left: 22px; color: var(--text-mid); }
+        .handoff-box li { margin-bottom: 6px; font-size: 0.93em; }
+
+        /* ─── DIVIDER ─────────────────────────────────────── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            margin: 80px 0;
+        }
+
+        /* ─── ZONE CARDS ──────────────────────────────────── */
+        .zone {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px 26px;
+            margin: 18px 0;
+        }
+        .zone-header {
+            font-family: var(--font-display);
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .zone.green .zone-header { color: var(--green); }
+        .zone.amber .zone-header { color: var(--amber); }
+        .zone.red   .zone-header { color: var(--red); }
+        .zone p { color: var(--text-mid); font-size: 0.93em; margin-bottom: 8px; }
+        .zone ul { margin-left: 20px; color: var(--text-mid); font-size: 0.93em; }
+        .zone li { margin-bottom: 6px; }
+        .zone strong { color: var(--text-bright); }
+
+        /* ─── MENTAL MODEL ────────────────────────────────── */
+        .mental-model {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            color: var(--accent-blue2);
+            line-height: 2;
+            margin: 20px 0;
+        }
+
+        /* ─── FOOTER ──────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+            padding: 50px 60px;
+            text-align: center;
+        }
+        footer p { color: var(--text-dim); font-style: italic; margin-bottom: 10px; }
+        footer p:first-child { font-size: 1.1em; color: var(--text-mid); }
+
+        /* ─── RESPONSIVE ──────────────────────────────────── */
+        @media (max-width: 900px) {
+            .sidenav { display: none; }
+            .main { margin-left: 0; }
+            .hero, .content { padding: 40px 24px; }
+            .vibe-vs-senior { grid-template-columns: 1fr; }
+            .metric-row { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR NAV ──────────────────────────────────────────── -->
+<nav class="sidenav">
+    <div class="sidenav-brand">
+        <span>Senior AI Consultant</span>
+        <span style="color:var(--text-dim);font-size:0.85em;font-weight:400;margin-top:4px;">Complete Playbook</span>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-label">Part I — Discovery</div>
+        <button class="nav-link" data-target="scenario"><span class="num">S</span>The Scenario</button>
+        <button class="nav-link" data-target="discovery"><span class="num">1</span>Discovery Flow (9 Steps)</button>
+        <button class="nav-link" data-target="tool-matrix"><span class="num">2</span>Tool Selection Matrix</button>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-label">Part II — Implementation</div>
+        <button class="nav-link" data-target="adr"><span class="num">3</span>Write an ADR First</button>
+        <button class="nav-link" data-target="observability"><span class="num">4</span>Observability Day 1</button>
+        <button class="nav-link" data-target="edge-cases"><span class="num">5</span>Edge Case Tests</button>
+        <button class="nav-link" data-target="why-not"><span class="num">6</span>Document "Why Not"</button>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-label">Part III — AI & Code</div>
+        <button class="nav-link" data-target="ai-code"><span class="num">7</span>AI Code Patterns</button>
+        <button class="nav-link" data-target="synthesis"><span class="num">8</span>Synthesis & Sprint</button>
+        <button class="nav-link" data-target="handoff"><span class="num">9</span>Handoff Package</button>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-label">Extras</div>
+        <button class="nav-link" data-target="skeleton"><span class="num">📁</span>Project Skeleton</button>
+        <button class="nav-link" data-target="checklist"><span class="num">✓</span>Master Checklist</button>
+    </div>
+</nav>
+
+<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<div class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-eyebrow">Senior AI Consultant · Complete Playbook</div>
+        <h1>Discovery → Architecture → <em>Production</em></h1>
+        <p class="hero-sub">From "client explains problem" to deployed, maintainable system — every move, every decision, every line of thinking.</p>
+        <div class="hero-pills">
+            <span class="pill pill-gold">Part I: Discovery</span>
+            <span class="pill pill-blue">Part II: 4 Moves in Action</span>
+            <span class="pill pill-green">Part III: AI-Assisted Code</span>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- ══════════════════════════════════════════════════
+             SCENARIO
+        ═══════════════════════════════════════════════════ -->
+        <div id="scenario" class="scenario">
+            <h2>📋 The Scenario (Used Throughout This Playbook)</h2>
+            <p><strong>Client:</strong> Mid-market B2B SaaS company (CRM platform, ~500 users)</p>
+            <p><strong>Problem:</strong> Customer support team is drowning in tickets. They need to surface relevant past customer conversations faster.</p>
+            <p><strong>Stated Solution:</strong> "Build us an AI chatbot that can search our ticket history"</p>
+            <p><strong>Real Problem (discovered via discovery call):</strong> Support reps spend 10 minutes per ticket hunting for context. Customers wait. Quality suffers.</p>
+            <p><strong>Timeline:</strong> MVP in 3 weeks. 1 engineer on their team (must be able to maintain it).</p>
+            <div class="constraint">💰 <strong>Budget Constraint:</strong> $50–100/month in AI costs (no sky-high token bills)</div>
+            <div class="constraint">⏱️ <strong>Latency Constraint:</strong> Must return results in &lt;2 seconds (they're not waiting)</div>
+            <div class="constraint">🔧 <strong>Team Constraint:</strong> One junior backend engineer. They know Python, not ML.</div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             PART I — DISCOVERY
+        ═══════════════════════════════════════════════════ -->
+        <div id="discovery" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">I</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Part One</div>
+                    <div class="chapter-title">After the Client Explains the Problem: What's Next?</div>
+                    <div class="chapter-desc">The 9-step sequence from vague pain to locked scope — before a single line of code.</div>
+                </div>
+            </div>
+
+            <p style="margin-bottom:32px;font-size:1.05em;">
+                You've heard the problem. They want "AI chatbot search" or "intelligent document classification."
+                Now comes the work: translating vague pain into a specific solution. Here's the exact sequence.
+            </p>
+
+            <div class="flow-diagram">
+
+                <div class="flow-step">
+                    <div class="flow-number">01</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Uncover the Real Problem (Not the Imagined Solution)</div>
+                        <div class="flow-description">Clients pitch the solution they think they want. Your job: ask until you find the actual pain.</div>
+                        <div class="flow-example">
+                            <strong>Client says:</strong> "Build us an AI chatbot."<br>
+                            <strong>You ask:</strong> "What's the chatbot solving? How many queries/day? What are they asking? How long do reps spend answering?"<br>
+                            <strong>Reality:</strong> 50 queries/day, rep spends 5 min per query hunting for context, customer wait time kills deals.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">02</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Map the Current State (Baseline)</div>
+                        <div class="flow-description">Document how things work now. Measure cost, latency, quality, human effort. This is your benchmark.</div>
+                        <div class="flow-example">
+                            <strong>Current state:</strong> Support reps spend 5 min/ticket → answer (no AI).<br>
+                            <strong>Cost:</strong> 50 queries/day × 5 min = 250 min/day of rep time = $1,250/day (at $30/hr).<br>
+                            <strong>Quality:</strong> 70% customer satisfaction (ambiguous answers).<br>
+                            <strong>Success metric:</strong> Cut time to 2 min/ticket, 85% satisfaction.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">03</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Scope the Data &amp; Constraints</div>
+                        <div class="flow-description">What data feeds the system? How much? How fresh? What are the hard constraints?</div>
+                        <div class="flow-example">
+                            <strong>Data:</strong> 50k past support tickets (text + metadata like customer_id, resolved_date).<br>
+                            <strong>Freshness:</strong> New tickets added daily, but search only uses historical context (not real-time).<br>
+                            <strong>Constraints:</strong> &lt;2s latency (user can't wait), $50–100/month budget (no GPT-4), junior engineer maintains.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">04</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Define Success Metrics (Quantified)</div>
+                        <div class="flow-description">Not "good results." Specific, measurable outcomes the client cares about.</div>
+                        <div class="flow-example">
+                            <strong>Metrics:</strong><br>
+                            • Latency: &lt;2s (p99)<br>
+                            • Quality: 80%+ relevant results in top 3<br>
+                            • Cost: &lt;$75/month<br>
+                            • Adoption: 90%+ of reps use daily<br>
+                            • Maintenance: Junior engineer can add tickets without consultant help
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">05</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Generate &amp; Evaluate Solution Options</div>
+                        <div class="flow-description">Don't jump to one answer. Show 2–3 architectures. Map each to constraints. Client picks knowing tradeoffs.</div>
+                        <div class="flow-example">
+                            <strong>Option A (RAG-only):</strong> Pinecone + GPT-4 + LangChain<br>
+                            ✅ Best accuracy &nbsp;|&nbsp; ❌ $200/month, 3–5s latency, black box<br><br>
+                            <strong>Option B (Hybrid SQL+Vector):</strong> PostgreSQL + pgvector + Sonnet<br>
+                            ✅ $60/month, &lt;2s, transparent &nbsp;|&nbsp; ⚠️ Slightly lower quality, needs setup<br><br>
+                            <strong>Option C (Full-text only):</strong> PostgreSQL full-text search<br>
+                            ✅ Free, &lt;0.5s latency &nbsp;|&nbsp; ❌ Fails on semantic mismatches
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">06</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Pick the Framework &amp; Architecture</div>
+                        <div class="flow-description">Framework choice gates everything. Don't skip this. Write an ADR (see Step 3 of this playbook).</div>
+                        <div class="flow-example">
+                            <strong>Chosen:</strong> Option B (Hybrid SQL + pgvector + Claude 3.5 Sonnet)<br>
+                            <strong>Why:</strong> Meets all constraints, client can maintain, transparent failure modes.<br>
+                            <strong>ADR:</strong> ADR-001-hybrid-search.md (in repo, explains tradeoffs)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">07</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Map Tools &amp; Dependencies</div>
+                        <div class="flow-description">Now that architecture is locked, choose specific tools. Use the matrix below.</div>
+                        <div class="flow-example">
+                            <strong>Orchestration:</strong> None needed (simple retrieval, no multi-step agents)<br>
+                            <strong>LLM:</strong> Claude 3.5 Sonnet (cost-optimal for rerank task)<br>
+                            <strong>Vector DB:</strong> pgvector (built into PostgreSQL, no new infrastructure)<br>
+                            <strong>Deployment:</strong> Railway or Azure Container Apps<br>
+                            <strong>Observability:</strong> SQLite metrics + LangSmith (for token tracking)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">08</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Estimate Effort &amp; Timeline</div>
+                        <div class="flow-description">Break into components. Map to sprint. Be realistic about what you can do.</div>
+                        <div class="flow-example">
+                            <strong>Week 1:</strong> Data pipeline + embedding + schema design (3 days), first retrieval working (2 days)<br>
+                            <strong>Week 2:</strong> Reranking + latency optimization, observability setup<br>
+                            <strong>Week 3:</strong> Testing, edge cases, deployment to staging<br>
+                            <strong>Handoff:</strong> Runbook, tests, ADRs, demo
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="flow-number">09</div>
+                    <div class="flow-content">
+                        <div class="flow-title">Get Approval &amp; Lock Scope</div>
+                        <div class="flow-description">Show client: architecture diagram, tool choices, timeline, cost (your time + infrastructure). Lock scope.</div>
+                        <div class="flow-example">
+                            <strong>Approval doc includes:</strong><br>
+                            • Architecture diagram (boxes: Postgres, pgvector, Claude, retrieval pipeline)<br>
+                            • Why these tools (ADR)<br>
+                            • Timeline: 3 weeks to MVP<br>
+                            • Infrastructure cost: ~$50/month<br>
+                            • Consultant fee: $X<br>
+                            • What's in / out of scope (no agents, no chat history, v1 memory only)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkpoint">
+                <h4>✓ Checkpoint: Before You Code</h4>
+                <ol>
+                    <li><strong>Problem statement:</strong> "Current state: X → Desired state: Y" (quantified)</li>
+                    <li><strong>Success metrics:</strong> Latency, cost, quality, adoption (measurable)</li>
+                    <li><strong>Architecture:</strong> Diagram + ADR explaining choices</li>
+                    <li><strong>Tools:</strong> Specific tools + why (vs. alternatives)</li>
+                    <li><strong>Timeline:</strong> Realistic breakdown by week</li>
+                    <li><strong>Signed-off scope:</strong> Client agrees to what's in/out</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             TOOL SELECTION MATRIX
+        ═══════════════════════════════════════════════════ -->
+        <div id="tool-matrix" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">↗</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Tool Selection Framework</div>
+                    <div class="chapter-title">Picking the Right Tools for Every Constraint</div>
+                    <div class="chapter-desc">Constraints from discovery drive tool choice — not trends, not "what's most popular."</div>
+                </div>
+            </div>
+
+            <p style="margin-bottom:24px;">Once you know the architecture, use this matrix to pick specific tools. The constraints from your discovery should drive the choice.</p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Decision Point</th>
+                            <th>If Constraint Is…</th>
+                            <th>Choose…</th>
+                            <th>Not This</th>
+                            <th>Cost / Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="cat-label">🤖 LLM Provider</span></td>
+                            <td>Cost vs. Quality</td>
+                            <td>$50/month budget</td>
+                            <td>Claude 3.5 Sonnet (rerank, not gen)</td>
+                            <td>GPT-4 (10x cost)</td>
+                            <td>$0.003 / 1K input tokens</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Cost vs. Quality</td>
+                            <td>$500/month budget</td>
+                            <td>GPT-4 Turbo or Claude Opus</td>
+                            <td>Free tier models</td>
+                            <td>Better quality for generation tasks</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Latency critical</td>
+                            <td>&lt;1s response time</td>
+                            <td>Sonnet (fast) or local Llama (cached)</td>
+                            <td>Opus (slower)</td>
+                            <td>Sonnet ~400ms, Opus ~2s</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cat-label">🗄️ Vector DB</span></td>
+                            <td>Operational burden</td>
+                            <td>Junior engineer, no DevOps</td>
+                            <td>pgvector (in Postgres) or Pinecone</td>
+                            <td>Qdrant, Weaviate (self-hosted)</td>
+                            <td>pgvector = free, Pinecone = managed</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Scale + cost</td>
+                            <td>&gt;100M vectors</td>
+                            <td>Qdrant or Milvus (self-hosted)</td>
+                            <td>Pinecone (goes 10x over budget)</td>
+                            <td>Self-hosted = cheap at scale</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Existing DB</td>
+                            <td>Data already in PostgreSQL</td>
+                            <td>pgvector (no migration)</td>
+                            <td>Separate vector DB (ETL overhead)</td>
+                            <td>Same connection pool, simpler</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cat-label">⚙️ Framework</span></td>
+                            <td>Multi-step orchestration?</td>
+                            <td>Yes, complex agent flows</td>
+                            <td>LangGraph or CrewAI</td>
+                            <td>Simple retrieval (don't overcomplicate)</td>
+                            <td>Graph = state management</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Multi-step orchestration?</td>
+                            <td>No, simple retrieval + rerank</td>
+                            <td>None (write plain Python)</td>
+                            <td>LangChain (adds complexity)</td>
+                            <td>Less abstraction = more control</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Team maintenance</td>
+                            <td>Junior engineer, limited ML</td>
+                            <td>No framework (plain Python + SQL)</td>
+                            <td>LangChain abstraction (hides bugs)</td>
+                            <td>Transparency &gt; magic</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cat-label">📊 Embedding</span></td>
+                            <td>Cost + quality</td>
+                            <td>Semantic search (not generation)</td>
+                            <td>text-embedding-3-small or voyage-3</td>
+                            <td>text-embedding-3-large (2x cost)</td>
+                            <td>Small = $0.02 / 1M tokens</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Privacy critical</td>
+                            <td>No API calls allowed</td>
+                            <td>all-minilm, bge-small (local)</td>
+                            <td>OpenAI embeddings (API)</td>
+                            <td>Run locally, ~50ms per query</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cat-label">🚀 Deployment</span></td>
+                            <td>Speed to MVP</td>
+                            <td>3-week sprint, simple app</td>
+                            <td>Railway or Render</td>
+                            <td>Kubernetes (too much setup)</td>
+                            <td>Deploy with `git push`</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Enterprise, Azure ecosystem</td>
+                            <td>Client uses Azure already</td>
+                            <td>Azure Container Apps or App Service</td>
+                            <td>AWS services (different ecosystem)</td>
+                            <td>Same dashboard, billing, SSO</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Scale + cost</td>
+                            <td>&gt;1M requests/month</td>
+                            <td>Kubernetes or managed Container Apps</td>
+                            <td>Serverless (cost explodes on volume)</td>
+                            <td>Containers = per-replica billing</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cat-label">📈 Observability</span></td>
+                            <td>Startup phase</td>
+                            <td>MVP, &lt;100 searches/day</td>
+                            <td>SQLite (free, transparent)</td>
+                            <td>Datadog or New Relic (overkill)</td>
+                            <td>$0, queryable, no vendor lock</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Scale phase</td>
+                            <td>10k+ searches/day, LLM evals</td>
+                            <td>LangSmith + custom monitoring</td>
+                            <td>Separate tools (splinter visibility)</td>
+                            <td>LangSmith = $30/mo for traces</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box-info">
+                <h4>🎯 Decision Algorithm</h4>
+                <ol style="margin-left:20px;color:var(--text-mid);">
+                    <li style="margin-bottom:8px;"><strong>Start with constraints:</strong> latency, budget, scale, team skill, deployment env</li>
+                    <li style="margin-bottom:8px;"><strong>Pick the most restrictive constraint:</strong> If budget is $50, eliminate expensive tools first</li>
+                    <li style="margin-bottom:8px;"><strong>Within that bucket, optimize for maintainability:</strong> Junior engineer? Pick transparent tools</li>
+                    <li style="margin-bottom:8px;"><strong>Benchmark against existing infrastructure:</strong> Using PostgreSQL? Use pgvector (no ETL)</li>
+                    <li style="margin-bottom:8px;"><strong>Document the "why not" for each alternative:</strong> Creates your ADR</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ══════════════════════════════════════════════════
+             PART II — THE 4 MOVES
+        ═══════════════════════════════════════════════════ -->
+        <div class="chapter-header" style="margin-bottom:50px;">
+            <div class="chapter-num">II</div>
+            <div class="chapter-title-block">
+                <div class="chapter-eyebrow">Part Two</div>
+                <div class="chapter-title">The 4 Moves in Action</div>
+                <div class="chapter-desc">From vibe coding to real delivery — the four things that separate a senior consultant from someone "shipping demos."</div>
+            </div>
+        </div>
+
+        <!-- MOVE 1 — ADR -->
+        <div id="adr" class="step-card">
+            <div class="step-card-header">
+                <div class="step-card-num">1️⃣</div>
+                <div class="step-card-title">
+                    <h2>Write an ADR Before Code</h2>
+                    <div class="step-card-subtitle">Make the tradeoff matrix explicit. Why this, not that?</div>
+                </div>
+            </div>
+            <div class="step-card-body">
+
+                <div class="vibe-vs-senior">
+                    <div class="cmp-box avoid">
+                        <h4>❌ Vibe Approach <span class="badge-avoid">AVOID</span></h4>
+                        <p>"Let's use LangChain + Pinecone + GPT-4. It's the most powerful setup. We'll build a RAG pipeline and the LLM will figure it out."</p>
+                        <p style="margin-top:8px;font-size:0.88em;color:var(--red);">No tradeoff analysis. No mention of cost, latency, or maintainability. Optimized for "sounds impressive."</p>
+                    </div>
+                    <div class="cmp-box do">
+                        <h4>✅ Senior Approach <span class="badge-do">DO THIS</span></h4>
+                        <p>Write an ADR that shows the decision, the constraints, alternatives considered + why they were rejected, tradeoffs, and how you'll measure success.</p>
+                    </div>
+                </div>
+
+                <div class="adr">
+                    <h4>📄 ADR-001: Hybrid Search Architecture (SQL + Vector)</h4>
+                    <p><strong>Status:</strong> ACCEPTED &nbsp;|&nbsp; <strong>Date:</strong> 2024-04-15</p>
+                    <hr>
+                    <p><strong>Decision:</strong> Use PostgreSQL (full-text search) + pgvector (semantic search) + Claude 3.5 Sonnet, NOT pure vector RAG with Pinecone/GPT-4.</p>
+
+                    <p style="margin-top:14px;"><strong>Context &amp; Constraints:</strong></p>
+                    <ul>
+                        <li><strong>Latency SLA:</strong> &lt;2 seconds end-to-end</li>
+                        <li><strong>Monthly budget:</strong> $50–100 in AI costs</li>
+                        <li><strong>Team:</strong> 1 junior backend engineer, not an ML specialist</li>
+                        <li><strong>Data:</strong> ~50k support tickets, mostly text</li>
+                        <li><strong>Maintenance:</strong> Client must understand and modify it 6 months from now</li>
+                    </ul>
+
+                    <p style="margin-top:16px;"><strong>Considered Alternatives:</strong></p>
+                    <div class="table-wrap" style="margin:14px 0;">
+                        <table>
+                            <thead><tr><th>Option</th><th>Latency</th><th>Cost/mo</th><th>Maintainability</th><th>Why Not</th></tr></thead>
+                            <tbody>
+                                <tr><td>Pure Vector (Pinecone + GPT-4)</td><td>~1.5s ✅</td><td>$150–250 ❌</td><td>Black box ❌</td><td>Over budget; client can't debug failures</td></tr>
+                                <tr><td>Full-text only (PostgreSQL)</td><td>~0.2s ✅</td><td>$0 ✅</td><td>Simple ✅</td><td>Fails on semantic mismatches ("Can't login" vs "access denied")</td></tr>
+                                <tr><td><strong>Hybrid (SQL + pgvector) ← CHOSEN</strong></td><td><strong>~1.8s ✅</strong></td><td><strong>$60 ✅</strong></td><td><strong>Transparent ✅</strong></td><td>—</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p><strong>Why This Works:</strong></p>
+                    <ul>
+                        <li><strong>Cost:</strong> Sonnet 3.5 is 1/10th the price of GPT-4. One reranking call per search = ~$0.005 per query.</li>
+                        <li><strong>Latency:</strong> Parallel SQL + vector search, then rerank = stays under 2s.</li>
+                        <li><strong>Maintainability:</strong> Junior engineer can understand SQL + embeddings. No black-box prompt magic.</li>
+                        <li><strong>Failure modes clear:</strong> If results are bad, they know to add more training data or tweak the embedding model.</li>
+                    </ul>
+
+                    <p style="margin-top:16px;"><strong>Tradeoffs:</strong></p>
+                    <div class="tradeoff-row">
+                        <div class="tradeoff-lose"><strong>Lose:</strong> Absolute state-of-the-art semantic understanding (GPT-4 is slightly better at nuance)</div>
+                        <div class="tradeoff-gain"><strong>Gain:</strong> Cost predictability, &lt;2s latency guarantee, debuggable system, trainable staff</div>
+                    </div>
+
+                    <p style="margin-top:16px;"><strong>How We'll Know This Works:</strong></p>
+                    <ul>
+                        <li>Support reps find the right ticket in top 3 results 80%+ of the time</li>
+                        <li>Time-to-answer drops from 10 min → 2 min</li>
+                        <li>Monthly token bill stays under $75</li>
+                        <li>Client's engineer can add new tickets to index without our help</li>
+                    </ul>
+
+                    <p style="margin-top:16px;"><strong>Path Forward If This Breaks:</strong></p>
+                    <ul>
+                        <li>If semantic quality is bad → try voyage-3 instead of text-embedding-3-small</li>
+                        <li>If latency creeps over 2s → add caching + prioritize recent tickets</li>
+                        <li>If cost explodes → reduce rerank frequency (only rerank top 10, not 500)</li>
+                        <li>If client grows to 1M tickets → migrate to Qdrant (same pgvector code, different backend)</li>
+                    </ul>
+                </div>
+
+                <div class="box-success">
+                    <strong>✅ What This ADR Does:</strong>
+                    <ul>
+                        <li>Client sees exactly why you chose this — they can debate it before code starts</li>
+                        <li>If something breaks, you have a clear roadmap</li>
+                        <li>Their engineer can extend it because they understand the reasoning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOVE 2 — OBSERVABILITY -->
+        <div id="observability" class="step-card">
+            <div class="step-card-header">
+                <div class="step-card-num">2️⃣</div>
+                <div class="step-card-title">
+                    <h2>Add Observability from Day 1</h2>
+                    <div class="step-card-subtitle">LangSmith + cost tracker. Show the client what they're paying for.</div>
+                </div>
+            </div>
+            <div class="step-card-body">
+
+                <div class="vibe-vs-senior">
+                    <div class="cmp-box avoid">
+                        <h4>❌ Vibe Approach <span class="badge-avoid">AVOID</span></h4>
+                        <p>"We'll add monitoring in phase 2 if there are issues." → (There are issues. It's too late to instrument. Client has no data.)</p>
+                    </div>
+                    <div class="cmp-box do">
+                        <h4>✅ Senior Approach <span class="badge-do">DO THIS</span></h4>
+                        <p>Instrument before the first API call. Show cost + quality + latency from day 1.</p>
+                    </div>
+                </div>
+
+                <div class="code-label">requirements.txt — add observability deps</div>
+                <pre>langsmith>=0.1.0
+anthropic>=0.25.0
+psycopg[binary]>=3.1.0
+pgvector>=0.2.0</pre>
+
+                <div class="code-label">observability.py — custom cost tracker</div>
+                <pre>import json
+import time
+from datetime import datetime
+from typing import Any
+import sqlite3
+
+class CostTracker:
+    """Track cost, latency, and quality metrics for each search."""
+    
+    def __init__(self, db_path: str = "search_metrics.db"):
+        self.db_path = db_path
+        self._init_db()
+    
+    def _init_db(self):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS search_metrics (
+                    id INTEGER PRIMARY KEY,
+                    timestamp TEXT NOT NULL,
+                    query TEXT,
+                    sql_latency_ms REAL,
+                    vector_latency_ms REAL,
+                    rerank_latency_ms REAL,
+                    total_latency_ms REAL,
+                    input_tokens INTEGER,
+                    output_tokens INTEGER,
+                    estimated_cost_cents REAL,
+                    result_count INTEGER,
+                    user_feedback_relevant BOOLEAN,
+                    user_feedback_rating INTEGER
+                )
+            """)
+    
+    def log_search(self, **kwargs):
+        """Log a single search operation."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("""
+                INSERT INTO search_metrics 
+                (timestamp, query, sql_latency_ms, vector_latency_ms, 
+                 rerank_latency_ms, total_latency_ms, input_tokens, 
+                 output_tokens, estimated_cost_cents, result_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                datetime.utcnow().isoformat(),
+                kwargs.get('query'),
+                kwargs.get('sql_latency_ms'),
+                kwargs.get('vector_latency_ms'),
+                kwargs.get('rerank_latency_ms'),
+                kwargs.get('total_latency_ms'),
+                kwargs.get('input_tokens', 0),
+                kwargs.get('output_tokens', 0),
+                self._estimate_cost(kwargs.get('input_tokens', 0), 
+                                    kwargs.get('output_tokens', 0)),
+                kwargs.get('result_count', 0)
+            ))
+    
+    @staticmethod
+    def _estimate_cost(input_tokens: int, output_tokens: int) -> float:
+        """Estimate cost in cents for Claude 3.5 Sonnet."""
+        # Input: $3/1M tokens  → 0.0003 cents per token
+        # Output: $15/1M tokens → 0.0015 cents per token
+        input_cost  = input_tokens  * 0.0003
+        output_cost = output_tokens * 0.0015
+        return input_cost + output_cost
+    
+    def get_daily_summary(self, days: int = 7) -> dict:
+        """Get cost, latency, and quality metrics for the last N days."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute("""
+                SELECT 
+                    DATE(timestamp) as date,
+                    COUNT(*) as search_count,
+                    ROUND(AVG(total_latency_ms), 1) as avg_latency_ms,
+                    ROUND(MAX(total_latency_ms), 1) as p99_latency_ms,
+                    ROUND(SUM(estimated_cost_cents) / 100, 2) as cost_usd,
+                    ROUND(AVG(CAST(user_feedback_relevant AS FLOAT)), 2) as quality_relevant_ratio
+                FROM search_metrics
+                WHERE timestamp > datetime('now', '-' || ? || ' days')
+                GROUP BY DATE(timestamp)
+                ORDER BY date DESC
+            """, (days,))
+            return [dict(row) for row in rows]</pre>
+
+                <div class="code-label">search_service.py — instrument the search pipeline</div>
+                <pre>from anthropic import Anthropic
+from observability import CostTracker
+import time
+import json
+
+class HybridSearchService:
+    def __init__(self, db_conn, tracker: CostTracker):
+        self.db = db_conn
+        self.tracker = tracker
+        self.client = Anthropic()
+    
+    def search(self, query: str, customer_id: str, limit: int = 10) -> list[dict]:
+        """Execute hybrid search with full observability."""
+        
+        total_start = time.time()
+        
+        # 1. SQL full-text search
+        sql_start = time.time()
+        sql_results = self._sql_search(query, customer_id, limit * 2)
+        sql_latency = (time.time() - sql_start) * 1000
+        
+        # 2. Vector semantic search
+        vector_start = time.time()
+        vector_results = self._vector_search(query, customer_id, limit * 2)
+        vector_latency = (time.time() - vector_start) * 1000
+        
+        # 3. Combine + rerank using Claude
+        combined = self._deduplicate_results(sql_results, vector_results)
+        
+        rerank_start = time.time()
+        ranked = self._rerank_with_claude(query, combined, limit)
+        rerank_latency = (time.time() - rerank_start) * 1000
+        
+        total_latency = (time.time() - total_start) * 1000
+        
+        # 4. Log everything
+        self.tracker.log_search(
+            query=query,
+            sql_latency_ms=sql_latency,
+            vector_latency_ms=vector_latency,
+            rerank_latency_ms=rerank_latency,
+            total_latency_ms=total_latency,
+            input_tokens=150,   # approximate; replace with response.usage.input_tokens
+            output_tokens=50,
+            result_count=len(ranked)
+        )
+        
+        return ranked
+    
+    def _rerank_with_claude(self, query: str, candidates: list, limit: int) -> list:
+        """Use Claude to rerank candidates."""
+        prompt = f"""Given this support ticket search query:
+"{query}"
+
+And these candidate tickets, rank them by relevance (most relevant first):
+{json.dumps(candidates, indent=2)}
+
+Return a JSON array of the top {limit} tickets, ordered by relevance."""
+        
+        response = self.client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=1000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        try:
+            return json.loads(response.content[0].text)
+        except json.JSONDecodeError:
+            return candidates[:limit]
+    
+    def _sql_search(self, query: str, customer_id: str, limit: int) -> list:
+        cur = self.db.cursor()
+        cur.execute("""
+            SELECT id, customer_id, content, created_at
+            FROM tickets
+            WHERE customer_id = %s
+            AND to_tsvector('english', content) @@ plainto_tsquery('english', %s)
+            LIMIT %s
+        """, (customer_id, query, limit))
+        return [dict(row) for row in cur.fetchall()]
+    
+    def _vector_search(self, query: str, customer_id: str, limit: int) -> list:
+        cur = self.db.cursor()
+        cur.execute("""
+            SELECT id, customer_id, content, created_at,
+                   1 - (embedding <=> %s::vector) as similarity
+            FROM tickets
+            WHERE customer_id = %s
+            ORDER BY embedding <=> %s::vector
+            LIMIT %s
+        """, (query, customer_id, query, limit))
+        return [dict(row) for row in cur.fetchall()]
+    
+    def _deduplicate_results(self, sql_results, vector_results) -> list:
+        seen, combined = set(), []
+        for r in sql_results + vector_results:
+            if r['id'] not in seen:
+                seen.add(r['id'])
+                combined.append(r)
+        return combined</pre>
+
+                <div class="code-label">What the client sees — daily dashboard output</div>
+                <pre>API Dashboard: Support Ticket Search
+Last 7 days:
+
+📊 PERFORMANCE
+  Avg Latency:     1.65s (target: <2s) ✅
+  P99 Latency:     1.98s
+  Search Count:    412 queries
+
+💰 COST
+  Day 1: $0.34
+  Day 2: $0.41
+  Day 3: $0.38
+  Week Total: $2.65 (annualized: ~$138)
+
+📈 QUALITY
+  Relevant (user rated):  78% ✅
+  Not Relevant:           14%
+  Skipped Rating:          8%
+
+🔴 ALERTS
+  None this week!</pre>
+
+                <div class="metric-row">
+                    <div class="metric-card">
+                        <div class="label">Avg Latency</div>
+                        <div class="value">1.65s ✅</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Week Cost</div>
+                        <div class="value">$2.65</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">Quality Score</div>
+                        <div class="value">78% ✅</div>
+                    </div>
+                </div>
+
+                <div class="box-success">
+                    <strong>✅ Why This Matters:</strong>
+                    <ul>
+                        <li>Client sees exactly what they're paying for ($0.34/day, not "thousands/month")</li>
+                        <li>You catch latency creep before it hits SLA</li>
+                        <li>When results are bad, you have data: is it the rerank step or the retrieval?</li>
+                        <li>Client's engineer can monitor in production without calling you</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOVE 3 — EDGE CASE TESTS -->
+        <div id="edge-cases" class="step-card">
+            <div class="step-card-header">
+                <div class="step-card-num">3️⃣</div>
+                <div class="step-card-title">
+                    <h2>Write 3 Edge Case Tests</h2>
+                    <div class="step-card-subtitle">Not happy-path tests. Break it before production does.</div>
+                </div>
+            </div>
+            <div class="step-card-body">
+
+                <div class="vibe-vs-senior">
+                    <div class="cmp-box avoid">
+                        <h4>❌ Vibe Approach <span class="badge-avoid">AVOID</span></h4>
+                        <p>"I tested it locally and it works. We're shipping." → (Crashes in production on edge cases)</p>
+                    </div>
+                    <div class="cmp-box do">
+                        <h4>✅ Senior Approach <span class="badge-do">DO THIS</span></h4>
+                        <p>Identify the 3 failure modes most likely to bite you in production. Write tests that catch them.</p>
+                    </div>
+                </div>
+
+                <div class="box-info">
+                    <h4>For this project, the 3 edge cases are:</h4>
+                    <ul style="margin-left:20px;color:var(--text-mid);">
+                        <li style="margin-bottom:6px;"><strong>Empty/null results:</strong> Customer has no tickets. Search returns 0 results. UI crashes.</li>
+                        <li style="margin-bottom:6px;"><strong>Timeout on rerank:</strong> Claude API is slow (&gt;5s). Total latency exceeds SLA. Request hangs.</li>
+                        <li style="margin-bottom:6px;"><strong>Duplicate tickets in results:</strong> SQL and vector search return same ticket twice. UI shows dups.</li>
+                    </ul>
+                </div>
+
+                <div class="code-label">tests/test_search_edge_cases.py</div>
+                <pre>import pytest
+import sqlite3
+import time
+from unittest.mock import patch, MagicMock
+from search_service import HybridSearchService
+from observability import CostTracker
+
+class TestHybridSearchEdgeCases:
+    
+    @pytest.fixture
+    def db_conn(self):
+        """Create in-memory DB with test data."""
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        conn.execute("""
+            CREATE TABLE tickets (
+                id INTEGER PRIMARY KEY,
+                customer_id TEXT,
+                content TEXT,
+                created_at TEXT,
+                embedding VECTOR(1536)
+            )
+        """)
+        conn.execute("""
+            INSERT INTO tickets (customer_id, content, created_at)
+            VALUES ('cust_123', 'User cannot login to account', '2024-04-10')
+        """)
+        conn.commit()
+        return conn
+    
+    def test_empty_result_set_no_tickets_for_customer(self, db_conn):
+        """EDGE CASE 1: Customer has no tickets.
+           Should return empty list, NOT crash."""
+        tracker = CostTracker()
+        service = HybridSearchService(db_conn, tracker)
+        
+        results = service.search(
+            query="login issue",
+            customer_id="cust_999"   # No tickets for this customer
+        )
+        
+        assert results == []
+        assert isinstance(results, list)
+    
+    def test_timeout_on_rerank_exceeds_latency_sla(self, db_conn):
+        """EDGE CASE 2: Rerank step times out (>5s).
+           Should degrade gracefully, NOT exceed 2s SLA."""
+        tracker = CostTracker()
+        service = HybridSearchService(db_conn, tracker)
+        
+        with patch.object(service.client.messages, 'create') as mock_claude:
+            def slow_api_call(*args, **kwargs):
+                time.sleep(0.1)
+                raise TimeoutError("API took too long")
+            mock_claude.side_effect = slow_api_call
+            
+            start = time.time()
+            results = service.search(query="login", customer_id="cust_123")
+            elapsed = (time.time() - start) * 1000
+            
+            assert len(results) > 0    # Still return something
+            assert elapsed < 2000      # Stayed under SLA
+    
+    def test_duplicate_tickets_in_combined_results(self, db_conn):
+        """EDGE CASE 3: SQL and vector search both return same ticket.
+           Should deduplicate, NOT show ticket twice."""
+        tracker = CostTracker()
+        service = HybridSearchService(db_conn, tracker)
+        
+        ticket = {
+            'id': 1,
+            'customer_id': 'cust_123',
+            'content': 'User cannot login',
+            'created_at': '2024-04-10'
+        }
+        
+        with patch.object(service, '_sql_search', return_value=[ticket]):
+            with patch.object(service, '_vector_search', return_value=[ticket]):
+                with patch.object(service, '_rerank_with_claude', return_value=[ticket]):
+                    results = service.search(
+                        query="login", customer_id="cust_123", limit=10
+                    )
+                    ids = [r['id'] for r in results]
+                    assert len(ids) == len(set(ids)), "Duplicate IDs found"
+                    assert ids.count(1) == 1
+    
+    def test_malformed_rerank_response_json(self, db_conn):
+        """EDGE CASE 4 (bonus): Claude returns invalid JSON.
+           Should fallback to original results."""
+        tracker = CostTracker()
+        service = HybridSearchService(db_conn, tracker)
+        
+        with patch.object(service.client.messages, 'create') as mock_claude:
+            mock_response = MagicMock()
+            mock_response.content = [MagicMock(text="Not valid JSON {{{")]
+            mock_claude.return_value = mock_response
+            
+            candidates = [
+                {'id': 1, 'content': 'ticket 1'},
+                {'id': 2, 'content': 'ticket 2'}
+            ]
+            results = service._rerank_with_claude(
+                query="test", candidates=candidates, limit=2
+            )
+            assert len(results) <= 2
+            assert results[0]['id'] in [1, 2]
+    
+    def test_cost_tracking_under_high_load(self, db_conn):
+        """EDGE CASE 5 (bonus): 100 searches in a row.
+           Cost tracking should not slow down searches."""
+        tracker = CostTracker()
+        service = HybridSearchService(db_conn, tracker)
+        
+        times = []
+        for i in range(100):
+            start = time.time()
+            service.search(query=f"query {i}", customer_id="cust_123")
+            times.append((time.time() - start) * 1000)
+        
+        avg_latency = sum(times) / len(times)
+        assert avg_latency < 300, f"Avg latency {avg_latency}ms is too high"</pre>
+
+                <div class="code-label">Run the tests</div>
+                <pre>$ pytest tests/test_search_edge_cases.py -v
+
+tests/...::test_empty_result_set_no_tickets_for_customer PASSED
+tests/...::test_timeout_on_rerank_exceeds_latency_sla PASSED
+tests/...::test_duplicate_tickets_in_combined_results PASSED
+tests/...::test_malformed_rerank_response_json PASSED
+tests/...::test_cost_tracking_under_high_load PASSED
+
+====== 5 passed in 2.34s ======</pre>
+
+                <div class="box-success">
+                    <strong>✅ Why Edge Cases Matter:</strong>
+                    <ul>
+                        <li>Happy path works → you still look bad when an edge case breaks in week 2</li>
+                        <li>Client's engineer runs tests, knows what's safe to change</li>
+                        <li>When something breaks later, they add a test; regression stays fixed</li>
+                        <li>You have proof you thought about failure modes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOVE 4 — WHY NOT -->
+        <div id="why-not" class="step-card">
+            <div class="step-card-header">
+                <div class="step-card-num">4️⃣</div>
+                <div class="step-card-title">
+                    <h2>Document "Why Not" Decisions</h2>
+                    <div class="step-card-subtitle">Show the paths you explicitly rejected and why.</div>
+                </div>
+            </div>
+            <div class="step-card-body">
+
+                <div class="vibe-vs-senior">
+                    <div class="cmp-box avoid">
+                        <h4>❌ Vibe Approach <span class="badge-avoid">AVOID</span></h4>
+                        <p>"I chose X because it's the best." (No context on what you considered or why alternatives lost.)</p>
+                    </div>
+                    <div class="cmp-box do">
+                        <h4>✅ Senior Approach <span class="badge-do">DO THIS</span></h4>
+                        <p>Document every alternative seriously considered. Make the tradeoff matrix visible to the client.</p>
+                    </div>
+                </div>
+
+                <div class="code-label">DECISIONS.md — living document in the repo</div>
+                <pre># Architecture Decisions
+
+## Decision 1: PostgreSQL + pgvector, NOT Neo4j or Pinecone
+
+### Option A: Neo4j (Knowledge Graph)
+Pros: Excellent for "related tickets" queries, strong for cross-customer insights
+Cons: Overkill for single-tenant search; requires Cypher (client doesn't know it); 5–10s latency on large datasets
+Why Not: "The client's problem is 'find the right past ticket for this one customer, fast.'
+Graph queries are powerful, but we'd pay in complexity and latency for features they don't need."
+
+### Option B: Pinecone Vector-Only
+Pros: Managed service, fastest single-query latency (~500ms), battle-tested
+Cons: $1,500–2,000/month at their scale; proprietary; junior engineer can't debug failures
+Why Not: "Cost explodes budget 20x. Also junior engineer can't debug why results are bad —
+Pinecone is a black box. We need transparency for maintenance."
+
+### Option C: Elasticsearch
+Pros: Open source, excellent hybrid search, widely known
+Cons: Requires separate infrastructure; more complex than PostgreSQL; overkill for 50k tickets
+Why Not: "PostgreSQL + pgvector gets 95% of value with 50% less complexity.
+Client has existing Postgres. No new infra to manage."
+
+### ✅ Final Choice: PostgreSQL + pgvector
+1. Data already in Postgres → no migration
+2. Full-text search is fast for exact matches
+3. Vector search is fast for semantic matches
+4. Junior engineer understands SQL
+5. Cost = hosting only (~$50/month)
+6. Transparent failure modes
+7. Upgrade path: Qdrant if they outgrow it (same pgvector code)
+
+---
+
+## Decision 2: Claude 3.5 Sonnet, NOT GPT-4
+
+### Option A: GPT-4
+Pros: Slightly better semantic understanding
+Cons: 10x cost; for a reranking task the extra quality buys almost nothing; would triple monthly budget
+Why Not: "Reranking is binary ('is this relevant?'). GPT-4 and Sonnet are both 99% accurate.
+GPT-4 costs 10x more. Spend that on better retrieval instead."
+
+### Option B: Open Source (Llama 2, Mixtral)
+Pros: Free (no per-token cost); runs on their server; complete control
+Cons: Requires GPU infrastructure ($500–1000/month); slower inference (3–5s); hard to maintain
+Why Not: "Infrastructure + maintenance + latency hit cancels the 'free' savings.
+Managed API is cheaper and faster."
+
+### ✅ Final Choice: Claude 3.5 Sonnet
+1. Cost-optimal for this task (reranking, not generation)
+2. Fast (<1s)
+3. Client pays per-use (no waste if searches drop)
+4. Anthropic API is reliable
+
+---
+
+## Decision 3: SQLite for Metrics, NOT Datadog or CloudWatch
+
+### Option A: Datadog
+Pros: Enterprise monitoring, dashboards, alerting
+Cons: Minimum $25/month + $0.25/GB; overkill for <100 searches/day
+Why Not: "Client doesn't need enterprise monitoring for an MVP. SQLite is free and queryable."
+
+### Option B: CloudWatch (AWS)
+Pros: Integrated if on AWS, scales easily
+Cons: Client is on Azure — adds vendor complexity
+Why Not: "Client's stack is Azure. Keep it simple: one vendor."
+
+### ✅ Final Choice: SQLite + simple Python dashboard
+1. Zero cost
+2. Client's engineer can query it directly: `SELECT * FROM metrics`
+3. Easy to migrate: `INSERT INTO datadog_metrics SELECT * FROM sqlite_metrics`
+4. Metrics live with the code (version controlled together)
+
+---
+
+## When to Revisit These Decisions
+- If search volume exceeds 1,000 queries/day → Migrate pgvector to Qdrant or Weaviate
+- If monthly cost exceeds $150 → Evaluate open-source LLM (self-hosted)
+- If latency hits 2.5s → Add caching, prioritize recent tickets, or switch embedding model
+- If quality drops below 70% → Collect more training data, or use GPT-4 for rerank</pre>
+
+                <div class="box-success">
+                    <strong>✅ Why Document "Why Not":</strong>
+                    <ul>
+                        <li>6 months later, client's engineer asks "Why not use Neo4j?" — you have the answer</li>
+                        <li>If a "better" tool comes out next month, you have a decision framework to evaluate it</li>
+                        <li>You look thoughtful, not impulsive ("I picked this because it's trendy")</li>
+                        <li>When they grow and need to optimize, they know what knobs to turn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <h3>🎯 The 4 Moves Checklist</h3>
+            <ul>
+                <li><strong>✅ ADR-001:</strong> Document the main choice (hybrid SQL + vector), alternatives rejected, and tradeoffs</li>
+                <li><strong>✅ Observability:</strong> Cost tracker (daily spend), latency dashboard, quality metric (% relevant results)</li>
+                <li><strong>✅ Edge Case Tests:</strong> Empty results, timeout degradation, duplicate deduplication, malformed JSON fallback</li>
+                <li><strong>✅ Why Not Decisions:</strong> Why PostgreSQL (not Neo4j), why Sonnet (not GPT-4), why SQLite (not Datadog)</li>
+            </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ══════════════════════════════════════════════════
+             PART III — AI-ASSISTED CODE
+        ═══════════════════════════════════════════════════ -->
+        <div id="ai-code" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">III</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Part Three</div>
+                    <div class="chapter-title">How to Use AI for Writing Code</div>
+                    <div class="chapter-desc">The gap between "AI wrote this" and "production-grade code" is intention and specificity.</div>
+                </div>
+            </div>
+
+            <div class="section-title">The Three Zones of AI Code Assistance</div>
+
+            <div class="zone green">
+                <div class="zone-header">✅ Zone 1: Boilerplate &amp; Scaffolding — High Leverage</div>
+                <p>Database schemas, API route handlers, test skeletons, config files. AI excels here.</p>
+                <ul>
+                    <li><strong>Example:</strong> "Generate a SQLAlchemy ORM model for a tickets table with id, customer_id, content, created_at"</li>
+                    <li><strong>What AI does right:</strong> Correct syntax, standard patterns, no mistakes</li>
+                    <li><strong>Your job:</strong> Verify it matches your schema, tweak indexes/constraints</li>
+                    <li><strong>Time saved:</strong> 20 mins → 2 mins</li>
+                </ul>
+            </div>
+
+            <div class="zone amber">
+                <div class="zone-header">⚠️ Zone 2: Business Logic &amp; Integration — Medium Leverage</div>
+                <p>Search pipelines, data transformations, multi-step flows. AI needs direction.</p>
+                <ul>
+                    <li><strong>Example:</strong> "Write a Python function that combines SQL + vector search results, deduplicates by ticket id, and reranks using Claude"</li>
+                    <li><strong>What AI does right:</strong> Structure, skeleton, most of the code</li>
+                    <li><strong>Where it fails:</strong> Edge cases (empty results, timeouts), error handling, cost tracking</li>
+                    <li><strong>Your job:</strong> Add edge case handling, integrate observability, verify latency</li>
+                    <li><strong>Time saved:</strong> 2 hours → 30 mins (you fix the important parts)</li>
+                </ul>
+            </div>
+
+            <div class="zone red">
+                <div class="zone-header">❌ Zone 3: Architecture Decisions — Low Leverage</div>
+                <p>System design, error recovery, performance optimization. AI generates syntax; you drive strategy.</p>
+                <ul>
+                    <li><strong>Example:</strong> "Should we add caching to the retrieval pipeline?"</li>
+                    <li><strong>What AI does wrong:</strong> Suggests cache without measuring latency, assumes all loads are equal</li>
+                    <li><strong>Your job:</strong> Measure first (where's the bottleneck?), then propose solution</li>
+                    <li><strong>What AI CAN do:</strong> Generate the cache implementation once you've decided to add it</li>
+                </ul>
+            </div>
+
+            <div class="ai-pattern">
+                <h4>🔄 Pattern 1: Structured Prompt for Code Generation</h4>
+                <p><strong>Bad prompt:</strong> "Write a search function"</p>
+                <p style="margin-top:10px;"><strong>Good prompt:</strong></p>
+                <pre style="margin-top:10px;">I'm building a support ticket search service. The stack is:
+- Python 3.11 + Flask
+- PostgreSQL with pgvector extension
+- Claude 3.5 Sonnet API for reranking
+
+Write a Python function called `hybrid_search` that:
+1. Takes query (str), customer_id (str), limit (int=10)
+2. Runs SQL full-text search on tickets.content
+3. Runs pgvector semantic search (same query embedding)
+4. Combines & deduplicates results (by ticket.id)
+5. Calls Claude with prompt: "Rank these tickets by relevance"
+6. Returns top N results as dicts with id, content, customer_id, similarity_score
+
+Requirements:
+- Max latency: 2 seconds (timeout rerank at 1.5s)
+- Handle empty result sets (return [])
+- Log tokens + latency to a metrics dict for observability
+- Use the existing db connection (psycopg connection object)
+
+Include error handling for:
+- Database connection errors
+- Claude API timeouts
+- Malformed JSON responses from Claude
+
+Also include docstring with example usage.</pre>
+            </div>
+
+            <div class="ai-pattern">
+                <h4>🔍 Pattern 2: Iterative Refinement (Don't Trust First Output)</h4>
+                <p><strong>Step 1:</strong> Get the initial code from AI</p>
+                <p><strong>Step 2:</strong> Run it. Find issues.</p>
+                <p><strong>Step 3:</strong> Give AI the error + constraint. Ask for fix.</p>
+                <pre style="margin-top:14px;">You:  "Generate hybrid_search function with the constraints above"
+AI:   ✓ Returns code
+
+You:  "When query returns 0 results, it crashes on rerank. Fix the empty result case."
+AI:   ✓ Adds guard clause
+
+You:  "The rerank step is timing out at 1.8s. Add timeout handling that falls back to original ranking."
+AI:   ✓ Adds timeout + fallback
+
+You:  "Now track tokens + latency in a metrics dict. Log before returning."
+AI:   ✓ Adds observability</pre>
+            </div>
+
+            <div class="ai-pattern">
+                <h4>🧪 Pattern 3: AI + Test-Driven Development</h4>
+                <ol>
+                    <li><strong>You write the test first:</strong> "Write a pytest test that verifies empty result set returns []"</li>
+                    <li><strong>AI generates the code to pass the test</strong></li>
+                    <li><strong>You write another test (edge case):</strong> "Write a pytest test that verifies timeout on rerank falls back to original order"</li>
+                    <li><strong>AI generates the implementation</strong></li>
+                </ol>
+                <p style="margin-top:12px;"><strong>Why this works:</strong> Tests define the contract. AI fills in the implementation. You control behavior.</p>
+            </div>
+
+            <div class="section-title" style="margin-top:40px;">Pattern 4: Full Iteration Loop (with Code)</div>
+
+            <div class="code-label">Step 1: AI generates the skeleton</div>
+            <pre>def hybrid_search(query: str, customer_id: str, limit: int = 10):
+    # SQL full-text search
+    sql_results = db.execute("SELECT ... WHERE to_tsvector ...")
+    
+    # Vector search
+    vec_results = db.execute("SELECT ... WHERE embedding <=> ...")
+    
+    # Combine
+    combined = deduplicate(sql_results + vec_results)
+    
+    # Rerank
+    ranked = rerank_with_claude(query, combined)
+    
+    return ranked[:limit]</pre>
+
+            <div class="box-warn">
+                <strong>Issues found in AI's first output:</strong><br>
+                ❌ No error handling &nbsp;|&nbsp; ❌ No empty result check &nbsp;|&nbsp; ❌ No timeout handling &nbsp;|&nbsp; ❌ No observability &nbsp;|&nbsp; ❌ No latency measurement
+            </div>
+
+            <div class="code-label">Step 3: You request specific improvements</div>
+            <pre># Prompt to AI:
+"Add:
+1. Timeout handling for rerank step (>1.5s → return SQL+vector unranked, log timeout)
+2. Empty result handling (if combined has 0 results, return [] immediately)
+3. Metrics tracking (sql_latency_ms, vector_latency_ms, rerank_latency_ms, tokens)
+4. Error handling for DB errors, Claude API errors, JSON parse errors
+5. Docstring with example usage
+
+Rewrite the full function with all of these."
+
+# AI Output (now production-grade):
+def hybrid_search(query: str, customer_id: str, limit: int = 10):
+    metrics = {
+        'sql_latency_ms': 0, 'vector_latency_ms': 0,
+        'rerank_latency_ms': 0, 'total_latency_ms': 0,
+        'input_tokens': 0, 'output_tokens': 0
+    }
+    start = time.time()
+    
+    try:
+        sql_start = time.time()
+        sql_results = db.execute(...)
+        metrics['sql_latency_ms'] = (time.time() - sql_start) * 1000
+        
+        vec_start = time.time()
+        vec_results = db.execute(...)
+        metrics['vector_latency_ms'] = (time.time() - vec_start) * 1000
+        
+        combined = deduplicate(sql_results + vec_results)
+        
+        if not combined:
+            metrics['total_latency_ms'] = (time.time() - start) * 1000
+            return [], metrics
+        
+        rerank_start = time.time()
+        try:
+            ranked = rerank_with_claude(query, combined, timeout_seconds=1.5)
+            metrics['rerank_latency_ms'] = (time.time() - rerank_start) * 1000
+        except TimeoutError:
+            logger.warning(f"Rerank timeout for query={query}")
+            ranked = combined
+            metrics['rerank_latency_ms'] = 1500
+        
+        metrics['total_latency_ms'] = (time.time() - start) * 1000
+        return ranked[:limit], metrics
+        
+    except Exception as e:
+        logger.error(f"hybrid_search failed: {e}")
+        metrics['total_latency_ms'] = (time.time() - start) * 1000
+        return combined[:limit], metrics</pre>
+
+            <div class="code-label">Step 4: You write tests for edge cases</div>
+            <pre>def test_empty_result_set():
+    results, metrics = hybrid_search("xyz", "unknown_customer")
+    assert results == []
+    assert metrics['total_latency_ms'] < 100  # Should be fast
+
+def test_rerank_timeout_fallback():
+    with patch('client.messages.create') as mock:
+        mock.side_effect = TimeoutError()
+        results, metrics = hybrid_search("query", "cust_123")
+        assert len(results) > 0       # Still returns unranked
+        assert metrics['total_latency_ms'] < 2000  # Under SLA
+
+def test_claude_api_error_fallback():
+    with patch('client.messages.create') as mock:
+        mock.return_value.content = [MagicMock(text="garbage")]
+        results, metrics = hybrid_search("query", "cust_123")
+        assert len(results) > 0       # Still returns unranked</pre>
+
+            <div class="section-title" style="margin-top:40px;">Pattern 5: Code Review Checklist (After AI Generates)</div>
+
+            <div class="checkpoint">
+                <h4>✓ What to Check After AI Generates Code</h4>
+                <ol>
+                    <li><strong>Error handling:</strong> Does it crash on empty results, timeouts, API errors?</li>
+                    <li><strong>Observability:</strong> Can you measure latency, cost, tokens used?</li>
+                    <li><strong>Edge cases:</strong> What happens if query is empty? N=0? Very large N?</li>
+                    <li><strong>Latency:</strong> Does it exceed SLA? Any N+1 queries?</li>
+                    <li><strong>Cost:</strong> How many API calls per request? Can it be optimized?</li>
+                    <li><strong>Testability:</strong> Can you unit test it? Is it overfit to specific data?</li>
+                    <li><strong>Maintainability:</strong> Can a junior engineer understand and modify it?</li>
+                    <li><strong>Documentation:</strong> Docstring + examples? Known limitations?</li>
+                </ol>
+            </div>
+
+            <div class="section-title" style="margin-top:40px;">A Day in the Life: AI + Code</div>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot">1</div>
+                    <div class="tl-body">
+                        <h4>9:00 AM — Sketch the function</h4>
+                        <p>Whiteboard or docstring: "We need hybrid_search. Takes query, returns ranked results. Must be &lt;2s."</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">2</div>
+                    <div class="tl-body">
+                        <h4>9:15 AM — Write tests first</h4>
+                        <p>3–5 pytest tests for happy path + edge cases (empty, timeout, error).</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">3</div>
+                    <div class="tl-body">
+                        <h4>9:30 AM — Detailed prompt to AI</h4>
+                        <p>Full context: stack, constraints, requirements, test cases. Ask for code to pass tests.</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">4</div>
+                    <div class="tl-body">
+                        <h4>9:35 AM — AI generates code</h4>
+                        <p>Paste into IDE. Run tests.</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">5</div>
+                    <div class="tl-body">
+                        <h4>9:40 AM — Review + identify gaps</h4>
+                        <p>Check error handling, observability, latency. Find 3–5 issues. Give specific prompts to fix.</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">6</div>
+                    <div class="tl-body">
+                        <h4>9:50 AM — AI refines</h4>
+                        <p>"Add timeout handling with fallback," "Add metrics tracking," "Handle JSON errors."</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">7</div>
+                    <div class="tl-body">
+                        <h4>10:05 AM — Tests pass ✓</h4>
+                        <p>All tests green. Code is production-ready. Docstring + examples included.</p>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot">8</div>
+                    <div class="tl-body">
+                        <h4>10:10 AM — Benchmark</h4>
+                        <p>Run locally with real data. Verify &lt;2s latency, cost/query, quality metrics.</p>
+                    </div>
+                </div>
+                <div class="tl-item" style="margin-bottom:0;">
+                    <div class="tl-dot">9</div>
+                    <div class="tl-body">
+                        <h4>10:30 AM — Move to next component</h4>
+                        <p>This function took 1.5 hours and is bulletproof. Scale to the full system.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vibe-vs-senior" style="margin-top:40px;">
+                <div class="cmp-box avoid">
+                    <h4>❌ Vibe Approach to AI Code</h4>
+                    <p>"Generate a full search service" → copy-paste entire output → ship</p>
+                    <ul>
+                        <li>No error handling (crashes on edge cases)</li>
+                        <li>No observability (no visibility into cost/latency)</li>
+                        <li>No tests (client finds bugs, not you)</li>
+                        <li>Code is opaque (you can't fix it)</li>
+                    </ul>
+                </div>
+                <div class="cmp-box do">
+                    <h4>✅ Senior Approach to AI Code</h4>
+                    <p>Use AI to 10x boilerplate; hand-build critical paths</p>
+                    <ul>
+                        <li>AI: Schema, routes, test skeletons</li>
+                        <li>You: Business logic, edge cases, observability</li>
+                        <li>AI: Refinements based on test failures</li>
+                        <li>You: Architecture, monitoring, handoff docs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             SYNTHESIS + SPRINT
+        ═══════════════════════════════════════════════════ -->
+        <div id="synthesis" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">↗</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Synthesis</div>
+                    <div class="chapter-title">The Full 3-Week Sprint</div>
+                    <div class="chapter-desc">Discovery → Architecture → Implementation → Handoff</div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-card-num" style="color:var(--accent-gold2);">W1</div>
+                    <div class="step-card-title">
+                        <h2>Week 1: Discovery + Architecture</h2>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <ul style="margin-left:22px;color:var(--text-mid);">
+                        <li style="margin-bottom:8px;"><strong>Days 1–2:</strong> Client discovery calls. Map problem → constraints → metrics.</li>
+                        <li style="margin-bottom:8px;"><strong>Day 2 PM:</strong> Generate 2–3 solution options. Map to constraints.</li>
+                        <li style="margin-bottom:8px;"><strong>Day 3:</strong> Client picks architecture. Write ADR + tool selection justification.</li>
+                        <li style="margin-bottom:8px;"><strong>Days 4–5:</strong> Setup infrastructure (DB schema, repo structure, dev environment).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-card-num" style="color:var(--accent-gold2);">W2</div>
+                    <div class="step-card-title">
+                        <h2>Week 2: Core Implementation + Tests</h2>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <ul style="margin-left:22px;color:var(--text-mid);">
+                        <li style="margin-bottom:8px;"><strong>Days 1–2:</strong> Write tests (TDD). Build retrieval pipeline (SQL + vector).</li>
+                        <li style="margin-bottom:8px;"><strong>Days 3–4:</strong> Build reranking + observability. Integrate Claude API.</li>
+                        <li style="margin-bottom:8px;"><strong>Day 5:</strong> All tests pass. Verify latency &lt;2s, cost &lt;$0.01/query.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-card-header">
+                    <div class="step-card-num" style="color:var(--accent-gold2);">W3</div>
+                    <div class="step-card-title">
+                        <h2>Week 3: Hardening + Handoff</h2>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <ul style="margin-left:22px;color:var(--text-mid);">
+                        <li style="margin-bottom:8px;"><strong>Days 1–2:</strong> Edge case tests. Error handling. Load testing.</li>
+                        <li style="margin-bottom:8px;"><strong>Days 3–4:</strong> Demo + metrics dashboard. Document ADR + DECISIONS + runbooks.</li>
+                        <li style="margin-bottom:8px;"><strong>Day 5:</strong> Deploy to staging. Client trains their team. Handoff.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top:40px;">Discovery → Code: Mental Model</div>
+            <div class="mental-model">
+Problem Statement → Success Metrics → Constraints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+Architecture Options → Chosen Architecture → Tool Selection<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+Tech Stack + Timeline → Scope Lock-In<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+(NOW: Code Phase)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+Tests (TDD) → Function Skeleton (AI) → Refinement (You + AI loop)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+Production Code (error handling, observability, docs)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+Demo → Handoff (ADRs, tests, runbooks, dashboards)
+            </div>
+
+            <div class="box-info" style="margin-top:24px;">
+                <h4>Key Insight</h4>
+                <p><strong>Discovery defines success.</strong> Architecture limits tool choice. Tests define the contract. AI fills in the syntax. You ensure it's production-ready.</p>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             HANDOFF PACKAGE
+        ═══════════════════════════════════════════════════ -->
+        <div id="handoff" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">↗</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Delivery</div>
+                    <div class="chapter-title">What You Hand Off to the Client</div>
+                    <div class="chapter-desc">A folder structure that says "This is production-ready, not a demo."</div>
+                </div>
+            </div>
+
+            <div class="handoff-box">
+                <h3>🚀 Handoff Package Structure</h3>
+                <pre>ticket-search-service/
+├── README.md                  # Quick start guide
+├── DECISIONS.md               # Why you chose what you chose  ← THEY READ THIS
+├── ADR-001-hybrid-search.md   # The architecture decision record
+├── src/
+│   ├── search_service.py
+│   ├── observability.py       # Cost tracker (transparent)
+│   └── main.py
+├── tests/
+│   └── test_search_edge_cases.py  # Edge case tests  ← THEY RUN THESE
+├── requirements.txt
+├── docker-compose.yml         # Local dev environment
+└── metrics.db                 # Their costs, latency, quality data</pre>
+
+                <p style="margin-top:20px;">When they ask "Can you add X to the search?" they can:</p>
+                <ul>
+                    <li>Read <code>DECISIONS.md</code> to understand what you tried</li>
+                    <li>Look at edge case tests to see what could break</li>
+                    <li>Check <code>metrics.db</code> to see if their change improved cost/latency/quality</li>
+                    <li>Run tests before pushing to prod</li>
+                </ul>
+            </div>
+
+            <div class="checkpoint">
+                <h4>✓ Final Checklist: AI-Assisted Code (Production Ready)</h4>
+                <ol>
+                    <li><strong>Tests pass:</strong> All edge cases, happy path, error cases</li>
+                    <li><strong>Latency verified:</strong> Measured with real data, under SLA</li>
+                    <li><strong>Observability baked in:</strong> Metrics dict, logging, tokens tracked</li>
+                    <li><strong>Error handling:</strong> Every exception caught + fallback defined</li>
+                    <li><strong>Documented:</strong> Docstring + usage example + known limitations</li>
+                    <li><strong>Code reviewed:</strong> You understand every line; can explain to client</li>
+                    <li><strong>Maintainable:</strong> Junior engineer can modify + extend without breaking</li>
+                    <li><strong>ADR written:</strong> Architecture decision + alternatives documented</li>
+                    <li><strong>"Why not" documented:</strong> Every rejected option has a reason</li>
+                </ol>
+            </div>
+        </div>
+
+
+        <!-- ══════════════════════════════════════════════════
+             PROJECT SKELETON
+        ═══════════════════════════════════════════════════ -->
+        <div id="skeleton" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">📁</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Project Structure</div>
+                    <div class="chapter-title">Complete Project Skeleton</div>
+                    <div class="chapter-desc">Every folder, file, and purpose — the full handoff-ready repo structure for a production AI consulting engagement.</div>
+                </div>
+            </div>
+
+            <div class="code-label">Full repo layout — copy this as your starting point</div>
+            <pre>ticket-search-service/
+│
+├── README.md                        # Quick-start: install, run, test, deploy
+├── DECISIONS.md                     # Living "why not" decision log
+├── CHANGELOG.md                     # Version history and notable changes
+├── .env.example                     # All required env vars (no secrets)
+├── .gitignore
+├── Makefile                         # Shortcuts: make test, make run, make deploy
+│
+├── docs/
+│   ├── architecture.md              # System diagram + data-flow narrative
+│   ├── runbook.md                   # How to operate this in production
+│   ├── onboarding.md                # Guide for client's junior engineer
+│   │
+│   ├── adr/                         # Architecture Decision Records
+│   │   ├── ADR-001-hybrid-search.md         # SQL + pgvector vs pure vector
+│   │   ├── ADR-002-llm-provider.md          # Claude Sonnet vs GPT-4 vs OSS
+│   │   ├── ADR-003-metrics-storage.md       # SQLite vs Datadog vs CloudWatch
+│   │   ├── ADR-004-deployment-target.md     # Railway vs Azure vs Kubernetes
+│   │   └── ADR-005-embedding-model.md       # text-embedding-3-small vs voyage-3
+│   │
+│   └── diagrams/
+│       ├── system-overview.mmd              # Mermaid: top-level architecture
+│       ├── search-pipeline.mmd              # Mermaid: retrieval + rerank flow
+│       └── data-flow.mmd                    # Mermaid: ingest → index → query
+│
+├── src/
+│   ├── __init__.py
+│   ├── main.py                      # App entrypoint (Flask/FastAPI)
+│   ├── config.py                    # Settings loaded from env vars
+│   │
+│   ├── search/
+│   │   ├── __init__.py
+│   │   ├── hybrid_search.py         # Core: SQL + vector + rerank
+│   │   ├── sql_retriever.py         # PostgreSQL full-text search
+│   │   ├── vector_retriever.py      # pgvector semantic search
+│   │   ├── reranker.py              # Claude rerank call + fallback
+│   │   └── deduplicator.py          # Merge + deduplicate result sets
+│   │
+│   ├── ingestion/
+│   │   ├── __init__.py
+│   │   ├── embedder.py              # Batch embed tickets → pgvector
+│   │   ├── indexer.py               # Upsert tickets into search index
+│   │   └── preprocessor.py          # Clean + chunk raw ticket text
+│   │
+│   ├── observability/
+│   │   ├── __init__.py
+│   │   ├── cost_tracker.py          # Log tokens, cost, latency per query
+│   │   ├── metrics_db.py            # SQLite schema + query helpers
+│   │   └── dashboard.py             # CLI summary: cost/day, p99 latency
+│   │
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── routes.py                # REST endpoints: /search, /health
+│   │   ├── schemas.py               # Pydantic request/response models
+│   │   └── middleware.py            # Auth, rate limiting, error handlers
+│   │
+│   └── db/
+│       ├── __init__.py
+│       ├── connection.py            # PostgreSQL connection pool
+│       ├── migrations/
+│       │   ├── 001_create_tickets.sql
+│       │   ├── 002_add_pgvector.sql
+│       │   └── 003_add_indexes.sql
+│       └── seed_data.sql            # Dev/test sample tickets
+│
+├── tests/
+│   ├── conftest.py                  # Shared fixtures (in-memory DB, mock Claude)
+│   │
+│   ├── unit/
+│   │   ├── test_hybrid_search.py    # Happy path + edge cases
+│   │   ├── test_sql_retriever.py    # Full-text search correctness
+│   │   ├── test_vector_retriever.py # Semantic search correctness
+│   │   ├── test_reranker.py         # Timeout fallback, JSON parse error
+│   │   ├── test_deduplicator.py     # Duplicate ID removal
+│   │   └── test_cost_tracker.py     # Token math, latency logging
+│   │
+│   ├── integration/
+│   │   ├── test_search_pipeline.py  # Full SQL→vector→rerank flow
+│   │   ├── test_ingestion.py        # Embed + index a batch of tickets
+│   │   └── test_api_routes.py       # HTTP endpoint smoke tests
+│   │
+│   ├── edge_cases/
+│   │   ├── test_empty_results.py    # Customer with zero tickets
+│   │   ├── test_timeout_handling.py # Claude API slow/down
+│   │   ├── test_duplicate_tickets.py# Same ticket from SQL + vector
+│   │   └── test_malformed_json.py   # Claude returns bad JSON
+│   │
+│   └── performance/
+│       ├── test_latency_sla.py      # Assert p99 &lt; 2000ms under load
+│       └── test_cost_per_query.py   # Assert cost &lt; $0.01 per search
+│
+├── scripts/
+│   ├── embed_all_tickets.py         # One-time: embed historical tickets
+│   ├── backfill_embeddings.py       # Incremental: embed new tickets
+│   ├── export_metrics.py            # Dump SQLite metrics to CSV/JSON
+│   └── check_health.py              # Ping /health, verify DB + Claude API
+│
+├── infra/
+│   ├── docker-compose.yml           # Local dev: Postgres + pgvector + app
+│   ├── Dockerfile                   # Production container image
+│   ├── railway.toml                 # Railway deployment config (MVP)
+│   └── azure/
+│       ├── container-app.bicep      # Azure Container Apps (enterprise)
+│       └── keyvault-secrets.bicep   # Azure Key Vault for secrets
+│
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                   # On PR: run tests, lint, type-check
+│       └── deploy.yml               # On merge to main: deploy to staging
+│
+├── requirements.txt                 # Production dependencies
+├── requirements-dev.txt             # Dev + test dependencies
+└── pyproject.toml                   # Black, mypy, pytest config</pre>
+
+            <div class="box-info">
+                <h4>Key Principle: Every File Has a Job</h4>
+                <p><strong>docs/</strong> → Everything a human needs to understand or operate the system. Client reads this.</p>
+                <p><strong>src/</strong> → Modular by domain (search, ingestion, observability, api, db). Junior engineer edits one folder without touching others.</p>
+                <p><strong>tests/</strong> → Separated by type. Unit tests run in milliseconds. Integration tests need DB. Edge cases document known failure modes. Performance tests enforce SLAs.</p>
+                <p><strong>scripts/</strong> → Operational one-offs. Runbook references these by name.</p>
+                <p><strong>infra/</strong> → Everything needed to deploy. Railway for MVP, Azure for enterprise.</p>
+            </div>
+
+            <div class="box-info" style="border-color:var(--accent-gold);background:rgba(201,153,58,0.05);">
+                <h4 style="color:var(--accent-gold2);">ADR Naming Convention</h4>
+                <p><strong>ADR-001</strong> through <strong>ADR-00N</strong> — one file per major architectural decision. Each ADR covers: Decision, Status, Context, Options Considered, Chosen Option, Tradeoffs, and Revisit Triggers. The numbering is permanent — never delete or renumber, only add <code>Status: SUPERSEDED by ADR-00X</code>.</p>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             MASTER CHECKLIST
+        ═══════════════════════════════════════════════════ -->
+        <div id="checklist" class="chapter">
+            <div class="chapter-header">
+                <div class="chapter-num">✓</div>
+                <div class="chapter-title-block">
+                    <div class="chapter-eyebrow">Master Checklist</div>
+                    <div class="chapter-title">End-to-End Delivery Checklist</div>
+                    <div class="chapter-desc">Check each item off as you complete it. Every box is a deliberate decision — not just a task.</div>
+                </div>
+            </div>
+
+            <div id="checklist-app">
+                <!-- Rendered by JS below -->
+            </div>
+        </div>
+
+    </div><!-- /content -->
+
+    <footer>
+        <p>The gap between vibe and senior isn't the code — it's the thinking before code.</p>
+        <p>Discovery → Architecture → Tool Selection → Tests → AI + Refinement → Handoff</p>
+        <p style="margin-top:20px;font-size:0.85em;color:var(--text-dim);">Every ADR, test, and metric is an investment in "we thought about this, not just built it."</p>
+    </footer>
+
+</div><!-- /main -->
+
+<script>
+    // Smooth scroll on nav click — buttons with data-target, no href
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    navLinks.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // Highlight active nav button on scroll
+    const sections = document.querySelectorAll('[id]');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(btn => {
+                    btn.classList.toggle('active',
+                        btn.getAttribute('data-target') === entry.target.id
+                    );
+                });
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+
+    // ── MASTER CHECKLIST ─────────────────────────────────────────
+    const CHECKLIST = [
+        {
+            phase: "Phase 1 — Discovery",
+            color: "#c9993a",
+            items: [
+                "Ran at least one discovery call with the client",
+                "Identified the real problem (not the imagined solution)",
+                "Documented current-state baseline (time, cost, quality, human effort)",
+                "Quantified success metrics (latency, cost, quality %, adoption)",
+                "Identified all hard constraints (budget, latency, team skill, infra)",
+                "Mapped all data sources (volume, freshness, format, access)",
+                "Identified who maintains the system post-handoff",
+            ]
+        },
+        {
+            phase: "Phase 2 — Architecture",
+            color: "#4a8fff",
+            items: [
+                "Generated 2–3 architecture options with pros/cons",
+                "Mapped each option to client constraints",
+                "Chose architecture — client reviewed and approved",
+                "Wrote ADR-001 (main architecture decision)",
+                "Wrote ADR for LLM provider choice",
+                "Wrote ADR for vector/search storage choice",
+                "Wrote ADR for observability/metrics approach",
+                "Wrote ADR for deployment target",
+                "Documented DECISIONS.md with all 'why not' alternatives",
+                "Created architecture diagram (Mermaid or equivalent)",
+                "Locked scope — explicit list of what's in vs out of v1",
+            ]
+        },
+        {
+            phase: "Phase 3 — Tool Selection",
+            color: "#8b6fd8",
+            items: [
+                "Selected orchestration framework (or explicitly chose none)",
+                "Selected LLM provider and model — justified against budget + latency",
+                "Selected vector DB — justified against ops burden + scale",
+                "Selected embedding model — justified against cost + quality",
+                "Selected deployment target — matches client infra",
+                "Selected observability approach — fits current scale",
+                "All tool choices traceable to a specific constraint",
+            ]
+        },
+        {
+            phase: "Phase 4 — Project Setup",
+            color: "#4db87a",
+            items: [
+                "Repo created with full skeleton (docs/, src/, tests/, scripts/, infra/)",
+                "README.md: install, run, test, deploy instructions",
+                "CHANGELOG.md initialized",
+                ".env.example with all required variables",
+                "Makefile with make test, make run, make deploy",
+                "docker-compose.yml for local dev (Postgres + pgvector + app)",
+                "CI pipeline: runs tests on every PR",
+                "DB migration scripts in src/db/migrations/",
+                "conftest.py: shared test fixtures (in-memory DB, mock Claude)",
+            ]
+        },
+        {
+            phase: "Phase 5 — Core Implementation",
+            color: "#4db87a",
+            items: [
+                "SQL retriever implemented and tested",
+                "Vector retriever implemented and tested",
+                "Deduplication logic implemented and tested",
+                "Reranker implemented with Claude API",
+                "Hybrid search pipeline assembled end-to-end",
+                "Ingestion pipeline: embed + index existing data",
+                "API routes: /search, /health implemented",
+                "Pydantic schemas for request/response validation",
+                "Config loaded cleanly from env vars (no hardcoded secrets)",
+            ]
+        },
+        {
+            phase: "Phase 6 — Observability",
+            color: "#d4853a",
+            items: [
+                "Cost tracker logs every query: tokens, latency, cost estimate",
+                "Latency tracked per sub-step (sql_ms, vector_ms, rerank_ms, total_ms)",
+                "SQLite metrics DB initialized on startup",
+                "Daily cost summary queryable: SELECT DATE, SUM(cost) FROM search_metrics",
+                "Quality metric tracked: user feedback or proxy signal",
+                "Dashboard / CLI report shows: avg latency, p99 latency, cost/day, quality %",
+                "Alerts defined: cost spike, latency breach, quality drop",
+                "LangSmith or equivalent tracing enabled for LLM calls",
+            ]
+        },
+        {
+            phase: "Phase 7 — Testing",
+            color: "#e05555",
+            items: [
+                "Happy path test: returns correct results for known query",
+                "Edge case: empty result set (customer with zero tickets) → returns []",
+                "Edge case: Claude API timeout → falls back to unranked results",
+                "Edge case: duplicate tickets from SQL + vector → deduplicated",
+                "Edge case: malformed JSON from Claude → falls back gracefully",
+                "Edge case: very large N (limit=1000) → doesn't crash or timeout",
+                "Integration test: full pipeline SQL→vector→rerank end-to-end",
+                "Performance test: p99 latency < 2000ms under realistic load",
+                "Performance test: cost per query < $0.01",
+                "All tests pass in CI (not just locally)",
+            ]
+        },
+        {
+            phase: "Phase 8 — Hardening",
+            color: "#e05555",
+            items: [
+                "Every exception has a defined fallback (not a 500 error)",
+                "Timeout handling on every external call (DB, Claude, embeddings)",
+                "Rate limiting on API routes",
+                "Input validation: empty query, very long query, SQL injection attempt",
+                "Secrets loaded from env vars or Key Vault — not committed to repo",
+                "Docker image builds cleanly from Dockerfile",
+                "App starts cleanly from docker-compose up",
+            ]
+        },
+        {
+            phase: "Phase 9 — Handoff",
+            color: "#6aa8ff",
+            items: [
+                "README covers: install, configure, run, test, deploy, troubleshoot",
+                "runbook.md: what to do when latency spikes / cost spikes / quality drops",
+                "onboarding.md: how client's engineer can add tickets to the index",
+                "All ADRs written and reviewed with client",
+                "DECISIONS.md complete with every rejected option and reason",
+                "Demo delivered: client can run a live search in front of stakeholders",
+                "Client's engineer ran the tests themselves",
+                "Client's engineer deployed to staging themselves",
+                "Metrics dashboard shown: cost/day, latency, quality visible",
+                "Scope delta documented: what changed from original spec + why",
+                "Revisit triggers defined: when to upgrade tooling / architecture",
+            ]
+        }
+    ];
+
+    const STORAGE_KEY = 'ai_consultant_checklist_v1';
+
+    function loadState() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } 
+        catch { return {}; }
+    }
+
+    function saveState(state) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+    }
+
+    function renderChecklist() {
+        const state = loadState();
+        const app = document.getElementById('checklist-app');
+        if (!app) return;
+
+        // Count totals
+        let totalItems = 0, totalChecked = 0;
+        CHECKLIST.forEach(phase => {
+            phase.items.forEach((item, i) => {
+                totalItems++;
+                const key = phase.phase + '::' + i;
+                if (state[key]) totalChecked++;
+            });
+        });
+
+        const pct = totalItems ? Math.round((totalChecked / totalItems) * 100) : 0;
+
+        let html = `
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:32px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div>
+                    <div style="font-family:var(--font-display);font-size:0.7em;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:4px;">Overall Progress</div>
+                    <div style="font-family:var(--font-display);font-size:2em;font-weight:800;color:var(--text-bright);">${totalChecked} <span style="color:var(--text-dim);font-size:0.5em;">/ ${totalItems}</span></div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-family:var(--font-display);font-size:2.4em;font-weight:800;color:${pct===100?'#4db87a':'var(--accent-gold2)'};">${pct}%</div>
+                    <button onclick="if(confirm('Reset all checkboxes?')){localStorage.removeItem('${STORAGE_KEY}');renderChecklist();}" style="font-family:var(--font-display);font-size:0.65em;font-weight:700;background:none;border:1px solid var(--border);color:var(--text-dim);padding:4px 10px;border-radius:4px;cursor:pointer;margin-top:4px;">Reset All</button>
+                </div>
+            </div>
+            <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:${pct===100?'#4db87a':'var(--accent-gold)'};border-radius:4px;transition:width 0.4s ease;"></div>
+            </div>
+        </div>`;
+
+        CHECKLIST.forEach(phase => {
+            let phaseChecked = 0;
+            phase.items.forEach((item, i) => {
+                const key = phase.phase + '::' + i;
+                if (state[key]) phaseChecked++;
+            });
+            const phasePct = Math.round((phaseChecked / phase.items.length) * 100);
+
+            html += `
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;">
+                <div style="background:var(--bg-mid);padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                    <div style="font-family:var(--font-display);font-size:0.88em;font-weight:700;color:${phase.color};">${phase.phase}</div>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="font-family:var(--font-display);font-size:0.75em;color:var(--text-dim);">${phaseChecked}/${phase.items.length}</div>
+                        <div style="width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${phasePct}%;background:${phase.color};border-radius:3px;transition:width 0.3s;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding:8px 0;">`;
+
+            phase.items.forEach((item, i) => {
+                const key = phase.phase + '::' + i;
+                const checked = !!state[key];
+                html += `
+                    <label style="display:flex;align-items:flex-start;gap:14px;padding:10px 24px;cursor:pointer;transition:background 0.15s;" 
+                           onmouseover="this.style.background='rgba(74,143,255,0.04)'" 
+                           onmouseout="this.style.background='none'">
+                        <input type="checkbox" ${checked ? 'checked' : ''} 
+                               data-key="${key.replace(/"/g, '&quot;')}"
+                               onchange="toggleCheck(this)"
+                               style="margin-top:3px;accent-color:${phase.color};width:16px;height:16px;flex-shrink:0;cursor:pointer;">
+                        <span style="font-size:0.93em;color:${checked ? 'var(--text-dim)' : 'var(--text-mid)'};text-decoration:${checked ? 'line-through' : 'none'};transition:all 0.2s;line-height:1.5;">${item}</span>
+                    </label>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        app.innerHTML = html;
+    }
+
+    function toggleCheck(checkbox) {
+        const state = loadState();
+        const key = checkbox.getAttribute('data-key');
+        state[key] = checkbox.checked;
+        saveState(state);
+        renderChecklist();
+    }
+
+    renderChecklist();
+
+</script>
+
+</body>
+</html>
