@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Core LLM App Guide · LearnAIbyAmir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- marked.js for Markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <!-- highlight.js for code syntax highlighting (GitHub Dark theme) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/highlight.min.js"></script>
+
+  <style>
+    :root {
+      --page-bg: #0d1117;
+      --canvas-default: #0d1117;
+      --canvas-subtle: #161b22;
+      --canvas-overlay: #1c2128;
+      --border-default: #30363d;
+      --border-muted: #21262d;
+      --fg-default: #e6edf3;
+      --fg-muted: #7d8590;
+      --fg-subtle: #6e7681;
+      --accent-fg: #2dd4bf;
+      --accent-emphasis: rgba(45,212,191,0.15);
+      --code-bg: #161b22;
+      --table-head-bg: #161b22;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-display: 'Syne', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--canvas-default);
+      color: var(--fg-default);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,17,23,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-default);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--fg-muted);
+      min-width: 0;
+    }
+    .topbar-left a {
+      color: var(--fg-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .topbar-left a:hover { color: var(--fg-default); }
+    .topbar-sep { color: var(--fg-subtle); }
+    .topbar-current {
+      color: var(--fg-default);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .chip {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-default);
+      background: var(--canvas-subtle);
+      color: var(--fg-muted);
+      white-space: nowrap;
+    }
+    .chip-accent {
+      border-color: rgba(45,212,191,0.3);
+      background: rgba(45,212,191,0.08);
+      color: var(--accent-fg);
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    /* ── SIDEBAR TOC ── */
+    .toc-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 72px;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+      padding: 24px 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-default) transparent;
+    }
+    .toc-sidebar::-webkit-scrollbar { width: 4px; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+
+    .toc-title {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      padding: 0 12px 10px;
+      border-bottom: 1px solid var(--border-muted);
+      margin-bottom: 10px;
+    }
+    #toc-list {
+      list-style: none;
+      padding: 0;
+    }
+    #toc-list li { margin: 0; }
+    #toc-list a {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--fg-muted);
+      text-decoration: none;
+      border-radius: 6px;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+      line-height: 1.4;
+    }
+    #toc-list a:hover {
+      color: var(--fg-default);
+      background: var(--canvas-subtle);
+    }
+    #toc-list a.active {
+      color: var(--accent-fg);
+      border-left-color: var(--accent-fg);
+      background: var(--accent-emphasis);
+    }
+    #toc-list li.toc-h3 a { padding-left: 22px; font-size: 11px; }
+
+    /* ── MAIN CONTENT ── */
+    .content-wrap {
+      flex: 1;
+      min-width: 0;
+      padding-top: 32px;
+    }
+
+    /* File header pill (GitHub-style) */
+    .file-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--canvas-subtle);
+      border: 1px solid var(--border-default);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      font-size: 13px;
+      color: var(--fg-muted);
+    }
+    .file-header .file-icon { font-size: 15px; }
+    .file-header .file-name {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--fg-default);
+      font-weight: 500;
+    }
+    .file-header .file-badge {
+      margin-left: auto;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-default);
+      background: var(--canvas-default);
+      color: var(--fg-subtle);
+    }
+
+    .markdown-body-wrap {
+      border: 1px solid var(--border-default);
+      border-radius: 0 0 8px 8px;
+      background: var(--canvas-default);
+    }
+
+    /* ── GITHUB-STYLE MARKDOWN ── */
+    .markdown-body {
+      padding: 32px 40px 40px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--fg-default);
+    }
+
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4,
+    .markdown-body h5,
+    .markdown-body h6 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.25;
+      margin-top: 1.75rem;
+      margin-bottom: 0.75rem;
+      scroll-margin-top: 72px;
+    }
+    .markdown-body h1 {
+      font-size: 2em;
+      padding-bottom: 0.4em;
+      border-bottom: 1px solid var(--border-default);
+      color: var(--fg-default);
+    }
+    .markdown-body h2 {
+      font-size: 1.4em;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--border-muted);
+    }
+    .markdown-body h3 { font-size: 1.15em; color: #c9d1d9; }
+    .markdown-body h4 { font-size: 1em; }
+
+    .markdown-body p { margin-bottom: 1em; }
+
+    .markdown-body a {
+      color: var(--accent-fg);
+      text-decoration: none;
+    }
+    .markdown-body a:hover { text-decoration: underline; }
+
+    .markdown-body ul,
+    .markdown-body ol {
+      margin: 0 0 1em 1.5em;
+    }
+    .markdown-body li { margin: 0.25em 0; }
+    .markdown-body li > p { margin-bottom: 0; }
+
+    /* Task list checkboxes */
+    .markdown-body input[type="checkbox"] {
+      margin-right: 6px;
+      accent-color: var(--accent-fg);
+    }
+
+    /* Inline code */
+    .markdown-body code:not(pre code) {
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+      padding: 0.15em 0.45em;
+      border-radius: 6px;
+      background: rgba(110,118,129,0.12);
+      border: 1px solid rgba(110,118,129,0.18);
+      color: #f0c27f;
+      white-space: nowrap;
+    }
+
+    /* Code blocks */
+    .markdown-body pre {
+      margin: 1em 0 1.25em;
+      border-radius: 8px;
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+      position: relative;
+    }
+    .markdown-body pre code {
+      display: block;
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.65;
+      overflow-x: auto;
+      background: var(--code-bg) !important;
+      color: var(--fg-default);
+      border-radius: 8px;
+      tab-size: 4;
+    }
+
+    /* Copy button */
+    .code-block-wrapper {
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-default);
+      background: var(--canvas-overlay);
+      color: var(--fg-muted);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s;
+      z-index: 2;
+    }
+    .code-block-wrapper:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { color: var(--fg-default); border-color: var(--fg-subtle); }
+    .copy-btn.copied { color: var(--accent-fg); border-color: rgba(45,212,191,0.4); }
+
+    /* Blockquote */
+    .markdown-body blockquote {
+      margin: 1em 0;
+      padding: 10px 16px;
+      border-left: 4px solid var(--border-default);
+      background: var(--canvas-subtle);
+      border-radius: 0 6px 6px 0;
+      color: var(--fg-muted);
+      font-style: italic;
+    }
+    .markdown-body blockquote p { margin: 0; }
+
+    /* Tables */
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0 1.25em;
+      font-size: 14px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--border-default);
+    }
+    .markdown-body th {
+      background: var(--table-head-bg);
+      font-weight: 600;
+      font-family: var(--font-display);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-default);
+    }
+    .markdown-body td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border-muted);
+      vertical-align: top;
+    }
+    .markdown-body tr:last-child td { border-bottom: none; }
+    .markdown-body tr:nth-child(even) { background: rgba(255,255,255,0.018); }
+
+    /* Horizontal rule */
+    .markdown-body hr {
+      margin: 2em 0;
+      border: none;
+      border-top: 1px solid var(--border-default);
+    }
+
+    /* Strong / em */
+    .markdown-body strong { color: var(--fg-default); font-weight: 600; }
+    .markdown-body em { color: #cdd9e5; }
+
+    /* ── LOADING STATE ── */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 16px;
+      color: var(--fg-muted);
+    }
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border-default);
+      border-top-color: var(--accent-fg);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .toc-sidebar { display: none; }
+      .markdown-body { padding: 24px 20px 32px; }
+      .layout { padding: 0 16px 60px; }
+    }
+    @media (max-width: 540px) {
+      .topbar { padding: 0 16px; }
+      .topbar-right { display: none; }
+      .file-header { padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="../../../index.html">Home</a>
+      <span class="topbar-sep">/</span>
+      <a href="../../index.html">LearnByAmir</a>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-sep">LLM & Agents</span>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-current">Core LLM App Guide</span>
+    </div>
+    <div class="topbar-right">
+      <span class="chip chip-accent">LLM</span>
+      <span class="chip chip-accent">RAG</span>
+      <span class="chip">Production</span>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR TABLE OF CONTENTS -->
+    <aside class="toc-sidebar">
+      <div class="toc-title">On this page</div>
+      <ul id="toc-list"></ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content-wrap">
+      <div class="file-header">
+        <span class="file-icon">📄</span>
+        <span class="file-name">corellmappguide.md</span>
+        <span class="file-badge">Markdown</span>
+      </div>
+      <div class="markdown-body-wrap">
+        <article class="markdown-body" id="markdown-body">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <span>Loading guide…</span>
+          </div>
+        </article>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ── Configure marked with highlight.js ──────────────────────────────────
+    marked.setOptions({
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try { return hljs.highlight(code, { language: lang }).value; } catch (_) {}
+        }
+        try { return hljs.highlightAuto(code).value; } catch (_) {}
+        return code;
+      },
+      langPrefix: 'hljs language-',
+      gfm: true,
+      breaks: false,
+      pedantic: false,
+    });
+
+    // ── Task list support ────────────────────────────────────────────────────
+    const renderer = new marked.Renderer();
+    renderer.listitem = function(text) {
+      if (/^\s*\[[ xX]\]/.test(text)) {
+        const checked = /^\s*\[[xX]\]/.test(text);
+        const cleaned = text.replace(/^\s*\[[ xX]\]\s*/, '');
+        return `<li style="list-style:none;margin-left:-1.5em"><input type="checkbox" ${checked ? 'checked' : ''} disabled> ${cleaned}</li>`;
+      }
+      return `<li>${text}</li>`;
+    };
+    marked.use({ renderer });
+
+    // ── Fetch & render markdown ──────────────────────────────────────────────
+    async function loadMarkdown() {
+      const body = document.getElementById('markdown-body');
+      try {
+        const res = await fetch('corellmappguide.md');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        body.innerHTML = marked.parse(text);
+        wrapCodeBlocks();
+        buildTOC();
+        activeTOCOnScroll();
+      } catch (err) {
+        body.innerHTML = `<p style="color:#f06a6a">Failed to load guide: ${err.message}</p>`;
+      }
+    }
+
+    // ── Wrap code blocks with copy button ───────────────────────────────────
+    function wrapCodeBlocks() {
+      document.querySelectorAll('.markdown-body pre').forEach(pre => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.addEventListener('click', () => {
+          const code = pre.querySelector('code');
+          navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+          });
+        });
+        wrapper.appendChild(btn);
+      });
+    }
+
+    // ── Build sidebar TOC from headings ─────────────────────────────────────
+    function slugify(text) {
+      return text.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+    }
+
+    function buildTOC() {
+      const tocList = document.getElementById('toc-list');
+      const headings = document.querySelectorAll('.markdown-body h2, .markdown-body h3');
+
+      headings.forEach(h => {
+        // Give heading an id if missing
+        if (!h.id) {
+          h.id = slugify(h.textContent);
+        }
+        const li = document.createElement('li');
+        li.className = h.tagName === 'H3' ? 'toc-h3' : 'toc-h2';
+        const a = document.createElement('a');
+        a.href = `#${h.id}`;
+        a.textContent = h.textContent;
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.replaceState(null, '', `#${h.id}`);
+        });
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+    }
+
+    // ── Highlight active TOC item on scroll ─────────────────────────────────
+    function activeTOCOnScroll() {
+      const headings = Array.from(document.querySelectorAll('.markdown-body h2, .markdown-body h3'));
+      const tocLinks = Array.from(document.querySelectorAll('#toc-list a'));
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(a => {
+              a.classList.toggle('active', a.getAttribute('href') === `#${id}`);
+            });
+          }
+        });
+      }, { rootMargin: '-64px 0px -70% 0px', threshold: 0 });
+
+      headings.forEach(h => observer.observe(h));
+    }
+
+    loadMarkdown();
+  </script>
+</body>
+</html>
