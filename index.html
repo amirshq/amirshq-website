@@ -38,180 +38,133 @@
   body {
     font-family: var(--font-body);
     background-color: var(--page-bg);
-    background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
-    background-repeat: no-repeat;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* BACKGROUND */
-  .bg-layer {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
-  .bg-layer::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at top left, rgba(45,212,191,0.12) 0, transparent 55%),
-      radial-gradient(circle at bottom right, rgba(15,23,42,0.9) 0, transparent 70%);
-    opacity: 0.7;
-  }
-  .bg-layer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 12% 24%, rgba(255,255,255,0.22) 0, transparent 100%),
-      radial-gradient(1px 1px at 32% 18%, rgba(255,255,255,0.14) 0, transparent 100%),
-      radial-gradient(1px 1px at 70% 32%, rgba(255,255,255,0.18) 0, transparent 100%),
-      radial-gradient(1px 1px at 84% 12%, rgba(255,255,255,0.14) 0, transparent 100%),
-      radial-gradient(1px 1px at 20% 72%, rgba(255,255,255,0.16) 0, transparent 100%);
-    opacity: 0.4;
-  }
-
-  /* LAYOUT */
-  .site-wrap {
+  /* ───────── SECTION 1: FULL-BLEED HERO ───────── */
+  .landing-hero {
     position: relative;
-    z-index: 1;
-    max-width: 1220px;
-    margin: 0 auto;
-    padding: 24px 24px 80px;
-  }
-
-  .stacked-sections {
+    width: 100%;
+    height: 100vh;
+    min-height: 560px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+  }
+  .landing-hero__img {
+    position: absolute;
+    inset: 0;
+    background-image: url("photography/photos/Aurora%20Canada%20may%202024.JPG");
+    background-size: cover;
+    background-position: center 30%;
+    z-index: 0;
+  }
+  .landing-hero__img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.18) 0%,
+      rgba(0,0,0,0.08) 40%,
+      rgba(0,0,0,0.42) 75%,
+      rgba(0,0,0,0.72) 100%
+    );
   }
 
-  /* NAV */
-  nav {
+  .landing-hero nav {
+    position: relative;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 0 32px;
+    padding: 28px 48px;
   }
   .nav-logo {
     font-family: var(--font-display);
     font-size: 18px;
     font-weight: 800;
     letter-spacing: -0.03em;
-    color: var(--text-primary);
+    color: #fff;
     text-decoration: none;
   }
   .nav-logo span { color: var(--accent); }
   .nav-links {
     display: flex;
-    gap: 32px;
+    gap: 36px;
     list-style: none;
   }
   .nav-links a {
     position: relative;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
-    color: var(--text-secondary);
+    color: rgba(255,255,255,0.75);
     text-decoration: none;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: 0.06em;
     transition: color 0.2s ease;
   }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    transition: width 0.25s ease;
-  }
-  .nav-links a:hover {
-    color: var(--accent);
-  }
-  .nav-links a:hover::after {
-    width: 100%;
-  }
+  .nav-links a:hover { color: #fff; }
   .nav-cta {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-    color: var(--accent);
+    color: #fff;
     text-decoration: none;
-    border: 1px solid rgba(255,255,255,0.12);
-    padding: 8px 18px;
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 9px 22px;
     border-radius: 999px;
-    background-color: transparent;
-    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.2s, border-color 0.2s;
   }
   .nav-cta:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-    box-shadow: 0 0 18px rgba(45,212,191,0.35);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.6);
   }
 
-  .landing-hero {
+  .landing-hero__content {
     position: relative;
-    min-height: clamp(380px, 68vh, 660px);
-    border-radius: 24px;
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-    background-image:
-      linear-gradient(to bottom, rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.62)),
-      url("photography/photos/Aurora%20Canada%20may%202024.JPG");
-    background-size: cover;
-    background-position: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 26px 70px rgba(0,0,0,0.45);
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px;
+    max-width: 900px;
   }
-  .landing-hero h2 {
+  .landing-hero__title {
     font-family: "Anthropic Sans", var(--font-display);
-    font-size: clamp(30px, 6vw, 62px);
+    font-size: clamp(38px, 6.5vw, 72px);
+    font-weight: 800;
     line-height: 1.06;
     letter-spacing: -0.03em;
-    color: #ffffff;
-    text-align: center;
-    text-wrap: balance;
-    max-width: 860px;
-    padding: 0 20px;
-    text-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    color: #fff;
+    margin-bottom: 18px;
   }
-
-  .intro-block {
-    background: linear-gradient(145deg, rgba(12,16,27,0.92), rgba(9,11,19,0.96));
-    border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 28px clamp(18px, 3vw, 42px);
-  }
-
-  /* HERO */
-  .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
-    gap: 48px;
-    padding: 4px 0 8px;
-    max-width: 100%;
-    align-items: stretch;
-  }
-  .hero-left {
+  .landing-hero__subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(15px, 1.6vw, 19px);
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
     max-width: 560px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    line-height: 1.6;
   }
-  .hero-right {
-    display: flex;
-    flex-direction: column;
+
+  /* ───────── SECTION 2: DARK INTRO ───────── */
+  .intro-section {
+    background: var(--page-bg);
+    position: relative;
+    z-index: 1;
+  }
+  .intro-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 0.85fr;
+    gap: 56px;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    height: 100%;
+    padding: 80px 48px;
   }
+  .intro-text {}
   .hero-eyebrow {
     display: inline-flex;
     align-items: center;
@@ -221,7 +174,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 18px;
+    margin-bottom: 20px;
   }
   .hero-eyebrow::before {
     content: '';
@@ -229,102 +182,32 @@
     height: 1px;
     background: var(--accent);
   }
-  .hero h1 {
+  .intro-text h2 {
     font-family: "Anthropic Sans", var(--font-display);
-    font-size: clamp(34px, 4.8vw, 56px);
+    font-size: clamp(30px, 4vw, 48px);
     font-weight: 800;
-    line-height: 1.02;
+    line-height: 1.06;
     letter-spacing: -0.03em;
     color: var(--text-primary);
-    margin-bottom: 18px;
+    margin-bottom: 24px;
   }
-  .hero h1 em {
+  .intro-text h2 em {
     font-style: normal;
     color: rgba(45,212,191,0.7);
     text-shadow: 0 0 40px rgba(45,212,191,0.4);
   }
-  .hero-sub {
+  .intro-body {
     font-family: "Anthropic Sans", var(--font-body);
     font-size: 16px;
     font-weight: 300;
     color: #ffffff;
-    max-width: 540px;
     line-height: 1.85;
-    margin-bottom: 36px;
+    margin-bottom: 32px;
   }
   .hero-badges {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .hero-photo-frame {
-    width: min(100%, 410px);
-    aspect-ratio: 4 / 5;
-    border-radius: 28px;
-    border: 1.5px solid rgba(45,212,191,0.3);
-    overflow: hidden;
-    background: linear-gradient(135deg,#1c2e40 0%,#243b52 50%,#182840 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.7);
-    transform-origin: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .hero-photo-frame::after {
-    content: '';
-    position: absolute;
-    inset: -8px;
-    border-radius: 28px;
-    border: 0.5px solid rgba(45,212,191,0.16);
-  }
-  .hero-photo-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 28px;
-    position: relative;
-    z-index: 1;
-  }
-  .hero-photo-frame:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 26px 60px rgba(0,0,0,0.9);
-  }
-  .hero-photo-caption {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-align: center;
-    width: min(100%, 410px);
-  }
-  .stats-row {
-    display: flex;
-    gap: 20px;
-    padding-top: 16px;
-    margin-top: 12px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    width: 100%;
-    justify-content: center;
-  }
-  .stat {
-    text-align: center;
-    min-width: 70px;
-  }
-  .stat-num {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: var(--text-primary);
-    line-height: 1;
-    display: block;
-  }
-  .stat-lbl {
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    display: block;
   }
   .badge {
     display: inline-flex;
@@ -338,22 +221,55 @@
     padding: 6px 14px;
     border-radius: 999px;
   }
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 3px rgba(45,212,191,0.22);
+
+  .intro-photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .intro-photo__frame {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 4 / 5;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1.5px solid rgba(45,212,191,0.25);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+  .intro-photo__frame:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  }
+  .intro-photo__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .intro-photo__caption {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
   }
 
-  /* DIVIDER + SECTIONS (below hero) */
+  /* ───────── SECTION 3: THREE CARDS ───────── */
+  .explore-section {
+    background: var(--page-bg);
+    padding: 0 48px 80px;
+  }
+  .explore-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   .divider {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 0 4px;
-    margin: 4px 0 8px;
-    max-width: 100%;
+    margin-bottom: 16px;
   }
   .divider-line {
     flex: 1;
@@ -371,16 +287,14 @@
 
   .sections {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    background: linear-gradient(145deg, rgba(12,16,27,0.92), rgba(9,11,19,0.96));
+    grid-template-columns: repeat(3, 1fr);
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-top: 1px solid rgba(255,255,255,0.06);
-    margin-top: 6px;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(14,17,23,0.6);
   }
   .sec {
-    padding: 24px 26px;
+    padding: 32px 28px;
     border-right: 1px solid rgba(255,255,255,0.06);
     position: relative;
     overflow: hidden;
@@ -388,7 +302,7 @@
     text-decoration: none;
     color: inherit;
     background: transparent;
-    transition: background 0.2s, transform 0.2s;
+    transition: background 0.25s, transform 0.25s;
   }
   .sec::before {
     content: '';
@@ -396,42 +310,26 @@
     inset: 0;
     background-size: cover;
     background-position: center;
-    opacity: 0.16;
+    opacity: 0.14;
     pointer-events: none;
     mix-blend-mode: screen;
   }
-  .sec:last-child {
-    border-right: none;
-  }
+  .sec:last-child { border-right: none; }
   .sec:hover {
-    background: rgba(255,255,255,0.03);
-    transform: translateY(-2px);
+    background: rgba(255,255,255,0.035);
+    transform: translateY(-3px);
   }
   .sec-accent {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 2px;
   }
-  .sec-1 .sec-accent {
-    background: linear-gradient(90deg, rgba(56,189,248,0.6), transparent);
-  }
-  .sec-2 .sec-accent {
-    background: linear-gradient(90deg, rgba(45,212,191,0.6), transparent);
-  }
-  .sec-3 .sec-accent {
-    background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent);
-  }
-  .sec-1::before {
-    background-image: url('photography/banner/Semnan%20milkyway.jpg');
-  }
-  .sec-2::before {
-    background-image: url('photography/banner/Career.jpg');
-  }
-  .sec-3::before {
-    background-image: url('photography/banner/AI.jpg');
-  }
+  .sec-1 .sec-accent { background: linear-gradient(90deg, rgba(56,189,248,0.6), transparent); }
+  .sec-2 .sec-accent { background: linear-gradient(90deg, rgba(45,212,191,0.6), transparent); }
+  .sec-3 .sec-accent { background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent); }
+  .sec-1::before { background-image: url('photography/banner/Semnan%20milkyway.jpg'); }
+  .sec-2::before { background-image: url('photography/banner/Career.jpg'); }
+  .sec-3::before { background-image: url('photography/banner/AI.jpg'); }
   .sec-num {
     font-size: 10px;
     font-weight: 500;
@@ -441,45 +339,39 @@
     margin-bottom: 10px;
   }
   .sec-icon {
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    margin-bottom: 10px;
     display: block;
   }
   .sec-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--text-primary);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.2;
   }
   .sec-body {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 300;
-    line-height: 1.6;
+    line-height: 1.65;
     color: rgba(190,205,240,0.55);
   }
   .sec-arrow {
     display: inline-block;
-    margin-top: 12px;
-    font-size: 11px;
+    margin-top: 16px;
+    font-size: 12px;
     color: rgba(45,212,191,0.5);
     transition: transform 0.2s ease;
   }
-  .sec:hover .sec-arrow {
-    transform: translateX(4px);
-  }
+  .sec:hover .sec-arrow { transform: translateX(4px); }
 
-  /* CARD: CONTACT */
-  .card-contact {
-    grid-column: 1 / 4;
-  }
-
-  /* FOOTER */
-  footer {
-    margin-top: 12px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(15,23,42,0.9);
+  /* ───────── FOOTER ───────── */
+  .site-footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 48px 40px;
+    border-top: 1px solid rgba(255,255,255,0.06);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -496,35 +388,19 @@
     color: var(--text-muted);
   }
 
-  /* ANIMATIONS */
+  /* ───────── ANIMATIONS ───────── */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  .hero {
-    animation: fadeUp 0.6s ease forwards;
-    animation-delay: 0.05s;
-    opacity: 0;
+  .landing-hero__content {
+    animation: fadeUp 0.8s ease 0.1s both;
   }
-  .card {
-    animation: fadeUp 0.6s ease forwards;
-    opacity: 0;
-  }
-  .bento .card:nth-child(1) { animation-delay: 0.12s; }
-  .bento .card:nth-child(2) { animation-delay: 0.18s; }
-  .bento .card:nth-child(3) { animation-delay: 0.24s; }
-
-  /* TEAL LINE ACCENT */
-  .teal-line {
-    display: inline-block;
-    width: 34px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    border-radius: 2px;
-    margin-bottom: 20px;
+  .intro-inner {
+    animation: fadeUp 0.7s ease 0.15s both;
   }
 
-  /* SCROLLBAR */
+  /* ───────── SCROLLBAR ───────── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--page-bg); }
   ::-webkit-scrollbar-thumb {
@@ -532,35 +408,28 @@
     border-radius: 3px;
   }
 
-  /* RESPONSIVE */
+  /* ───────── RESPONSIVE ───────── */
   @media (max-width: 768px) {
-    .site-wrap {
-      padding: 16px 14px 52px;
+    .landing-hero nav {
+      padding: 18px 20px;
     }
-    .stacked-sections {
-      gap: 20px;
+    .nav-links { display: none; }
+    .landing-hero__content {
+      padding: 0 24px 52px;
     }
-    .landing-hero {
-      min-height: 48vh;
-      border-radius: 18px;
+    .landing-hero__title {
+      font-size: 36px;
     }
-    .intro-block {
-      border-radius: 18px;
-      padding: 18px 14px;
-    }
-    .hero {
+    .intro-inner {
       grid-template-columns: 1fr;
-      gap: 28px;
-      max-width: 100%;
-      padding: 4px 0 10px;
+      gap: 36px;
+      padding: 48px 24px;
     }
-    .hero-left,
-    .hero-right {
-      height: auto;
+    .intro-photo__frame {
+      max-width: 340px;
     }
-    .hero-photo-frame,
-    .hero-photo-caption {
-      width: min(100%, 380px);
+    .explore-section {
+      padding: 0 20px 52px;
     }
     .sections {
       grid-template-columns: 1fr;
@@ -569,26 +438,22 @@
       border-right: none;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .sec:last-child {
-      border-bottom: none;
+    .sec:last-child { border-bottom: none; }
+    .site-footer {
+      padding: 16px 20px 32px;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
     }
-    .bento { grid-template-columns: 1fr; }
-    .card-photo, .card-ai, .card-learn {
-      grid-column: 1;
-      grid-row: auto;
-    }
-    .nav-links { display: none; }
-    .hero h1 { font-size: 38px; }
   }
 </style>
 </head>
 <body>
 
-<div class="bg-layer"></div>
+<!-- ════════ SECTION 1: FULL-BLEED AURORA HERO ════════ -->
+<section class="landing-hero">
+  <div class="landing-hero__img"></div>
 
-<div class="site-wrap">
-
-  <!-- NAV -->
   <nav>
     <a href="#" class="nav-logo">Amir <span>Sh.</span></a>
     <ul class="nav-links">
@@ -599,83 +464,85 @@
     <a href="contact/" class="nav-cta">Contact</a>
   </nav>
 
-  <div class="stacked-sections">
-    <section class="landing-hero">
-      <h2>Amir Shahcheraghian Personal Website</h2>
-    </section>
-
-    <section class="intro-block">
-      <section class="hero">
-        <div class="hero-left">
-          <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
-          <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
-          <p class="hero-sub">
-            I am Amir Shahcheraghian, a PhD graduate from École de Technologie Supérieure (ÉTS), Montréal, Canada, and a seasoned AI Developer and Data Scientist with deep expertise in designing and deploying intelligent systems. My work spans large language model (LLM) integration, retrieval‑augmented generation (RAG) architectures, and autonomous AI agents — bringing cutting‑edge research to real‑world enterprise solutions. Based in Québec, I currently serve as a Senior AI Consultant, where I lead MLOps and LLMOps pipelines, mentor technical teams, and help organizations navigate the rapidly evolving AI landscape.
-            <br><br>
-            Beyond my professional life, I am a passionate night sky photographer and seasoned world traveler, driven by a singular mission: to capture the breathtaking beauty of the cosmos from every corner of the globe. From remote deserts to mountaintop observatories, I chase clear dark skies and rare celestial events — including solar eclipses — blending scientific precision with artistic vision. My photography is a testament to the wonder that exists at the intersection of technology, nature, and human curiosity.
-            <br><br>
-            This site is my personal landing page. I share my life in two parts: my AI engineer journey and learning path (through LearnByAmir), and my photography work as I explore nature, night skies and life.
-          </p>
-          <div class="hero-badges">
-            <span class="badge">Based in Montréal, Canada</span>
-            <span class="badge">LangGraph · RAG · MLOps</span>
-          </div>
-        </div>
-
-        <aside class="hero-right">
-          <div class="hero-photo-frame">
-            <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
-          </div>
-          <p class="hero-photo-caption">Amir Shahcheraghian · Montréal, Canada</p>
-        </aside>
-      </section>
-    </section>
-
-    <section>
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-text">Explore my work</div>
-        <div class="divider-line"></div>
-      </div>
-
-      <section class="sections">
-        <a class="sec sec-1" href="photography/">
-          <div class="sec-accent"></div>
-          <div class="sec-num">01</div>
-          <span class="sec-icon">&#9728;</span>
-          <div class="sec-title">Photography</div>
-          <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
-          <div class="sec-arrow">Explore ↗</div>
-        </a>
-
-        <a class="sec sec-2" href="career/">
-          <div class="sec-accent"></div>
-          <div class="sec-num">02</div>
-          <span class="sec-icon">&#9889;</span>
-          <div class="sec-title">AI Career</div>
-          <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
-          <div class="sec-arrow">Explore ↗</div>
-        </a>
-
-        <a class="sec sec-3" href="LearnbyAmir/">
-          <div class="sec-accent"></div>
-          <div class="sec-num">03</div>
-          <span class="sec-icon">&#9670;</span>
-          <div class="sec-title">LearnByAmir</div>
-          <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
-          <div class="sec-arrow">Explore ↗</div>
-        </a>
-      </section>
-    </section>
+  <div class="landing-hero__content">
+    <h1 class="landing-hero__title">Amir Shahcheraghian<br>Personal Website</h1>
+    <p class="landing-hero__subtitle">AI Engineer & Night Sky Photographer — Montréal, Canada</p>
   </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-name">Amir <span>Sh.</span> · 2026</div>
-    <div class="footer-copy">Built with precision. Deployed with intention.</div>
-  </footer>
+<!-- ════════ SECTION 2: DARK INTRO + PROFILE ════════ -->
+<section class="intro-section">
+  <div class="intro-inner">
+    <div class="intro-text">
+      <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
+      <h2>I design <em>intelligent</em> systems<br>and tell stories with stars.</h2>
+      <p class="intro-body">
+        I am Amir Shahcheraghian, a PhD graduate from École de Technologie Supérieure (ÉTS), Montréal, Canada, and a seasoned AI Developer and Data Scientist with deep expertise in designing and deploying intelligent systems. My work spans large language model (LLM) integration, retrieval‑augmented generation (RAG) architectures, and autonomous AI agents — bringing cutting‑edge research to real‑world enterprise solutions. Based in Québec, I currently serve as a Senior AI Consultant, where I lead MLOps and LLMOps pipelines, mentor technical teams, and help organizations navigate the rapidly evolving AI landscape.
+        <br><br>
+        Beyond my professional life, I am a passionate night sky photographer and seasoned world traveler, driven by a singular mission: to capture the breathtaking beauty of the cosmos from every corner of the globe. From remote deserts to mountaintop observatories, I chase clear dark skies and rare celestial events — including solar eclipses — blending scientific precision with artistic vision. My photography is a testament to the wonder that exists at the intersection of technology, nature, and human curiosity.
+        <br><br>
+        This site is my personal landing page. I share my life in two parts: my AI engineer journey and learning path (through LearnByAmir), and my photography work as I explore nature, night skies and life.
+      </p>
+      <div class="hero-badges">
+        <span class="badge">Based in Montréal, Canada</span>
+        <span class="badge">LangGraph · RAG · MLOps</span>
+      </div>
+    </div>
 
-</div>
+    <div class="intro-photo">
+      <div class="intro-photo__frame">
+        <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
+      </div>
+      <p class="intro-photo__caption">Amir Shahcheraghian · Montréal, Canada</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SECTION 3: EXPLORE CARDS ════════ -->
+<section class="explore-section">
+  <div class="explore-inner">
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">Explore my work</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="sections">
+      <a class="sec sec-1" href="photography/">
+        <div class="sec-accent"></div>
+        <div class="sec-num">01</div>
+        <span class="sec-icon">&#9728;</span>
+        <div class="sec-title">Photography</div>
+        <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
+        <div class="sec-arrow">Explore &#8599;</div>
+      </a>
+
+      <a class="sec sec-2" href="career/">
+        <div class="sec-accent"></div>
+        <div class="sec-num">02</div>
+        <span class="sec-icon">&#9889;</span>
+        <div class="sec-title">AI Career</div>
+        <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
+        <div class="sec-arrow">Explore &#8599;</div>
+      </a>
+
+      <a class="sec sec-3" href="LearnbyAmir/">
+        <div class="sec-accent"></div>
+        <div class="sec-num">03</div>
+        <span class="sec-icon">&#9670;</span>
+        <div class="sec-title">LearnByAmir</div>
+        <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
+        <div class="sec-arrow">Explore &#8599;</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="site-footer">
+  <div class="footer-name">Amir <span>Sh.</span> · 2026</div>
+  <div class="footer-copy">Built with precision. Deployed with intention.</div>
+</footer>
+
 </body>
 </html>
-
