@@ -149,35 +149,42 @@
     line-height: 1.6;
   }
 
-  /* ───────── SECTION 2: DARK INTRO ───────── */
+  /* ───────── SECTION 2: FULL-BLEED PROFILE INTRO ───────── */
   .intro-section {
     position: relative;
-    z-index: 1;
+    width: 100%;
+    min-height: 100vh;
     overflow: hidden;
-    background: var(--page-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
   }
   .intro-section__bg {
     position: absolute;
     inset: 0;
     background-image: url("photography/photos/amir%20profile%20pic.jpg");
     background-size: cover;
-    background-position: center 20%;
-    filter: blur(50px) brightness(0.28) saturate(0.6);
-    transform: scale(1.15);
+    background-position: center 15%;
     z-index: 0;
+  }
+  .intro-section__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.12) 0%,
+      rgba(0,0,0,0.05) 30%,
+      rgba(0,0,0,0.35) 60%,
+      rgba(0,0,0,0.78) 100%
+    );
   }
   .intro-inner {
     position: relative;
     z-index: 1;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 60px;
-    align-items: center;
-    padding: 96px 48px;
+    max-width: 1000px;
+    padding: 0 48px 72px;
   }
-  .intro-text {}
   .hero-eyebrow {
     display: inline-flex;
     align-items: center;
@@ -201,7 +208,7 @@
     font-weight: 300;
     line-height: 1.25;
     letter-spacing: -0.015em;
-    color: var(--text-primary);
+    color: #fff;
     margin-bottom: 28px;
   }
   .intro-text h2 em {
@@ -213,9 +220,10 @@
     font-family: "Anthropic Sans", var(--font-body);
     font-size: 15px;
     font-weight: 300;
-    color: rgba(255,255,255,0.78);
+    color: rgba(255,255,255,0.82);
     line-height: 1.85;
     margin-bottom: 32px;
+    max-width: 680px;
   }
   .hero-badges {
     display: flex;
@@ -228,50 +236,12 @@
     gap: 6px;
     font-size: 11px;
     font-weight: 400;
-    color: var(--text-secondary);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
     padding: 6px 14px;
     border-radius: 999px;
-    backdrop-filter: blur(8px);
-  }
-
-  .intro-photo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .intro-photo__frame {
-    width: 100%;
-    max-width: 460px;
-    aspect-ratio: 3.5 / 4.5;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow:
-      0 30px 80px rgba(0,0,0,0.5),
-      0 0 0 1px rgba(255,255,255,0.04);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-  }
-  .intro-photo__frame:hover {
-    transform: translateY(-6px) scale(1.01);
-    box-shadow:
-      0 40px 100px rgba(0,0,0,0.6),
-      0 0 0 1px rgba(255,255,255,0.06);
-  }
-  .intro-photo__frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .intro-photo__caption {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-align: center;
+    backdrop-filter: blur(12px);
   }
 
   /* ───────── SECTION 3: THREE CARDS ───────── */
@@ -438,13 +408,11 @@
     .landing-hero__title {
       font-size: 36px;
     }
-    .intro-inner {
-      grid-template-columns: 1fr;
-      gap: 36px;
-      padding: 56px 24px;
+    .intro-section {
+      min-height: 80vh;
     }
-    .intro-photo__frame {
-      max-width: 360px;
+    .intro-inner {
+      padding: 0 24px 48px;
     }
     .explore-section {
       padding: 0 20px 52px;
@@ -488,7 +456,7 @@
   </div>
 </section>
 
-<!-- ════════ SECTION 2: DARK INTRO + PROFILE ════════ -->
+<!-- ════════ SECTION 2: FULL-BLEED PROFILE INTRO ════════ -->
 <section class="intro-section">
   <div class="intro-section__bg"></div>
   <div class="intro-inner">
@@ -506,13 +474,6 @@
         <span class="badge">Based in Montréal, Canada</span>
         <span class="badge">LangGraph · RAG · MLOps</span>
       </div>
-    </div>
-
-    <div class="intro-photo">
-      <div class="intro-photo__frame">
-        <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
-      </div>
-      <p class="intro-photo__caption">Amir Shahcheraghian · Montréal, Canada</p>
     </div>
   </div>
 </section>
