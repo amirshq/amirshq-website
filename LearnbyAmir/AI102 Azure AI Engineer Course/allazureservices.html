@@ -1,0 +1,419 @@
+
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans, sans-serif); overflow: hidden; }
+    
+    #canvas-wrap {
+      width: 100%; height: 720px; position: relative; overflow: hidden;
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg, 12px);
+      cursor: grab;
+      user-select: none;
+    }
+    #canvas-wrap:active { cursor: grabbing; }
+    #mindmap { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    
+    .controls {
+      display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      font-size: 12px; padding: 5px 12px; border-radius: 6px;
+      border: 0.5px solid var(--color-border-secondary);
+      background: var(--color-background-primary);
+      color: var(--color-text-secondary);
+      cursor: pointer; font-family: inherit;
+      transition: background 0.12s, color 0.12s;
+    }
+    .ctrl-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+    .hint { font-size: 11px; color: var(--color-text-tertiary); margin-left: auto; }
+    
+    .tooltip {
+      position: absolute; pointer-events: none; z-index: 20;
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-primary);
+      border-radius: 8px; padding: 8px 12px;
+      font-size: 12px; color: var(--color-text-secondary);
+      max-width: 220px; line-height: 1.55;
+      opacity: 0; transition: opacity 0.15s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .tooltip.show { opacity: 1; }
+    .tooltip strong { color: var(--color-text-primary); font-weight: 500; display: block; margin-bottom: 3px; }
+    </style>
+    
+    <div class="controls">
+      <button class="ctrl-btn" onclick="zoom(1.2)">+ Zoom in</button>
+      <button class="ctrl-btn" onclick="zoom(0.83)">− Zoom out</button>
+      <button class="ctrl-btn" onclick="resetView()">Reset view</button>
+      <button class="ctrl-btn" onclick="toggleAll()">Expand / collapse all</button>
+      <span class="hint">Click node to expand · Drag to pan · Hover for details</span>
+    </div>
+    
+    <div id="canvas-wrap">
+      <svg id="mindmap" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="tooltip" id="tip"></div>
+    </div>
+    
+    <script>
+    const COLORS = {
+      root:    { fill:'#185FA5', stroke:'#0C447C', text:'#E6F1FB' },
+      l1:      { fill:'#534AB7', stroke:'#3C3489', text:'#EEEDFE' },
+      ai:      { fill:'#0F6E56', stroke:'#085041', text:'#E1F5EE' },
+      compute: { fill:'#854F0B', stroke:'#633806', text:'#FAEEDA' },
+      data:    { fill:'#993C1D', stroke:'#712B13', text:'#FAECE7' },
+      network: { fill:'#3B6D11', stroke:'#27500A', text:'#EAF3DE' },
+      security:{ fill:'#993556', stroke:'#72243E', text:'#FBEAF0' },
+      devops:  { fill:'#185FA5', stroke:'#0C447C', text:'#E6F1FB' },
+      iot:     { fill:'#0F6E56', stroke:'#085041', text:'#E1F5EE' },
+      mixed:   { fill:'#5F5E5A', stroke:'#444441', text:'#F1EFE8' },
+    };
+    
+    const data = {
+      id:'root', label:'Microsoft Azure', color:'root', tip:'Microsoft\'s cloud platform — 200+ services across compute, AI, data, networking, security, and more.',
+      children:[
+        {
+          id:'ai-foundry', label:'Azure AI Foundry', color:'l1', tip:'Unified platform for building, deploying and managing AI solutions. Hub → Project hierarchy.',
+          children:[
+            { id:'foundry-hub', label:'Foundry Hub', color:'ai', tip:'Enterprise container — manages shared infra, networking, security policies.', children:[] },
+            { id:'foundry-project', label:'Foundry Project', color:'ai', tip:'Team workspace — model deployments, prompt flows, agent configs, evaluations.', children:[] },
+            {
+              id:'foundry-tools', label:'Foundry Tools', color:'ai', tip:'Collection of cognitive AI services managed through Foundry.',
+              children:[
+                { id:'vision', label:'Azure Vision', color:'ai', tip:'Image analysis, OCR/Read API, Custom Vision (classification & detection), Spatial Analysis for video.', children:[] },
+                { id:'speech', label:'Azure Speech', color:'ai', tip:'STT, TTS (SSML), speech translation, custom speech, keyword recognition, custom neural voice.', children:[] },
+                { id:'language', label:'Azure Language', color:'ai', tip:'Sentiment, NER, PII detection, key phrases, summarization, CLU (intents/entities), custom QnA.', children:[] },
+                { id:'translator', label:'Azure Translator', color:'ai', tip:'Text translation (100+ langs), document translation (async), transliteration, Custom Translator.', children:[] },
+                { id:'doc-intel', label:'Document Intelligence', color:'ai', tip:'Prebuilt models (invoice, receipt, ID, W2) + Custom Template / Neural + Composed models.', children:[] },
+                { id:'content-und', label:'Content Understanding', color:'ai', tip:'Multimodal: processes documents, images, video, audio in one pipeline. Schema-based field extraction.', children:[] },
+                { id:'content-safety', label:'Content Safety', color:'ai', tip:'Content filters, prompt shields (jailbreak), groundedness detection, blocklists, harm categories.', children:[] },
+                { id:'video-indexer', label:'Video Indexer', color:'ai', tip:'Extracts transcript, speaker IDs, topics, OCR, keyframes, sentiment from video files.', children:[] },
+              ]
+            },
+            {
+              id:'openai', label:'Azure OpenAI', color:'l1', tip:'Managed OpenAI models — GPT-4o, o1/o3, DALL-E 3, Whisper, text-embedding-3.',
+              children:[
+                { id:'gpt4o', label:'GPT-4o / mini', color:'l1', tip:'Multimodal LLM — text, image, audio. 128k context. Mini is faster and cheaper.', children:[] },
+                { id:'o1o3', label:'o1 / o3 Reasoning', color:'l1', tip:'Extended chain-of-thought for math, science, complex coding.', children:[] },
+                { id:'dalle3', label:'DALL-E 3', color:'l1', tip:'Text-to-image generation up to 1792×1024. Standard or HD quality.', children:[] },
+                { id:'embeddings', label:'text-embedding-3', color:'l1', tip:'Converts text to vectors. Used in RAG, semantic search, clustering.', children:[] },
+                { id:'whisper', label:'Whisper', color:'l1', tip:'Audio transcription model. 50+ languages. Available via Azure OpenAI endpoint.', children:[] },
+              ]
+            },
+            { id:'agent-svc', label:'Agent Service', color:'l1', tip:'Managed agent platform — Threads, Runs, built-in tools (Code Interpreter, File Search, Function Calling, Bing).', children:[] },
+            { id:'prompt-flow', label:'Prompt Flow', color:'l1', tip:'Visual DAG-based LLM-ops tool. Nodes: LLM, Python, Prompt. Variants, evaluators, deployment.', children:[] },
+            { id:'ai-search', label:'Azure AI Search', color:'l1', tip:'Full-text + vector + semantic + hybrid search. Skillsets for AI enrichment. Core RAG component.', children:[] },
+          ]
+        },
+        {
+          id:'compute', label:'Compute', color:'compute', tip:'Services that run code — VMs, containers, serverless functions, app hosting.',
+          children:[
+            { id:'vm', label:'Virtual Machines', color:'compute', tip:'IaaS — full control over OS and software. Windows or Linux. Many SKU sizes.', children:[] },
+            { id:'vmss', label:'VM Scale Sets', color:'compute', tip:'Auto-scaling groups of identical VMs. Load balanced, elastic.', children:[] },
+            { id:'aks', label:'Azure Kubernetes Service', color:'compute', tip:'Managed Kubernetes — deploy containerized workloads. Integrates with ACR, AAD, monitoring.', children:[] },
+            { id:'aci', label:'Container Instances', color:'compute', tip:'Run containers on-demand without managing servers. Fast startup, per-second billing.', children:[] },
+            { id:'functions', label:'Azure Functions', color:'compute', tip:'Serverless — event-triggered code. Used for custom AI skills, webhooks, automation.', children:[] },
+            { id:'appservice', label:'App Service', color:'compute', tip:'Managed PaaS for web apps and APIs. Supports .NET, Python, Node, Java, PHP.', children:[] },
+            { id:'logicapps', label:'Logic Apps', color:'compute', tip:'Low-code workflow automation. 400+ connectors. Orchestrate services and APIs.', children:[] },
+          ]
+        },
+        {
+          id:'data', label:'Data & Storage', color:'data', tip:'Databases, data lakes, analytics, and storage services.',
+          children:[
+            { id:'blob', label:'Azure Blob Storage', color:'data', tip:'Object storage for unstructured data — documents, images, audio, video. Used by AI services as data source.', children:[] },
+            { id:'sql', label:'Azure SQL Database', color:'data', tip:'Fully managed PaaS SQL Server. High availability, auto-scaling, threat protection.', children:[] },
+            { id:'cosmos', label:'Cosmos DB', color:'data', tip:'Multi-model NoSQL — document, key-value, graph, column. Global distribution, 99.999% SLA.', children:[] },
+            { id:'adls', label:'Data Lake Storage Gen2', color:'data', tip:'Hierarchical namespace on Blob Storage. Hadoop-compatible. Used for big data and ML training data.', children:[] },
+            { id:'synapse', label:'Azure Synapse Analytics', color:'data', tip:'Unified analytics — SQL pools, Spark, pipelines, Power BI integration. Data warehouse and ML.', children:[] },
+            { id:'databricks', label:'Azure Databricks', color:'data', tip:'Apache Spark-based analytics. MLflow for ML lifecycle. Delta Lake for reliable data lake.', children:[] },
+            { id:'event-hub', label:'Event Hubs', color:'data', tip:'Big data streaming platform — millions of events/sec. Used for real-time AI pipelines.', children:[] },
+            { id:'service-bus', label:'Service Bus', color:'data', tip:'Enterprise messaging — queues and topics. Reliable async communication between services.', children:[] },
+          ]
+        },
+        {
+          id:'networking', label:'Networking', color:'network', tip:'Services connecting, securing, and delivering Azure resources.',
+          children:[
+            { id:'vnet', label:'Virtual Network (VNet)', color:'network', tip:'Isolated private network in Azure. Subnets, route tables, NSGs. Foundation for private AI deployments.', children:[] },
+            { id:'private-ep', label:'Private Endpoint', color:'network', tip:'Private IP in your VNet for Azure services — no traffic over internet. Best security for AI resources.', children:[] },
+            { id:'apim', label:'API Management', color:'network', tip:'Gateway for APIs — rate limiting, auth, monitoring, versioning. Front AI service endpoints.', children:[] },
+            { id:'cdn', label:'Azure CDN / Front Door', color:'network', tip:'Global content delivery and load balancing. Edge caching, WAF, failover.', children:[] },
+            { id:'vpn-gw', label:'VPN Gateway', color:'network', tip:'Connect on-premises networks to Azure VNets securely via IPsec/IKE tunnels.', children:[] },
+          ]
+        },
+        {
+          id:'security', label:'Security & Identity', color:'security', tip:'Authentication, authorization, secrets management, and compliance.',
+          children:[
+            { id:'entra', label:'Microsoft Entra ID', color:'security', tip:'Cloud identity provider (formerly AAD). OAuth2, OIDC, SAML. Managed Identity for AI auth.', children:[] },
+            { id:'keyvault', label:'Key Vault', color:'security', tip:'Secrets, keys, and certificates management. Always store AI API keys here — never in code.', children:[] },
+            { id:'defender', label:'Microsoft Defender', color:'security', tip:'Cloud security posture management (CSPM) and threat protection across Azure services.', children:[] },
+            { id:'policy', label:'Azure Policy', color:'security', tip:'Enforce governance — audit and enforce resource configs at scale across subscriptions.', children:[] },
+            { id:'rbac', label:'Azure RBAC', color:'security', tip:'Role-Based Access Control — assign roles (Owner, Contributor, Reader, custom) at any scope.', children:[] },
+          ]
+        },
+        {
+          id:'devops-cat', label:'DevOps & Monitoring', color:'devops', tip:'Tools for CI/CD, observability, and infrastructure management.',
+          children:[
+            { id:'azure-devops', label:'Azure DevOps', color:'devops', tip:'Boards, Repos, Pipelines, Artifacts, Test Plans. End-to-end ALM including AI CI/CD.', children:[] },
+            { id:'github-actions', label:'GitHub Actions', color:'devops', tip:'CI/CD workflows triggered by GitHub events. Deploy ARM, Bicep, or SDK-based AI resources.', children:[] },
+            { id:'monitor', label:'Azure Monitor', color:'devops', tip:'Metrics, logs, alerts for all Azure resources. Log Analytics (KQL), Application Insights, dashboards.', children:[] },
+            { id:'app-insights', label:'Application Insights', color:'devops', tip:'APM — traces, exceptions, performance. Integrates with OpenTelemetry for LLM tracing.', children:[] },
+            { id:'bicep', label:'Bicep / ARM / Terraform', color:'devops', tip:'Infrastructure as Code for deploying and managing Azure AI resources in pipelines.', children:[] },
+          ]
+        },
+        {
+          id:'iot-edge', label:'IoT & Edge', color:'iot', tip:'Services for connected devices and edge AI deployments.',
+          children:[
+            { id:'iot-hub', label:'IoT Hub', color:'iot', tip:'Bi-directional messaging between IoT devices and cloud. Device registry, routing, monitoring.', children:[] },
+            { id:'iot-edge', label:'IoT Edge', color:'iot', tip:'Run AI models and Azure services on edge devices. Deploy AI containers to field devices.', children:[] },
+            { id:'digital-twins', label:'Azure Digital Twins', color:'iot', tip:'Model real-world environments as digital graphs. Combine with AI for predictive maintenance.', children:[] },
+          ]
+        },
+      ]
+    };
+    
+    const svg = document.getElementById('mindmap');
+    const tip = document.getElementById('tip');
+    const wrap = document.getElementById('canvas-wrap');
+    
+    let W = wrap.clientWidth, H = wrap.clientHeight;
+    let tx = W/2, ty = H/2, scale = 1;
+    let allExpanded = false;
+    
+    const collapsed = new Set();
+    const positions = {};
+    let edges = [];
+    let nodes = [];
+    
+    const RX = { root:52, l1:42, ai:34, compute:34, data:34, network:34, security:34, devops:34, iot:34, mixed:34 };
+    const RY = { root:22, l1:18, ai:15, compute:15, data:15, network:15, security:15, devops:15, iot:15, mixed:15 };
+    const FS = { root:13, l1:12, ai:11, compute:11, data:11, network:11, security:11, devops:11, iot:11, mixed:11 };
+    
+    function layout() {
+      nodes = []; edges = [];
+      const cx = 0, cy = 0;
+      positions['root'] = { x:cx, y:cy };
+      nodes.push({ node: data, x:cx, y:cy });
+    
+      const L1 = data.children;
+      const L1count = L1.length;
+      const L1r = 220;
+    
+      L1.forEach((l1node, i) => {
+        if (collapsed.has('root')) return;
+        const angle = (2*Math.PI / L1count) * i - Math.PI/2;
+        const x = cx + Math.cos(angle) * L1r;
+        const y = cy + Math.sin(angle) * L1r;
+        positions[l1node.id] = {x, y};
+        nodes.push({node:l1node, x, y});
+        edges.push({x1:cx, y1:cy, x2:x, y2:y, color:l1node.color});
+    
+        const L2 = l1node.children;
+        if (!L2 || !L2.length || collapsed.has(l1node.id)) return;
+    
+        const spread = Math.min(Math.PI * 0.7, (L2.length-1) * 0.25);
+        const baseAngle = angle;
+        const L2r = 130 + Math.min(L2.length * 4, 40);
+    
+        L2.forEach((l2node, j) => {
+          const off = L2.length === 1 ? 0 : (j / (L2.length-1) - 0.5) * spread;
+          const a2 = baseAngle + off;
+          const x2 = x + Math.cos(a2) * L2r;
+          const y2 = y + Math.sin(a2) * L2r;
+          positions[l2node.id] = {x:x2, y:y2};
+          nodes.push({node:l2node, x:x2, y:y2});
+          edges.push({x1:x, y1:y, x2:x2, y2:y2, color:l2node.color});
+    
+          const L3 = l2node.children;
+          if (!L3 || !L3.length || collapsed.has(l2node.id)) return;
+          const spread3 = Math.min(Math.PI*0.45, (L3.length-1)*0.2);
+          const L3r = 95;
+    
+          L3.forEach((l3node, k) => {
+            const off3 = L3.length===1 ? 0 : (k/(L3.length-1)-0.5)*spread3;
+            const a3 = a2 + off3;
+            const x3 = x2 + Math.cos(a3)*L3r;
+            const y3 = y2 + Math.sin(a3)*L3r;
+            positions[l3node.id] = {x:x3, y:y3};
+            nodes.push({node:l3node, x:x3, y:y3});
+            edges.push({x1:x2, y1:y2, x2:x3, y2:y3, color:l3node.color});
+          });
+        });
+      });
+    }
+    
+    function colorFor(c) { return COLORS[c] || COLORS.mixed; }
+    
+    function render() {
+      layout();
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+    
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('id','scene');
+      g.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+      svg.appendChild(g);
+    
+      edges.forEach(e => {
+        const col = colorFor(e.color);
+        const mx = (e.x1+e.x2)/2, my = (e.y1+e.y2)/2;
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', `M${e.x1},${e.y1} Q${mx},${my} ${e.x2},${e.y2}`);
+        path.setAttribute('fill','none');
+        path.setAttribute('stroke', col.stroke);
+        path.setAttribute('stroke-width','1.2');
+        path.setAttribute('opacity','0.45');
+        g.appendChild(path);
+      });
+    
+      nodes.forEach(({node, x, y}) => {
+        const col = colorFor(node.color);
+        const rx = RX[node.color] || 32;
+        const ry = RY[node.color] || 15;
+        const fs = FS[node.color] || 11;
+        const hasC = node.children && node.children.length > 0;
+        const isCollapsed = collapsed.has(node.id);
+    
+        const grp = document.createElementNS('http://www.w3.org/2000/svg','g');
+        grp.style.cursor = 'pointer';
+    
+        const ell = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+        ell.setAttribute('cx', x); ell.setAttribute('cy', y);
+        ell.setAttribute('rx', rx); ell.setAttribute('ry', ry);
+        ell.setAttribute('fill', col.fill);
+        ell.setAttribute('stroke', col.stroke);
+        ell.setAttribute('stroke-width', node.color==='root' ? '2' : '1');
+        grp.appendChild(ell);
+    
+        const label = node.label.length > 16 ? node.label.replace(' ', '\n') : node.label;
+        const lines = label.split('\n');
+        lines.forEach((line, i) => {
+          const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+          txt.setAttribute('x', x);
+          txt.setAttribute('y', y + (i - (lines.length-1)/2) * (fs+2));
+          txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('dominant-baseline','central');
+          txt.setAttribute('fill', col.text);
+          txt.setAttribute('font-size', fs);
+          txt.setAttribute('font-family', 'var(--font-sans, sans-serif)');
+          txt.setAttribute('font-weight', node.color==='root' ? '500' : '400');
+          txt.setAttribute('pointer-events','none');
+          txt.textContent = line;
+          grp.appendChild(txt);
+        });
+    
+        if (hasC) {
+          const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+          dot.setAttribute('cx', x + rx - 5);
+          dot.setAttribute('cy', y - ry + 5);
+          dot.setAttribute('r', '5');
+          dot.setAttribute('fill', isCollapsed ? col.text : col.stroke);
+          dot.setAttribute('stroke', col.stroke);
+          dot.setAttribute('stroke-width','1');
+          grp.appendChild(dot);
+    
+          const sym = document.createElementNS('http://www.w3.org/2000/svg','text');
+          sym.setAttribute('x', x + rx - 5);
+          sym.setAttribute('y', y - ry + 5);
+          sym.setAttribute('text-anchor','middle');
+          sym.setAttribute('dominant-baseline','central');
+          sym.setAttribute('fill', isCollapsed ? col.fill : col.text);
+          sym.setAttribute('font-size', '7');
+          sym.setAttribute('font-weight', '500');
+          sym.setAttribute('pointer-events','none');
+          sym.textContent = isCollapsed ? '+' : '−';
+          grp.appendChild(sym);
+        }
+    
+        grp.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (hasC) {
+            if (collapsed.has(node.id)) collapsed.delete(node.id);
+            else collapsed.add(node.id);
+            render();
+          }
+        });
+    
+        grp.addEventListener('mouseenter', (e) => {
+          tip.innerHTML = `<strong>${node.label}</strong>${node.tip}`;
+          tip.classList.add('show');
+          ell.setAttribute('opacity','0.85');
+        });
+        grp.addEventListener('mousemove', (e) => {
+          const rect = wrap.getBoundingClientRect();
+          let lx = e.clientX - rect.left + 14;
+          let ly = e.clientY - rect.top + 14;
+          if (lx + 230 > W) lx -= 240;
+          if (ly + 80 > H) ly -= 80;
+          tip.style.left = lx + 'px';
+          tip.style.top = ly + 'px';
+        });
+        grp.addEventListener('mouseleave', () => {
+          tip.classList.remove('show');
+          ell.setAttribute('opacity','1');
+        });
+    
+        g.appendChild(grp);
+      });
+    }
+    
+    function zoom(f) {
+      scale = Math.max(0.3, Math.min(2.5, scale * f));
+      render();
+    }
+    
+    function resetView() {
+      tx = W/2; ty = H/2; scale = 1;
+      render();
+    }
+    
+    function toggleAll() {
+      if (allExpanded) {
+        data.children.forEach(c => {
+          collapsed.add(c.id);
+          if (c.children) c.children.forEach(cc => collapsed.add(cc.id));
+        });
+        allExpanded = false;
+      } else {
+        collapsed.clear();
+        allExpanded = true;
+      }
+      render();
+    }
+    
+    let drag = false, lastX = 0, lastY = 0;
+    wrap.addEventListener('mousedown', e => { drag=true; lastX=e.clientX; lastY=e.clientY; });
+    window.addEventListener('mousemove', e => {
+      if (!drag) return;
+      tx += e.clientX - lastX; ty += e.clientY - lastY;
+      lastX=e.clientX; lastY=e.clientY;
+      render();
+    });
+    window.addEventListener('mouseup', () => { drag=false; });
+    
+    wrap.addEventListener('wheel', e => {
+      e.preventDefault();
+      zoom(e.deltaY < 0 ? 1.1 : 0.91);
+    }, {passive:false});
+    
+    wrap.addEventListener('touchstart', e => {
+      if (e.touches.length===1) { drag=true; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; }
+    }, {passive:true});
+    wrap.addEventListener('touchmove', e => {
+      if (!drag || e.touches.length!==1) return;
+      tx += e.touches[0].clientX - lastX; ty += e.touches[0].clientY - lastY;
+      lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
+      render();
+    }, {passive:true});
+    wrap.addEventListener('touchend', () => { drag=false; });
+    
+    collapsed.add('root');
+    data.children.forEach(c => {
+      collapsed.add(c.id);
+      if (c.children) c.children.forEach(cc => collapsed.add(cc.id));
+    });
+    
+    W = wrap.clientWidth; H = wrap.clientHeight;
+    tx = W/2; ty = H/2;
+    collapsed.delete('root');
+    render();
+    </script>
+    
