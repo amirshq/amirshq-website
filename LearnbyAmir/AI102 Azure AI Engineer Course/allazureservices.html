@@ -3,11 +3,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-sans, 'Inter', sans-serif); overflow: hidden; }
 
-    .mindmap-wrapper {
-      background: transparent;
-      padding: 0;
-    }
-
     #canvas-wrap {
       width: 100%; height: 780px; position: relative; overflow: hidden;
       background: linear-gradient(135deg, #0d1117 0%, #0f1b2d 40%, #111827 100%);
@@ -22,8 +17,8 @@
       content: '';
       position: absolute; inset: 0;
       background-image:
-        radial-gradient(ellipse at 20% 20%, rgba(24,95,165,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 80%, rgba(83,74,183,0.10) 0%, transparent 60%);
+        radial-gradient(ellipse at 20% 20%, rgba(24,95,165,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(83,74,183,0.08) 0%, transparent 60%);
       pointer-events: none;
       border-radius: 16px;
     }
@@ -47,14 +42,11 @@
       color: rgba(255,255,255,0.95);
       border-color: rgba(255,255,255,0.22);
     }
-    .hint {
-      font-size: 11px; color: rgba(255,255,255,0.32); margin-left: auto;
-      letter-spacing: 0.02em;
-    }
+    .hint { font-size: 11px; color: rgba(255,255,255,0.32); margin-left: auto; letter-spacing: 0.02em; }
 
     .tooltip {
       position: absolute; pointer-events: none; z-index: 20;
-      background: rgba(15, 20, 30, 0.92);
+      background: rgba(15, 20, 30, 0.94);
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: 10px; padding: 10px 14px;
       font-size: 12px; color: rgba(255,255,255,0.65);
@@ -64,92 +56,73 @@
       backdrop-filter: blur(10px);
     }
     .tooltip.show { opacity: 1; }
-    .tooltip strong {
-      color: rgba(255,255,255,0.9); font-weight: 500;
-      display: block; margin-bottom: 4px; font-size: 12.5px;
-    }
+    .tooltip strong { color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 4px; font-size: 12.5px; }
 </style>
 
-<div class="mindmap-wrapper">
-  <div class="controls">
-    <button class="ctrl-btn" onclick="zoom(1.2)">+ Zoom in</button>
-    <button class="ctrl-btn" onclick="zoom(0.83)">− Zoom out</button>
-    <button class="ctrl-btn" onclick="resetView()">Reset view</button>
-    <button class="ctrl-btn" onclick="toggleAll()">Expand / collapse all</button>
-    <span class="hint">Click node to expand · Drag to pan · Hover for details</span>
-  </div>
+<div class="controls">
+  <button class="ctrl-btn" onclick="zoom(1.2)">+ Zoom in</button>
+  <button class="ctrl-btn" onclick="zoom(0.83)">− Zoom out</button>
+  <button class="ctrl-btn" onclick="resetView()">Reset view</button>
+  <button class="ctrl-btn" onclick="toggleAll()">Expand / collapse all</button>
+  <span class="hint">Click node to expand · Drag to pan · Hover for details</span>
+</div>
 
-  <div id="canvas-wrap">
-    <svg id="mindmap" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow-blue" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="glow-purple" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="3.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="node-shadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.45)"/>
-        </filter>
-        <filter id="node-shadow-root" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="rgba(24,95,165,0.5)"/>
-        </filter>
-      </defs>
-    </svg>
-    <div class="tooltip" id="tip"></div>
-  </div>
+<div id="canvas-wrap">
+  <svg id="mindmap" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="tooltip" id="tip"></div>
 </div>
 
 <script>
+// Each L1 category gets its own distinct hue; L2/L3 inherit parent's color key
 const COLORS = {
-  root:     { fill:'#1a6bbf', stroke:'#2a8ae0', text:'#ffffff', glow:'rgba(42,138,224,0.6)' },
-  l1:       { fill:'#5c52c8', stroke:'#7b72e0', text:'#f0eeff', glow:'rgba(123,114,224,0.5)' },
-  ai:       { fill:'#0d7a60', stroke:'#13a880', text:'#d0f5ea', glow:'rgba(19,168,128,0.4)' },
-  compute:  { fill:'#9a5d0e', stroke:'#c47a18', text:'#fdecc8', glow:'rgba(196,122,24,0.4)' },
-  data:     { fill:'#a83f20', stroke:'#d45528', text:'#fde0d5', glow:'rgba(212,85,40,0.4)' },
-  network:  { fill:'#3d7a12', stroke:'#55aa18', text:'#d8f0c0', glow:'rgba(85,170,24,0.4)' },
-  security: { fill:'#9e2f5a', stroke:'#c83e76', text:'#fcdeed', glow:'rgba(200,62,118,0.4)' },
-  devops:   { fill:'#1a6bbf', stroke:'#2a8ae0', text:'#dceeff', glow:'rgba(42,138,224,0.4)' },
-  iot:      { fill:'#0d7a60', stroke:'#13a880', text:'#d0f5ea', glow:'rgba(19,168,128,0.4)' },
-  mixed:    { fill:'#5a5850', stroke:'#7a7870', text:'#f0ede5', glow:'rgba(122,120,112,0.3)' },
+  root:     { fill:'#1565c0', stroke:'#42a5f5', text:'#e3f2fd' }, // Azure blue
+  foundry:  { fill:'#6a1b9a', stroke:'#ab47bc', text:'#f3e5f5' }, // Purple
+  openai:   { fill:'#283593', stroke:'#5c6bc0', text:'#e8eaf6' }, // Indigo
+  compute:  { fill:'#bf360c', stroke:'#ff7043', text:'#fbe9e7' }, // Deep orange
+  data:     { fill:'#880e4f', stroke:'#f06292', text:'#fce4ec' }, // Pink/magenta
+  network:  { fill:'#1b5e20', stroke:'#66bb6a', text:'#e8f5e9' }, // Green
+  security: { fill:'#4a148c', stroke:'#ce93d8', text:'#f3e5f5' }, // Deep purple
+  devops:   { fill:'#006064', stroke:'#4dd0e1', text:'#e0f7fa' }, // Cyan/teal
+  iot:      { fill:'#e65100', stroke:'#ffb74d', text:'#fff3e0' }, // Amber
+  ai:       { fill:'#004d40', stroke:'#4db6ac', text:'#e0f2f1' }, // Teal
+  mixed:    { fill:'#37474f', stroke:'#90a4ae', text:'#eceff1' }, // Blue grey
 };
 
+// Map node color keys to specific categories for L1 nodes
 const data = {
   id:'root', label:'Microsoft Azure', color:'root', tip:'Microsoft\'s cloud platform — 200+ services across compute, AI, data, networking, security, and more.',
   children:[
     {
-      id:'ai-foundry', label:'Azure AI Foundry', color:'l1', tip:'Unified platform for building, deploying and managing AI solutions. Hub → Project hierarchy.',
+      id:'ai-foundry', label:'Azure AI Foundry', color:'foundry', tip:'Unified platform for building, deploying and managing AI solutions. Hub → Project hierarchy.',
       children:[
-        { id:'foundry-hub', label:'Foundry Hub', color:'ai', tip:'Enterprise container — manages shared infra, networking, security policies.', children:[] },
-        { id:'foundry-project', label:'Foundry Project', color:'ai', tip:'Team workspace — model deployments, prompt flows, agent configs, evaluations.', children:[] },
+        { id:'foundry-hub', label:'Foundry Hub', color:'foundry', tip:'Enterprise container — manages shared infra, networking, security policies.', children:[] },
+        { id:'foundry-project', label:'Foundry Project', color:'foundry', tip:'Team workspace — model deployments, prompt flows, agent configs, evaluations.', children:[] },
         {
-          id:'foundry-tools', label:'Foundry Tools', color:'ai', tip:'Collection of cognitive AI services managed through Foundry.',
+          id:'foundry-tools', label:'Foundry Tools', color:'foundry', tip:'Collection of cognitive AI services managed through Foundry.',
           children:[
-            { id:'vision', label:'Azure Vision', color:'ai', tip:'Image analysis, OCR/Read API, Custom Vision (classification & detection), Spatial Analysis for video.', children:[] },
-            { id:'speech', label:'Azure Speech', color:'ai', tip:'STT, TTS (SSML), speech translation, custom speech, keyword recognition, custom neural voice.', children:[] },
-            { id:'language', label:'Azure Language', color:'ai', tip:'Sentiment, NER, PII detection, key phrases, summarization, CLU (intents/entities), custom QnA.', children:[] },
-            { id:'translator', label:'Azure Translator', color:'ai', tip:'Text translation (100+ langs), document translation (async), transliteration, Custom Translator.', children:[] },
-            { id:'doc-intel', label:'Document Intelligence', color:'ai', tip:'Prebuilt models (invoice, receipt, ID, W2) + Custom Template / Neural + Composed models.', children:[] },
-            { id:'content-und', label:'Content Understanding', color:'ai', tip:'Multimodal: processes documents, images, video, audio in one pipeline. Schema-based field extraction.', children:[] },
-            { id:'content-safety', label:'Content Safety', color:'ai', tip:'Content filters, prompt shields (jailbreak), groundedness detection, blocklists, harm categories.', children:[] },
-            { id:'video-indexer', label:'Video Indexer', color:'ai', tip:'Extracts transcript, speaker IDs, topics, OCR, keyframes, sentiment from video files.', children:[] },
+            { id:'vision', label:'Azure Vision', color:'foundry', tip:'Image analysis, OCR/Read API, Custom Vision (classification & detection), Spatial Analysis for video.', children:[] },
+            { id:'speech', label:'Azure Speech', color:'foundry', tip:'STT, TTS (SSML), speech translation, custom speech, keyword recognition, custom neural voice.', children:[] },
+            { id:'language', label:'Azure Language', color:'foundry', tip:'Sentiment, NER, PII detection, key phrases, summarization, CLU (intents/entities), custom QnA.', children:[] },
+            { id:'translator', label:'Azure Translator', color:'foundry', tip:'Text translation (100+ langs), document translation (async), transliteration, Custom Translator.', children:[] },
+            { id:'doc-intel', label:'Document Intelligence', color:'foundry', tip:'Prebuilt models (invoice, receipt, ID, W2) + Custom Template / Neural + Composed models.', children:[] },
+            { id:'content-und', label:'Content Understanding', color:'foundry', tip:'Multimodal: processes documents, images, video, audio in one pipeline. Schema-based field extraction.', children:[] },
+            { id:'content-safety', label:'Content Safety', color:'foundry', tip:'Content filters, prompt shields (jailbreak), groundedness detection, blocklists, harm categories.', children:[] },
+            { id:'video-indexer', label:'Video Indexer', color:'foundry', tip:'Extracts transcript, speaker IDs, topics, OCR, keyframes, sentiment from video files.', children:[] },
           ]
         },
         {
-          id:'openai', label:'Azure OpenAI', color:'l1', tip:'Managed OpenAI models — GPT-4o, o1/o3, DALL-E 3, Whisper, text-embedding-3.',
+          id:'openai', label:'Azure OpenAI', color:'openai', tip:'Managed OpenAI models — GPT-4o, o1/o3, DALL-E 3, Whisper, text-embedding-3.',
           children:[
-            { id:'gpt4o', label:'GPT-4o / mini', color:'l1', tip:'Multimodal LLM — text, image, audio. 128k context. Mini is faster and cheaper.', children:[] },
-            { id:'o1o3', label:'o1 / o3 Reasoning', color:'l1', tip:'Extended chain-of-thought for math, science, complex coding.', children:[] },
-            { id:'dalle3', label:'DALL-E 3', color:'l1', tip:'Text-to-image generation up to 1792×1024. Standard or HD quality.', children:[] },
-            { id:'embeddings', label:'text-embedding-3', color:'l1', tip:'Converts text to vectors. Used in RAG, semantic search, clustering.', children:[] },
-            { id:'whisper', label:'Whisper', color:'l1', tip:'Audio transcription model. 50+ languages. Available via Azure OpenAI endpoint.', children:[] },
+            { id:'gpt4o', label:'GPT-4o / mini', color:'openai', tip:'Multimodal LLM — text, image, audio. 128k context. Mini is faster and cheaper.', children:[] },
+            { id:'o1o3', label:'o1 / o3 Reasoning', color:'openai', tip:'Extended chain-of-thought for math, science, complex coding.', children:[] },
+            { id:'dalle3', label:'DALL-E 3', color:'openai', tip:'Text-to-image generation up to 1792×1024. Standard or HD quality.', children:[] },
+            { id:'embeddings', label:'text-embedding-3', color:'openai', tip:'Converts text to vectors. Used in RAG, semantic search, clustering.', children:[] },
+            { id:'whisper', label:'Whisper', color:'openai', tip:'Audio transcription model. 50+ languages. Available via Azure OpenAI endpoint.', children:[] },
           ]
         },
-        { id:'agent-svc', label:'Agent Service', color:'l1', tip:'Managed agent platform — Threads, Runs, built-in tools (Code Interpreter, File Search, Function Calling, Bing).', children:[] },
-        { id:'prompt-flow', label:'Prompt Flow', color:'l1', tip:'Visual DAG-based LLM-ops tool. Nodes: LLM, Python, Prompt. Variants, evaluators, deployment.', children:[] },
-        { id:'ai-search', label:'Azure AI Search', color:'l1', tip:'Full-text + vector + semantic + hybrid search. Skillsets for AI enrichment. Core RAG component.', children:[] },
+        { id:'agent-svc', label:'Agent Service', color:'foundry', tip:'Managed agent platform — Threads, Runs, built-in tools (Code Interpreter, File Search, Function Calling, Bing).', children:[] },
+        { id:'prompt-flow', label:'Prompt Flow', color:'foundry', tip:'Visual DAG-based LLM-ops tool. Nodes: LLM, Python, Prompt. Variants, evaluators, deployment.', children:[] },
+        { id:'ai-search', label:'Azure AI Search', color:'foundry', tip:'Full-text + vector + semantic + hybrid search. Skillsets for AI enrichment. Core RAG component.', children:[] },
       ]
     },
     {
@@ -167,22 +140,22 @@ const data = {
     {
       id:'data', label:'Data & Storage', color:'data', tip:'Databases, data lakes, analytics, and storage services.',
       children:[
-        { id:'blob', label:'Blob Storage', color:'data', tip:'Object storage for unstructured data — documents, images, audio, video. Used by AI services as data source.', children:[] },
+        { id:'blob', label:'Blob Storage', color:'data', tip:'Object storage for unstructured data — documents, images, audio, video.', children:[] },
         { id:'sql', label:'Azure SQL Database', color:'data', tip:'Fully managed PaaS SQL Server. High availability, auto-scaling, threat protection.', children:[] },
         { id:'cosmos', label:'Cosmos DB', color:'data', tip:'Multi-model NoSQL — document, key-value, graph, column. Global distribution, 99.999% SLA.', children:[] },
         { id:'adls', label:'Data Lake Gen2', color:'data', tip:'Hierarchical namespace on Blob Storage. Hadoop-compatible. Used for big data and ML training data.', children:[] },
-        { id:'synapse', label:'Synapse Analytics', color:'data', tip:'Unified analytics — SQL pools, Spark, pipelines, Power BI integration. Data warehouse and ML.', children:[] },
+        { id:'synapse', label:'Synapse Analytics', color:'data', tip:'Unified analytics — SQL pools, Spark, pipelines, Power BI integration.', children:[] },
         { id:'databricks', label:'Azure Databricks', color:'data', tip:'Apache Spark-based analytics. MLflow for ML lifecycle. Delta Lake for reliable data lake.', children:[] },
-        { id:'event-hub', label:'Event Hubs', color:'data', tip:'Big data streaming platform — millions of events/sec. Used for real-time AI pipelines.', children:[] },
+        { id:'event-hub', label:'Event Hubs', color:'data', tip:'Big data streaming platform — millions of events/sec. Real-time AI pipelines.', children:[] },
         { id:'service-bus', label:'Service Bus', color:'data', tip:'Enterprise messaging — queues and topics. Reliable async communication between services.', children:[] },
       ]
     },
     {
       id:'networking', label:'Networking', color:'network', tip:'Services connecting, securing, and delivering Azure resources.',
       children:[
-        { id:'vnet', label:'Virtual Network', color:'network', tip:'Isolated private network in Azure. Subnets, route tables, NSGs. Foundation for private AI deployments.', children:[] },
-        { id:'private-ep', label:'Private Endpoint', color:'network', tip:'Private IP in your VNet for Azure services — no traffic over internet. Best security for AI resources.', children:[] },
-        { id:'apim', label:'API Management', color:'network', tip:'Gateway for APIs — rate limiting, auth, monitoring, versioning. Front AI service endpoints.', children:[] },
+        { id:'vnet', label:'Virtual Network', color:'network', tip:'Isolated private network in Azure. Subnets, route tables, NSGs.', children:[] },
+        { id:'private-ep', label:'Private Endpoint', color:'network', tip:'Private IP in your VNet for Azure services — no traffic over internet.', children:[] },
+        { id:'apim', label:'API Management', color:'network', tip:'Gateway for APIs — rate limiting, auth, monitoring, versioning.', children:[] },
         { id:'cdn', label:'CDN / Front Door', color:'network', tip:'Global content delivery and load balancing. Edge caching, WAF, failover.', children:[] },
         { id:'vpn-gw', label:'VPN Gateway', color:'network', tip:'Connect on-premises networks to Azure VNets securely via IPsec/IKE tunnels.', children:[] },
       ]
@@ -202,7 +175,7 @@ const data = {
       children:[
         { id:'azure-devops', label:'Azure DevOps', color:'devops', tip:'Boards, Repos, Pipelines, Artifacts, Test Plans. End-to-end ALM including AI CI/CD.', children:[] },
         { id:'github-actions', label:'GitHub Actions', color:'devops', tip:'CI/CD workflows triggered by GitHub events. Deploy ARM, Bicep, or SDK-based AI resources.', children:[] },
-        { id:'monitor', label:'Azure Monitor', color:'devops', tip:'Metrics, logs, alerts for all Azure resources. Log Analytics (KQL), Application Insights, dashboards.', children:[] },
+        { id:'monitor', label:'Azure Monitor', color:'devops', tip:'Metrics, logs, alerts for all Azure resources. Log Analytics (KQL), Application Insights.', children:[] },
         { id:'app-insights', label:'App Insights', color:'devops', tip:'APM — traces, exceptions, performance. Integrates with OpenTelemetry for LLM tracing.', children:[] },
         { id:'bicep', label:'Bicep / ARM / TF', color:'devops', tip:'Infrastructure as Code for deploying and managing Azure AI resources in pipelines.', children:[] },
       ]
@@ -225,63 +198,54 @@ const wrap = document.getElementById('canvas-wrap');
 let W = wrap.clientWidth, H = wrap.clientHeight;
 let tx = W/2, ty = H/2, scale = 1;
 let allExpanded = false;
-
 const collapsed = new Set();
-const positions = {};
-let edges = [];
-let nodes = [];
+let edges = [], nodes = [];
 
-// Node sizes — larger, more readable
-const RX = { root:68, l1:58, ai:46, compute:46, data:46, network:46, security:46, devops:46, iot:46, mixed:44 };
-const RY = { root:26, l1:22, ai:18, compute:18, data:18, network:18, security:18, devops:18, iot:18, mixed:18 };
-const FS = { root:14, l1:13, ai:12, compute:12, data:12, network:12, security:12, devops:12, iot:12, mixed:12 };
+// Node half-widths and half-heights (for rect sizing)
+const NW = { root:72, foundry:62, openai:62, compute:62, data:62, network:62, security:62, devops:62, iot:62, ai:58, mixed:58 };
+const NH = { root:22, foundry:18, openai:18, compute:18, data:18, network:18, security:18, devops:18, iot:18, ai:16, mixed:16 };
+const FS = { root:13, foundry:12, openai:12, compute:12, data:12, network:12, security:12, devops:12, iot:12, ai:11, mixed:11 };
+const CORNER = 8; // border-radius for rect nodes
 
 function layout() {
   nodes = []; edges = [];
-  const cx = 0, cy = 0;
-  positions['root'] = { x:cx, y:cy };
-  nodes.push({ node: data, x:cx, y:cy });
+  nodes.push({ node: data, x:0, y:0 });
 
   const L1 = data.children;
-  const L1count = L1.length;
-  const L1r = 310; // more spacing
+  const L1r = 320;
 
   L1.forEach((l1node, i) => {
     if (collapsed.has('root')) return;
-    const angle = (2*Math.PI / L1count) * i - Math.PI/2;
-    const x = cx + Math.cos(angle) * L1r;
-    const y = cy + Math.sin(angle) * L1r;
-    positions[l1node.id] = {x, y};
+    const angle = (2*Math.PI / L1.length) * i - Math.PI/2;
+    const x = Math.cos(angle) * L1r;
+    const y = Math.sin(angle) * L1r;
     nodes.push({node:l1node, x, y});
-    edges.push({x1:cx, y1:cy, x2:x, y2:y, color:l1node.color});
+    edges.push({x1:0, y1:0, x2:x, y2:y, color:l1node.color});
 
     const L2 = l1node.children;
     if (!L2 || !L2.length || collapsed.has(l1node.id)) return;
 
-    const spread = Math.min(Math.PI * 0.75, (L2.length-1) * 0.28);
-    const baseAngle = angle;
-    const L2r = 175 + Math.min(L2.length * 6, 55); // more spacing
+    const spread = Math.min(Math.PI * 0.72, (L2.length - 1) * 0.27);
+    const L2r = 185 + Math.min(L2.length * 5, 50);
 
     L2.forEach((l2node, j) => {
-      const off = L2.length === 1 ? 0 : (j / (L2.length-1) - 0.5) * spread;
-      const a2 = baseAngle + off;
+      const off = L2.length === 1 ? 0 : (j / (L2.length - 1) - 0.5) * spread;
+      const a2 = angle + off;
       const x2 = x + Math.cos(a2) * L2r;
       const y2 = y + Math.sin(a2) * L2r;
-      positions[l2node.id] = {x:x2, y:y2};
       nodes.push({node:l2node, x:x2, y:y2});
       edges.push({x1:x, y1:y, x2:x2, y2:y2, color:l2node.color});
 
       const L3 = l2node.children;
       if (!L3 || !L3.length || collapsed.has(l2node.id)) return;
-      const spread3 = Math.min(Math.PI*0.5, (L3.length-1)*0.22);
-      const L3r = 130; // more spacing
+      const spread3 = Math.min(Math.PI * 0.5, (L3.length - 1) * 0.22);
+      const L3r = 135;
 
       L3.forEach((l3node, k) => {
-        const off3 = L3.length===1 ? 0 : (k/(L3.length-1)-0.5)*spread3;
+        const off3 = L3.length === 1 ? 0 : (k / (L3.length - 1) - 0.5) * spread3;
         const a3 = a2 + off3;
-        const x3 = x2 + Math.cos(a3)*L3r;
-        const y3 = y2 + Math.sin(a3)*L3r;
-        positions[l3node.id] = {x:x3, y:y3};
+        const x3 = x2 + Math.cos(a3) * L3r;
+        const y3 = y2 + Math.sin(a3) * L3r;
         nodes.push({node:l3node, x:x3, y:y3});
         edges.push({x1:x2, y1:y2, x2:x3, y2:y3, color:l3node.color});
       });
@@ -291,59 +255,60 @@ function layout() {
 
 function colorFor(c) { return COLORS[c] || COLORS.mixed; }
 
-function hexToRgba(hex, a) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
+function makeSVGDefs() {
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `
+    <filter id="f-shadow" x="-25%" y="-40%" width="150%" height="180%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/>
+    </filter>
+    <filter id="f-root" x="-30%" y="-60%" width="160%" height="220%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="rgba(66,165,245,0.45)"/>
+    </filter>
+  `;
+  return defs;
 }
 
 function render() {
   layout();
-  while(svg.firstChild) {
-    if (svg.firstChild.tagName === 'defs') { svg.removeChild(svg.lastChild); break; }
-    svg.removeChild(svg.firstChild);
-  }
-  // Rebuild keeping defs
-  while(svg.children.length > 1) svg.removeChild(svg.lastChild);
+  // Clear and rebuild SVG from scratch each render
+  svg.innerHTML = '';
+  svg.appendChild(makeSVGDefs());
 
   const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-  g.setAttribute('id','scene');
   g.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
   svg.appendChild(g);
 
-  // Draw edges with gradient-like opacity
+  // Edges
   edges.forEach(e => {
     const col = colorFor(e.color);
     const dx = e.x2 - e.x1, dy = e.y2 - e.y1;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const mx = (e.x1+e.x2)/2 + (-dy/dist)*20;
-    const my = (e.y1+e.y2)/2 + (dx/dist)*20;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    // Slight perpendicular curve
+    const mx = (e.x1+e.x2)/2 + (-dy/dist)*15;
+    const my = (e.y1+e.y2)/2 + (dx/dist)*15;
+    const d = `M${e.x1},${e.y1} Q${mx},${my} ${e.x2},${e.y2}`;
 
-    // Glow line
-    const glow = document.createElementNS('http://www.w3.org/2000/svg','path');
-    glow.setAttribute('d', `M${e.x1},${e.y1} Q${mx},${my} ${e.x2},${e.y2}`);
-    glow.setAttribute('fill','none');
-    glow.setAttribute('stroke', col.stroke);
-    glow.setAttribute('stroke-width','3');
-    glow.setAttribute('opacity','0.12');
-    g.appendChild(glow);
+    // Glow
+    const pg = document.createElementNS('http://www.w3.org/2000/svg','path');
+    pg.setAttribute('d', d); pg.setAttribute('fill','none');
+    pg.setAttribute('stroke', col.stroke); pg.setAttribute('stroke-width','4');
+    pg.setAttribute('opacity','0.10');
+    g.appendChild(pg);
 
-    // Main line
-    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d', `M${e.x1},${e.y1} Q${mx},${my} ${e.x2},${e.y2}`);
-    path.setAttribute('fill','none');
-    path.setAttribute('stroke', col.stroke);
-    path.setAttribute('stroke-width','1.5');
-    path.setAttribute('opacity','0.5');
-    g.appendChild(path);
+    // Line
+    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', d); p.setAttribute('fill','none');
+    p.setAttribute('stroke', col.stroke); p.setAttribute('stroke-width','1.5');
+    p.setAttribute('opacity','0.55');
+    g.appendChild(p);
   });
 
+  // Nodes
   nodes.forEach(({node, x, y}) => {
     const col = colorFor(node.color);
-    const rx = RX[node.color] || 44;
-    const ry = RY[node.color] || 18;
-    const fs = FS[node.color] || 12;
+    const hw = NW[node.color] || 58;   // half-width
+    const hh = NH[node.color] || 16;   // half-height
+    const fs = FS[node.color] || 11;
     const hasC = node.children && node.children.length > 0;
     const isCollapsed = collapsed.has(node.id);
     const isRoot = node.color === 'root';
@@ -351,77 +316,83 @@ function render() {
     const grp = document.createElementNS('http://www.w3.org/2000/svg','g');
     grp.style.cursor = hasC ? 'pointer' : 'default';
 
-    // Outer glow ellipse
-    const glowEll = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    glowEll.setAttribute('cx', x); glowEll.setAttribute('cy', y);
-    glowEll.setAttribute('rx', rx + 6); glowEll.setAttribute('ry', ry + 6);
-    glowEll.setAttribute('fill', col.glow || 'rgba(255,255,255,0.05)');
-    glowEll.setAttribute('opacity','0');
-    glowEll.setAttribute('class', 'node-glow');
-    grp.appendChild(glowEll);
+    // Outer glow rect (shown on hover)
+    const glowRect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    glowRect.setAttribute('x', x - hw - 5); glowRect.setAttribute('y', y - hh - 5);
+    glowRect.setAttribute('width', (hw+5)*2); glowRect.setAttribute('height', (hh+5)*2);
+    glowRect.setAttribute('rx', CORNER + 4); glowRect.setAttribute('ry', CORNER + 4);
+    glowRect.setAttribute('fill', col.stroke); glowRect.setAttribute('opacity','0');
+    grp.appendChild(glowRect);
 
-    // Main ellipse with subtle gradient-like look via inner shadow
-    const ell = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    ell.setAttribute('cx', x); ell.setAttribute('cy', y);
-    ell.setAttribute('rx', rx); ell.setAttribute('ry', ry);
-    ell.setAttribute('fill', col.fill);
-    ell.setAttribute('stroke', col.stroke);
-    ell.setAttribute('stroke-width', isRoot ? '2.5' : '1.5');
-    ell.setAttribute('filter', isRoot ? 'url(#node-shadow-root)' : 'url(#node-shadow)');
-    grp.appendChild(ell);
+    // Main rect
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x', x - hw); rect.setAttribute('y', y - hh);
+    rect.setAttribute('width', hw*2); rect.setAttribute('height', hh*2);
+    rect.setAttribute('rx', CORNER); rect.setAttribute('ry', CORNER);
+    rect.setAttribute('fill', col.fill);
+    rect.setAttribute('stroke', col.stroke);
+    rect.setAttribute('stroke-width', isRoot ? '2.5' : '1.5');
+    rect.setAttribute('filter', isRoot ? 'url(#f-root)' : 'url(#f-shadow)');
+    grp.appendChild(rect);
 
-    // Highlight arc on top for depth
-    const hi = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    hi.setAttribute('cx', x); hi.setAttribute('cy', y - ry*0.22);
-    hi.setAttribute('rx', rx * 0.7); hi.setAttribute('ry', ry * 0.38);
-    hi.setAttribute('fill', 'rgba(255,255,255,0.08)');
+    // Top highlight strip
+    const hi = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    hi.setAttribute('x', x - hw + 2); hi.setAttribute('y', y - hh + 2);
+    hi.setAttribute('width', (hw-2)*2); hi.setAttribute('height', hh * 0.45);
+    hi.setAttribute('rx', CORNER - 1); hi.setAttribute('ry', CORNER - 1);
+    hi.setAttribute('fill', 'rgba(255,255,255,0.07)');
     hi.setAttribute('pointer-events','none');
     grp.appendChild(hi);
 
-    const label = node.label.length > 18 ? node.label.replace(' ', '\n') : node.label;
-    const lines = label.split('\n');
+    // Label text (split long labels)
+    const rawLabel = node.label;
+    let lines;
+    if (rawLabel.length > 17) {
+      // Split at last space before midpoint
+      const mid = Math.floor(rawLabel.length / 2);
+      const sp = rawLabel.lastIndexOf(' ', mid + 4);
+      lines = sp > 0 ? [rawLabel.slice(0,sp), rawLabel.slice(sp+1)] : [rawLabel];
+    } else {
+      lines = [rawLabel];
+    }
+
     lines.forEach((line, i) => {
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
       txt.setAttribute('x', x);
-      txt.setAttribute('y', y + (i - (lines.length-1)/2) * (fs + 3));
+      txt.setAttribute('y', y + (i - (lines.length-1)/2) * (fs + 2.5));
       txt.setAttribute('text-anchor','middle');
       txt.setAttribute('dominant-baseline','central');
       txt.setAttribute('fill', col.text);
       txt.setAttribute('font-size', fs);
-      txt.setAttribute('font-family', 'var(--font-sans, Inter, sans-serif)');
+      txt.setAttribute('font-family', 'var(--font-sans, Inter, system-ui, sans-serif)');
       txt.setAttribute('font-weight', isRoot ? '600' : '500');
-      txt.setAttribute('letter-spacing', isRoot ? '0.3' : '0.1');
       txt.setAttribute('pointer-events','none');
       txt.textContent = line;
       grp.appendChild(txt);
     });
 
+    // Expand/collapse badge
     if (hasC) {
-      const dotR = 6;
-      const dotX = x + rx - 2;
-      const dotY = y - ry + 2;
-
-      const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      dot.setAttribute('cx', dotX); dot.setAttribute('cy', dotY);
-      dot.setAttribute('r', dotR);
-      dot.setAttribute('fill', isCollapsed ? col.stroke : 'rgba(255,255,255,0.15)');
-      dot.setAttribute('stroke', col.stroke);
-      dot.setAttribute('stroke-width','1.5');
-      grp.appendChild(dot);
+      const bx = x + hw - 9, by = y - hh + 9;
+      const badge = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      badge.setAttribute('cx', bx); badge.setAttribute('cy', by);
+      badge.setAttribute('r','7');
+      badge.setAttribute('fill', isCollapsed ? col.stroke : 'rgba(255,255,255,0.15)');
+      badge.setAttribute('stroke', col.stroke);
+      badge.setAttribute('stroke-width','1.5');
+      grp.appendChild(badge);
 
       const sym = document.createElementNS('http://www.w3.org/2000/svg','text');
-      sym.setAttribute('x', dotX); sym.setAttribute('y', dotY);
-      sym.setAttribute('text-anchor','middle');
-      sym.setAttribute('dominant-baseline','central');
+      sym.setAttribute('x', bx); sym.setAttribute('y', by);
+      sym.setAttribute('text-anchor','middle'); sym.setAttribute('dominant-baseline','central');
       sym.setAttribute('fill', isCollapsed ? '#fff' : col.text);
-      sym.setAttribute('font-size', '8');
-      sym.setAttribute('font-weight', '700');
+      sym.setAttribute('font-size','9'); sym.setAttribute('font-weight','700');
       sym.setAttribute('pointer-events','none');
       sym.textContent = isCollapsed ? '+' : '−';
       grp.appendChild(sym);
     }
 
-    grp.addEventListener('click', (e) => {
+    grp.addEventListener('click', e => {
       e.stopPropagation();
       if (hasC) {
         if (collapsed.has(node.id)) collapsed.delete(node.id);
@@ -430,43 +401,32 @@ function render() {
       }
     });
 
-    grp.addEventListener('mouseenter', (e) => {
+    grp.addEventListener('mouseenter', () => {
       tip.innerHTML = `<strong>${node.label}</strong>${node.tip}`;
       tip.classList.add('show');
-      ell.setAttribute('stroke-width', isRoot ? '3' : '2');
-      ell.setAttribute('opacity','0.88');
-      glowEll.setAttribute('opacity','0.5');
+      glowRect.setAttribute('opacity','0.18');
+      rect.setAttribute('stroke-width', isRoot ? '3' : '2.5');
     });
-    grp.addEventListener('mousemove', (e) => {
-      const rect = wrap.getBoundingClientRect();
-      let lx = e.clientX - rect.left + 16;
-      let ly = e.clientY - rect.top + 16;
-      if (lx + 250 > W) lx -= 260;
+    grp.addEventListener('mousemove', e => {
+      const r = wrap.getBoundingClientRect();
+      let lx = e.clientX - r.left + 16;
+      let ly = e.clientY - r.top + 16;
+      if (lx + 255 > W) lx -= 265;
       if (ly + 90 > H) ly -= 90;
-      tip.style.left = lx + 'px';
-      tip.style.top = ly + 'px';
+      tip.style.left = lx + 'px'; tip.style.top = ly + 'px';
     });
     grp.addEventListener('mouseleave', () => {
       tip.classList.remove('show');
-      ell.setAttribute('stroke-width', isRoot ? '2.5' : '1.5');
-      ell.setAttribute('opacity','1');
-      glowEll.setAttribute('opacity','0');
+      glowRect.setAttribute('opacity','0');
+      rect.setAttribute('stroke-width', isRoot ? '2.5' : '1.5');
     });
 
     g.appendChild(grp);
   });
 }
 
-function zoom(f) {
-  scale = Math.max(0.25, Math.min(3, scale * f));
-  render();
-}
-
-function resetView() {
-  tx = W/2; ty = H/2; scale = 1;
-  render();
-}
-
+function zoom(f) { scale = Math.max(0.25, Math.min(3, scale*f)); render(); }
+function resetView() { tx = W/2; ty = H/2; scale = 1; render(); }
 function toggleAll() {
   if (allExpanded) {
     data.children.forEach(c => {
@@ -486,16 +446,14 @@ wrap.addEventListener('mousedown', e => { drag=true; lastX=e.clientX; lastY=e.cl
 window.addEventListener('mousemove', e => {
   if (!drag) return;
   tx += e.clientX - lastX; ty += e.clientY - lastY;
-  lastX=e.clientX; lastY=e.clientY;
+  lastX = e.clientX; lastY = e.clientY;
   render();
 });
-window.addEventListener('mouseup', () => { drag=false; });
-
+window.addEventListener('mouseup', () => { drag = false; });
 wrap.addEventListener('wheel', e => {
   e.preventDefault();
   zoom(e.deltaY < 0 ? 1.1 : 0.91);
 }, {passive:false});
-
 wrap.addEventListener('touchstart', e => {
   if (e.touches.length===1) { drag=true; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; }
 }, {passive:true});
@@ -505,7 +463,7 @@ wrap.addEventListener('touchmove', e => {
   lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
   render();
 }, {passive:true});
-wrap.addEventListener('touchend', () => { drag=false; });
+wrap.addEventListener('touchend', () => { drag = false; });
 
 // Start with L1 visible, L2+ collapsed
 data.children.forEach(c => {
