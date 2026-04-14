@@ -78,9 +78,15 @@
   .site-wrap {
     position: relative;
     z-index: 1;
-    max-width: 1100px;
+    max-width: 1220px;
     margin: 0 auto;
     padding: 24px 24px 80px;
+  }
+
+  .stacked-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
   }
 
   /* NAV */
@@ -148,13 +154,48 @@
     box-shadow: 0 0 18px rgba(45,212,191,0.35);
   }
 
+  .landing-hero {
+    position: relative;
+    min-height: clamp(380px, 68vh, 660px);
+    border-radius: 24px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background-image:
+      linear-gradient(to bottom, rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.62)),
+      url("photography/photos/Aurora%20Canada%20may%202024.JPG");
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 26px 70px rgba(0,0,0,0.45);
+  }
+  .landing-hero h2 {
+    font-family: "Anthropic Sans", var(--font-display);
+    font-size: clamp(30px, 6vw, 62px);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    text-align: center;
+    text-wrap: balance;
+    max-width: 860px;
+    padding: 0 20px;
+    text-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+
+  .intro-block {
+    background: linear-gradient(145deg, rgba(12,16,27,0.92), rgba(9,11,19,0.96));
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 28px clamp(18px, 3vw, 42px);
+  }
+
   /* HERO */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
     gap: 48px;
-    padding: 24px 0 56px;
-    max-width: 980px;
+    padding: 4px 0 8px;
+    max-width: 100%;
     align-items: stretch;
   }
   .hero-left {
@@ -311,8 +352,8 @@
     align-items: center;
     gap: 14px;
     padding: 0 4px;
-    margin: 6px 0 10px;
-    max-width: 880px;
+    margin: 4px 0 8px;
+    max-width: 100%;
   }
   .divider-line {
     flex: 1;
@@ -331,8 +372,12 @@
   .sections {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    background: linear-gradient(145deg, rgba(12,16,27,0.92), rgba(9,11,19,0.96));
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
     border-top: 1px solid rgba(255,255,255,0.06);
     margin-top: 6px;
+    overflow: hidden;
   }
   .sec {
     padding: 24px 26px;
@@ -432,7 +477,7 @@
 
   /* FOOTER */
   footer {
-    margin-top: 54px;
+    margin-top: 12px;
     padding-top: 20px;
     border-top: 1px solid rgba(15,23,42,0.9);
     display: flex;
@@ -489,11 +534,25 @@
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
+    .site-wrap {
+      padding: 16px 14px 52px;
+    }
+    .stacked-sections {
+      gap: 20px;
+    }
+    .landing-hero {
+      min-height: 48vh;
+      border-radius: 18px;
+    }
+    .intro-block {
+      border-radius: 18px;
+      padding: 18px 14px;
+    }
     .hero {
       grid-template-columns: 1fr;
       gap: 28px;
       max-width: 100%;
-      padding: 14px 0 40px;
+      padding: 4px 0 10px;
     }
     .hero-left,
     .hero-right {
@@ -502,6 +561,16 @@
     .hero-photo-frame,
     .hero-photo-caption {
       width: min(100%, 380px);
+    }
+    .sections {
+      grid-template-columns: 1fr;
+    }
+    .sec {
+      border-right: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .sec:last-child {
+      border-bottom: none;
     }
     .bento { grid-template-columns: 1fr; }
     .card-photo, .card-ai, .card-learn {
@@ -530,67 +599,75 @@
     <a href="contact/" class="nav-cta">Contact</a>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-left">
-      <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
-      <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
-      <p class="hero-sub">
-        I am Amir Shahcheraghian, a PhD graduate from École de Technologie Supérieure (ÉTS), Montréal, Canada, and a seasoned AI Developer and Data Scientist with deep expertise in designing and deploying intelligent systems. My work spans large language model (LLM) integration, retrieval‑augmented generation (RAG) architectures, and autonomous AI agents — bringing cutting‑edge research to real‑world enterprise solutions. Based in Québec, I currently serve as a Senior AI Consultant, where I lead MLOps and LLMOps pipelines, mentor technical teams, and help organizations navigate the rapidly evolving AI landscape.
-        <br><br>
-        Beyond my professional life, I am a passionate night sky photographer and seasoned world traveler, driven by a singular mission: to capture the breathtaking beauty of the cosmos from every corner of the globe. From remote deserts to mountaintop observatories, I chase clear dark skies and rare celestial events — including solar eclipses — blending scientific precision with artistic vision. My photography is a testament to the wonder that exists at the intersection of technology, nature, and human curiosity.
-        <br><br>
-        This site is my personal landing page. I share my life in two parts: my AI engineer journey and learning path (through LearnByAmir), and my photography work as I explore nature, night skies and life.
-      </p>
-      <div class="hero-badges">
-        <span class="badge">Based in Montréal, Canada</span>
-        <span class="badge">LangGraph · RAG · MLOps</span>
-      </div>
-    </div>
+  <div class="stacked-sections">
+    <section class="landing-hero">
+      <h2>Amir Shahcheraghian Personal Website</h2>
+    </section>
 
-    <aside class="hero-right">
-      <div class="hero-photo-frame">
-        <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
-      </div>
-      <p class="hero-photo-caption">Amir Shahcheraghian · Montréal, Canada</p>
-    </aside>
-  </section>
+    <section class="intro-block">
+      <section class="hero">
+        <div class="hero-left">
+          <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
+          <h1>I design <em>intelligent</em> systems<br>and tell stories with stars.</h1>
+          <p class="hero-sub">
+            I am Amir Shahcheraghian, a PhD graduate from École de Technologie Supérieure (ÉTS), Montréal, Canada, and a seasoned AI Developer and Data Scientist with deep expertise in designing and deploying intelligent systems. My work spans large language model (LLM) integration, retrieval‑augmented generation (RAG) architectures, and autonomous AI agents — bringing cutting‑edge research to real‑world enterprise solutions. Based in Québec, I currently serve as a Senior AI Consultant, where I lead MLOps and LLMOps pipelines, mentor technical teams, and help organizations navigate the rapidly evolving AI landscape.
+            <br><br>
+            Beyond my professional life, I am a passionate night sky photographer and seasoned world traveler, driven by a singular mission: to capture the breathtaking beauty of the cosmos from every corner of the globe. From remote deserts to mountaintop observatories, I chase clear dark skies and rare celestial events — including solar eclipses — blending scientific precision with artistic vision. My photography is a testament to the wonder that exists at the intersection of technology, nature, and human curiosity.
+            <br><br>
+            This site is my personal landing page. I share my life in two parts: my AI engineer journey and learning path (through LearnByAmir), and my photography work as I explore nature, night skies and life.
+          </p>
+          <div class="hero-badges">
+            <span class="badge">Based in Montréal, Canada</span>
+            <span class="badge">LangGraph · RAG · MLOps</span>
+          </div>
+        </div>
 
-  <!-- DIVIDER + MAIN SECTIONS -->
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-text">This site has three parts</div>
-    <div class="divider-line"></div>
+        <aside class="hero-right">
+          <div class="hero-photo-frame">
+            <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
+          </div>
+          <p class="hero-photo-caption">Amir Shahcheraghian · Montréal, Canada</p>
+        </aside>
+      </section>
+    </section>
+
+    <section>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-text">Explore my work</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <section class="sections">
+        <a class="sec sec-1" href="photography/">
+          <div class="sec-accent"></div>
+          <div class="sec-num">01</div>
+          <span class="sec-icon">&#9728;</span>
+          <div class="sec-title">Photography</div>
+          <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
+          <div class="sec-arrow">Explore ↗</div>
+        </a>
+
+        <a class="sec sec-2" href="career/">
+          <div class="sec-accent"></div>
+          <div class="sec-num">02</div>
+          <span class="sec-icon">&#9889;</span>
+          <div class="sec-title">AI Career</div>
+          <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
+          <div class="sec-arrow">Explore ↗</div>
+        </a>
+
+        <a class="sec sec-3" href="LearnbyAmir/">
+          <div class="sec-accent"></div>
+          <div class="sec-num">03</div>
+          <span class="sec-icon">&#9670;</span>
+          <div class="sec-title">LearnByAmir</div>
+          <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
+          <div class="sec-arrow">Explore ↗</div>
+        </a>
+      </section>
+    </section>
   </div>
-
-  <section class="sections">
-    <a class="sec sec-1" href="photography/">
-      <div class="sec-accent"></div>
-      <div class="sec-num">01</div>
-      <span class="sec-icon">&#9728;</span>
-      <div class="sec-title">Photography</div>
-      <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
-      <div class="sec-arrow">Explore ↗</div>
-    </a>
-
-    <a class="sec sec-2" href="career/">
-      <div class="sec-accent"></div>
-      <div class="sec-num">02</div>
-      <span class="sec-icon">&#9889;</span>
-      <div class="sec-title">AI Career</div>
-      <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
-      <div class="sec-arrow">Explore ↗</div>
-    </a>
-
-    <a class="sec sec-3" href="LearnbyAmir/">
-      <div class="sec-accent"></div>
-      <div class="sec-num">03</div>
-      <span class="sec-icon">&#9670;</span>
-      <div class="sec-title">LearnByAmir</div>
-      <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
-      <div class="sec-arrow">Explore ↗</div>
-    </a>
-  </section>
 
   <!-- FOOTER -->
   <footer>
