@@ -151,18 +151,31 @@
 
   /* ───────── SECTION 2: DARK INTRO ───────── */
   .intro-section {
-    background: var(--page-bg);
     position: relative;
     z-index: 1;
+    overflow: hidden;
+    background: var(--page-bg);
+  }
+  .intro-section__bg {
+    position: absolute;
+    inset: 0;
+    background-image: url("photography/photos/amir%20profile%20pic.jpg");
+    background-size: cover;
+    background-position: center 20%;
+    filter: blur(50px) brightness(0.28) saturate(0.6);
+    transform: scale(1.15);
+    z-index: 0;
   }
   .intro-inner {
+    position: relative;
+    z-index: 1;
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1.3fr 0.85fr;
-    gap: 56px;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 60px;
     align-items: center;
-    padding: 80px 48px;
+    padding: 96px 48px;
   }
   .intro-text {}
   .hero-eyebrow {
@@ -183,24 +196,24 @@
     background: var(--accent);
   }
   .intro-text h2 {
-    font-family: "Anthropic Sans", var(--font-display);
-    font-size: clamp(30px, 4vw, 48px);
-    font-weight: 800;
-    line-height: 1.06;
-    letter-spacing: -0.03em;
+    font-family: var(--font-body);
+    font-size: clamp(28px, 3.6vw, 42px);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
     color: var(--text-primary);
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
   .intro-text h2 em {
     font-style: normal;
-    color: rgba(45,212,191,0.7);
-    text-shadow: 0 0 40px rgba(45,212,191,0.4);
+    font-weight: 400;
+    color: var(--accent);
   }
   .intro-body {
     font-family: "Anthropic Sans", var(--font-body);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 300;
-    color: #ffffff;
+    color: rgba(255,255,255,0.78);
     line-height: 1.85;
     margin-bottom: 32px;
   }
@@ -216,10 +229,11 @@
     font-size: 11px;
     font-weight: 400;
     color: var(--text-secondary);
-    background: rgba(17,19,24,0.9);
-    border: 1px solid var(--border-subtle);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 6px 14px;
     border-radius: 999px;
+    backdrop-filter: blur(8px);
   }
 
   .intro-photo {
@@ -230,17 +244,21 @@
   }
   .intro-photo__frame {
     width: 100%;
-    max-width: 400px;
-    aspect-ratio: 4 / 5;
-    border-radius: 24px;
+    max-width: 460px;
+    aspect-ratio: 3.5 / 4.5;
+    border-radius: 20px;
     overflow: hidden;
-    border: 1.5px solid rgba(45,212,191,0.25);
-    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
-    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow:
+      0 30px 80px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.04);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
   }
   .intro-photo__frame:hover {
-    transform: translateY(-6px) scale(1.015);
-    box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+    transform: translateY(-6px) scale(1.01);
+    box-shadow:
+      0 40px 100px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.06);
   }
   .intro-photo__frame img {
     width: 100%;
@@ -423,10 +441,10 @@
     .intro-inner {
       grid-template-columns: 1fr;
       gap: 36px;
-      padding: 48px 24px;
+      padding: 56px 24px;
     }
     .intro-photo__frame {
-      max-width: 340px;
+      max-width: 360px;
     }
     .explore-section {
       padding: 0 20px 52px;
@@ -472,6 +490,7 @@
 
 <!-- ════════ SECTION 2: DARK INTRO + PROFILE ════════ -->
 <section class="intro-section">
+  <div class="intro-section__bg"></div>
   <div class="intro-inner">
     <div class="intro-text">
       <div class="hero-eyebrow">AI Engineer &amp; Photographer · Montréal</div>
