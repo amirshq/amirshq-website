@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel & Nature · Amir Sh.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --page-bg: #0e1117;
+      --card-bg: #161b26;
+      --border-subtle: rgba(255,255,255,0.09);
+      --border-strong: rgba(94,234,212,0.25);
+      --text-primary: #f9fafb;
+      --text-secondary: rgba(200,215,255,0.55);
+      --text-muted: rgba(148,163,184,0.7);
+      --accent: #2dd4bf;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--page-bg);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-repeat: no-repeat;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .bg-layer::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(45,212,191,0.12) 0, transparent 55%),
+        radial-gradient(circle at bottom right, rgba(15,23,42,0.9) 0, transparent 70%);
+      opacity: 0.7;
+    }
+
+    .site-wrap {
+      position: relative; z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 20px 72px;
+    }
+
+    /* NAV */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .nav-left {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+    .nav-link-back {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .nav-link-back span { font-size: 14px; }
+    .nav-link-back:hover {
+      border-color: var(--border-strong);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* HERO COVER */
+    .cover-hero {
+      margin-bottom: 40px;
+    }
+    .cover-photo {
+      position: relative;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #02030a;
+      min-height: min(50vh, 460px);
+    }
+    .cover-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cover-caption {
+      position: absolute;
+      left: 32px;
+      bottom: 32px;
+      max-width: 500px;
+    }
+    .cover-caption-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(200,215,255,0.6);
+      margin-bottom: 6px;
+    }
+    .cover-caption-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #f9fafb;
+    }
+
+    /* SECTION HEADING */
+    .section-heading {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* MASONRY GALLERY */
+    .gallery {
+      columns: 3;
+      column-gap: 14px;
+    }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      cursor: zoom-in;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .gallery-item:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-inner {
+      max-width: 92vw;
+      max-height: 92vh;
+      position: relative;
+    }
+    .lightbox-inner img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 12px;
+      display: block;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      padding: 6px 14px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .lightbox-close:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 12px 16px;
+      font-size: 20px;
+      border: 1px solid rgba(148,163,184,0.3);
+      border-radius: 999px;
+      background: rgba(15,23,42,0.8);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .lightbox-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .lightbox-prev { left: -60px; }
+    .lightbox-next { right: -60px; }
+    .lightbox-counter {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15,23,42,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* RESPONSIVE */
+    @media (max-width: 840px) {
+      .gallery { columns: 2; }
+      .lightbox-prev { left: 8px; }
+      .lightbox-next { right: 8px; }
+    }
+    @media (max-width: 520px) {
+      .gallery { columns: 1; }
+      .cover-caption { left: 20px; bottom: 20px; }
+      .cover-caption-title { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+
+  <main class="site-wrap">
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="../../index.html" class="nav-logo">Amir <span>Sh.</span></a>
+        <span class="nav-sub">Travel &amp; Nature</span>
+      </div>
+      <a href="../../index.html" class="nav-link-back">
+        <span>←</span> Back to landing page
+      </a>
+    </header>
+
+    <section class="cover-hero">
+      <figure class="cover-photo">
+        <img src="../Travel%20%26%20Nature/111.JPG" alt="Travel & Nature photography by Amir Sh.">
+        <figcaption class="cover-caption">
+          <div class="cover-caption-label">Travel &amp; Nature</div>
+          <div class="cover-caption-title">Landscapes, cultures, and quiet moments from journeys across the world.</div>
+        </figcaption>
+      </figure>
+    </section>
+
+    <div class="section-heading">
+      <span class="section-title">Gallery</span>
+      <span class="section-sub">38 photographs</span>
+    </div>
+
+    <div class="gallery">
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/01.JPG" alt="Travel photo 1" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/11.JPG" alt="Travel photo 2" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/21.JPG" alt="Travel photo 3" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/31.JPG" alt="Travel photo 4" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/41.JPG" alt="Travel photo 5" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/51.JPG" alt="Travel photo 6" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/61.JPG" alt="Travel photo 7" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/71.JPG" alt="Travel photo 8" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/81.JPG" alt="Travel photo 9" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/91.JPG" alt="Travel photo 10" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/101.JPG" alt="Travel photo 11" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/111.JPG" alt="Travel photo 12" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/121.JPG" alt="Travel photo 13" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/131.JPG" alt="Travel photo 14" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/141.JPG" alt="Travel photo 15" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/151.JPG" alt="Travel photo 16" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/161.JPG" alt="Travel photo 17" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/171.JPG" alt="Travel photo 18" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/181.JPG" alt="Travel photo 19" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/191.JPG" alt="Travel photo 20" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/201.JPG" alt="Travel photo 21" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/211.JPG" alt="Travel photo 22" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/221.JPG" alt="Travel photo 23" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/231.JPG" alt="Travel photo 24" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/241.JPG" alt="Travel photo 25" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/251.JPG" alt="Travel photo 26" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/261.JPG" alt="Travel photo 27" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/271.JPG" alt="Travel photo 28" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/281.JPG" alt="Travel photo 29" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/291.JPG" alt="Travel photo 30" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/301.JPG" alt="Travel photo 31" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/311.JPG" alt="Travel photo 32" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/321.JPG" alt="Travel photo 33" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/331.JPG" alt="Travel photo 34" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/341.JPG" alt="Travel photo 35" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/351.JPG" alt="Travel photo 36" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/361.JPG" alt="Travel photo 37" loading="lazy"></div>
+      <div class="gallery-item"><img src="../Travel%20%26%20Nature/371.JPG" alt="Travel photo 38" loading="lazy"></div>
+    </div>
+
+    <footer>
+      <span>&copy; 2026 Amir Shah &middot; Photography &amp; AI.</span>
+      <span>Back to <a href="../../index.html">amirshq-website</a></span>
+    </footer>
+  </main>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" type="button">Close &#10005;</button>
+      <button class="lightbox-nav lightbox-prev" type="button">&#8592;</button>
+      <img src="" alt="">
+      <button class="lightbox-nav lightbox-next" type="button">&#8594;</button>
+      <div class="lightbox-counter"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const lightbox = document.getElementById('lightbox');
+      if (!lightbox) return;
+      const lbImg = lightbox.querySelector('img');
+      const lbCounter = lightbox.querySelector('.lightbox-counter');
+      const items = Array.from(document.querySelectorAll('.gallery-item img'));
+      let current = 0;
+
+      function show(idx) {
+        current = (idx + items.length) % items.length;
+        lbImg.src = items[current].src;
+        lbImg.alt = items[current].alt;
+        lbCounter.textContent = (current + 1) + ' / ' + items.length;
+        lightbox.classList.add('open');
+      }
+
+      items.forEach(function (img, i) {
+        img.addEventListener('click', function () { show(i); });
+      });
+
+      lightbox.querySelector('.lightbox-close').addEventListener('click', function () {
+        lightbox.classList.remove('open');
+      });
+      lightbox.querySelector('.lightbox-prev').addEventListener('click', function () {
+        show(current - 1);
+      });
+      lightbox.querySelector('.lightbox-next').addEventListener('click', function () {
+        show(current + 1);
+      });
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) lightbox.classList.remove('open');
+      });
+      window.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') lightbox.classList.remove('open');
+        if (e.key === 'ArrowLeft') show(current - 1);
+        if (e.key === 'ArrowRight') show(current + 1);
+      });
+    })();
+  </script>
+</body>
+</html>

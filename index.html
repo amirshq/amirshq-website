@@ -299,7 +299,7 @@
 
   .sections {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.07);
@@ -336,12 +336,14 @@
     top: 0; left: 0; right: 0;
     height: 2px;
   }
-  .sec-1 .sec-accent { background: linear-gradient(90deg, rgba(56,189,248,0.6), transparent); }
-  .sec-2 .sec-accent { background: linear-gradient(90deg, rgba(45,212,191,0.6), transparent); }
-  .sec-3 .sec-accent { background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent); }
-  .sec-1::before { background-image: url('photography/banner/Semnan%20milkyway.jpg'); }
-  .sec-2::before { background-image: url('photography/banner/Career.jpg'); }
-  .sec-3::before { background-image: url('photography/banner/AI.jpg'); }
+  .sec-1 .sec-accent { background: linear-gradient(90deg, rgba(234,179,8,0.6), transparent); }
+  .sec-2 .sec-accent { background: linear-gradient(90deg, rgba(56,189,248,0.6), transparent); }
+  .sec-3 .sec-accent { background: linear-gradient(90deg, rgba(45,212,191,0.6), transparent); }
+  .sec-4 .sec-accent { background: linear-gradient(90deg, rgba(167,139,250,0.6), transparent); }
+  .sec-1::before { background-image: url('photography/Travel%20%26%20Nature/111.JPG'); }
+  .sec-2::before { background-image: url('photography/banner/Semnan%20milkyway.jpg'); }
+  .sec-3::before { background-image: url('photography/banner/Career.jpg'); }
+  .sec-4::before { background-image: url('photography/banner/AI.jpg'); }
   .sec-num {
     font-size: 10px;
     font-weight: 500;
@@ -444,13 +446,14 @@
       padding: 0 20px 52px;
     }
     .sections {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
     }
     .sec {
       border-right: none;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .sec:last-child { border-bottom: none; }
+    .sec:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.06); }
     .site-footer {
       padding: 16px 20px 32px;
       flex-direction: column;
@@ -469,6 +472,7 @@
   <nav>
     <a href="#" class="nav-logo">Amir <span>Sh.</span></a>
     <ul class="nav-links">
+      <li><a href="photography/travel/">Travel</a></li>
       <li><a href="photography/">Photography</a></li>
       <li><a href="career/">AI Career</a></li>
       <li><a href="LearnbyAmir/">LearnByAmir</a></li>
@@ -518,27 +522,36 @@
     </div>
 
     <div class="sections">
-      <a class="sec sec-1" href="photography/">
+      <a class="sec sec-1" href="photography/travel/">
         <div class="sec-accent"></div>
         <div class="sec-num">01</div>
+        <span class="sec-icon">&#127758;</span>
+        <div class="sec-title">Travel</div>
+        <div class="sec-body">Landscapes, cultures, and moments from journeys across the world.</div>
+        <div class="sec-arrow">Explore &#8599;</div>
+      </a>
+
+      <a class="sec sec-2" href="photography/">
+        <div class="sec-accent"></div>
+        <div class="sec-num">02</div>
         <span class="sec-icon">&#9728;</span>
         <div class="sec-title">Photography</div>
         <div class="sec-body">Night skies, cities, and travel — paired with short stories from the field.</div>
         <div class="sec-arrow">Explore &#8599;</div>
       </a>
 
-      <a class="sec sec-2" href="career/">
+      <a class="sec sec-3" href="career/">
         <div class="sec-accent"></div>
-        <div class="sec-num">02</div>
+        <div class="sec-num">03</div>
         <span class="sec-icon">&#9889;</span>
         <div class="sec-title">AI Career</div>
         <div class="sec-body">Notes from building production AI — LLMs, agents, and lessons from real client work.</div>
         <div class="sec-arrow">Explore &#8599;</div>
       </a>
 
-      <a class="sec sec-3" href="LearnbyAmir/">
+      <a class="sec sec-4" href="LearnbyAmir/">
         <div class="sec-accent"></div>
-        <div class="sec-num">03</div>
+        <div class="sec-num">04</div>
         <span class="sec-icon">&#9670;</span>
         <div class="sec-title">LearnByAmir</div>
         <div class="sec-body">Practical AI material built from engineering experience — not just theory.</div>
