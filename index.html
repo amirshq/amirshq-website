@@ -149,41 +149,31 @@
     line-height: 1.6;
   }
 
-  /* ───────── SECTION 2: FULL-BLEED PROFILE INTRO ───────── */
+  /* ───────── SECTION 2: INTRO WITH BLURRED BG ───────── */
   .intro-section {
     position: relative;
-    width: 100%;
-    min-height: 100vh;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
   }
   .intro-section__bg {
     position: absolute;
-    inset: 0;
+    inset: -40px;
     background-image: url("photography/photos/amir%20profile%20pic.jpg");
     background-size: cover;
     background-position: center 15%;
+    filter: blur(60px) brightness(0.22) saturate(0.5);
+    transform: scale(1.2);
     z-index: 0;
-  }
-  .intro-section__bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.12) 0%,
-      rgba(0,0,0,0.05) 30%,
-      rgba(0,0,0,0.35) 60%,
-      rgba(0,0,0,0.78) 100%
-    );
   }
   .intro-inner {
     position: relative;
     z-index: 1;
-    max-width: 1000px;
-    padding: 0 48px 72px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 56px;
+    align-items: center;
+    padding: 88px 48px;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -223,7 +213,6 @@
     color: rgba(255,255,255,0.82);
     line-height: 1.85;
     margin-bottom: 32px;
-    max-width: 680px;
   }
   .hero-badges {
     display: flex;
@@ -242,6 +231,40 @@
     padding: 6px 14px;
     border-radius: 999px;
     backdrop-filter: blur(12px);
+  }
+
+  .intro-photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .intro-photo__frame {
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 4 / 5;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+  .intro-photo__frame:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+  .intro-photo__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .intro-photo__caption {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
   }
 
   /* ───────── SECTION 3: THREE CARDS ───────── */
@@ -408,11 +431,13 @@
     .landing-hero__title {
       font-size: 36px;
     }
-    .intro-section {
-      min-height: 80vh;
-    }
     .intro-inner {
-      padding: 0 24px 48px;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding: 48px 24px;
+    }
+    .intro-photo__frame {
+      max-width: 300px;
     }
     .explore-section {
       padding: 0 20px 52px;
@@ -456,7 +481,7 @@
   </div>
 </section>
 
-<!-- ════════ SECTION 2: FULL-BLEED PROFILE INTRO ════════ -->
+<!-- ════════ SECTION 2: INTRO WITH PROFILE ════════ -->
 <section class="intro-section">
   <div class="intro-section__bg"></div>
   <div class="intro-inner">
@@ -474,6 +499,13 @@
         <span class="badge">Based in Montréal, Canada</span>
         <span class="badge">LangGraph · RAG · MLOps</span>
       </div>
+    </div>
+
+    <div class="intro-photo">
+      <div class="intro-photo__frame">
+        <img src="photography/photos/amir%20profile%20pic.jpg" alt="Portrait of Amir standing near the water with wooden buildings in the background">
+      </div>
+      <p class="intro-photo__caption">Amir Shahcheraghian · Montréal, Canada</p>
     </div>
   </div>
 </section>
