@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docker Complete Guide · LearnAIbyAmir</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/dockerfile.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface2: #f0f2f5;
+      --border: rgba(31,35,40,0.12);
+      --border2: rgba(31,35,40,0.18);
+      --text: #1f2328;
+      --text2: #636c76;
+      --text3: #6e7781;
+      --accent: #0d9488;
+      --accent-bg: #e0f4ee;
+      --green-bg: #e4f2e0; --green-text: #1a7f4e;
+      --red-bg: #fceee9; --red-text: #c5341b;
+      --blue-bg: #e8f0fb; --blue-text: #1a4fa0;
+      --amber-bg: #fdf0d8; --amber-text: #a56514;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 5px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── Sidebar nav ── */
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .sidebar a {
+      display: block;
+      font-size: 13px;
+      color: var(--text2);
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .sidebar a:hover {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-left-color: var(--accent);
+    }
+
+    /* ── Sections ── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 2px 7px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 10px;
+    }
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin-left: 20px;
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+    li { margin-bottom: 4px; }
+    li strong { color: var(--text); }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .code-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .code-block code, .code-block pre {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      background: none;
+      padding: 0;
+    }
+    .code-block pre { line-height: 1.6; }
+
+    /* inline code */
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+    pre code { border: none; background: none; padding: 0; font-size: 13px; }
+
+    /* ── Diagram / ASCII art ── */
+    .diagram {
+      background: #f0f5f3;
+      border: 1px solid rgba(13,148,136,0.2);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+    .diagram-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .diagram pre {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    /* ── Call-out boxes ── */
+    .callout {
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      border-left: 3px solid;
+    }
+    .callout.info  { background: var(--blue-bg);  border-color: #1a4fa0; color: #1a4fa0; }
+    .callout.tip   { background: var(--accent-bg); border-color: var(--accent); color: var(--text); }
+    .callout.warn  { background: var(--amber-bg); border-color: #a56514; color: #a56514; }
+    .callout.danger{ background: var(--red-bg);  border-color: var(--red-text); color: var(--red-text); }
+    .callout strong { color: inherit; }
+
+    /* ── Component cards ── */
+    .comp-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin: 14px 0;
+      background: var(--surface2);
+    }
+    .comp-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .comp-card-sub {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
+
+    /* ── Comparison grid ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .compare-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+    .compare-item-text {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    /* ── Workflow steps ── */
+    .workflow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin: 10px 0;
+    }
+    .step-number {
+      background: var(--accent);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 14px 0;
+    }
+    th {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text2);
+    }
+    td {
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      color: var(--text2);
+      vertical-align: top;
+    }
+    tr:hover td { background: var(--surface2); }
+
+    /* ── Do/Don't pills ── */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+    .badge.do   { background: var(--green-bg); color: var(--green-text); }
+    .badge.dont { background: var(--red-bg); color: var(--red-text); }
+
+    /* ── Footer ── */
+    .page-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border2);
+      font-size: 12px;
+      color: var(--text3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    .page-footer a { color: var(--accent); text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── Page header ── -->
+    <header class="page-header">
+      <div>
+        <h1>Docker · Complete Guide</h1>
+        <p>Mental models, components, and practical implementations for AI engineers</p>
+      </div>
+      <a class="back-link" href="../index.html">← Back to Topics</a>
+    </header>
+
+    <div class="layout">
+
+      <!-- ── Sidebar ── -->
+      <nav class="sidebar">
+        <div class="sidebar-title">Sections</div>
+        <a onclick="document.getElementById('mental-model').scrollIntoView({behavior:'smooth'})">Mental Model</a>
+        <a onclick="document.getElementById('core-architecture').scrollIntoView({behavior:'smooth'})">Core Architecture</a>
+        <a onclick="document.getElementById('components').scrollIntoView({behavior:'smooth'})">Main Components</a>
+        <a onclick="document.getElementById('dockerfile').scrollIntoView({behavior:'smooth'})">Dockerfile Patterns</a>
+        <a onclick="document.getElementById('implementation').scrollIntoView({behavior:'smooth'})">Implementation</a>
+        <a onclick="document.getElementById('ai-context').scrollIntoView({behavior:'smooth'})">AI/ML Context</a>
+        <a onclick="document.getElementById('best-practices').scrollIntoView({behavior:'smooth'})">Best Practices</a>
+        <a onclick="document.getElementById('end-to-end').scrollIntoView({behavior:'smooth'})">End-to-End Flow</a>
+      </nav>
+
+      <!-- ── Main content ── -->
+      <main>
+
+        <!-- 1. Mental Model -->
+        <section class="section" id="mental-model">
+          <div class="section-title">
+            <span class="section-num">01</span>
+            Mental Model: What Docker Actually Is
+          </div>
+
+          <p>Docker is a <strong>containerization platform</strong> that packages three things together:</p>
+
+          <div class="callout tip">
+            <strong>Application code</strong> (Python, Node.js, etc.)<br>
+            <strong>Runtime</strong> (interpreter, dependencies)<br>
+            <strong>System libraries</strong> (everything your app needs)<br><br>
+            → All bundled into a <strong>portable, isolated unit (container)</strong> that runs identically on your laptop, CI/CD, and production servers.
+          </div>
+
+          <div class="diagram">
+            <div class="diagram-title">Docker solves: "It works on my machine"</div>
+            <pre>Without Docker:
+Dev Machine → Works ✓
+CI Server    → Fails ✗  (missing library X)
+Production   → Fails ✗  (wrong version Y)
+
+With Docker:
+Dev, CI, Prod → Same container → Works ✓✓✓</pre>
+          </div>
+
+          <h3>Key Analogy</h3>
+          <div class="compare-grid">
+            <div class="compare-item">
+              <div class="compare-item-title">Without Docker</div>
+              <div class="compare-item-text">Ship source code + hope the server has the right setup</div>
+            </div>
+            <div class="compare-item">
+              <div class="compare-item-title">With Docker</div>
+              <div class="compare-item-text">Ship a complete, sealed box. Open anywhere, it works.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Core Architecture -->
+        <section class="section" id="core-architecture">
+          <div class="section-title">
+            <span class="section-num">02</span>
+            Core Architecture
+          </div>
+
+          <div class="diagram">
+            <div class="diagram-title">Docker system stack</div>
+            <pre>┌─────────────────────────────────┐
+│         Docker CLI              │
+│  (docker run, build, push...)   │
+└────────────────┬────────────────┘
+                 │ (API calls)
+┌────────────────▼────────────────┐
+│        Docker Daemon            │
+│        (dockerd process)        │
+└────────────────┬────────────────┘
+                 │ (manages)
+┌────────────────▼────────────────┐
+│        Docker Objects           │
+├─────────────────────────────────┤
+│ • Images     (blueprints)       │
+│ • Containers (running tasks)    │
+│ • Networks   (communication)    │
+│ • Volumes    (persistent data)  │
+└─────────────────────────────────┘</pre>
+          </div>
+
+          <h3>How it works</h3>
+          <ol>
+            <li><strong>You type a command:</strong> <code>docker run myapp</code></li>
+            <li><strong>CLI contacts daemon:</strong> "Start a container from myapp image"</li>
+            <li><strong>Daemon creates:</strong> Isolated process, filesystem, network interface</li>
+            <li><strong>Container runs:</strong> Your app executes inside</li>
+          </ol>
+        </section>
+
+        <!-- 3. Main Components -->
+        <section class="section" id="components">
+          <div class="section-title">
+            <span class="section-num">03</span>
+            Main Components
+          </div>
+
+          <!-- Images -->
+          <div class="comp-card">
+            <div class="comp-card-title">A. Images (Blueprint Layer)</div>
+            <div class="comp-card-sub">Immutable templates used to create and run containers</div>
+
+            <p>A read-only snapshot of your entire application stack. Think: "snapshot of a hard drive".</p>
+
+            <h4>Key properties</h4>
+            <ul>
+              <li><strong>Layered</strong> — Built incrementally (cached for speed)</li>
+              <li><strong>Versioned</strong> — Tagged with names like <code>myapp:1.0</code>, <code>myapp:latest</code></li>
+              <li><strong>Portable</strong> — Run anywhere Docker exists</li>
+            </ul>
+
+            <div class="diagram">
+              <div class="diagram-title">Image structure (layers)</div>
+              <pre>┌─────────────────────────────┐
+│ Layer 5: Your app code      │ ← Copied last
+├─────────────────────────────┤
+│ Layer 4: Dependencies       │
+├─────────────────────────────┤
+│ Layer 3: Python 3.11        │
+├─────────────────────────────┤
+│ Layer 2: Linux base         │
+├─────────────────────────────┤
+│ Layer 1: Base image         │ ← Cached, reused
+└─────────────────────────────┘
+Each layer = cached & reusable</pre>
+            </div>
+
+            <h4>Commands</h4>
+            <div class="code-block">
+              <span class="code-label">Pull a public image</span>
+              <code>$ docker pull python:3.11</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">List images on your machine</span>
+              <code>$ docker images</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Build an image from Dockerfile</span>
+              <code>$ docker build -t myapp:1.0 .</code>
+            </div>
+          </div>
+
+          <!-- Containers -->
+          <div class="comp-card">
+            <div class="comp-card-title">B. Containers (Execution Layer)</div>
+            <div class="comp-card-sub">Running instance of an image. Isolated, ephemeral by default.</div>
+
+            <div class="compare-grid">
+              <div class="compare-item">
+                <div class="compare-item-title">Image</div>
+                <div class="compare-item-text">Class definition (blueprint)</div>
+              </div>
+              <div class="compare-item">
+                <div class="compare-item-title">Container</div>
+                <div class="compare-item-text">Object instance (running process)</div>
+              </div>
+            </div>
+
+            <h4>Key properties</h4>
+            <ul>
+              <li><strong>Isolated</strong> — Own filesystem, processes, network</li>
+              <li><strong>Lightweight</strong> — Shares host OS kernel (not a full VM)</li>
+              <li><strong>Ephemeral</strong> — Data is lost when container stops (unless using volumes)</li>
+            </ul>
+
+            <h4>Essential commands</h4>
+            <div class="code-block">
+              <span class="code-label">Start a container in background</span>
+              <code>$ docker run -d -p 8000:8000 myapp</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">List running containers</span>
+              <code>$ docker ps</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">View logs from a container</span>
+              <code>$ docker logs &lt;container-id&gt;</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Stop a container</span>
+              <code>$ docker stop &lt;container-id&gt;</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Execute a command inside a running container</span>
+              <code>$ docker exec -it &lt;container-id&gt; /bin/bash</code>
+            </div>
+          </div>
+
+          <!-- Volumes -->
+          <div class="comp-card">
+            <div class="comp-card-title">C. Volumes (Persistence Layer)</div>
+            <div class="comp-card-sub">Persistent storage that survives container restarts.</div>
+
+            <div class="callout warn">
+              <strong>Containers are ephemeral.</strong> When a container stops, all data inside is deleted.<br>
+              If you run PostgreSQL in a container without a volume, your database is gone when the container crashes.
+            </div>
+
+            <h4>Named volumes</h4>
+            <p>Managed by Docker. Data stored in Docker's directory on host.</p>
+            <div class="code-block">
+              <span class="code-label">Create and use a named volume</span>
+              <code>$ docker run -v mydata:/var/lib/postgresql/data postgres</code>
+            </div>
+
+            <h4>Bind mounts</h4>
+            <p>Direct host directory ↔ container directory mapping.</p>
+            <div class="code-block">
+              <span class="code-label">Mount a host folder into container</span>
+              <code>$ docker run -v /host/path:/container/path myapp</code>
+            </div>
+
+            <div class="diagram">
+              <div class="diagram-title">Volumes keep data safe</div>
+              <pre>Without volume:
+postgres container stops → database ✗ deleted
+
+With volume:
+postgres container stops → database ✓ persisted
+new postgres container  → same database ✓</pre>
+            </div>
+          </div>
+
+          <!-- Networks -->
+          <div class="comp-card">
+            <div class="comp-card-title">D. Networks (Communication)</div>
+            <div class="comp-card-sub">Enables containers to communicate with each other and the host.</div>
+
+            <h4>Network types</h4>
+            <ul>
+              <li><strong>bridge</strong> — Default. Containers can talk to each other on same network.</li>
+              <li><strong>host</strong> — Container shares host's network (no isolation)</li>
+              <li><strong>overlay</strong> — Multi-host networking (Docker Swarm)</li>
+            </ul>
+
+            <h4>Example: Two containers talking</h4>
+            <div class="code-block">
+              <span class="code-label">Step 1: Create a network</span>
+              <code>$ docker network create mynet</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Step 2: Start Redis on the network</span>
+              <code>$ docker run --name redis --network=mynet redis</code>
+            </div>
+            <div class="code-block">
+              <span class="code-label">Step 3: Start app on the same network</span>
+              <code>$ docker run --name myapp --network=mynet myapp</code>
+            </div>
+            <div class="callout tip">
+              <strong>Magic:</strong> Inside myapp container, you can reach Redis at <code>redis:6379</code> (by container name)
+            </div>
+          </div>
+
+          <!-- Docker Compose -->
+          <div class="comp-card">
+            <div class="comp-card-title">E. Docker Compose (Multi-Container Orchestration)</div>
+            <div class="comp-card-sub">YAML file that defines and runs multiple containers together.</div>
+
+            <p>Instead of running 5+ docker commands manually, define everything in one file and start with <code>docker-compose up</code>.</p>
+
+            <h4>Core concepts</h4>
+            <ul>
+              <li><strong>Services</strong> — Each container definition</li>
+              <li><strong>Volumes</strong> — Persistent storage definitions</li>
+              <li><strong>Networks</strong> — Communication channels (auto-created)</li>
+              <li><strong>Env files</strong> — Environment variables</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 4. Dockerfile Best Practices -->
+        <section class="section" id="dockerfile">
+          <div class="section-title">
+            <span class="section-num">04</span>
+            Dockerfile Best Practices
+          </div>
+
+          <h3>Pattern: Python FastAPI app</h3>
+          <div class="code-block">
+            <span class="code-label">Dockerfile (optimized for caching)</span>
+            <pre><code class="language-dockerfile">FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy only requirements first (cached if code changes)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
+
+EXPOSE 8000
+
+# Health check (production important)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+
+          <h3>Pattern: Node.js app with multi-stage build</h3>
+          <div class="code-block">
+            <span class="code-label">Dockerfile (multi-stage reduces final size)</span>
+            <pre><code class="language-dockerfile"># Stage 1: Build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+COPY package.json package-lock.json .
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# Stage 2: Production
+FROM node:18-alpine
+
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]</code></pre>
+          </div>
+
+          <h3>Critical rules</h3>
+          <div class="callout tip">
+            <strong>1. Order matters:</strong> Dependencies first, code last. Code changes often, dependencies don't.<br><br>
+            <strong>2. Use slim images:</strong> <code>python:3.11-slim</code> vs <code>python:3.11</code> saves ~800 MB<br><br>
+            <strong>3. Don't run as root:</strong> Create a user for security<br><br>
+            <strong>4. Multi-stage for smaller images:</strong> Build stage + runtime stage = smaller final image<br><br>
+            <strong>5. Add health checks:</strong> Production containers need to report their status
+          </div>
+        </section>
+
+        <!-- 5. Implementation -->
+        <section class="section" id="implementation">
+          <div class="section-title">
+            <span class="section-num">05</span>
+            Step-by-Step Implementation
+          </div>
+
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div>
+              <div class="step-title">Create a Dockerfile</div>
+              <div class="step-desc">Define the image recipe</div>
+            </div>
+          </div>
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div>
+              <div class="step-title">Build the image</div>
+              <div class="step-desc"><code>docker build -t myapp:1.0 .</code></div>
+            </div>
+          </div>
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div>
+              <div class="step-title">Run a container locally</div>
+              <div class="step-desc"><code>docker run -p 8000:8000 myapp:1.0</code></div>
+            </div>
+          </div>
+          <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div>
+              <div class="step-title">Push to registry (optional for local dev)</div>
+              <div class="step-desc"><code>docker push myregistry/myapp:1.0</code></div>
+            </div>
+          </div>
+
+          <h3>Full example: RAG system with FastAPI</h3>
+          <div class="code-block">
+            <span class="code-label">Project structure</span>
+            <pre><code>my-rag-app/
+├── Dockerfile
+├── docker-compose.yml
+├── main.py               (FastAPI app)
+├── requirements.txt
+└── .dockerignore</code></pre>
+          </div>
+
+          <div class="code-block">
+            <span class="code-label">requirements.txt</span>
+            <pre><code>fastapi==0.104.1
+uvicorn==0.24.0
+langchain==0.0.340
+pgvector==0.2.4
+psycopg2-binary==2.9.9
+pydantic==2.5.0</code></pre>
+          </div>
+
+          <div class="code-block">
+            <span class="code-label">Dockerfile</span>
+            <pre><code class="language-dockerfile">FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies for pgvector
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
+COPY . .
+
+ENV PYTHONUNBUFFERED=1
+ENV POSTGRES_URL=postgresql://user:pass@postgres:5432/rag_db
+ENV REDIS_URL=redis://redis:6379
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+          </div>
+
+          <div class="code-block">
+            <span class="code-label">docker-compose.yml (recommended for local dev + staging)</span>
+            <pre><code class="language-yaml">version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: rag_api
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_URL: postgresql://postgres:password@postgres:5432/rag_db
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./:/app  # Hot reload for development
+    networks:
+      - rag_network
+
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: rag_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: rag_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rag_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: rag_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rag_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  rag_network:
+    driver: bridge</code></pre>
+          </div>
+
+          <h4>Run everything</h4>
+          <div class="code-block">
+            <span class="code-label">Start all services</span>
+            <code>$ docker-compose up -d</code>
+          </div>
+          <div class="code-block">
+            <span class="code-label">View logs</span>
+            <code>$ docker-compose logs -f api</code>
+          </div>
+          <div class="code-block">
+            <span class="code-label">Stop all</span>
+            <code>$ docker-compose down</code>
+          </div>
+          <div class="code-block">
+            <span class="code-label">Stop and remove volumes</span>
+            <code>$ docker-compose down -v</code>
+          </div>
+        </section>
+
+        <!-- 6. AI/ML Context -->
+        <section class="section" id="ai-context">
+          <div class="section-title">
+            <span class="section-num">06</span>
+            Docker for AI/ML Engineers
+          </div>
+
+          <h3>Your use cases → Docker patterns</h3>
+          <table>
+            <tr>
+              <th>Use Case</th>
+              <th>Docker Role</th>
+              <th>Key Pattern</th>
+            </tr>
+            <tr>
+              <td>LLM API (FastAPI)</td>
+              <td>Package API + dependencies</td>
+              <td><code>FROM python:3.11</code> + FastAPI app</td>
+            </tr>
+            <tr>
+              <td>RAG pipeline</td>
+              <td>Isolate embedding service + DB</td>
+              <td>Multi-service compose: app + pgvector + redis</td>
+            </tr>
+            <tr>
+              <td>Batch jobs (e.g., embedding)</td>
+              <td>Scheduled containers (cron)</td>
+              <td><code>docker run</code> or Kubernetes CronJob</td>
+            </tr>
+            <tr>
+              <td>GPU models (LLaMA, etc.)</td>
+              <td>CUDA base image + GPU access</td>
+              <td><code>FROM nvidia/cuda:12.1-runtime</code></td>
+            </tr>
+            <tr>
+              <td>Reproducibility</td>
+              <td>Lock environment versions</td>
+              <td>requirements.txt pinned + Dockerfile</td>
+            </tr>
+          </table>
+
+          <h3>GPU example (LLM inference)</h3>
+          <div class="code-block">
+            <span class="code-label">Dockerfile (GPU-enabled)</span>
+            <pre><code class="language-dockerfile">FROM nvidia/cuda:12.1-runtime-ubuntu22.04
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y python3.11 python3-pip
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python3", "inference_server.py"]</code></pre>
+          </div>
+
+          <div class="code-block">
+            <span class="code-label">Run with GPU access</span>
+            <code>$ docker run --gpus all -p 8000:8000 llm-server</code>
+          </div>
+
+          <h3>RAG system architecture (with Docker)</h3>
+          <div class="diagram">
+            <div class="diagram-title">Three-tier RAG with Docker Compose</div>
+            <pre>┌─────────────────────────────┐
+│  FastAPI (LLM + retrieval)  │ ← docker-compose service
+├─────────────────────────────┤
+│  pgvector + PostgreSQL      │ ← docker-compose service
+├─────────────────────────────┤
+│  Redis (caching)            │ ← docker-compose service
+└─────────────────────────────┘
+
+All networked. All defined in one docker-compose.yml</pre>
+          </div>
+
+          <div class="callout tip">
+            <strong>• Package once, run anywhere</strong> — Your LLM pipeline works identically in CI/CD and production<br><br>
+            <strong>• Version your environment</strong> — Lock specific versions of transformers, torch, etc.<br><br>
+            <strong>• Separate concerns</strong> — API service ≠ vector DB ≠ cache<br><br>
+            <strong>• GPU support</strong> — Docker works with NVIDIA GPUs natively<br><br>
+            <strong>• Batch jobs</strong> — Run embedding jobs as containers on a schedule
+          </div>
+        </section>
+
+        <!-- 7. Best Practices -->
+        <section class="section" id="best-practices">
+          <div class="section-title">
+            <span class="section-num">07</span>
+            Best Practices &amp; Common Mistakes
+          </div>
+
+          <h3>Do This</h3>
+
+          <div class="callout tip">
+            <span class="badge do">Do</span>
+            <strong>Order dependencies before code</strong><br>
+            Install dependencies → copy code. Code changes often, dependencies don't. Exploit caching.
+          </div>
+
+          <div class="callout tip">
+            <span class="badge do">Do</span>
+            <strong>Use volumes for databases</strong><br>
+            Never store critical data inside a container without a volume. Data disappears on restart.
+          </div>
+
+          <div class="callout tip">
+            <span class="badge do">Do</span>
+            <strong>Add health checks</strong><br>
+            Production orchestrators (K8s) need to know if your container is alive.
+          </div>
+
+          <div class="callout tip">
+            <span class="badge do">Do</span>
+            <strong>Use .dockerignore</strong><br>
+            Prevent copying <code>__pycache__</code>, <code>node_modules</code>, <code>.git</code> into the image.
+          </div>
+
+          <div class="callout tip">
+            <span class="badge do">Do</span>
+            <strong>Pin base image versions</strong><br>
+            Use <code>python:3.11</code>, not <code>python:latest</code>. Prevents surprise breakage.
+          </div>
+
+          <h3>Avoid This</h3>
+
+          <div class="callout danger">
+            <span class="badge dont">Don't</span>
+            <strong>Running multiple apps in one container</strong><br>
+            One container = one service. Use docker-compose for multi-service apps.
+          </div>
+
+          <div class="callout danger">
+            <span class="badge dont">Don't</span>
+            <strong>Hardcoding secrets in Dockerfile</strong><br>
+            Use environment variables or secret management tools.
+          </div>
+
+          <div class="callout danger">
+            <span class="badge dont">Don't</span>
+            <strong>Forgetting volumes for databases</strong><br>
+            No volume = data loss on restart. Always use volumes for stateful services.
+          </div>
+
+          <div class="callout danger">
+            <span class="badge dont">Don't</span>
+            <strong>Using :latest in production</strong><br>
+            Unpredictable. Tag images with specific versions.
+          </div>
+
+          <div class="callout danger">
+            <span class="badge dont">Don't</span>
+            <strong>Running containers as root</strong><br>
+            Create a non-root user for security.
+          </div>
+
+          <h3>.dockerignore (prevent bloat)</h3>
+          <div class="code-block">
+            <span class="code-label">.dockerignore</span>
+            <pre><code>.git
+.gitignore
+__pycache__
+.pytest_cache
+node_modules
+dist
+build
+*.pyc
+.env.local
+.DS_Store
+.vscode</code></pre>
+          </div>
+        </section>
+
+        <!-- 8. End-to-End Flow -->
+        <section class="section" id="end-to-end">
+          <div class="section-title">
+            <span class="section-num">08</span>
+            Complete End-to-End Flow
+          </div>
+
+          <div class="diagram">
+            <div class="diagram-title">From code to running container</div>
+            <pre>Step 1: Write code
+        ↓
+Step 2: Create Dockerfile
+        ↓
+Step 3: docker build -t myapp:1.0 .
+        ↓
+Step 4: Image created (layers cached)
+        ↓
+Step 5: docker run -p 8000:8000 myapp:1.0
+        ↓
+Step 6: Container running (isolated process)
+        ↓
+Step 7: Push to registry (optional)
+        ↓
+Step 8: Deploy to cloud (Railway, Azure, K8s)</pre>
+          </div>
+
+          <h3>For multi-service apps (recommended)</h3>
+          <div class="diagram">
+            <div class="diagram-title">Docker Compose flow</div>
+            <pre>docker-compose.yml (defines all services)
+        ↓
+docker-compose up -d (start everything)
+        ↓
+Services:
+  ├── API (FastAPI)
+  ├── Database (PostgreSQL + pgvector)
+  ├── Cache (Redis)
+  └── All networked automatically
+        ↓
+docker-compose down    (stop all, keep volumes)
+docker-compose down -v (stop all, delete volumes)</pre>
+          </div>
+
+          <h3>Quick reference commands</h3>
+          <table>
+            <tr>
+              <th>Command</th>
+              <th>Purpose</th>
+            </tr>
+            <tr>
+              <td><code>docker build -t name:tag .</code></td>
+              <td>Build image from Dockerfile</td>
+            </tr>
+            <tr>
+              <td><code>docker run -d -p 8000:8000 name:tag</code></td>
+              <td>Start container (background)</td>
+            </tr>
+            <tr>
+              <td><code>docker ps</code></td>
+              <td>List running containers</td>
+            </tr>
+            <tr>
+              <td><code>docker logs &lt;id&gt;</code></td>
+              <td>View container logs</td>
+            </tr>
+            <tr>
+              <td><code>docker exec -it &lt;id&gt; /bin/bash</code></td>
+              <td>Shell into running container</td>
+            </tr>
+            <tr>
+              <td><code>docker stop &lt;id&gt;</code></td>
+              <td>Stop container gracefully</td>
+            </tr>
+            <tr>
+              <td><code>docker rm &lt;id&gt;</code></td>
+              <td>Delete a stopped container</td>
+            </tr>
+            <tr>
+              <td><code>docker images</code></td>
+              <td>List all images</td>
+            </tr>
+            <tr>
+              <td><code>docker-compose up -d</code></td>
+              <td>Start all services defined in compose file</td>
+            </tr>
+            <tr>
+              <td><code>docker-compose down</code></td>
+              <td>Stop all services (keep volumes)</td>
+            </tr>
+          </table>
+        </section>
+
+      </main>
+    </div>
+
+    <footer class="page-footer">
+      <span>Hosted via GitHub Pages · static HTML only.</span>
+      <span><a href="../index.html">← Back to LearnAIbyAmir Topics</a></span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('pre code').forEach(block => {
+        hljs.highlightElement(block);
+      });
+    });
+  </script>
+</body>
+</html>
