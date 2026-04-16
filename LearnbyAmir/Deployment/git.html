@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Git Cheat Sheet · LearnAIbyAmir</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface2: #f0f2f5;
+      --border: rgba(31,35,40,0.12);
+      --border2: rgba(31,35,40,0.18);
+      --text: #1f2328;
+      --text2: #636c76;
+      --text3: #6e7781;
+      --accent: #0d9488;
+      --accent-bg: #e0f4ee;
+      --green-bg: #e4f2e0; --green-text: #1a7f4e;
+      --red-bg: #fceee9; --red-text: #c5341b;
+      --blue-bg: #e8f0fb; --blue-text: #1a4fa0;
+      --amber-bg: #fdf0d8; --amber-text: #a56514;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 5px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── Sidebar nav ── */
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .sidebar a {
+      display: block;
+      font-size: 13px;
+      color: var(--text2);
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .sidebar a:hover {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-left-color: var(--accent);
+    }
+
+    /* ── Sections ── */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 2px 7px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 10px;
+    }
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin-left: 20px;
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+    li { margin-bottom: 4px; }
+    li strong { color: var(--text); }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .code-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .code-block code, .code-block pre {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      background: none;
+      padding: 0;
+    }
+    .code-block pre { line-height: 1.6; }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+    pre code { border: none; background: none; padding: 0; font-size: 13px; }
+
+    /* ── Diagram / ASCII art ── */
+    .diagram {
+      background: #f0f5f3;
+      border: 1px solid rgba(13,148,136,0.2);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+    .diagram-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .diagram pre {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    /* ── Call-out boxes ── */
+    .callout {
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      border-left: 3px solid;
+    }
+    .callout.info  { background: var(--blue-bg);  border-color: #1a4fa0; color: #1a4fa0; }
+    .callout.tip   { background: var(--accent-bg); border-color: var(--accent); color: var(--text); }
+    .callout.warn  { background: var(--amber-bg); border-color: #a56514; color: #a56514; }
+    .callout.danger{ background: var(--red-bg);  border-color: var(--red-text); color: var(--red-text); }
+    .callout strong { color: inherit; }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 14px 0;
+    }
+    th {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text2);
+    }
+    td {
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      color: var(--text2);
+      vertical-align: top;
+    }
+    tr:hover td { background: var(--surface2); }
+
+    /* ── Footer ── */
+    .page-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border2);
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="page-header">
+      <div>
+        <h1>Git — Cheat Sheet</h1>
+        <p>The essential Git pipeline, branching, pushing, merging, undoing mistakes, and a quick-reference table.</p>
+      </div>
+      <a class="back-link" href="../index.html">← Back to Learn AI by Amir</a>
+    </header>
+
+    <div class="layout">
+
+      <nav class="sidebar">
+        <div class="sidebar-title">Sections</div>
+        <a href="#mental-model">Mental Model</a>
+        <a href="#head">What is HEAD?</a>
+        <a href="#safety">Safety Check</a>
+        <a href="#branches">Branches</a>
+        <a href="#add-commit-push">Add / Commit / Push</a>
+        <a href="#first-push">First Push</a>
+        <a href="#push-another">Push to Another Branch</a>
+        <a href="#pull">Pull Latest</a>
+        <a href="#merge">Merge into Main</a>
+        <a href="#pr">Pull Request (CLI)</a>
+        <a href="#undo">Undo / Fix Mistakes</a>
+        <a href="#inspect">Inspect</a>
+        <a href="#quick-ref">Quick Reference Table</a>
+      </nav>
+
+      <div class="content">
+
+        <!-- 1. Mental Model -->
+        <section class="section" id="mental-model">
+          <div class="section-title">
+            <span class="section-num">01</span>
+            Mental Model
+          </div>
+          <div class="diagram">
+            <div class="diagram-title">The Git pipeline</div>
+            <pre>edit → add → commit → push → PR → merge</pre>
+          </div>
+          <p>Every change follows this pipeline. Understand where you are in it at all times.</p>
+        </section>
+
+        <!-- 2. What is HEAD? -->
+        <section class="section" id="head">
+          <div class="section-title">
+            <span class="section-num">02</span>
+            What is HEAD?
+          </div>
+          <p>In Git, <strong>HEAD = where you are currently working.</strong></p>
+          <p>When HEAD points to a <strong>branch</strong>, your commits land on that branch. When HEAD points directly to a <strong>commit</strong> (not a branch), you are in <strong>detached HEAD</strong> state — commits are "floating" and not attached to any branch.</p>
+
+          <table>
+            <tr>
+              <th>State</th>
+              <th>HEAD points to</th>
+              <th>Behavior</th>
+            </tr>
+            <tr>
+              <td>On a branch</td>
+              <td><code>refs/heads/main</code> → commit</td>
+              <td>Commits are saved in that branch. Branch pointer moves forward.</td>
+            </tr>
+            <tr>
+              <td>Detached HEAD</td>
+              <td>A raw commit hash</td>
+              <td>Commits are not attached to any branch. They will be <strong>lost</strong> if you switch away without saving.</td>
+            </tr>
+          </table>
+
+          <div class="code-block">
+            <span class="code-label">Fix a detached HEAD</span>
+            <pre><code># You'll see this if detached:
+# "HEAD detached at abc1234"
+
+# Fix: create a branch to save your work
+git checkout -b my-rescued-work</code></pre>
+          </div>
+        </section>
+
+        <!-- 3. Safety Check -->
+        <section class="section" id="safety">
+          <div class="section-title">
+            <span class="section-num">03</span>
+            Safety Check
+          </div>
+          <p>Do this first before any operation.</p>
+          <div class="code-block">
+            <span class="code-label">Verify your state</span>
+            <pre><code>git branch --show-current      # verify you are on the correct branch
+git status                     # see what's staged, modified, untracked</code></pre>
+          </div>
+          <div class="callout danger">
+            <strong>Never work in detached HEAD</strong> — if you see <code>HEAD detached at ...</code>, create a branch immediately with <code>git checkout -b &lt;name&gt;</code>.
+          </div>
+        </section>
+
+        <!-- 4. Branches -->
+        <section class="section" id="branches">
+          <div class="section-title">
+            <span class="section-num">04</span>
+            Branches
+          </div>
+          <div class="code-block">
+            <span class="code-label">Branch operations</span>
+            <pre><code>git branch                     # list local branches
+git branch --show-current      # show current branch
+git checkout -b &lt;branch&gt;       # create + switch to new branch
+git switch -c &lt;branch&gt;         # same (newer syntax)
+git branch -d &lt;branch&gt;         # delete a local branch (safe — refuses if unmerged)
+git branch -D &lt;branch&gt;         # force-delete a local branch</code></pre>
+          </div>
+        </section>
+
+        <!-- 5. Add / Commit / Push -->
+        <section class="section" id="add-commit-push">
+          <div class="section-title">
+            <span class="section-num">05</span>
+            Add / Commit / Push
+          </div>
+          <div class="code-block">
+            <span class="code-label">Stage, commit, push</span>
+            <pre><code>git add .                      # stage all changes
+git add &lt;file&gt;                 # stage a specific file
+git commit -m "msg"            # commit with message
+git push                       # push to remote (if upstream is set)</code></pre>
+          </div>
+        </section>
+
+        <!-- 6. First Push -->
+        <section class="section" id="first-push">
+          <div class="section-title">
+            <span class="section-num">06</span>
+            First Push (Set Upstream)
+          </div>
+          <div class="code-block">
+            <span class="code-label">Link local branch to remote</span>
+            <pre><code>git push -u origin &lt;branch&gt;    # push + link local branch to remote</code></pre>
+          </div>
+          <p>After this, <code>git push</code> / <code>git pull</code> work without specifying the remote.</p>
+        </section>
+
+        <!-- 7. Push to Another Branch -->
+        <section class="section" id="push-another">
+          <div class="section-title">
+            <span class="section-num">07</span>
+            Push to Another Branch
+          </div>
+          <div class="code-block">
+            <span class="code-label">Push current work to a different remote branch</span>
+            <pre><code>git push origin HEAD:&lt;target-branch&gt;</code></pre>
+          </div>
+        </section>
+
+        <!-- 8. Pull Latest -->
+        <section class="section" id="pull">
+          <div class="section-title">
+            <span class="section-num">08</span>
+            Pull Latest
+          </div>
+          <div class="code-block">
+            <span class="code-label">Fetch + merge or rebase</span>
+            <pre><code>git pull origin main           # fetch + merge latest changes from main
+git pull --rebase origin main  # fetch + rebase (cleaner history, no merge commit)</code></pre>
+          </div>
+        </section>
+
+        <!-- 9. Merge into Main -->
+        <section class="section" id="merge">
+          <div class="section-title">
+            <span class="section-num">09</span>
+            Merge into Main
+          </div>
+          <div class="code-block">
+            <span class="code-label">Standard merge workflow</span>
+            <pre><code>git checkout main              # switch to main
+git pull origin main           # make sure main is up to date
+git merge &lt;branch&gt;             # merge &lt;branch&gt; into main
+git push origin main           # push updated main to remote</code></pre>
+          </div>
+        </section>
+
+        <!-- 10. Pull Request (CLI) -->
+        <section class="section" id="pr">
+          <div class="section-title">
+            <span class="section-num">10</span>
+            Pull Request (CLI with GitHub CLI)
+          </div>
+          <div class="code-block">
+            <span class="code-label">Create a PR from the terminal</span>
+            <pre><code>gh pr create --base main --head &lt;branch&gt; --title "title" --body "description"</code></pre>
+          </div>
+        </section>
+
+        <!-- 11. Undo / Fix Mistakes -->
+        <section class="section" id="undo">
+          <div class="section-title">
+            <span class="section-num">11</span>
+            Undo / Fix Mistakes
+          </div>
+          <div class="code-block">
+            <span class="code-label">Common undo operations</span>
+            <pre><code>git restore &lt;file&gt;             # discard unstaged changes in a file
+git restore --staged &lt;file&gt;    # unstage a file (keep changes in working tree)
+git commit --amend -m "new msg"  # fix the last commit message (before push)
+git reset --soft HEAD~1        # undo last commit, keep changes staged
+git stash                      # temporarily shelve changes
+git stash pop                  # re-apply stashed changes</code></pre>
+          </div>
+        </section>
+
+        <!-- 12. Inspect -->
+        <section class="section" id="inspect">
+          <div class="section-title">
+            <span class="section-num">12</span>
+            Inspect
+          </div>
+          <div class="code-block">
+            <span class="code-label">View history and changes</span>
+            <pre><code>git log --oneline -10          # last 10 commits, compact
+git diff                       # unstaged changes
+git diff --staged              # staged changes (what will be committed)
+git log --oneline --graph      # visual branch history</code></pre>
+          </div>
+        </section>
+
+        <!-- 13. Quick Reference Table -->
+        <section class="section" id="quick-ref">
+          <div class="section-title">
+            <span class="section-num">13</span>
+            Quick Reference Table
+          </div>
+          <table>
+            <tr>
+              <th>Task</th>
+              <th>Command</th>
+            </tr>
+            <tr>
+              <td>See current branch</td>
+              <td><code>git branch --show-current</code></td>
+            </tr>
+            <tr>
+              <td>Create + switch branch</td>
+              <td><code>git checkout -b &lt;branch&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Stage everything</td>
+              <td><code>git add .</code></td>
+            </tr>
+            <tr>
+              <td>Commit</td>
+              <td><code>git commit -m "msg"</code></td>
+            </tr>
+            <tr>
+              <td>First push</td>
+              <td><code>git push -u origin &lt;branch&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Subsequent pushes</td>
+              <td><code>git push</code></td>
+            </tr>
+            <tr>
+              <td>Pull latest main</td>
+              <td><code>git pull origin main</code></td>
+            </tr>
+            <tr>
+              <td>Merge branch into main</td>
+              <td><code>git checkout main && git pull && git merge &lt;branch&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Create PR</td>
+              <td><code>gh pr create --base main --head &lt;branch&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Undo last commit (keep changes)</td>
+              <td><code>git reset --soft HEAD~1</code></td>
+            </tr>
+            <tr>
+              <td>Discard file changes</td>
+              <td><code>git restore &lt;file&gt;</code></td>
+            </tr>
+            <tr>
+              <td>Stash work</td>
+              <td><code>git stash</code> / <code>git stash pop</code></td>
+            </tr>
+          </table>
+        </section>
+
+      </div><!-- .content -->
+    </div><!-- .layout -->
+
+    <footer class="page-footer">
+      LearnAIbyAmir · Git Cheat Sheet
+    </footer>
+
+  </div><!-- .page -->
+</body>
+</html>
