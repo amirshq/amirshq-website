@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-102: Azure AI Engineer Associate — Complete Course</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
   :root {
     --bg: #0a0e1a;
@@ -77,7 +77,7 @@
   }
 
   .brand-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 16px;
     color: var(--text);
     font-weight: 600;
@@ -251,7 +251,7 @@
   }
 
   .hero h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 28px;
     color: var(--text);
     margin-bottom: 0.75rem;
@@ -372,7 +372,7 @@
   .tag-d6 { background: rgba(125,211,252,0.15); color: var(--accent2); border: 1px solid rgba(125,211,252,0.3); }
 
   .lesson-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 24px;
     color: var(--text);
     margin-bottom: 8px;
@@ -575,7 +575,7 @@
   }
 
   .quiz-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 20px;
     color: var(--text);
   }
@@ -700,7 +700,7 @@
   }
 
   .results-score {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 72px;
     font-weight: 600;
     margin-bottom: 4px;
@@ -2132,7 +2132,7 @@ function submitQuiz() {
   const msg = pct >= 85 ? "Excellent — you're ready to book the exam!" : pct >= 70 ? "Passing score! Review wrong answers and book soon." : "Keep studying — review the modules for the questions you missed.";
   const summary = document.createElement('div');
   summary.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center;margin-bottom:1.5rem;';
-  summary.innerHTML = `<div style="font-family:Playfair Display,serif;font-size:48px;color:var(--accent2);font-weight:600;">${correct}/50</div><div style="margin:8px 0;">${verdict}</div><div style="font-size:14px;color:var(--text3);">${msg}</div>`;
+  summary.innerHTML = `<div style="font-family:DM Sans,sans-serif;font-size:48px;color:var(--accent2);font-weight:600;">${correct}/50</div><div style="margin:8px 0;">${verdict}</div><div style="font-size:14px;color:var(--text3);">${msg}</div>`;
   document.getElementById('quiz-questions').prepend(summary);
   window.scrollTo(0,0);
 }

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Framework Selection Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root {
   --bg: #f6f8fa;
@@ -36,7 +36,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  font-family:'Syne',sans-serif;
+  font-family:'DM Sans',sans-serif;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
@@ -74,7 +74,7 @@ body::before {
 .sidebar-logo .brand {
   font-size:11px; font-weight:700; letter-spacing:3px;
   color:var(--muted); text-transform:uppercase;
-  font-family:'JetBrains Mono',monospace;
+  font-family:'DM Mono',monospace;
   margin-bottom:6px; display:block;
 }
 
@@ -90,7 +90,7 @@ body::before {
   padding:11px 20px; cursor:pointer;
   border:none; background:none; width:100%;
   text-align:left; color:var(--muted);
-  font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+  font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
   transition:all 0.2s; position:relative;
   border-left:3px solid transparent;
 }
@@ -105,7 +105,7 @@ body::before {
 .nav-item .nav-icon { font-size:16px; flex-shrink:0; }
 .nav-item .nav-label { font-size:12px; line-height:1.3; }
 .nav-item .nav-badge {
-  margin-left:auto; font-family:'JetBrains Mono',monospace;
+  margin-left:auto; font-family:'DM Mono',monospace;
   font-size:10px; background:var(--surface3);
   color:var(--muted); padding:2px 7px; border-radius:10px;
   border:1px solid var(--border);
@@ -115,7 +115,7 @@ body::before {
 .sidebar-footer {
   padding:16px 20px;
   border-top:1px solid var(--border);
-  font-family:'JetBrains Mono',monospace;
+  font-family:'DM Mono',monospace;
   font-size:10px; color:var(--muted2);
   line-height:1.6;
 }
@@ -135,7 +135,7 @@ body::before {
 }
 
 .sheet-tag {
-  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-family:'DM Mono',monospace; font-size:10px;
   color:var(--sky); text-transform:uppercase; letter-spacing:3px;
   margin-bottom:8px; display:block;
 }
@@ -158,14 +158,14 @@ body::before {
 }
 
 .toolbar-label {
-  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-family:'DM Mono',monospace; font-size:10px;
   color:var(--muted2); text-transform:uppercase; letter-spacing:2px;
 }
 
 .filter-btn {
   background:var(--surface2); border:1px solid var(--border);
   color:var(--muted); padding:5px 14px; border-radius:4px;
-  font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700;
   cursor:pointer; transition:all 0.15s; letter-spacing:0.5px;
 }
 .filter-btn:hover { border-color:var(--sky); color:var(--text); }
@@ -178,7 +178,7 @@ body::before {
 }
 .search-box input {
   background:none; border:none; outline:none;
-  font-family:'Syne',sans-serif; font-size:12px; color:var(--text);
+  font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text);
   width:180px;
 }
 .search-box input::placeholder { color:var(--muted2); }
@@ -195,7 +195,7 @@ table { width:100%; border-collapse:collapse; }
 #s1 .col-scenario { min-width:320px; max-width:420px; }
 #s1 table th {
   padding:13px 16px; text-align:left;
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:600;
   text-transform:uppercase; letter-spacing:1.5px;
   background:var(--surface2); border-bottom:2px solid var(--border2);
   position:sticky; top:0; z-index:5; white-space:nowrap;
@@ -211,7 +211,7 @@ table { width:100%; border-collapse:collapse; }
 
 #s1 .fw-name { font-weight:800; font-size:14px; color:#1f2328; }
 #s1 .fw-type {
-  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-family:'DM Mono',monospace; font-size:10px;
   padding:2px 8px; border-radius:3px; font-weight:500;
 }
 .type-low  { background:rgba(29,106,170,0.10); color:#1d6aaa; border:1px solid rgba(29,106,170,0.22); }
@@ -234,7 +234,7 @@ table { width:100%; border-collapse:collapse; }
 /* ── SHEET 2 — DECISION MATRIX ─────────────────────────────────── */
 #s2 table th {
   padding:13px 16px; text-align:center;
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:1px;
   background:var(--surface2); border-bottom:2px solid var(--border2);
   position:sticky; top:0; z-index:5; white-space:nowrap;
@@ -253,7 +253,7 @@ table { width:100%; border-collapse:collapse; }
 
 #s2 tr.section-row td {
   background:var(--surface3);
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:2.5px; color:var(--sky);
   padding:8px 16px; border-bottom:1px solid var(--border2);
 }
@@ -268,7 +268,7 @@ table { width:100%; border-collapse:collapse; }
 /* ── SHEET 3 — SCENARIOS ─────────────────────────────────────────── */
 #s3 table th {
   padding:13px 16px; text-align:left;
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:1px;
   background:var(--surface2); border-bottom:2px solid var(--border2);
   position:sticky; top:0; z-index:5; white-space:nowrap; color:var(--muted);
@@ -282,7 +282,7 @@ table { width:100%; border-collapse:collapse; }
 #s3 tr:hover td { background:rgba(0,0,0,0.03); }
 
 #s3 .sc-name { font-weight:700; color:#1f2328; font-size:13px; }
-#s3 .sc-industry { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); }
+#s3 .sc-industry { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); }
 
 .sc-primary { background:rgba(26,127,78,0.10); color:#1a7f4e; border:1px solid rgba(26,127,78,0.25); border-radius:4px; padding:3px 9px; font-weight:700; font-size:11.5px; white-space:nowrap; display:inline-block; }
 .sc-secondary { background:rgba(165,101,20,0.10); color:#a56514; border:1px solid rgba(165,101,20,0.25); border-radius:4px; padding:3px 9px; font-weight:600; font-size:11.5px; white-space:nowrap; display:inline-block; }
@@ -307,7 +307,7 @@ table { width:100%; border-collapse:collapse; }
   color:var(--text); border-right:1px solid var(--border);
   display:flex; align-items:center; gap:12px;
 }
-#s4 .qr-if { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--sky); letter-spacing:2px; margin-right:4px; }
+#s4 .qr-if { font-family:'DM Mono',monospace; font-size:10px; color:var(--sky); letter-spacing:2px; margin-right:4px; }
 #s4 .qr-answer {
   padding:18px 28px; font-size:13.5px; color:#1d6aaa;
   display:flex; align-items:center; gap:8px; font-weight:600;
@@ -337,7 +337,7 @@ table { width:100%; border-collapse:collapse; }
 #s5 .cs-table { width:100%; border-collapse:collapse; }
 #s5 .cs-table th {
   padding:12px 14px; text-align:left;
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:1px;
   position:sticky; top:0; z-index:5;
   background:var(--surface2); border-bottom:2px solid var(--border2);
@@ -357,7 +357,7 @@ table { width:100%; border-collapse:collapse; }
 }
 
 #s5 tr.cs-group td {
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:2.5px;
   padding:8px 14px;
 }
@@ -381,15 +381,15 @@ table { width:100%; border-collapse:collapse; }
 #s5 .concept-name { font-weight:800; font-size:13px; color:#fff; display:block; margin-bottom:3px; }
 #s5 .concept-def  { font-size:11px; color:var(--muted); line-height:1.5; display:block; }
 #s5 .concept-ex   {
-  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-family:'DM Mono',monospace; font-size:10px;
   color:#3dd6c8; margin-top:5px; display:block;
   background:rgba(61,214,200,0.07); padding:3px 7px; border-radius:3px;
   border-left:2px solid rgba(61,214,200,0.4);
 }
 
-#s5 .term-name { font-family:'JetBrains Mono',monospace; font-weight:600; font-size:11.5px; display:block; margin-bottom:3px; padding:2px 6px; border-radius:3px; }
+#s5 .term-name { font-family:'DM Mono',monospace; font-weight:600; font-size:11.5px; display:block; margin-bottom:3px; padding:2px 6px; border-radius:3px; }
 #s5 .term-note { font-size:11px; color:var(--muted); line-height:1.45; display:block; }
-.na-cell { color:var(--muted2); font-family:'JetBrains Mono',monospace; font-size:11px; font-style:italic; }
+.na-cell { color:var(--muted2); font-family:'DM Mono',monospace; font-size:11px; font-style:italic; }
 
 .lex-term        { background:rgba(165,101,20,0.10); color:#a56514; }
 .copilot-term    { background:rgba(29,106,170,0.10); color:#1d6aaa; }
@@ -413,7 +413,7 @@ table { width:100%; border-collapse:collapse; }
   pointer-events:none;
 }
 #s6 .s6-core-label {
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   color:var(--sky); text-transform:uppercase; letter-spacing:3px; margin-bottom:12px;
 }
 #s6 .s6-rule-row {
@@ -430,7 +430,7 @@ table { width:100%; border-collapse:collapse; }
 .s6-fw-hybrid { background:rgba(168,85,247,0.12); color:var(--langchain); border:1px solid rgba(168,85,247,0.25); }
 
 #s6 .s6-section-title {
-  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:11px; font-weight:700;
   text-transform:uppercase; letter-spacing:2px; color:var(--sky);
   margin-bottom:14px; display:flex; align-items:center; gap:8px;
 }
@@ -447,7 +447,7 @@ table { width:100%; border-collapse:collapse; }
 }
 #s6 .s6-tree-card:hover { border-color:var(--border2); transform:translateY(-2px); }
 #s6 .s6-tree-num {
-  font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:800;
+  font-family:'DM Mono',monospace; font-size:22px; font-weight:800;
   position:absolute; top:14px; right:18px; opacity:0.12;
 }
 #s6 .s6-tree-q { font-size:13px; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.4; }
@@ -467,7 +467,7 @@ table { width:100%; border-collapse:collapse; }
 }
 #s6 .s6-rule-card:hover { border-color:var(--border2); transform:translateY(-2px); }
 #s6 .s6-rule-card-head {
-  padding:10px 16px; font-family:'JetBrains Mono',monospace;
+  padding:10px 16px; font-family:'DM Mono',monospace;
   font-size:10px; font-weight:700; text-transform:uppercase;
   letter-spacing:1.5px; border-bottom:1px solid var(--border);
   color:var(--muted);
@@ -487,14 +487,14 @@ table { width:100%; border-collapse:collapse; }
   padding:18px 22px; margin-bottom:28px; line-height:1.7; font-size:13px;
 }
 #s6 .s6-insight-title {
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:2px; color:#c084fc; margin-bottom:8px;
 }
 
 #s6 .s6-mapping-table { width:100%; border-collapse:collapse; margin-bottom:28px; }
 #s6 .s6-mapping-table th {
   padding:12px 18px; text-align:left;
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:1.5px;
   background:var(--surface2); border-bottom:2px solid var(--border2);
   color:var(--muted);
@@ -511,7 +511,7 @@ table { width:100%; border-collapse:collapse; }
   font-size:14px; font-weight:600; color:#fff; line-height:1.6;
 }
 #s6 .s6-heuristic-label {
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:2px; color:var(--dialogflow); margin-bottom:8px;
 }
 
@@ -521,7 +521,7 @@ table { width:100%; border-collapse:collapse; }
   padding:18px 22px; margin-bottom:28px; font-size:13px; line-height:1.6;
 }
 #s6 .s6-mistake-label {
-  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:700;
   text-transform:uppercase; letter-spacing:2px; color:#f87171; margin-bottom:8px;
 }
 #s6 .s6-mistake li { margin-left:18px; margin-top:4px; color:var(--muted); }
@@ -537,7 +537,7 @@ table { width:100%; border-collapse:collapse; }
 }
 #s6 .s6-final-item:hover { border-color:var(--border2); transform:translateY(-2px); }
 #s6 .s6-final-need {
-  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-family:'DM Mono',monospace; font-size:10px;
   text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:6px;
 }
 #s6 .s6-final-pick { font-size:13px; font-weight:700; }
@@ -560,7 +560,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
   background:linear-gradient(135deg,var(--sky),#a78bfa);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
-.stat-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted2); text-transform:uppercase; letter-spacing:1.5px; }
+.stat-lbl { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted2); text-transform:uppercase; letter-spacing:1.5px; }
 
 /* ── SCROLLBAR ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width:6px; height:6px; }
@@ -826,7 +826,7 @@ mark { background:rgba(240,165,0,0.35); color:inherit; border-radius:2px; }
   </div>
   <div class="table-area">
     <div style="padding: 18px 36px 30px;">
-      <pre style="font-family:'JetBrains Mono', monospace; white-space:pre-wrap; line-height:1.55; font-size:12px; color:var(--text); margin:0;">
+      <pre style="font-family:'DM Mono', monospace; white-space:pre-wrap; line-height:1.55; font-size:12px; color:var(--text); margin:0;">
 CORE RULE (1-liner)
 
 If the problem is deterministic → use Dialogflow / Lex

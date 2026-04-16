@@ -1,3 +1,4 @@
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -5,7 +6,7 @@
       height: 100%; width: 100%;
       background: #0d1117;
       overflow: hidden;
-      font-family: var(--font-sans, 'Inter', sans-serif);
+      font-family: var(--font-sans, 'DM Sans', sans-serif);
     }
 
     .mindmap-page {
@@ -383,7 +384,7 @@ function render() {
       txt.setAttribute('dominant-baseline','central');
       txt.setAttribute('fill', col.text);
       txt.setAttribute('font-size', fs);
-      txt.setAttribute('font-family', 'var(--font-sans, Inter, system-ui, sans-serif)');
+      txt.setAttribute('font-family', 'var(--font-sans, DM Sans, sans-serif)');
       txt.setAttribute('font-weight', isRoot ? '600' : '500');
       txt.setAttribute('pointer-events','none');
       txt.textContent = line;
