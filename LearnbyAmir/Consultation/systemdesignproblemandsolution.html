@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design: Problems &amp; Solutions · LearnAIbyAmir</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface2: #f0f2f5;
+      --border: rgba(31,35,40,0.12);
+      --border2: rgba(31,35,40,0.18);
+      --text: #1f2328;
+      --text2: #636c76;
+      --text3: #6e7781;
+      --accent: #0d9488;
+      --accent-bg: #e0f4ee;
+      --green-bg: #e4f2e0; --green-text: #1a7f4e;
+      --red-bg: #fceee9; --red-text: #c5341b;
+      --blue-bg: #e8f0fb; --blue-text: #1a4fa0;
+      --amber-bg: #fdf0d8; --amber-text: #a56514;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page { max-width: 1160px; margin: 0 auto; }
+
+    .page-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 5px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .sidebar a {
+      display: block;
+      font-size: 13px;
+      color: var(--text2);
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .sidebar a:hover {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-left-color: var(--accent);
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 2px 7px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 16px;
+    }
+
+    h3 { font-size: 15px; font-weight: 600; color: var(--text); margin: 20px 0 10px; }
+
+    p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    .problem {
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 12px 0 8px;
+      border-left: 3px solid;
+    }
+    .problem.danger  { background: var(--red-bg);   border-color: var(--red-text); }
+    .problem.warning { background: var(--amber-bg);  border-color: var(--amber-text); }
+    .problem.info    { background: var(--blue-bg);   border-color: var(--blue-text); }
+    .problem-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 3px;
+    }
+    .problem.danger  .problem-label { color: var(--red-text); }
+    .problem.warning .problem-label { color: var(--amber-text); }
+    .problem.info    .problem-label { color: var(--blue-text); }
+    .problem-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .problem-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    .solution {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 0 0 12px;
+    }
+    .solution-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .solution-detail {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 3px;
+    }
+    .tag-row { margin-top: 8px; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    .page-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border2);
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="page-header">
+      <div>
+        <h1>System Design: Problems &amp; Solutions Matrix</h1>
+        <p>Stage-by-stage evolution from a single server to a globally distributed system — every problem met with its solution.</p>
+      </div>
+      <a class="back-link" href="../index.html">← Back to Learn AI by Amir</a>
+    </header>
+
+    <div class="layout">
+
+      <nav class="sidebar">
+        <div class="sidebar-title">Stages</div>
+        <a href="#stage-1">1 · Single Server</a>
+        <a href="#stage-2a">2a · Separate Tiers</a>
+        <a href="#stage-2b">2b · Database Choice</a>
+        <a href="#stage-2c">2c · Scaling Approach</a>
+        <a href="#stage-3">3 · Load Balancer</a>
+        <a href="#stage-4">4 · DB Replication</a>
+        <a href="#stage-5">5 · Cache Layer</a>
+        <a href="#stage-6">6 · CDN</a>
+        <a href="#stage-7">7 · Stateless Web</a>
+        <a href="#stage-8">8 · Multi-DC</a>
+        <a href="#stage-9">9 · Message Queue</a>
+        <a href="#stage-10">10 · DB Sharding</a>
+        <a href="#stage-11">11 · Monitoring</a>
+      </nav>
+
+      <div class="content">
+
+        <!-- STAGE 1 -->
+        <section class="section" id="stage-1">
+          <div class="section-title"><span class="section-num">01</span> Single Server Setup (All-in-One)</div>
+          <div class="section-desc">Everything running on one machine: web app, database, cache.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 1.1</div>
+            <div class="problem-title">Single Point of Failure (SPOF)</div>
+            <div class="problem-desc">Server goes down → entire website/app becomes inaccessible.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ No immediate solution (accept risk in MVP)</div>
+            <div class="solution-detail">At single-server stage, focus on feature velocity. Monitor uptime and treat failures as learning.</div>
+            <div class="solution-detail">Contingency: Set up automated backups to external storage.</div>
+            <div class="tag-row"><span class="tag">Risk Management</span><span class="tag">MVP Stage</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 1.2</div>
+            <div class="problem-title">Traffic Bottleneck &amp; Scaling Limit</div>
+            <div class="problem-desc">As traffic grows, single server cannot handle simultaneous users. Response times degrade, requests fail.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Vertical Scaling (Temporary)</div>
+            <div class="solution-detail">Add CPU, RAM, and disk storage to the single server.</div>
+            <div class="solution-detail">Cost-effective short-term solution (~weeks to months).</div>
+            <div class="solution-detail">Buys time before reaching hardware limits (max ~256 GB RAM, 64 vCPUs on most commodity hardware).</div>
+            <div class="tag-row"><span class="tag">Cost-Effective</span><span class="tag">Quick Implementation</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 1.3</div>
+            <div class="problem-title">No Redundancy or Backup</div>
+            <div class="problem-desc">Data loss risk if hardware fails. No way to serve users while recovering.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Automated Backups + Manual Recovery</div>
+            <div class="solution-detail">Set up daily/hourly backups to external storage (S3, backup service).</div>
+            <div class="solution-detail">Document recovery procedure for manual failover.</div>
+            <div class="solution-detail">Recovery time: hours to days (RTO) — not acceptable for production.</div>
+            <div class="tag-row"><span class="tag">Data Protection</span><span class="tag">Manual Failover</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 2A -->
+        <section class="section" id="stage-2a">
+          <div class="section-title"><span class="section-num">02a</span> Separate Web Tier from Data Tier</div>
+          <div class="section-desc">Move database to its own server, web traffic to another.</div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 2.1</div>
+            <div class="problem-title">Web &amp; Database Compete for Resources</div>
+            <div class="problem-desc">Heavy database queries slow down web request handling; web traffic spikes starve the DB.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Independent Tier Separation</div>
+            <div class="solution-detail">Move database server to separate machine (10.0.0.100).</div>
+            <div class="solution-detail">Web server handles requests on 10.0.0.1, database serves data independently.</div>
+            <div class="solution-detail">Can scale each tier independently: add CPU to web without touching DB, and vice versa.</div>
+            <div class="tag-row"><span class="tag">Resource Isolation</span><span class="tag">Independent Scaling</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 2.2</div>
+            <div class="problem-title">Both Tiers Still Have SPOF</div>
+            <div class="problem-desc">Web server down → no requests served; DB server down → no data access.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Each Tier Gets Failover in Next Stages</div>
+            <div class="solution-detail">Web tier: Add load balancer + multiple web servers (Stage 3).</div>
+            <div class="solution-detail">DB tier: Add database replication — master/slave (Stage 4).</div>
+            <div class="tag-row"><span class="tag">Roadmap</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 2B -->
+        <section class="section" id="stage-2b">
+          <div class="section-title"><span class="section-num">02b</span> Choose Database Type</div>
+          <div class="section-desc">SQL vs NoSQL: structural vs performance trade-off.</div>
+
+          <div class="problem info">
+            <div class="problem-label">Decision Point</div>
+            <div class="problem-title">Which Database Fits Your Data Model?</div>
+            <div class="problem-desc">Wrong database choice = costly migration later.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Use SQL (Relational) If:</div>
+            <div class="solution-detail">Data is structured (users, posts, comments with relationships).</div>
+            <div class="solution-detail">Need ACID transactions (financial data, orders).</div>
+            <div class="solution-detail">Need JOIN operations across tables.</div>
+            <div class="solution-detail">Data model is known upfront.</div>
+            <div class="solution-detail">Examples: MySQL, PostgreSQL, Oracle.</div>
+            <div class="tag-row"><span class="tag">Reliability</span><span class="tag">Consistency</span></div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Use NoSQL If:</div>
+            <div class="solution-detail">Data is unstructured or semi-structured (logs, events, documents).</div>
+            <div class="solution-detail">Need super-low latency (&lt;10 ms response).</div>
+            <div class="solution-detail">Horizontal scaling is critical (millions of records/sec).</div>
+            <div class="solution-detail">Data model evolves rapidly (schema flexibility).</div>
+            <div class="solution-detail">Examples: MongoDB, DynamoDB, Cassandra, Redis.</div>
+            <div class="tag-row"><span class="tag">Performance</span><span class="tag">Scalability</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 2C -->
+        <section class="section" id="stage-2c">
+          <div class="section-title"><span class="section-num">02c</span> Choose Scaling Approach</div>
+          <div class="section-desc">Vertical vs Horizontal scaling strategy.</div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 2.3</div>
+            <div class="problem-title">Single Server Cannot Scale Beyond Hardware Limits</div>
+            <div class="problem-desc">Max CPU, RAM, disk on commodity hardware ≈ 256 GB RAM, 64 vCPUs. Millions of users need more.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Vertical Scaling (Scale Up) — Short-term</div>
+            <div class="solution-detail">Add more CPU, RAM, disk to single server.</div>
+            <div class="solution-detail">Cheap, simple, works for moderate growth.</div>
+            <div class="solution-detail">BUT: hardware limit reached (AWS max ~768 GB RAM, 96 vCPUs); cost becomes exponential; still SPOF.</div>
+            <div class="tag-row"><span class="tag">Quick</span><span class="tag">Simple</span></div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Horizontal Scaling (Scale Out) — Long-term</div>
+            <div class="solution-detail">Add multiple servers (10.0.0.1, 10.0.0.2, 10.0.0.3…).</div>
+            <div class="solution-detail">Unlimited scalability: can keep adding servers as needed.</div>
+            <div class="solution-detail">Provides redundancy: if one server fails, others still serve traffic.</div>
+            <div class="solution-detail">Requires load balancer to distribute requests.</div>
+            <div class="tag-row"><span class="tag">Unlimited Scale</span><span class="tag">Redundancy</span><span class="tag">Recommended</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 3 -->
+        <section class="section" id="stage-3">
+          <div class="section-title"><span class="section-num">03</span> Multiple Web Servers (Horizontal Scaling)</div>
+          <div class="section-desc">Added multiple web servers (10.0.0.1, 10.0.0.2, 10.0.0.3).</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 3.1</div>
+            <div class="problem-title">How Do Users Know Which Server to Connect To?</div>
+            <div class="problem-desc">With 3 web servers, users need a single entry point. Which IP do they use?</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Load Balancer (Public IP 88.88.88.1)</div>
+            <div class="solution-detail">Single public IP that users connect to.</div>
+            <div class="solution-detail">Load balancer routes requests to private IPs using round-robin, least-connections, or other algorithms.</div>
+            <div class="solution-detail">Users never see private IPs; load balancer handles routing transparently.</div>
+            <div class="tag-row"><span class="tag">Single Entry Point</span><span class="tag">Abstraction</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 3.2</div>
+            <div class="problem-title">Traffic Not Evenly Distributed</div>
+            <div class="problem-desc">Without a load balancer, all users might hit Server 1, leaving Servers 2 &amp; 3 idle. Server 1 overloads.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Load Balancer Distributes Traffic Evenly</div>
+            <div class="solution-detail">Round-robin: Server 1, then 2, then 3, then repeat.</div>
+            <div class="solution-detail">Least-connections: route to server with fewest active connections.</div>
+            <div class="solution-detail">IP hash: same client always routes to same server (if sticky sessions needed).</div>
+            <div class="tag-row"><span class="tag">Load Distribution</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 3.3</div>
+            <div class="problem-title">No Failover If One Server Goes Down</div>
+            <div class="problem-desc">Server 1 crashes → load balancer still tries to route to it → requests timeout/fail.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Load Balancer Health Checks</div>
+            <div class="solution-detail">Balancer pings each server every 10 seconds: "Are you alive?"</div>
+            <div class="solution-detail">If Server 1 doesn't respond, balancer marks it DOWN and removes it from rotation.</div>
+            <div class="solution-detail">Requests now route only to Servers 2 &amp; 3; users don't see the outage.</div>
+            <div class="solution-detail">Ops team can add a replacement Server 4; balancer detects it and adds to rotation.</div>
+            <div class="tag-row"><span class="tag">Automatic Failover</span><span class="tag">High Availability</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 3.4</div>
+            <div class="problem-title">Load Balancer Itself Is a SPOF</div>
+            <div class="problem-desc">Load balancer goes down → users can't reach any web server (even if all 3 are healthy).</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Redundant Load Balancers</div>
+            <div class="solution-detail">Deploy 2+ load balancers in active-passive or active-active config.</div>
+            <div class="solution-detail">DNS points to primary; if primary fails, DNS fails over to secondary.</div>
+            <div class="solution-detail">Or: use managed load balancer service (AWS ALB, GCP LB) — provider handles redundancy.</div>
+            <div class="tag-row"><span class="tag">High Availability</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 4 -->
+        <section class="section" id="stage-4">
+          <div class="section-title"><span class="section-num">04</span> Database Replication (Master-Slave)</div>
+          <div class="section-desc">While the web tier has redundancy, the database is still a single point of failure.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 4.1</div>
+            <div class="problem-title">Master Database Is a SPOF</div>
+            <div class="problem-desc">Master DB crashes → no reads, no writes → entire app becomes unusable (even if web servers are healthy).</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Master-Slave Database Replication</div>
+            <div class="solution-detail">Master DB (10.0.0.100): handles ALL writes, updates, deletes.</div>
+            <div class="solution-detail">Slave DB(s) (10.0.0.101, 10.0.0.102): receive copies of data from master in real-time.</div>
+            <div class="solution-detail">Web servers send reads to any slave, writes to master only.</div>
+            <div class="solution-detail">If master fails: promote one slave to become new master.</div>
+            <div class="solution-detail">Replication lag: typically &lt;100 ms; eventual consistency.</div>
+            <div class="tag-row"><span class="tag">High Availability</span><span class="tag">Read Scaling</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 4.2</div>
+            <div class="problem-title">Master Promotion Is Manual &amp; Error-Prone</div>
+            <div class="problem-desc">When master fails, ops engineer must manually SSH, run promotion scripts, update configs. Takes 15+ minutes. Data loss possible.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Automated Failover (Advanced)</div>
+            <div class="solution-detail">Tools: MGR (MySQL Group Replication), Patroni (PostgreSQL), etc.</div>
+            <div class="solution-detail">Automatically detect master failure, promote best slave, update all clients.</div>
+            <div class="solution-detail">Failover time: &lt;30 seconds; minimises data loss.</div>
+            <div class="tag-row"><span class="tag">Production-Grade</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 4.3</div>
+            <div class="problem-title">Slave Data Might Be Out of Sync with Master</div>
+            <div class="problem-desc">Replication lag: master gets an update, but slave takes 500 ms to apply it. Web server reads slave → gets stale data.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Accept Eventual Consistency (or use stronger guarantees)</div>
+            <div class="solution-detail">For most apps, eventual consistency is fine: &lt;100 ms lag is imperceptible.</div>
+            <div class="solution-detail">Critical reads (financial, current user profile): route to MASTER only.</div>
+            <div class="solution-detail">Less critical reads (user feed, analytics): read from SLAVE (stale is OK).</div>
+            <div class="tag-row"><span class="tag">Pragmatic Trade-off</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 5 -->
+        <section class="section" id="stage-5">
+          <div class="section-title"><span class="section-num">05</span> Cache Layer (Redis / Memcached)</div>
+          <div class="section-desc">Database is now highly available, but still bottlenecked by repeated read requests.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 5.1</div>
+            <div class="problem-title">Database Is Hit by Thousands of Repeated Read Queries</div>
+            <div class="problem-desc">3 web servers × 100 users = 300 identical DB queries/sec → DB CPU maxes out, latency spikes.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Cache Layer (Redis / Memcached at 10.0.0.50)</div>
+            <div class="solution-detail">Before hitting DB, web server checks cache: "Is this data in memory?"</div>
+            <div class="solution-detail">Cache hit (data found): return in &lt;1 ms.</div>
+            <div class="solution-detail">Cache miss (data not found): query DB, store result in cache with TTL, return.</div>
+            <div class="solution-detail">Typical hit rate: 90%+ → 90% of requests bypass the database entirely.</div>
+            <div class="solution-detail">Result: DB load drops 10×, latency drops 100×.</div>
+            <div class="tag-row"><span class="tag">10-100× Faster</span><span class="tag">DB Load Reduction</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 5.2</div>
+            <div class="problem-title">Cache Holds Stale Data</div>
+            <div class="problem-desc">User updates profile → written to DB. But cache still has old data for 30 minutes → next read gets stale profile.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ TTL (Time-To-Live) Policy</div>
+            <div class="solution-detail">Cache all data with expiration: <code>cache.set("user:123", {...}, ttl=60)</code></div>
+            <div class="solution-detail">After 60 s, cache entry expires automatically; next read hits DB for fresh data.</div>
+            <div class="solution-detail">Invalidation: proactively delete from cache on write: <code>cache.delete("user:123")</code></div>
+            <div class="tag-row"><span class="tag">Freshness Guarantee</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 5.3</div>
+            <div class="problem-title">Cache Is a SPOF</div>
+            <div class="problem-desc">Cache server goes down → all requests become cache misses → DB gets hammered → cascading failure ("thundering herd").</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Redundant Cache Servers (Cluster)</div>
+            <div class="solution-detail">Deploy cache as cluster (2–3 replicas) instead of single instance.</div>
+            <div class="solution-detail">If one node fails, cluster routes to others.</div>
+            <div class="solution-detail">Overprovision capacity: cache 10 GB data, allocate 15 GB (50% headroom).</div>
+            <div class="tag-row"><span class="tag">High Availability</span><span class="tag">Resilience</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 5.4</div>
+            <div class="problem-title">Cache Memory Is Full</div>
+            <div class="problem-desc">Cache can hold only ~16 GB data. After reaching 16 GB, where do new entries go?</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Cache Eviction Policy</div>
+            <div class="solution-detail">LRU (Least-Recently-Used): delete oldest-accessed entry to make room.</div>
+            <div class="solution-detail">LFU (Least-Frequently-Used): delete least-popular entry.</div>
+            <div class="solution-detail">FIFO (First-In-First-Out): delete oldest entry.</div>
+            <div class="solution-detail">Most common: LRU (hottest data stays, cold data gets evicted).</div>
+            <div class="tag-row"><span class="tag">Memory Management</span></div>
+          </div>
+
+          <div class="solution" style="border-left-color: var(--blue-text); background: var(--blue-bg);">
+            <div class="solution-title" style="color: var(--blue-text);">Considerations for Using Cache</div>
+            <div class="solution-detail"><strong>When to use cache.</strong> Consider using cache when data is read frequently but modified infrequently. Since cached data is stored in volatile memory, a cache server is not ideal for persisting data. If a cache server restarts, all data in memory is lost. Important data should always be saved in persistent data stores.</div>
+            <div class="solution-detail"><strong>Expiration policy.</strong> It is good practice to implement an expiration policy. Once cached data expires, it is removed from the cache. Without an expiration policy, cached data remains in memory permanently. The expiration date should not be too short (causes frequent database reloads) or too long (data can become stale).</div>
+            <div class="solution-detail"><strong>Consistency.</strong> Keeping the data store and the cache in sync is critical. Inconsistency can occur because data-modifying operations on the data store and cache are not in a single transaction. When scaling across multiple regions, maintaining consistency is especially challenging. For further details, refer to <em>"Scaling Memcache at Facebook"</em> published by Facebook.</div>
+            <div class="solution-detail"><strong>Mitigating failures.</strong> A single cache server represents a potential single point of failure (SPOF) — a part of a system that, if it fails, will stop the entire system from working. Multiple cache servers across different data centres are recommended to avoid SPOF. Another approach is to overprovision the required memory by a certain percentage, providing a buffer as memory usage increases.</div>
+            <div class="solution-detail"><strong>Eviction policy.</strong> Once the cache is full, any request to add items may cause existing items to be removed (cache eviction). Least-Recently-Used (LRU) is the most popular policy. Other policies such as Least Frequently Used (LFU) or First In First Out (FIFO) can be adopted to satisfy different use cases.</div>
+            <div class="tag-row"><span class="tag">Best Practices</span><span class="tag">Cache Design</span><span class="tag">Production Readiness</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 6 -->
+        <section class="section" id="stage-6">
+          <div class="section-title"><span class="section-num">06</span> Content Delivery Network (CDN)</div>
+          <div class="section-desc">Database and app are optimised, but static assets (JS, CSS, images) are still served from origin.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 6.1</div>
+            <div class="problem-title">Static Assets Downloaded from Origin Every Time</div>
+            <div class="problem-desc">User in London requests logo.png from US server → 120 ms latency × thousands of users = network congestion.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ CDN at the Edge</div>
+            <div class="solution-detail">CDN is a global network of servers physically located near users.</div>
+            <div class="solution-detail">Static assets cached on CDN edges near users.</div>
+            <div class="solution-detail">User in London → served from CDN UK edge (30 ms) instead of US origin (120 ms).</div>
+            <div class="tag-row"><span class="tag">4× Faster</span><span class="tag">Global Reach</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 6.2</div>
+            <div class="problem-title">CDN Serves Stale Assets</div>
+            <div class="problem-desc">Release new logo.jpg but CDN edges still serve old cached version for hours.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Cache Invalidation + Versioning</div>
+            <div class="solution-detail">Set TTL on CDN: cache static assets for 1 hour, then re-fetch from origin.</div>
+            <div class="solution-detail">Use versioning in URL: <code>logo.jpg?v=2</code> → new cache key, CDN fetches fresh.</div>
+            <div class="solution-detail">Purge CDN manually via API when deploying new assets.</div>
+            <div class="tag-row"><span class="tag">Asset Freshness</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 6.3</div>
+            <div class="problem-title">CDN Outage Breaks Static Assets</div>
+            <div class="problem-desc">CDN provider has a regional outage → users can't load CSS/JS → site is broken.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ CDN Fallback (Origin Fallback)</div>
+            <div class="solution-detail">HTML includes fallback: if CDN request fails, browser requests asset from origin.</div>
+            <div class="solution-detail">Ensures graceful degradation: worse latency, but site stays functional.</div>
+            <div class="tag-row"><span class="tag">Resilience</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 7 -->
+        <section class="section" id="stage-7">
+          <div class="section-title"><span class="section-num">07</span> Stateless Web Tier</div>
+          <div class="section-desc">Web tier is scaled horizontally, but session state makes servers interdependent.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 7.1</div>
+            <div class="problem-title">Session State Couples Servers to Users (Sticky Sessions)</div>
+            <div class="problem-desc">User A logs in on Server 1 → session stored in Server 1 memory. Load balancer MUST always route User A to Server 1, or auth fails.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Move Session State to Persistent Store</div>
+            <div class="solution-detail">Store session data in Redis/Memcached or database, NOT in server memory.</div>
+            <div class="solution-detail">Load balancer can route User A to ANY server; all servers fetch session from Redis.</div>
+            <div class="solution-detail">Servers become stateless: can be killed/restarted without losing user sessions.</div>
+            <div class="solution-detail">Auto-scaling now works: spin up 10 servers, kill 5, users don't notice.</div>
+            <div class="tag-row"><span class="tag">Stateless</span><span class="tag">Auto-Scaling</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 7.2</div>
+            <div class="problem-title">Cannot Add/Remove Servers Without Breaking Users</div>
+            <div class="problem-desc">When session is tied to Server 1, removing Server 1 logs out all its users.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Auto-Scaling Becomes Possible</div>
+            <div class="solution-detail">With sessions in Redis, can spin up/down servers freely without user impact.</div>
+            <div class="solution-detail">Monitor CPU/memory; if &gt;80%, add servers; if &lt;20%, remove servers.</div>
+            <div class="solution-detail">Tools: Kubernetes auto-scaler, AWS auto-scaling groups.</div>
+            <div class="tag-row"><span class="tag">Elasticity</span><span class="tag">Cost Efficiency</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 8 -->
+        <section class="section" id="stage-8">
+          <div class="section-title"><span class="section-num">08</span> Multi-Data Center Setup</div>
+          <div class="section-desc">Single data center is now a regional SPOF; global users have high latency.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 8.1</div>
+            <div class="problem-title">Single Data Center Failure = Total Outage</div>
+            <div class="problem-desc">Fire in US-East data center → all servers, DBs, cache offline → millions of users unreachable.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Deploy Redundant Data Centers (DC1 + DC2)</div>
+            <div class="solution-detail">Deploy identical infrastructure in US-East (DC1) and US-West (DC2).</div>
+            <div class="solution-detail">Each DC has: web servers, cache, master DB, workers, etc.</div>
+            <div class="solution-detail">If US-East fails, GeoDNS routes 100% traffic to DC2. RTO: &lt;30 s.</div>
+            <div class="tag-row"><span class="tag">Disaster Recovery</span><span class="tag">High Availability</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 8.2</div>
+            <div class="problem-title">High Latency for Users Far from Data Center</div>
+            <div class="problem-desc">User in Australia requests from US-only server → 200 ms latency (vs 30 ms from local edge).</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ GeoDNS Routing + Multiple DCs</div>
+            <div class="solution-detail">GeoDNS resolves domain based on user location: US-East → DC1, US-West → DC2.</div>
+            <div class="solution-detail">Route to nearest DC → lower latency, better user experience.</div>
+            <div class="tag-row"><span class="tag">Low Latency</span><span class="tag">Global Reach</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 8.3</div>
+            <div class="problem-title">Data Inconsistency Across DCs</div>
+            <div class="problem-desc">User updates profile in DC1 → replicated to DC2 asynchronously (100–500 ms lag) → user logs in from DC2, sees old profile.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Asynchronous Multi-DC Replication</div>
+            <div class="solution-detail">Master DB in each DC handles local writes; replicates to other DCs asynchronously.</div>
+            <div class="solution-detail">Eventual consistency: within seconds/minutes, all DCs converge to same state.</div>
+            <div class="solution-detail">For critical data (financial): stick to single DC for writes.</div>
+            <div class="tag-row"><span class="tag">Eventual Consistency</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 8.4</div>
+            <div class="problem-title">Complex Operational Burden</div>
+            <div class="problem-desc">Deploying to 2 DCs means 2× infrastructure, 2× monitoring, 2× backups, 2× troubleshooting.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Infrastructure as Code (IaC) + Automation</div>
+            <div class="solution-detail">Terraform/Bicep: define entire DC infrastructure once, deploy to both regions with one command.</div>
+            <div class="solution-detail">Centralised monitoring: one dashboard showing both DCs' health.</div>
+            <div class="tag-row"><span class="tag">Operational Simplicity</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 9 -->
+        <section class="section" id="stage-9">
+          <div class="section-title"><span class="section-num">09</span> Message Queue &amp; Async Workers</div>
+          <div class="section-desc">Web servers handling long-running tasks (photo processing, email) block user requests.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 9.1</div>
+            <div class="problem-title">Long-Running Tasks Block User Requests</div>
+            <div class="problem-desc">User uploads photo → web server processes it (crop, resize, blur = 10 s) → request blocked → user sees timeout.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Message Queue (RabbitMQ / Kafka at 10.0.0.60)</div>
+            <div class="solution-detail">Web server publishes task to queue: <code>queue.publish("photo_process", {photo_id: 123})</code></div>
+            <div class="solution-detail">Returns immediately: "Your photo is processing" (200 ms response).</div>
+            <div class="solution-detail">Worker picks up task from queue asynchronously and processes offline.</div>
+            <div class="tag-row"><span class="tag">Non-Blocking</span><span class="tag">Better UX</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 9.2</div>
+            <div class="problem-title">Cannot Scale Processing Tasks Independently</div>
+            <div class="problem-desc">10,000 photo uploads → should spin up 100 workers, each handling 100 photos. Not 10,000 servers.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Decouple Web Tier from Worker Tier</div>
+            <div class="solution-detail">Web servers only handle requests and publish to queue.</div>
+            <div class="solution-detail">Workers independently consume from queue and process photos.</div>
+            <div class="solution-detail">If queue backlog grows, spin up more workers. If queue empties, kill workers.</div>
+            <div class="solution-detail">Web and worker tiers scale independently.</div>
+            <div class="tag-row"><span class="tag">Independent Scaling</span><span class="tag">Cost Efficient</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 9.3</div>
+            <div class="problem-title">Worker Crashes Lose Tasks</div>
+            <div class="problem-desc">Worker picks up task, starts processing, then crashes → task lost, photo never processed.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Durable Message Queue + Acknowledgments</div>
+            <div class="solution-detail">Queue persists all messages to disk before worker processes them.</div>
+            <div class="solution-detail">If crash before ACK, queue re-delivers to another worker.</div>
+            <div class="solution-detail">Guarantees: "at least once" or "exactly once" (more complex, slower).</div>
+            <div class="tag-row"><span class="tag">Durability</span><span class="tag">Fault Tolerance</span></div>
+          </div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 9.4</div>
+            <div class="problem-title">Queue Server Is a SPOF</div>
+            <div class="problem-desc">Queue crashes → all task publishing fails → web servers can't offload → requests timeout.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Distributed Queue Cluster</div>
+            <div class="solution-detail">Deploy queue as 3-node cluster (RabbitMQ cluster, Kafka brokers).</div>
+            <div class="solution-detail">If one node fails, cluster rebalances; publishers/consumers reconnect to other nodes.</div>
+            <div class="tag-row"><span class="tag">High Availability</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 10 -->
+        <section class="section" id="stage-10">
+          <div class="section-title"><span class="section-num">10</span> Database Sharding (Horizontal Scaling)</div>
+          <div class="section-desc">Database has grown to massive scale; single master can't handle read/write volume.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 10.1</div>
+            <div class="problem-title">Single Master Database Hits Scalability Ceiling</div>
+            <div class="problem-desc">Millions of concurrent users, billions of rows → single master can't handle throughput. 5 s queries.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Vertical Scaling (Temporary, ~weeks)</div>
+            <div class="solution-detail">Add massive CPU/RAM to single server: 512 GB RAM, 96 vCPUs.</div>
+            <div class="solution-detail">Works for medium scale (~100 M records).</div>
+            <div class="solution-detail">BUT: costs exponential; hits hardware limits; still SPOF.</div>
+            <div class="tag-row"><span class="tag">Quick Fix</span></div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Horizontal Database Scaling = Sharding</div>
+            <div class="solution-detail">Partition data across multiple databases (Shard 0, 1, 2, 3).</div>
+            <div class="solution-detail">Sharding key: <code>user_id</code>. Hash function: <code>user_id % 4</code>.</div>
+            <div class="solution-detail">Each shard holds 1/4 of total data; queries 4× faster than monolith.</div>
+            <div class="solution-detail">Can add more shards as data grows; unlimited horizontal scale.</div>
+            <div class="tag-row"><span class="tag">Linear Scaling</span><span class="tag">Unlimited Growth</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 10.2</div>
+            <div class="problem-title">Sharding Introduces Complexity</div>
+            <div class="problem-desc">Cannot JOIN across shards; resharding when data grows; hotspot keys overload one shard.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Accept Complexity or Mitigate</div>
+            <div class="solution-detail">Avoid cross-shard JOINs: denormalise data (duplicate in each shard).</div>
+            <div class="solution-detail">Resharding: split Shard 0 into 0a, 0b; move half the data.</div>
+            <div class="solution-detail">Hotspot keys: split that shard further, allocate dedicated replicas.</div>
+            <div class="tag-row"><span class="tag">Planned Complexity</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 10.3</div>
+            <div class="problem-title">Choosing Wrong Sharding Key Is Fatal</div>
+            <div class="problem-desc">Shard by country → US shard has 100 B rows, EU shard has 1 B rows → uneven, one shard overloaded.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Choose Sharding Key Carefully</div>
+            <div class="solution-detail">Shard key must be: (1) immutable, (2) even distribution, (3) queries mostly within shard.</div>
+            <div class="solution-detail">Good: <code>user_id</code> (every user unique, query by user common).</div>
+            <div class="solution-detail">Bad: <code>timestamp</code> (new data all goes to latest shard, old shards empty).</div>
+            <div class="tag-row"><span class="tag">Design Decision</span></div>
+          </div>
+        </section>
+
+        <!-- STAGE 11 -->
+        <section class="section" id="stage-11">
+          <div class="section-title"><span class="section-num">11</span> Monitoring, Logging &amp; Cost Tracking</div>
+          <div class="section-desc">System is complex (2 DCs, multiple DBs, caches, queues, workers); hard to debug issues at scale.</div>
+
+          <div class="problem danger">
+            <div class="problem-label">Problem 11.1</div>
+            <div class="problem-title">Cannot Debug Production Issues</div>
+            <div class="problem-desc">3 web servers, 2 DBs, 1 cache, 1 queue, 3 workers across 2 DCs. User reports "photo not processing." Where is the bug?</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Centralised Logging (ELK, Splunk, CloudWatch)</div>
+            <div class="solution-detail">Every component logs to central location.</div>
+            <div class="solution-detail">Search all logs by user_id: see every request, DB query, worker task.</div>
+            <div class="solution-detail">Alerts: if error rate &gt; 5%, page on-call engineer.</div>
+            <div class="tag-row"><span class="tag">Observability</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 11.2</div>
+            <div class="problem-title">No Visibility into System Health</div>
+            <div class="problem-desc">Is the system healthy? Are users happy? Is the DB slow? No idea until customers complain.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Metrics &amp; Dashboards (Prometheus, Grafana, Datadog)</div>
+            <div class="solution-detail">Collect metrics: CPU, memory, disk, request latency, error rate, queue size, DB query time.</div>
+            <div class="solution-detail">Dashboard shows: latency, queue backlog, cache hit rate — spot problems before users notice.</div>
+            <div class="tag-row"><span class="tag">Proactive Monitoring</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 11.3</div>
+            <div class="problem-title">Cloud Costs Are Spiralling</div>
+            <div class="problem-desc">2 DCs × 10 servers + DB + cache + queue + worker tier = $50K/month. Is this efficient?</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ Cost Tracking &amp; Automation</div>
+            <div class="solution-detail">Tag every resource by service: "photo_service", "payment_service", "worker_tier".</div>
+            <div class="solution-detail">Track: cost per service, cost per user, cost per transaction.</div>
+            <div class="solution-detail">Alerts: if service cost &gt; budget, shut down unused resources.</div>
+            <div class="solution-detail">Tools: LangSmith for AI workload tracking; Kubecost for Kubernetes; CloudHealth for AWS.</div>
+            <div class="tag-row"><span class="tag">Financial Control</span></div>
+          </div>
+
+          <div class="problem warning">
+            <div class="problem-label">Problem 11.4</div>
+            <div class="problem-title">Deployments Are Manual and Error-Prone</div>
+            <div class="problem-desc">Deploy new code: SSH to 6 servers, restart services, hope nothing breaks. Takes 30 minutes.</div>
+          </div>
+          <div class="solution">
+            <div class="solution-title">✓ CI/CD Automation</div>
+            <div class="solution-detail">Continuous Integration: every commit runs tests automatically.</div>
+            <div class="solution-detail">Continuous Deployment: tests pass → deploy to staging → approve → auto-deploy to production.</div>
+            <div class="solution-detail">Result: deploy in 2 minutes with 0 human steps; rollback if needed.</div>
+            <div class="tag-row"><span class="tag">Velocity</span><span class="tag">Reliability</span></div>
+          </div>
+        </section>
+
+      </div><!-- .content -->
+    </div><!-- .layout -->
+
+    <footer class="page-footer">
+      LearnAIbyAmir · System Design: Problems &amp; Solutions Matrix
+    </footer>
+
+  </div><!-- .page -->
+</body>
+</html>
