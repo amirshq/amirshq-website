@@ -701,6 +701,46 @@ new postgres container  → same database ✓</pre>
             Dockerfile Best Practices
           </div>
 
+          <h3>Most Important Instructions</h3>
+          <table>
+            <tr>
+              <th>Instruction</th>
+              <th>Purpose</th>
+            </tr>
+            <tr>
+              <td><code>FROM</code></td>
+              <td>Base image</td>
+            </tr>
+            <tr>
+              <td><code>WORKDIR</code></td>
+              <td>Set working directory</td>
+            </tr>
+            <tr>
+              <td><code>COPY</code></td>
+              <td>Copy files</td>
+            </tr>
+            <tr>
+              <td><code>RUN</code></td>
+              <td>Execute commands</td>
+            </tr>
+            <tr>
+              <td><code>CMD</code></td>
+              <td>Default run command</td>
+            </tr>
+            <tr>
+              <td><code>ENTRYPOINT</code></td>
+              <td>Fixed execution</td>
+            </tr>
+            <tr>
+              <td><code>ENV</code></td>
+              <td>Environment variables</td>
+            </tr>
+            <tr>
+              <td><code>EXPOSE</code></td>
+              <td>Document ports</td>
+            </tr>
+          </table>
+
           <h3>Pattern: Python FastAPI app</h3>
           <div class="code-block">
             <span class="code-label">Dockerfile (optimized for caching)</span>
