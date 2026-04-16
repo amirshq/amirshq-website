@@ -896,64 +896,39 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
             <pre><code class="language-yaml">version: "3.9"
 
 services:
-  api:
-    build: .
-    container_name: rag_api
+  backend:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.backend
+    container_name: partpricingtool-backend-test
     ports:
-      - "8000:8000"
+      - "8001:8001"
+    env_file:
+      - .env
     environment:
-      POSTGRES_URL: postgresql://postgres:password@postgres:5432/rag_db
-      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SQL_TEST_USERNAME: ${SQL_TEST_USERNAME}
+      SQL_TEST_PASSWORD: ${SQL_TEST_PASSWORD}
+      SQL_TEST_HOST: ${SQL_TEST_HOST}
+      SQL_TEST_DATABASE: ${SQL_TEST_DATABASE}
+    volumes:
+      - ../:/app          # Allows live reload of backend code
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8001 --reload
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.frontend
+      args:
+        REACT_APP_API_URL: "http://192.168.1.23:8001"
+    container_name: partpricingtool-frontend-test
+    ports:
+      - "3001:80"               # Nginx serves React on port 80 -> exposed to 3001
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./:/app  # Hot reload for development
-    networks:
-      - rag_network
-
-  postgres:
-    image: pgvector/pgvector:pg15
-    container_name: rag_postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rag_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - rag_network
-
-  redis:
-    image: redis:7-alpine
-    container_name: rag_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - rag_network
-
-volumes:
-  postgres_data:
-  redis_data:
+      - backend
 
 networks:
-  rag_network:
+  default:
     driver: bridge</code></pre>
           </div>
 
