@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@staticmethod vs @abstractmethod — Python Decorators Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: rgba(31,35,40,0.12);
+    --accent: #6e40c9;
+    --accent2: #0d9488;
+    --accent3: #c5341b;
+    --text: #1f2328;
+    --muted: #636c76;
+    --code-bg: #eaeef2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .back-pill {
+    position: fixed; z-index: 9999; top: 12px; left: 12px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(246,248,250,0.96); border: 1px solid rgba(31,35,40,0.22);
+    color: #1f2328; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    backdrop-filter: blur(14px); text-decoration: none;
+  }
+  .back-pill span { font-size: 14px; }
+
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(246,248,250,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .logo em { color: var(--accent2); font-style: normal; }
+
+  .container { display: flex; height: calc(100vh - 60px); }
+
+  aside {
+    width: 260px; min-width: 260px; background: var(--surface);
+    border-right: 1px solid var(--border); overflow-y: auto; padding: 1.5rem 0;
+  }
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); padding: 0.8rem 1.5rem 0.4rem;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.15s;
+    border-left: 3px solid transparent; font-size: 0.85rem; color: var(--muted);
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); background: var(--surface2); color: var(--text); }
+  .nav-item.done .nav-dot { background: var(--accent2); }
+  .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .nav-item.active .nav-dot { background: var(--accent); }
+  .chapter-badge {
+    margin-left: auto; font-size: 0.6rem; font-family: 'DM Mono', monospace;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 3px; color: var(--muted);
+  }
+
+  main {
+    flex: 1; overflow-y: auto; padding: 3rem 4rem; max-width: 860px;
+  }
+
+  .lesson { display: none; animation: fadeIn 0.3s ease; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+  .lesson-tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 0.75rem;
+  }
+  .tag-py { color: var(--accent); }
+  .tag-pattern { color: var(--accent2); }
+  .tag-ref { color: var(--accent3); }
+
+  h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .lesson-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+  h2 { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text); }
+  h3 { font-size: 1rem; font-weight: 700; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+  p { color: #1f2328; line-height: 1.75; margin-bottom: 1rem; font-size: 0.95rem; }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 1.25rem 0; overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .copy-btn {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--muted); background: none; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  pre {
+    padding: 1.25rem; overflow-x: auto; font-family: 'DM Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7; color: #1f2328;
+  }
+
+  .kw { color: #c5341b; } .fn { color: #1a7f4e; } .st { color: #a56514; }
+  .cm { color: #636c76; font-style: italic; } .cl { color: #1d6aaa; }
+  .num { color: #6e40c9; } .op { color: #c5341b; }
+
+  .callout { border-left: 3px solid; padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0; font-size: 0.9rem; }
+  .callout-info { border-color: var(--accent); background: rgba(110,64,201,0.06); }
+  .callout-tip { border-color: var(--accent2); background: rgba(13,148,136,0.06); }
+  .callout-warn { border-color: var(--accent3); background: rgba(197,52,27,0.06); }
+  .callout strong { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .callout-info strong { color: var(--accent); }
+  .callout-tip strong { color: var(--accent2); }
+  .callout-warn strong { color: var(--accent3); }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: border-color 0.2s; }
+  .concept-card:hover { border-color: var(--accent); }
+  .concept-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent2); }
+  .concept-card p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.6rem 1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--accent2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { padding: 0.6rem 1rem; border: 1px solid var(--border); color: #1f2328; }
+  tr:hover td { background: var(--surface2); }
+
+  .nav-btns { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .btn { font-family: 'DM Mono', monospace; font-size: 0.8rem; padding: 0.6rem 1.5rem; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; font-weight: 700; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #9070ff; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'DM Mono', monospace; font-size: 0.75rem; line-height: 2; color: #636c76; overflow-x: auto; }
+  .diagram .node { color: var(--accent2); font-weight: 700; }
+  .diagram .arrow { color: var(--accent); }
+  .diagram .label { color: var(--muted); }
+
+  code { font-family: 'DM Mono', monospace; font-size: 0.8em; background: rgba(175,184,193,0.2); padding: 1px 5px; border-radius: 3px; color: #0550ae; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    aside { display: none; }
+    main { padding: 2rem 1.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<a class="back-pill" href="../index.html">
+  <span>←</span> Back to topics
+</a>
+
+<header>
+  <div class="logo"><span>@static</span>method vs <em>@abstract</em>method</div>
+</header>
+
+<div class="container">
+<aside>
+  <div class="section-label">Fundamentals</div>
+  <div class="nav-item active" onclick="goto(0)"><div class="nav-dot"></div>Overview <span class="chapter-badge">01</span></div>
+  <div class="nav-item" onclick="goto(1)"><div class="nav-dot"></div>@abstractmethod <span class="chapter-badge">02</span></div>
+  <div class="nav-item" onclick="goto(2)"><div class="nav-dot"></div>@staticmethod <span class="chapter-badge">03</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Comparisons</div>
+  <div class="nav-item" onclick="goto(3)"><div class="nav-dot"></div>Side-by-Side Code <span class="chapter-badge">04</span></div>
+  <div class="nav-item" onclick="goto(4)"><div class="nav-dot"></div>Import Sources <span class="chapter-badge">05</span></div>
+  <div class="nav-item" onclick="goto(5)"><div class="nav-dot"></div>All Built-in Decorators <span class="chapter-badge">06</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Applied</div>
+  <div class="nav-item" onclick="goto(6)"><div class="nav-dot"></div>Real-World BaseAgent <span class="chapter-badge">07</span></div>
+  <div class="nav-item" onclick="goto(7)"><div class="nav-dot"></div>Summary & Cheat Sheet <span class="chapter-badge">08</span></div>
+</aside>
+
+<main id="mainContent">
+
+<!-- LESSON 0: OVERVIEW -->
+<div class="lesson active" id="lesson-0">
+  <div class="lesson-tag tag-py">Chapter 01 — Overview</div>
+  <h1>@staticmethod vs @abstractmethod</h1>
+  <p class="lesson-subtitle">Two decorators that look similar but serve completely different purposes in Python.</p>
+
+  <h2>What You'll Learn</h2>
+  <p>Python has several method decorators that change how methods behave inside classes. Two of the most important — and most confused — are <code>@abstractmethod</code> and <code>@staticmethod</code>.</p>
+
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>@abstractmethod</h4>
+      <p>Enforce that subclasses implement required methods. Comes from the <code>abc</code> module. Design pattern enforcement.</p>
+    </div>
+    <div class="concept-card">
+      <h4>@staticmethod</h4>
+      <p>A utility function inside a class that doesn't need <code>self</code>. Built-in Python — no import needed.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Key Distinction</strong>
+    <code>@abstractmethod</code> says: "You MUST implement this in your subclass." <code>@staticmethod</code> says: "This function doesn't need an instance to run."
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-primary" onclick="goto(1)">Next: @abstractmethod →</button>
+  </div>
+</div>
+
+<!-- LESSON 1: ABSTRACTMETHOD -->
+<div class="lesson" id="lesson-1">
+  <div class="lesson-tag tag-py">Chapter 02 — Fundamentals</div>
+  <h1>@abstractmethod — Enforce Subclass Implementation</h1>
+  <p class="lesson-subtitle">Force every subclass to implement specific methods. The foundation of plugin and agent architectures.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+
+<span class="kw">class</span> <span class="cl">Agent</span>(<span class="cl">ABC</span>):  <span class="cm"># MUST inherit from ABC</span>
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="st">"""Subclass MUST implement this."""</span>
+        <span class="kw">pass</span>
+
+<span class="cm"># ❌ Can't instantiate abstract class</span>
+agent = <span class="cl">Agent</span>()
+<span class="cm"># TypeError: Can't instantiate abstract class Agent with abstract method run</span>
+
+<span class="cm"># ✅ Subclass MUST implement it</span>
+<span class="kw">class</span> <span class="cl">ResearchAgent</span>(<span class="cl">Agent</span>):
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="kw">return</span> <span class="st">"research results"</span>
+
+agent = <span class="cl">ResearchAgent</span>()  <span class="cm"># Works!</span></pre>
+  </div>
+
+  <p><strong>Purpose:</strong> Enforce that subclasses implement required methods. This is design pattern enforcement — the base class defines <em>what</em> must exist, subclasses define <em>how</em> it works.</p>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ Requires ABC</strong>
+    The class <em>must</em> inherit from <code>ABC</code> (Abstract Base Class). Without it, <code>@abstractmethod</code> won't enforce anything — Python will happily let you instantiate the class with an empty method.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(2)">Next: @staticmethod →</button>
+  </div>
+</div>
+
+<!-- LESSON 2: STATICMETHOD -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-tag tag-py">Chapter 03 — Fundamentals</div>
+  <h1>@staticmethod — Method Without <code>self</code></h1>
+  <p class="lesson-subtitle">A utility function that lives inside a class for organization — no instance state needed.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">Utils</span>:  <span class="cm"># NO ABC needed</span>
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">validate_email</span>(email: str) -> bool:
+        <span class="st">"""No self parameter! Just a function in a class."""</span>
+        <span class="kw">return</span> <span class="st">"@"</span> <span class="kw">in</span> email <span class="kw">and</span> <span class="st">"."</span> <span class="kw">in</span> email
+
+<span class="cm"># ✅ Call on class itself (no instance needed)</span>
+is_valid = <span class="cl">Utils</span>.validate_email(<span class="st">"amir@example.com"</span>)  <span class="cm"># True</span>
+
+<span class="cm"># ✅ Also works on instance (but doesn't use it)</span>
+utils = <span class="cl">Utils</span>()
+is_valid = utils.validate_email(<span class="st">"amir@example.com"</span>)  <span class="cm"># Also works</span></pre>
+  </div>
+
+  <p><strong>Purpose:</strong> Organize utility functions inside a class without needing an instance. No <code>self</code>, no instance state — just a function grouped with related logic.</p>
+
+  <div class="callout callout-tip">
+    <strong>💡 When to use</strong>
+    Use <code>@staticmethod</code> when the method doesn't access <code>self</code> (instance) or <code>cls</code> (class). It's purely organizational — the function <em>could</em> live outside the class, but grouping it inside makes your code more readable.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(3)">Next: Side-by-Side Code →</button>
+  </div>
+</div>
+
+<!-- LESSON 3: SIDE-BY-SIDE -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-tag tag-pattern">Chapter 04 — Comparison</div>
+  <h1>Side-by-Side Comparison with Code</h1>
+  <p class="lesson-subtitle">See exactly how each decorator works in a real architecture.</p>
+
+  <h2>@abstractmethod: Enforce Architecture</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+
+<span class="kw">class</span> <span class="cl">DataBackend</span>(<span class="cl">ABC</span>):
+    <span class="st">"""All storage backends MUST implement these."""</span>
+
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">save</span>(self, key: str, value: str):
+        <span class="st">"""Subclass MUST implement."""</span>
+        <span class="kw">pass</span>
+
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">load</span>(self, key: str) -> str:
+        <span class="st">"""Subclass MUST implement."""</span>
+        <span class="kw">pass</span>
+
+<span class="cm"># ✅ Complete implementation</span>
+<span class="kw">class</span> <span class="cl">RedisBackend</span>(<span class="cl">DataBackend</span>):
+    <span class="kw">def</span> <span class="fn">save</span>(self, key: str, value: str):
+        redis.set(key, value)  <span class="cm"># Uses self (instance)</span>
+
+    <span class="kw">def</span> <span class="fn">load</span>(self, key: str) -> str:
+        <span class="kw">return</span> redis.get(key)  <span class="cm"># Uses self (instance)</span>
+
+backend = <span class="cl">RedisBackend</span>()  <span class="cm"># Works!</span>
+
+<span class="cm"># ❌ Incomplete implementation</span>
+<span class="kw">class</span> <span class="cl">MemoryBackend</span>(<span class="cl">DataBackend</span>):
+    <span class="kw">def</span> <span class="fn">save</span>(self, key: str, value: str):
+        self.data[key] = value
+    <span class="cm"># Forgot load()!</span>
+
+backend = <span class="cl">MemoryBackend</span>()
+<span class="cm"># TypeError: Can't instantiate MemoryBackend with abstract method load</span></pre>
+  </div>
+
+  <p><strong>Key point:</strong> <code>save()</code> and <code>load()</code> need <code>self</code> because they interact with instance state (redis connection, <code>self.data</code>, etc).</p>
+
+  <h2>@staticmethod: Utility Functions</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">InputValidator</span>:
+    <span class="st">"""Helper functions, no state needed."""</span>
+
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">validate_query</span>(query: str) -> bool:
+        <span class="st">"""Pure utility. No self needed."""</span>
+        <span class="kw">return</span> <span class="fn">len</span>(query) > <span class="num">0</span> <span class="kw">and</span> <span class="fn">len</span>(query) < <span class="num">2000</span>
+
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">sanitize_log_data</span>(data: dict) -> dict:
+        <span class="st">"""No instance state. Just helper logic."""</span>
+        <span class="kw">return</span> {k: <span class="st">"***"</span> <span class="kw">if</span> k <span class="kw">in</span> [<span class="st">"password"</span>, <span class="st">"token"</span>] <span class="kw">else</span> v
+                <span class="kw">for</span> k, v <span class="kw">in</span> data.items()}
+
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">extract_text_content</span>(content) -> str:
+        <span class="st">"""No instance needed. Pure transformation."""</span>
+        <span class="kw">if</span> <span class="fn">isinstance</span>(content, str):
+            <span class="kw">return</span> content
+        <span class="kw">if</span> <span class="fn">isinstance</span>(content, list):
+            <span class="kw">return</span> <span class="st">" "</span>.join(<span class="fn">str</span>(item) <span class="kw">for</span> item <span class="kw">in</span> content)
+        <span class="kw">return</span> <span class="fn">str</span>(content)
+
+<span class="cm"># Use directly on class (no instance needed)</span>
+is_valid = <span class="cl">InputValidator</span>.validate_query(<span class="st">"test query"</span>)  <span class="cm"># True</span>
+clean_data = <span class="cl">InputValidator</span>.sanitize_log_data({<span class="st">"password"</span>: <span class="st">"secret"</span>})
+<span class="cm"># {'password': '***'}</span></pre>
+  </div>
+
+  <p><strong>Key point:</strong> These methods don't need instance state. They're just utility functions grouped in a class for organization.</p>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(2)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(4)">Next: Import Sources →</button>
+  </div>
+</div>
+
+<!-- LESSON 4: IMPORT SOURCES -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-tag tag-ref">Chapter 05 — Reference</div>
+  <h1>Import Sources — Where Do They Come From?</h1>
+  <p class="lesson-subtitle">Only <code>abstractmethod</code> is in <code>abc</code>. The rest are built-in.</p>
+
+  <div class="callout callout-warn">
+    <strong>⚠️ Common Mistake</strong>
+    "Do all of them come from <code>abc</code>?" — <strong>NO!</strong> Only <code>abstractmethod</code> is in <code>abc</code>. <code>@staticmethod</code> is a Python <em>built-in</em> — no import needed.
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># ✅ abstractmethod comes from abc module</span>
+<span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+
+<span class="cm"># ✅ staticmethod is BUILT-IN (no import needed)</span>
+<span class="kw">class</span> <span class="cl">MyClass</span>:
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">helper</span>():
+        <span class="kw">pass</span>
+
+<span class="cm"># ❌ This is WRONG</span>
+<span class="kw">from</span> abc <span class="kw">import</span> staticmethod  <span class="cm"># ERROR! staticmethod not in abc module</span></pre>
+  </div>
+
+  <h2>Complete Import Map</h2>
+  <table>
+    <tr><th>Decorator</th><th>Module</th><th>Import</th></tr>
+    <tr><td><code>@abstractmethod</code></td><td><code>abc</code></td><td><code>from abc import abstractmethod</code></td></tr>
+    <tr><td><code>@staticmethod</code></td><td>Built-in</td><td>No import needed</td></tr>
+    <tr><td><code>@classmethod</code></td><td>Built-in</td><td>No import needed</td></tr>
+    <tr><td><code>@property</code></td><td>Built-in</td><td>No import needed</td></tr>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(3)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(5)">Next: All Built-in Decorators →</button>
+  </div>
+</div>
+
+<!-- LESSON 5: ALL BUILT-IN DECORATORS -->
+<div class="lesson" id="lesson-5">
+  <div class="lesson-tag tag-py">Chapter 06 — Reference</div>
+  <h1>All Built-in Python Decorators</h1>
+  <p class="lesson-subtitle">The four decorators every Python developer should know cold.</p>
+
+  <h2>1. @staticmethod — No self, no cls</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">Math</span>:
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">add</span>(a, b):
+        <span class="kw">return</span> a + b
+
+<span class="cl">Math</span>.add(<span class="num">1</span>, <span class="num">2</span>)  <span class="cm"># 3 (no instance needed)</span></pre>
+  </div>
+
+  <h2>2. @classmethod — Has cls, not self</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">Config</span>:
+    default_value = <span class="st">"test"</span>
+
+    <span class="op">@</span><span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">get_default</span>(cls):
+        <span class="kw">return</span> cls.default_value  <span class="cm"># cls is the class itself</span>
+
+<span class="cl">Config</span>.get_default()  <span class="cm"># "test"</span></pre>
+  </div>
+
+  <h2>3. @property — Access attribute like a method</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">User</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
+        self._name = name
+
+    <span class="op">@</span><span class="fn">property</span>
+    <span class="kw">def</span> <span class="fn">name</span>(self):
+        <span class="kw">return</span> self._name
+
+user = <span class="cl">User</span>(<span class="st">"Amir"</span>)
+user.name  <span class="cm"># "Amir" (looks like attribute, but computed)</span></pre>
+  </div>
+
+  <h2>4. @abstractmethod (from abc module)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+
+<span class="kw">class</span> <span class="cl">BaseClass</span>(<span class="cl">ABC</span>):
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">method</span>(self):
+        <span class="kw">pass</span></pre>
+  </div>
+
+  <h2>Quick Comparison</h2>
+  <table>
+    <tr><th>Decorator</th><th>First param</th><th>Needs import?</th><th>Purpose</th></tr>
+    <tr><td><code>@staticmethod</code></td><td>None</td><td>No</td><td>Utility function in a class</td></tr>
+    <tr><td><code>@classmethod</code></td><td><code>cls</code></td><td>No</td><td>Access class-level attributes</td></tr>
+    <tr><td><code>@property</code></td><td><code>self</code></td><td>No</td><td>Computed attribute access</td></tr>
+    <tr><td><code>@abstractmethod</code></td><td><code>self</code></td><td>Yes (<code>abc</code>)</td><td>Force subclass implementation</td></tr>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(4)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(6)">Next: Real-World BaseAgent →</button>
+  </div>
+</div>
+
+<!-- LESSON 6: REAL-WORLD BASEAGENT -->
+<div class="lesson" id="lesson-6">
+  <div class="lesson-tag tag-pattern">Chapter 07 — Applied</div>
+  <h1>Real-World Example: BaseAgent</h1>
+  <p class="lesson-subtitle">See both decorators working together in a production agent architecture.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+<span class="kw">import</span> logging
+<span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="cl">BaseAgent</span>(<span class="cl">ABC</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, name: str):
+        self.name = name
+        self._log = logging.getLogger(<span class="fn">f</span><span class="st">"{__name__}.{name}"</span>)
+        self._start_time = time.monotonic()
+
+    <span class="cm"># ✅ abstractmethod — Forces all agents to implement</span>
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+        <span class="st">"""Must be implemented by subclasses."""</span>
+        <span class="kw">pass</span>
+
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="st">"""Must be implemented by subclasses."""</span>
+        <span class="kw">pass</span>
+
+    <span class="cm"># ✅ Static method — Utility function, no instance needed</span>
+    <span class="op">@</span><span class="fn">staticmethod</span>
+    <span class="kw">def</span> <span class="fn">extract_text_content</span>(content: Any) -> str:
+        <span class="st">"""Pure utility. Doesn't need self."""</span>
+        <span class="kw">if</span> <span class="fn">isinstance</span>(content, str):
+            <span class="kw">return</span> content
+        <span class="kw">if</span> <span class="fn">isinstance</span>(content, list):
+            <span class="kw">return</span> <span class="st">" "</span>.join(<span class="fn">str</span>(item) <span class="kw">for</span> item <span class="kw">in</span> content)
+        <span class="kw">return</span> <span class="fn">str</span>(content)
+
+    <span class="cm"># Regular instance method — Uses self</span>
+    <span class="kw">def</span> <span class="fn">elapsed_seconds</span>(self) -> float:
+        <span class="st">"""Uses self._start_time from instance."""</span>
+        <span class="kw">return</span> time.monotonic() - self._start_time</pre>
+  </div>
+
+  <h2>Usage Patterns</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># ✅ Call static method on class (no instance)</span>
+text = <span class="cl">BaseAgent</span>.extract_text_content([<span class="st">"hello"</span>, <span class="st">"world"</span>])
+
+<span class="cm"># ✅ Call static method on instance (still no self)</span>
+agent = <span class="cl">ResearchAgent</span>(name=<span class="st">"researcher"</span>)
+text = agent.extract_text_content([<span class="st">"hello"</span>])
+
+<span class="cm"># ✅ Call instance method (needs instance)</span>
+elapsed = agent.elapsed_seconds()  <span class="cm"># Uses agent._start_time</span>
+
+<span class="cm"># ❌ Can't instantiate abstract class</span>
+agent = <span class="cl">BaseAgent</span>()  <span class="cm"># ERROR (has abstract methods)</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>🔑 Three method types in one class</strong>
+    <code>build_graph()</code> and <code>run()</code> are abstract — every agent must implement them differently. <code>extract_text_content()</code> is static — shared utility, same for all agents. <code>elapsed_seconds()</code> is a regular method — needs <code>self</code> to access instance state.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(5)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(7)">Next: Summary →</button>
+  </div>
+</div>
+
+<!-- LESSON 7: SUMMARY -->
+<div class="lesson" id="lesson-7">
+  <div class="lesson-tag tag-ref">Chapter 08 — Cheat Sheet</div>
+  <h1>Summary &amp; Cheat Sheet</h1>
+  <p class="lesson-subtitle">Everything on one page — the definitive reference.</p>
+
+  <h2>Full Comparison Table</h2>
+  <table>
+    <tr><th>Feature</th><th>@abstractmethod</th><th>@staticmethod</th></tr>
+    <tr><td>Import source</td><td><code>from abc import abstractmethod</code></td><td>Built-in (no import)</td></tr>
+    <tr><td>Requires ABC parent</td><td>YES</td><td>NO</td></tr>
+    <tr><td>Has <code>self</code> parameter</td><td>YES (enforced)</td><td>NO (explicitly not)</td></tr>
+    <tr><td>Can instantiate class</td><td>NO (if abstract methods exist)</td><td>YES (always)</td></tr>
+    <tr><td>Purpose</td><td>Enforce subclass implementation</td><td>Organize utility functions</td></tr>
+    <tr><td>When to use</td><td>Design patterns, architecture</td><td>Helpers, validators, parsers</td></tr>
+    <tr><td>Example</td><td><code>run()</code> in agents</td><td><code>validate_email()</code> in validators</td></tr>
+  </table>
+
+  <h2>The Two-Line Summary</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>@abstractmethod (from abc)</h4>
+      <p>"This method <strong>MUST</strong> be implemented by subclasses"</p>
+    </div>
+    <div class="concept-card">
+      <h4>@staticmethod (built-in)</h4>
+      <p>"This is a utility function, <strong>no instance needed</strong>"</p>
+    </div>
+  </div>
+
+  <h2>Decision Flowchart</h2>
+  <div class="diagram">
+<span class="label">Does the method need access to </span><span class="node">self</span><span class="label"> (instance)?</span>
+  <span class="arrow">├── YES →</span> <span class="label">Regular instance method</span>
+  <span class="arrow">└── NO  →</span> <span class="label">Does it need access to </span><span class="node">cls</span><span class="label"> (class)?</span>
+              <span class="arrow">├── YES →</span> <span class="node">@classmethod</span>
+              <span class="arrow">└── NO  →</span> <span class="label">Is it a contract for subclasses?</span>
+                          <span class="arrow">├── YES →</span> <span class="node">@abstractmethod</span> <span class="label">(from abc)</span>
+                          <span class="arrow">└── NO  →</span> <span class="node">@staticmethod</span> <span class="label">(built-in)</span>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>🎓 You've Completed the Guide!</strong>
+    You now understand the difference between <code>@abstractmethod</code> (enforces architecture) and <code>@staticmethod</code> (organizes utilities), where each comes from, and how they work together in real-world agent patterns.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(6)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(0)" style="background:var(--accent2);color:#000;">↩ Start Over</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const lessons = document.querySelectorAll('.lesson');
+const navItems = document.querySelectorAll('.nav-item');
+let completed = new Set();
+let current = 0;
+const TOTAL = 8;
+
+function goto(idx) {
+  lessons[current].classList.remove('active');
+  navItems[current].classList.remove('active');
+  completed.add(current);
+  navItems[current].classList.add('done');
+  navItems[current].querySelector('.nav-dot').style.background = 'var(--accent2)';
+
+  current = idx;
+  lessons[current].classList.add('active');
+  navItems[current].classList.add('active');
+  navItems[current].classList.remove('done');
+  navItems[current].querySelector('.nav-dot').style.background = '';
+
+  document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--accent2)';
+    setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+  });
+}
+</script>
+</body>
+</html>

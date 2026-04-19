@@ -342,6 +342,7 @@
   <div class="nav-item" onclick="goto(11)"><div class="nav-dot"></div>The | Pipe Chain <span class="chapter-badge">12</span></div>
   <div class="nav-item" onclick="goto(12)"><div class="nav-dot"></div>State in LangGraph <span class="chapter-badge">13</span></div>
   <div class="nav-item" onclick="goto(13)"><div class="nav-dot"></div>Annotated &amp; Reducers <span class="chapter-badge">14</span></div>
+  <div class="nav-item" onclick="goto(14)"><div class="nav-dot"></div>Abstract Methods <span class="chapter-badge">15</span></div>
 </aside>
 
 <main id="mainContent">
@@ -1565,6 +1566,228 @@ result2 = add_messages(existing, update)
 
   <div class="nav-btns">
     <button class="btn btn-secondary" onclick="goto(12)">← Back</button>
+    <button class="btn btn-primary" onclick="goto(14)">Next: Abstract Methods →</button>
+  </div>
+</div>
+
+<!-- LESSON 14: ABSTRACT METHODS -->
+<div class="lesson" id="lesson-14">
+  <div class="lesson-tag tag-core">Chapter 15 — Deep Dive</div>
+  <h1>Abstract Methods in BaseAgent</h1>
+  <p class="lesson-subtitle">Why <code>build_graph()</code> and <code>run()</code> have empty bodies — and why that's exactly correct.</p>
+
+  <h2>The End-to-End Architecture</h2>
+  <div class="diagram">
+<span class="node">User</span>
+  <span class="arrow">↓</span>
+<span class="node">DNS / Geo-routing</span>  <span class="label">← Route53 / Cloudflare</span>
+  <span class="arrow">↓</span>
+<span class="node">CDN</span>  <span class="label">← optional cache</span>
+  <span class="arrow">↓</span>
+<span class="node">Load Balancer</span>
+  <span class="arrow">↓</span>
+<span class="node">Stateless Servers</span>  <span class="label">← API layer</span>
+  <span class="arrow">↓</span>
+<span class="node">Cache (Redis)</span>
+  <span class="arrow">↓</span>
+<span class="node">Databases / Storage</span>  <span class="label">← SQL, NoSQL, S3</span>
+  </div>
+
+  <h2>Abstract Methods Have Empty Bodies on Purpose</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="op">@</span>abc.abstractmethod
+<span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+    <span class="st">"""
+    Construct the compiled LangGraph StateGraph...
+    """</span>
+    <span class="cm"># ← NOTHING HERE. Just pass or docstring.</span>
+
+<span class="op">@</span>abc.abstractmethod
+<span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+    <span class="st">"""
+    Execute the agent graph...
+    """</span>
+    <span class="cm"># ← NOTHING HERE. Just pass or docstring.</span></pre>
+  </div>
+
+  <p>This is <strong>intentional</strong>. These methods are <strong>contracts</strong>, not implementations.</p>
+
+  <div class="callout callout-info">
+    <strong>🔑 What These Methods Are</strong>
+    They're CONTRACTS, not IMPLEMENTATIONS. BaseAgent is saying: <em>"I don't know HOW you should run(). I don't know HOW you should build_graph(). But I REQUIRE you to implement them."</em> The empty body means: <em>"This is NOT the real implementation. YOU provide the implementation."</em>
+  </div>
+
+  <h2>Real Implementations Are in Subclasses</h2>
+  <p>The empty body in BaseAgent is intentionally useless. The real code lives in concrete agent classes:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python · agents/researcher.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">ResearchAgent</span>(<span class="cl">BaseAgent</span>):
+    <span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+        <span class="cm"># REAL implementation here</span>
+        graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+        graph.add_node(<span class="st">"research"</span>, self._research_node)
+        graph.add_node(<span class="st">"analyze"</span>, self._analyze_node)
+        <span class="cm"># ... actual graph building</span>
+        <span class="kw">return</span> graph.compile()
+
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="cm"># REAL implementation here</span>
+        state = self._make_initial_state(query)
+        result = self._graph.invoke(state, config=self._get_config())
+        <span class="kw">return</span> result.messages[-<span class="num">1</span>].content</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python · agents/analyst.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">class</span> <span class="cl">AnalystAgent</span>(<span class="cl">BaseAgent</span>):
+    <span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+        <span class="cm"># DIFFERENT implementation here</span>
+        graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+        graph.add_node(<span class="st">"extract"</span>, self._extract_node)
+        graph.add_node(<span class="st">"synthesize"</span>, self._synthesize_node)
+        <span class="cm"># ... different graph logic</span>
+        <span class="kw">return</span> graph.compile()
+
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="cm"># DIFFERENT implementation here</span>
+        state = self._make_initial_state(query)
+        result = self._graph.invoke(state, config=self._get_config())
+        <span class="kw">return</span> extract_findings(result)</pre>
+  </div>
+
+  <h2>Why the Empty Body?</h2>
+  <p>BaseAgent doesn't know how to implement these methods because:</p>
+
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>🔀 Different Agents, Different Graphs</h4>
+      <p>ResearchAgent has: query expansion → retrieval → quality check. AnalystAgent has: extraction → insight detection → reporting. Your agent might have completely different nodes and logic.</p>
+    </div>
+    <div class="concept-card">
+      <h4>📤 Different Agents, Different Outputs</h4>
+      <p>ResearchAgent returns raw research findings. AnalystAgent returns structured analysis. Your agent might return something else entirely.</p>
+    </div>
+    <div class="concept-card">
+      <h4>🤷 The Base Class Can't Guess Your Logic</h4>
+      <p>It can't know what nodes you need, how they connect, what the entry/exit points are, or how to extract the final result. So it says: "You implement this."</p>
+    </div>
+    <div class="concept-card">
+      <h4>✅ Enforced by Python</h4>
+      <p>If you forget to implement <code>build_graph()</code> or <code>run()</code> in your subclass, Python raises <code>TypeError</code> at instantiation — not at runtime. Fail fast.</p>
+    </div>
+  </div>
+
+  <h2>The Pattern: Contract + Implementation</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># LEVEL 1: The Contract (BaseAgent)</span>
+<span class="kw">from</span> abc <span class="kw">import</span> <span class="cl">ABC</span>, abstractmethod
+
+<span class="kw">class</span> <span class="cl">BaseAgent</span>(<span class="cl">ABC</span>):
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+        <span class="kw">pass</span>  <span class="cm"># ← Empty. "You must implement this."</span>
+
+    <span class="op">@</span>abstractmethod
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="kw">pass</span>  <span class="cm"># ← Empty. "You must implement this."</span>
+
+<span class="cm"># LEVEL 2: The Implementation (Your Agent)</span>
+<span class="kw">class</span> <span class="cl">MyResearchAgent</span>(<span class="cl">BaseAgent</span>):
+    <span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+        <span class="cm"># YOUR CODE HERE</span>
+        graph = <span class="cl">StateGraph</span>(<span class="cl">AgentState</span>)
+        graph.add_node(<span class="st">"step1"</span>, ...)
+        <span class="kw">return</span> graph.compile()
+
+    <span class="kw">def</span> <span class="fn">run</span>(self, query: str) -> str:
+        <span class="cm"># YOUR CODE HERE</span>
+        <span class="kw">return</span> self._graph.invoke(...)</pre>
+  </div>
+
+  <h2>What the Developer Actually Wrote</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># In BaseAgent:</span>
+<span class="op">@</span>abc.abstractmethod
+<span class="kw">def</span> <span class="fn">build_graph</span>(self) -> Any:
+    <span class="st">"""
+    Construct the compiled LangGraph StateGraph for this agent.
+    Called once during __init__. The returned object is stored as
+    self._graph and invoked by run().
+
+    Returns:
+        A compiled LangGraph graph (result of graph.compile(...)).
+    """</span></pre>
+  </div>
+
+  <p>This is <strong>perfect code</strong> because:</p>
+  <table>
+    <tr><th>Aspect</th><th>Why It's Correct</th></tr>
+    <tr><td>Clearly states what's required</td><td>The docstring explains the contract</td></tr>
+    <tr><td>Explains what should be returned</td><td>A compiled LangGraph graph</td></tr>
+    <tr><td>Enforces implementation</td><td><code>@abstractmethod</code> fails if missing</td></tr>
+    <tr><td>Doesn't pretend to have implementation</td><td>No misleading code in the body</td></tr>
+  </table>
+
+  <h2>Where's the Real Logic?</h2>
+  <p>You need to look at <strong>concrete agents</strong> to see actual implementations:</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">file locations</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>agents/researcher.py          <span class="cm"># Real run() and build_graph()</span>
+agents/analyst.py             <span class="cm"># Real run() and build_graph()</span>
+agents/supervisor.py          <span class="cm"># Real run() and build_graph()</span>
+examples/sequential/graph.py  <span class="cm"># Real example implementations</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>🎓 Key Insight</strong>
+    Empty abstract methods are not a "missing implementation bug." They're a deliberate architectural choice that means: <em>"I'm defining a contract. You must implement this. I'm not providing the implementation because each subclass will do it differently."</em>
+  </div>
+
+  <h2>Key Corrections Table</h2>
+  <table>
+    <tr><th>Statement</th><th>Status</th><th>Correction</th></tr>
+    <tr><td>LB distributes across servers</td><td>✅</td><td>Correct</td></tr>
+    <tr><td>LB distributes across databases</td><td>⚠️</td><td>Usually via DB proxies, not LB</td></tr>
+    <tr><td>LB chooses data center</td><td>❌</td><td>DNS / geo-routing does this</td></tr>
+    <tr><td>Data centers store data</td><td>✅</td><td>Also host compute + networking</td></tr>
+    <tr><td>Servers host backend/frontend</td><td>✅</td><td>Correct</td></tr>
+  </table>
+
+  <h2>Advanced Note — Multi-Region Production Systems</h2>
+  <div class="callout callout-info">
+    <strong>🏗️ Layered Architecture</strong>
+    <strong>Layer 1:</strong> DNS decides region<br>
+    <strong>Layer 2:</strong> LB distributes within region<br>
+    <strong>Layer 3:</strong> DB replication handles data locality
+  </div>
+
+  <h2>Final Takeaway</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>⚖️ Load Balancer</h4>
+      <p>Intra-region traffic distribution (servers)</p>
+    </div>
+    <div class="concept-card">
+      <h4>🌐 DNS / CDN</h4>
+      <p>Inter-region routing (data centers)</p>
+    </div>
+    <div class="concept-card">
+      <h4>🏢 Data Center</h4>
+      <p>Full stack (compute + storage)</p>
+    </div>
+    <div class="concept-card">
+      <h4>🖥️ Servers</h4>
+      <p>Execution layer (APIs, apps, jobs)</p>
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(13)">← Back</button>
     <button class="btn btn-primary" onclick="goto(0)" style="background:var(--accent2);color:#000;">↩ Start Over</button>
   </div>
 </div>
@@ -1577,7 +1800,7 @@ const lessons = document.querySelectorAll('.lesson');
 const navItems = document.querySelectorAll('.nav-item');
 let completed = new Set();
 let current = 0;
-const TOTAL = 14;
+const TOTAL = 15;
 
 function goto(idx) {
   lessons[current].classList.remove('active');
