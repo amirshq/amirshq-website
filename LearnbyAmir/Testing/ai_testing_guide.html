@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("js", new Date());
+  gtag("config", "G-M40T258NB2");
+</script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Project Testing Guide — Complete Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: rgba(31,35,40,0.12);
+    --accent: #0d9488;
+    --accent2: #6e40c9;
+    --accent3: #c5341b;
+    --text: #1f2328;
+    --muted: #636c76;
+    --code-bg: #eaeef2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .back-pill {
+    position: fixed; z-index: 9999; top: 12px; left: 12px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(246,248,250,0.96); border: 1px solid rgba(31,35,40,0.22);
+    color: #1f2328; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    backdrop-filter: blur(14px); text-decoration: none;
+  }
+  .back-pill span { font-size: 14px; }
+
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(246,248,250,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .logo em { color: var(--accent2); font-style: normal; }
+
+  .container { display: flex; height: calc(100vh - 60px); }
+
+  aside {
+    width: 260px; min-width: 260px; background: var(--surface);
+    border-right: 1px solid var(--border); overflow-y: auto; padding: 1.5rem 0;
+  }
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); padding: 0.8rem 1.5rem 0.4rem;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.15s;
+    border-left: 3px solid transparent; font-size: 0.85rem; color: var(--muted);
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); background: var(--surface2); color: var(--text); }
+  .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .nav-item.active .nav-dot { background: var(--accent); }
+  .chapter-badge {
+    margin-left: auto; font-size: 0.6rem; font-family: 'DM Mono', monospace;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 3px; color: var(--muted);
+  }
+
+  main {
+    flex: 1; overflow-y: auto; padding: 3rem 4rem; max-width: 900px;
+  }
+
+  .lesson { display: none; animation: fadeIn 0.3s ease; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+  .lesson-tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+
+  h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .lesson-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+  h2 { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text); }
+  h3 { font-size: 1rem; font-weight: 700; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+  p { color: #1f2328; line-height: 1.75; margin-bottom: 1rem; font-size: 0.95rem; }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 1.25rem 0; overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .copy-btn {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--muted); background: none; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  .copy-btn.copied { color: #1a7f4e; border-color: #1a7f4e; }
+  pre {
+    padding: 1.25rem; overflow-x: auto; font-family: 'DM Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7; color: #1f2328;
+  }
+
+  code { font-family: 'DM Mono', monospace; font-size: 0.8em; background: rgba(175,184,193,0.2); padding: 1px 5px; border-radius: 3px; color: #0550ae; }
+
+  .callout { border-left: 3px solid; padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0; font-size: 0.9rem; }
+  .callout-info { border-color: var(--accent2); background: rgba(110,64,201,0.06); }
+  .callout-tip { border-color: var(--accent); background: rgba(13,148,136,0.06); }
+  .callout-warn { border-color: var(--accent3); background: rgba(197,52,27,0.06); }
+  .callout strong { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .callout-info strong { color: var(--accent2); }
+  .callout-tip strong { color: var(--accent); }
+  .callout-warn strong { color: var(--accent3); }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: border-color 0.2s; }
+  .concept-card:hover { border-color: var(--accent); }
+  .concept-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent); }
+  .concept-card p { font-size: 0.8rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.6rem 1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { padding: 0.6rem 1rem; border: 1px solid var(--border); color: #1f2328; }
+  tr:hover td { background: var(--surface2); }
+
+  .step-list { list-style: none; margin: 1.5rem 0; }
+  .step-list li {
+    display: flex; gap: 1rem; align-items: flex-start; padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: rgba(13,148,136,0.1);
+    border: 1.5px solid var(--accent); color: var(--accent); font-size: 0.75rem;
+    font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .step-body h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; color: var(--text); }
+  .step-body p { font-size: 0.83rem; color: var(--muted); margin: 0; }
+
+  .feature-list { list-style: none; margin: 1rem 0; }
+  .feature-list li {
+    padding: 0.45rem 0 0.45rem 1.5rem; position: relative;
+    color: var(--text); font-size: 0.9rem; line-height: 1.5;
+  }
+  .feature-list li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+  .checklist { margin: 1rem 0; }
+  .checklist-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0.85rem; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.5rem;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .checklist-item:hover { border-color: var(--accent); }
+  .checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+  .checklist-item label { cursor: pointer; font-size: 0.88rem; color: var(--text); flex: 1; }
+  .checklist-item input[type="checkbox"]:checked + label { color: var(--muted); text-decoration: line-through; }
+
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+  .tab-btn {
+    padding: 0.6rem 1.2rem; background: transparent; border: none;
+    color: var(--muted); cursor: pointer; font-size: 0.8rem; font-family: 'DM Mono', monospace;
+    border-bottom: 2px solid transparent; transition: all 0.15s; font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .nav-btns { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .btn { font-family: 'DM Mono', monospace; font-size: 0.8rem; padding: 0.6rem 1.5rem; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; font-weight: 700; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #0f766e; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    aside { display: none; }
+    main { padding: 2rem 1.5rem; }
+    .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-pill" href="../index.html">
+  <span>←</span> Back to topics
+</a>
+
+<header>
+  <div class="logo"><span>AI Project</span> · <em>Testing Guide</em></div>
+</header>
+
+<div class="container">
+<aside>
+  <div class="section-label">Foundation</div>
+  <div class="nav-item active" onclick="goto(0)"><div class="nav-dot"></div>Overview <span class="chapter-badge">01</span></div>
+  <div class="nav-item" onclick="goto(1)"><div class="nav-dot"></div>Data Validation <span class="chapter-badge">02</span></div>
+  <div class="nav-item" onclick="goto(2)"><div class="nav-dot"></div>Unit Testing <span class="chapter-badge">03</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Integration</div>
+  <div class="nav-item" onclick="goto(3)"><div class="nav-dot"></div>Integration Testing <span class="chapter-badge">04</span></div>
+  <div class="nav-item" onclick="goto(4)"><div class="nav-dot"></div>Model Testing <span class="chapter-badge">05</span></div>
+  <div class="nav-item" onclick="goto(5)"><div class="nav-dot"></div>End-to-End Testing <span class="chapter-badge">06</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Advanced</div>
+  <div class="nav-item" onclick="goto(6)"><div class="nav-dot"></div>Performance Testing <span class="chapter-badge">07</span></div>
+  <div class="nav-item" onclick="goto(7)"><div class="nav-dot"></div>Debugging & Breakpoints <span class="chapter-badge">08</span></div>
+  <div class="nav-item" onclick="goto(8)"><div class="nav-dot"></div>Testing Checklist <span class="chapter-badge">09</span></div>
+  <div class="nav-item" onclick="goto(9)"><div class="nav-dot"></div>Tools & Resources <span class="chapter-badge">10</span></div>
+</aside>
+
+<main id="mainContent">
+
+<!-- LESSON 0: OVERVIEW -->
+<div class="lesson active" id="lesson-0">
+  <div class="lesson-tag">Chapter 01 — Overview</div>
+  <h1>AI Project Testing Framework</h1>
+  <p class="lesson-subtitle">Complete testing strategy from data pipelines to model evaluation.</p>
+
+  <h2>Why Testing Matters in AI</h2>
+  <p>AI projects have unique testing challenges: data quality affects model performance, silent failures in data pipelines are common, and debugging requires both code inspection and data flow validation. This guide covers the full testing lifecycle.</p>
+
+  <div class="callout callout-tip">
+    <strong>Key Principle</strong>
+    Build from the foundation: data validation (bottom) → unit tests → integration tests → model evaluation → end-to-end tests (top). Each layer must pass before moving higher.
+  </div>
+
+  <h2>Testing Pyramid for AI</h2>
+  <ul class="step-list">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Data Validation</h4>
+        <p>Check data quality, schema, nulls, outliers, and distributions before any processing.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Unit Testing</h4>
+        <p>Test individual functions: data loaders, preprocessors, vectorizers, prompts.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Integration Testing</h4>
+        <p>Test components together: RAG pipelines, multi-step workflows, API interactions.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Model Testing</h4>
+        <p>Evaluate LLM outputs, RAG quality, vector search accuracy, response consistency.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>End-to-End Testing</h4>
+        <p>Full user workflows from input to output; error handling and edge cases.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h4>Performance Testing</h4>
+        <p>Latency, throughput, cost tracking, memory usage, concurrent users.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h2>Key Principles</h2>
+  <ul class="feature-list">
+    <li><strong>Test data flow first:</strong> Data issues cascade downstream. Validate early and often.</li>
+    <li><strong>Breakpoints are debugging tools, not tests:</strong> Use them to inspect state during development, then convert insights into automated tests.</li>
+    <li><strong>Pytest for automation:</strong> All repeatable tests belong in pytest. Breakpoints are for exploration.</li>
+    <li><strong>Test happy path AND edge cases:</strong> Off-by-one errors, null values, empty inputs, malformed data.</li>
+    <li><strong>Separate concerns:</strong> Keep unit tests, integration tests, and model tests in different files.</li>
+    <li><strong>Use fixtures for data:</strong> Reusable test data across multiple test functions.</li>
+  </ul>
+
+  <div class="nav-btns">
+    <button class="btn btn-primary" onclick="goto(1)">Next: Data Validation →</button>
+  </div>
+</div>
+
+<!-- LESSON 1: DATA VALIDATION -->
+<div class="lesson" id="lesson-1">
+  <div class="lesson-tag">Chapter 02 — Data Validation</div>
+  <h1>Phase 1: Data Validation Testing</h1>
+  <p class="lesson-subtitle">Ensure data quality before it enters your pipeline.</p>
+
+  <h2>What to Validate</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>Schema & Types</h4>
+      <p>Column names, types, order, data type correctness (int vs float vs string), format consistency for dates, emails, phone numbers.</p>
+    </div>
+    <div class="concept-card">
+      <h4>Quality Checks</h4>
+      <p>Missing values (nulls, empty strings, NaN), duplication and uniqueness constraints, referential integrity (foreign keys).</p>
+    </div>
+    <div class="concept-card">
+      <h4>Statistical Checks</h4>
+      <p>Value ranges (min/max, outliers), distribution checks (skew, balance), class balance for classification tasks.</p>
+    </div>
+    <div class="concept-card">
+      <h4>Volume Checks</h4>
+      <p>Minimum dataset size, row counts within expected bounds, batch completeness for time-series or streaming data.</p>
+    </div>
+  </div>
+
+  <h2>Pandas Data Validation</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event,'dv-basic','dv')">Basic Checks</button>
+    <button class="tab-btn" onclick="switchTab(event,'dv-advanced','dv')">Advanced Validation</button>
+  </div>
+  <div id="dv-basic" class="tab-pane active">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import pandas as pd
+import numpy as np
+
+# Load data
+df = pd.read_csv('data.csv')
+
+# Schema validation
+expected_columns = ['id', 'text', 'label', 'timestamp']
+assert list(df.columns) == expected_columns, "Column mismatch"
+
+# Check nulls
+print(df.isnull().sum())  # Should be 0 for critical columns
+assert df['id'].isnull().sum() == 0, "ID has null values"
+
+# Check data types
+assert df['id'].dtype == 'int64', "ID should be integer"
+assert df['label'].isin([0, 1]).all(), "Label must be 0 or 1"
+
+# Check duplicates
+assert df['id'].is_unique, "ID has duplicates"
+
+# Value range checks
+assert df['id'].min() > 0, "ID should be positive"
+assert len(df) > 100, "Dataset too small"
+
+print("✓ All validation checks passed")</pre>
+    </div>
+  </div>
+  <div id="dv-advanced" class="tab-pane">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import pandas as pd
+from scipy import stats
+import re
+
+# Distribution check
+skewness = stats.skew(df['numeric_col'])
+print(f"Skewness: {skewness:.2f}")
+assert abs(skewness) < 2, "Data too skewed"
+
+# Class balance (for classification)
+class_counts = df['label'].value_counts()
+ratio = class_counts.max() / class_counts.min()
+print(f"Class imbalance ratio: {ratio:.2f}x")
+assert ratio < 3, "Classes severely imbalanced"
+
+# Format validation (regex)
+email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+assert df['email'].str.match(email_pattern).all(), \
+    "Invalid email format"
+
+# Outlier detection (IQR method)
+Q1 = df['value'].quantile(0.25)
+Q3 = df['value'].quantile(0.75)
+IQR = Q3 - Q1
+outliers = df[(df['value'] < Q1 - 1.5*IQR) |
+              (df['value'] > Q3 + 1.5*IQR)]
+print(f"Outliers: {len(outliers)}/{len(df)}")
+
+# Date validation
+df['date'] = pd.to_datetime(df['date'])
+assert (df['date'] > '2020-01-01').all(), "Dates too old"
+
+print("✓ Advanced validation passed")</pre>
+    </div>
+  </div>
+
+  <h2>Pytest for Data Validation</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_data_validation.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import pandas as pd
+from src.data.loader import load_data
+
+@pytest.fixture
+def sample_data():
+    return pd.DataFrame({
+        'id': [1, 2, 3],
+        'text': ['hello', 'world', 'test'],
+        'label': [0, 1, 0],
+    })
+
+def test_no_null_values(sample_data):
+    """Critical columns should have no nulls"""
+    assert sample_data['id'].isnull().sum() == 0
+    assert sample_data['text'].isnull().sum() == 0
+
+def test_correct_schema(sample_data):
+    """Columns and types must match spec"""
+    expected = ['id', 'text', 'label']
+    assert list(sample_data.columns) == expected
+    assert sample_data['id'].dtype == 'int64'
+
+def test_no_duplicates(sample_data):
+    """Primary key must be unique"""
+    assert sample_data['id'].is_unique
+
+def test_label_values_valid(sample_data):
+    """Labels must be in valid range"""
+    assert sample_data['label'].isin([0, 1]).all()
+
+def test_text_length_reasonable(sample_data):
+    """Text field should have content"""
+    assert (sample_data['text'].str.len() > 0).all()
+    assert (sample_data['text'].str.len() < 10000).all()
+
+def test_load_data_from_file():
+    """Integration: test actual data loading"""
+    df = load_data('data/sample.csv')
+    assert len(df) > 0
+    assert 'id' in df.columns</pre>
+  </div>
+
+  <h2>Common Data Issues</h2>
+  <table>
+    <tr><th>Issue</th><th>Detection</th><th>Fix</th></tr>
+    <tr><td>Missing values</td><td><code>df.isnull().sum()</code></td><td>Drop rows, forward-fill, or use mean</td></tr>
+    <tr><td>Type mismatch</td><td><code>df.dtypes</code></td><td><code>pd.to_numeric()</code>, <code>astype()</code></td></tr>
+    <tr><td>Duplicates</td><td><code>df.duplicated().sum()</code></td><td><code>df.drop_duplicates()</code></td></tr>
+    <tr><td>Outliers</td><td>IQR or z-score</td><td>Clip, cap, or remove</td></tr>
+    <tr><td>Encoding issues</td><td>Garbled text, unicode errors</td><td><code>df['col'].str.encode('utf-8')</code></td></tr>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(0)">← Overview</button>
+    <button class="btn btn-primary" onclick="goto(2)">Next: Unit Testing →</button>
+  </div>
+</div>
+
+<!-- LESSON 2: UNIT TESTING -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-tag">Chapter 03 — Unit Testing</div>
+  <h1>Phase 2: Unit Testing</h1>
+  <p class="lesson-subtitle">Test individual functions with pytest.</p>
+
+  <h2>What to Unit Test in AI</h2>
+  <ul class="feature-list">
+    <li>Data loaders and preprocessing functions</li>
+    <li>Tokenizers and text cleaners</li>
+    <li>Feature extraction and embedding functions</li>
+    <li>Prompt templates and prompt formatting</li>
+    <li>Configuration loading and validation</li>
+    <li>Utility functions (parsers, formatters, validators)</li>
+    <li>Vector search queries</li>
+    <li>Post-processing and output formatting</li>
+  </ul>
+
+  <h2>Project Structure</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Directory Structure</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>ai_project/
+├── src/
+│   ├── data/
+│   │   ├── loader.py
+│   │   └── preprocessor.py
+│   ├── models/
+│   │   └── embedder.py
+│   ├── prompts/
+│   │   └── templates.py
+│   └── utils/
+│       └── helpers.py
+├── tests/
+│   ├── test_data_loader.py
+│   ├── test_preprocessor.py
+│   ├── test_embedder.py
+│   └── test_prompts.py
+├── requirements.txt
+├── requirements-dev.txt
+└── pytest.ini</pre>
+  </div>
+
+  <h2>Unit Test Examples</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event,'ut-loader','ut')">Data Loader</button>
+    <button class="tab-btn" onclick="switchTab(event,'ut-preproc','ut')">Text Preprocessor</button>
+    <button class="tab-btn" onclick="switchTab(event,'ut-prompt','ut')">Prompt Template</button>
+  </div>
+  <div id="ut-loader" class="tab-pane active">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python — tests/test_data_loader.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import pytest
+from pathlib import Path
+from src.data.loader import load_csv, clean_text
+
+@pytest.fixture
+def test_data_dir(tmp_path):
+    """Create temporary test data"""
+    csv_file = tmp_path / "test.csv"
+    csv_file.write_text("id,text,label\n1,hello,0\n2,world,1")
+    return tmp_path
+
+@pytest.fixture
+def sample_texts():
+    return [
+        "Hello world!",
+        "Test    with   spaces",
+        "Special chars: @#$%",
+        "   leading/trailing   ",
+    ]
+
+def test_load_csv_success(test_data_dir):
+    """CSV loads correctly"""
+    df = load_csv(test_data_dir / "test.csv")
+    assert len(df) == 2
+    assert list(df.columns) == ['id', 'text', 'label']
+
+def test_load_csv_file_not_found():
+    """Missing file raises error"""
+    with pytest.raises(FileNotFoundError):
+        load_csv("nonexistent.csv")
+
+def test_clean_text_removes_special_chars(sample_texts):
+    """Special characters are removed"""
+    result = clean_text(sample_texts[2])
+    assert not any(c in result for c in "@#$%")
+
+def test_clean_text_normalizes_spaces(sample_texts):
+    """Multiple spaces become single"""
+    result = clean_text(sample_texts[1])
+    assert "   " not in result
+
+def test_clean_text_strips_whitespace(sample_texts):
+    """Leading/trailing spaces removed"""
+    result = clean_text(sample_texts[3])
+    assert not result.startswith(" ")
+    assert not result.endswith(" ")</pre>
+    </div>
+  </div>
+  <div id="ut-preproc" class="tab-pane">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python — tests/test_preprocessor.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import pytest
+import numpy as np
+from src.data.preprocessor import tokenize, vectorize, normalize_embeddings
+
+@pytest.fixture
+def sample_texts():
+    return ["hello world", "test data", "example text"]
+
+def test_tokenize_basic(sample_texts):
+    """Tokenizer splits text correctly"""
+    tokens = tokenize(sample_texts[0])
+    assert tokens == ["hello", "world"]
+
+def test_tokenize_empty_string():
+    """Empty strings handled gracefully"""
+    tokens = tokenize("")
+    assert tokens == []
+
+def test_vectorize_output_shape(sample_texts):
+    """Vectorizer returns correct shape"""
+    vectors = vectorize(sample_texts)
+    assert vectors.shape == (3, 384)  # 3 texts, 384-dim embeddings
+
+def test_vectorize_no_nan(sample_texts):
+    """Vectors contain no NaN values"""
+    vectors = vectorize(sample_texts)
+    assert not np.isnan(vectors).any()
+
+def test_normalize_embeddings_magnitude():
+    """Unit norm after normalization"""
+    vectors = np.random.randn(5, 384)
+    normalized = normalize_embeddings(vectors)
+    norms = np.linalg.norm(normalized, axis=1)
+    np.testing.assert_array_almost_equal(norms, np.ones(5))</pre>
+    </div>
+  </div>
+  <div id="ut-prompt" class="tab-pane">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python — tests/test_prompts.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import pytest
+from src.prompts.templates import format_rag_prompt, format_system_message
+
+@pytest.fixture
+def sample_context():
+    return {
+        "query": "What is AI?",
+        "documents": [
+            "AI is artificial intelligence",
+            "Machine learning is a subset of AI"
+        ],
+        "user_name": "Alice"
+    }
+
+def test_format_rag_prompt_includes_query(sample_context):
+    """Query is included in prompt"""
+    prompt = format_rag_prompt(**sample_context)
+    assert sample_context["query"] in prompt
+
+def test_format_rag_prompt_includes_documents(sample_context):
+    """Retrieved documents are in prompt"""
+    prompt = format_rag_prompt(**sample_context)
+    for doc in sample_context["documents"]:
+        assert doc in prompt
+
+def test_format_rag_prompt_empty_documents():
+    """Empty documents handled gracefully"""
+    prompt = format_rag_prompt(query="test", documents=[], user_name="Test")
+    assert len(prompt) > 0
+
+@pytest.mark.parametrize("query", [
+    "short",
+    "a" * 5000,
+    "query with special chars: @#$%",
+])
+def test_format_rag_prompt_various_queries(query):
+    """Handles various query formats"""
+    prompt = format_rag_prompt(query=query, documents=["doc1"], user_name="Test")
+    assert query in prompt</pre>
+    </div>
+  </div>
+
+  <h2>Running Pytest</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre># Run all tests
+pytest
+
+# Run specific file
+pytest tests/test_data_loader.py
+
+# Run specific test
+pytest tests/test_data_loader.py::test_load_csv_success
+
+# Verbose output
+pytest -v
+
+# Coverage report
+pytest --cov=src --cov-report=html
+
+# Run only tests matching pattern
+pytest -k "test_clean_text"
+
+# Stop at first failure
+pytest -x
+
+# Show print statements
+pytest -s</pre>
+  </div>
+
+  <h2>pytest.ini Configuration</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">INI — pytest.ini</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>[pytest]
+minversion = 7.0
+addopts =
+    -v
+    --strict-markers
+    --tb=short
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+markers =
+    slow: marks tests as slow
+    integration: marks tests as integration
+    unit: marks tests as unit</pre>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(1)">← Data Validation</button>
+    <button class="btn btn-primary" onclick="goto(3)">Next: Integration Testing →</button>
+  </div>
+</div>
+
+<!-- LESSON 3: INTEGRATION TESTING -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-tag">Chapter 04 — Integration Testing</div>
+  <h1>Phase 3: Integration Testing</h1>
+  <p class="lesson-subtitle">Test components working together.</p>
+
+  <h2>What to Test</h2>
+  <ul class="feature-list">
+    <li>RAG pipeline (retrieve → rerank → context building)</li>
+    <li>Multi-step workflows (load → process → vectorize → store)</li>
+    <li>Database connections and queries</li>
+    <li>Vector store operations (upsert, search)</li>
+    <li>LLM calls with retries and fallbacks</li>
+    <li>Cache functionality</li>
+    <li>Async operations and concurrent requests</li>
+    <li>Error handling across components</li>
+  </ul>
+
+  <h2>RAG Pipeline Integration Test</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_rag_pipeline.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+from src.rag.pipeline import RAGPipeline
+
+@pytest.fixture
+def rag_pipeline():
+    return RAGPipeline(
+        embedding_model="sentence-transformers/all-MiniLM-L6-v2",
+        vector_db="chroma",
+        llm_provider="openai"
+    )
+
+@pytest.fixture
+def test_documents():
+    return [
+        {"id": "1", "content": "Python is a programming language"},
+        {"id": "2", "content": "Python was created in 1989"},
+        {"id": "3", "content": "Java is another programming language"},
+    ]
+
+@pytest.mark.integration
+def test_rag_indexing(rag_pipeline, test_documents):
+    """Documents are indexed correctly"""
+    rag_pipeline.index_documents(test_documents)
+    assert rag_pipeline.doc_count() == 3
+
+@pytest.mark.integration
+def test_rag_retrieval(rag_pipeline, test_documents):
+    """Query retrieves relevant documents"""
+    rag_pipeline.index_documents(test_documents)
+    results = rag_pipeline.retrieve("What is Python?", top_k=2)
+
+    assert len(results) == 2
+    assert results[0]['score'] > results[1]['score']
+    assert "Python" in results[0]['content']
+
+@pytest.mark.integration
+def test_rag_end_to_end(rag_pipeline, test_documents):
+    """Full RAG: index → retrieve → augment → generate"""
+    rag_pipeline.index_documents(test_documents)
+    response = rag_pipeline.query(
+        query="When was Python created?",
+        use_rag=True
+    )
+    assert response['answer'] is not None
+    assert len(response['sources']) > 0
+
+@pytest.mark.integration
+def test_rag_error_handling_invalid_query(rag_pipeline, test_documents):
+    """Handles invalid queries"""
+    rag_pipeline.index_documents(test_documents)
+    with pytest.raises(ValueError):
+        rag_pipeline.retrieve("")
+    with pytest.raises(TypeError):
+        rag_pipeline.retrieve(None)</pre>
+  </div>
+
+  <h2>Database Integration Test</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_database.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+from src.database import Database
+
+@pytest.fixture
+def db():
+    """In-memory database for testing"""
+    db = Database(":memory:")
+    db.create_tables()
+    yield db
+    db.close()
+
+@pytest.mark.integration
+def test_insert_and_retrieve(db):
+    """Data insert and retrieval"""
+    db.insert_document(doc_id="1", content="Test document", embedding=[0.1, 0.2, 0.3])
+    result = db.get_document("1")
+    assert result is not None
+    assert result['content'] == "Test document"
+
+@pytest.mark.integration
+def test_vector_search(db):
+    """Vector similarity search"""
+    db.insert_document("1", "Python programming", [0.1, 0.2, 0.3])
+    db.insert_document("2", "Java programming", [0.1, 0.2, 0.4])
+    results = db.search_similar([0.1, 0.2, 0.3], top_k=2)
+    assert len(results) == 2
+    assert results[0]['doc_id'] == "1"
+
+@pytest.mark.integration
+def test_batch_operations(db):
+    """Batch insert and delete"""
+    docs = [
+        {"doc_id": "1", "content": "doc1", "embedding": [0.1]},
+        {"doc_id": "2", "content": "doc2", "embedding": [0.2]},
+        {"doc_id": "3", "content": "doc3", "embedding": [0.3]},
+    ]
+    db.batch_insert(docs)
+    assert db.count() == 3
+    db.batch_delete(["1", "2"])
+    assert db.count() == 1</pre>
+  </div>
+
+  <h2>Async Integration Test</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_async_pipeline.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import asyncio
+from src.async_pipeline import AsyncPipeline
+
+@pytest.mark.asyncio
+async def test_concurrent_requests():
+    """Multiple async requests work concurrently"""
+    pipeline = AsyncPipeline()
+    tasks = [
+        pipeline.process_async("query 1"),
+        pipeline.process_async("query 2"),
+        pipeline.process_async("query 3"),
+    ]
+    results = await asyncio.gather(*tasks)
+    assert len(results) == 3
+    assert all(r is not None for r in results)
+
+@pytest.mark.asyncio
+async def test_error_handling_async():
+    """Async errors propagate correctly"""
+    pipeline = AsyncPipeline()
+    with pytest.raises(ValueError):
+        await pipeline.process_async(None)</pre>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(2)">← Unit Testing</button>
+    <button class="btn btn-primary" onclick="goto(4)">Next: Model Testing →</button>
+  </div>
+</div>
+
+<!-- LESSON 4: MODEL TESTING -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-tag">Chapter 05 — Model Testing</div>
+  <h1>Phase 4: Model Testing</h1>
+  <p class="lesson-subtitle">Evaluate LLM outputs and AI quality.</p>
+
+  <h2>What to Test</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>Output Format</h4>
+      <p>JSON structure, required keys, response schema, token counts and length limits.</p>
+    </div>
+    <div class="concept-card">
+      <h4>Consistency</h4>
+      <p>Same input → similar outputs, determinism at temperature=0, diversity at high temperature.</p>
+    </div>
+    <div class="concept-card">
+      <h4>RAG Quality</h4>
+      <p>Faithfulness, answer relevancy, context precision, context recall via RAGAS metrics.</p>
+    </div>
+    <div class="concept-card">
+      <h4>Embedding Quality</h4>
+      <p>Correct dimensions, unit norm, semantic similarity ordering, no NaN values.</p>
+    </div>
+  </div>
+
+  <h2>LLM Output Format Tests</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_llm_output.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import json
+from src.llm.client import LLMClient
+
+@pytest.fixture
+def llm_client():
+    return LLMClient(provider="openai", model="gpt-4")
+
+def test_json_output_format(llm_client):
+    """LLM returns valid JSON when requested"""
+    response = llm_client.generate(
+        prompt="Extract entities from: 'John works at Apple'",
+        response_format="json",
+        schema={"type": "object", "properties": {
+            "person": {"type": "string"},
+            "company": {"type": "string"}
+        }}
+    )
+    data = json.loads(response)
+    assert data['person'] == "John"
+    assert data['company'] == "Apple"
+
+def test_structured_output_required_fields(llm_client):
+    """All required fields present in output"""
+    response = llm_client.generate(
+        prompt="Classify: 'I love this product!'",
+        response_format="json",
+        schema={"required": ["sentiment", "confidence", "keywords"]}
+    )
+    data = json.loads(response)
+    assert 'sentiment' in data
+    assert 'confidence' in data
+    assert 'keywords' in data
+
+def test_response_within_length_limit(llm_client):
+    """Response respects max_tokens"""
+    response = llm_client.generate(prompt="Summarize in 2 sentences", max_tokens=50)
+    assert len(response.split()) < 50
+
+@pytest.mark.parametrize("invalid_prompt", [None, "", " " * 100])
+def test_invalid_prompts_handled(llm_client, invalid_prompt):
+    """Invalid prompts raise appropriate errors"""
+    with pytest.raises((ValueError, TypeError)):
+        llm_client.generate(invalid_prompt)</pre>
+  </div>
+
+  <h2>Consistency Testing</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_consistency.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from src.llm.client import LLMClient
+
+@pytest.fixture
+def llm_client():
+    return LLMClient(provider="openai", model="gpt-4")
+
+def test_response_consistency(llm_client, embeddings_model):
+    """Same prompt produces similar responses"""
+    prompt = "What is the capital of France?"
+    responses = [llm_client.generate(prompt, temperature=0.7) for _ in range(3)]
+    embeddings = embeddings_model.encode(responses)
+    similarity_matrix = cosine_similarity(embeddings)
+    avg_similarity = np.mean([similarity_matrix[i][j]
+        for i in range(3) for j in range(i+1, 3)])
+    assert avg_similarity > 0.7, "Responses too inconsistent"
+
+def test_deterministic_with_temperature_zero(llm_client):
+    """Same prompt with temperature=0 is deterministic"""
+    prompt = "Spell 'hello'"
+    responses = [llm_client.generate(prompt, temperature=0) for _ in range(2)]
+    assert responses[0] == responses[1]</pre>
+  </div>
+
+  <h2>RAG Quality Metrics (RAGAS)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_rag_quality.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from datasets import Dataset
+
+@pytest.fixture
+def rag_eval_data():
+    return Dataset.from_dict({
+        "question": ["What is Python?", "When was Python created?"],
+        "answer": [
+            "Python is a high-level programming language.",
+            "Python was created in 1989.",
+        ],
+        "contexts": [
+            ["Python is a high-level, interpreted programming language.", "Created by Guido van Rossum"],
+            ["Python was first released in 1991.", "Guido van Rossum started the project in 1989."]
+        ],
+        "ground_truth": [
+            "Python is a programming language",
+            "Python was created in 1989 and released in 1991",
+        ]
+    })
+
+def test_rag_faithfulness(rag_eval_data):
+    """Answers grounded in context — target > 0.7"""
+    score = evaluate(rag_eval_data, metrics=[faithfulness])
+    assert score['faithfulness'].score > 0.7
+
+def test_rag_answer_relevancy(rag_eval_data):
+    """Answers address the question — target > 0.7"""
+    score = evaluate(rag_eval_data, metrics=[answer_relevancy])
+    assert score['answer_relevancy'].score > 0.7
+
+def test_rag_context_precision(rag_eval_data):
+    """Retrieved context is relevant — target > 0.7"""
+    score = evaluate(rag_eval_data, metrics=[context_precision])
+    assert score['context_precision'].score > 0.7</pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>RAGAS Metrics Reference</strong>
+    <strong>Faithfulness</strong>: Are claims in the answer grounded in retrieved context?<br>
+    <strong>Answer Relevancy</strong>: Does the answer actually address the question?<br>
+    <strong>Context Precision</strong>: Is the retrieved context relevant to the question?<br>
+    <strong>Context Recall</strong>: Does the retrieved context contain the ground truth?
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(3)">← Integration Testing</button>
+    <button class="btn btn-primary" onclick="goto(5)">Next: End-to-End Testing →</button>
+  </div>
+</div>
+
+<!-- LESSON 5: E2E TESTING -->
+<div class="lesson" id="lesson-5">
+  <div class="lesson-tag">Chapter 06 — End-to-End Testing</div>
+  <h1>Phase 5: End-to-End Testing</h1>
+  <p class="lesson-subtitle">Test complete user workflows from input to output.</p>
+
+  <h2>What to Test</h2>
+  <ul class="feature-list">
+    <li>Full user workflows (user input → AI response)</li>
+    <li>Error scenarios and recovery</li>
+    <li>Timeout handling</li>
+    <li>Retry logic with exponential backoff</li>
+    <li>Fallback mechanisms</li>
+    <li>Rate limiting</li>
+    <li>Session persistence across requests</li>
+    <li>Multi-turn conversations</li>
+    <li>File uploads and processing</li>
+  </ul>
+
+  <h2>Full Workflow E2E Test</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_e2e.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+from src.app import App
+
+@pytest.fixture
+def app():
+    return App(env="test")
+
+@pytest.mark.e2e
+def test_user_query_happy_path(app):
+    """Full: user sends query → gets relevant response"""
+    session = app.create_session(user_id="test_user")
+    response = session.ask("What is machine learning?")
+
+    assert response['answer'] is not None
+    assert len(response['answer']) > 0
+    assert response['sources'] is not None
+    assert response['latency_ms'] < 5000  # Under 5 seconds
+
+@pytest.mark.e2e
+def test_multi_turn_conversation(app):
+    """Conversation maintains context across turns"""
+    session = app.create_session(user_id="test_user")
+
+    session.ask("My name is Alice")
+    response = session.ask("What's my name?")
+
+    assert "Alice" in response['answer']
+
+@pytest.mark.e2e
+def test_error_recovery(app):
+    """App recovers from partial failures gracefully"""
+    session = app.create_session(user_id="test_user")
+
+    # Simulate a query that might stress the system
+    response = session.ask("a" * 10000)  # Very long query
+    assert response is not None
+    assert 'error' in response or 'answer' in response
+
+@pytest.mark.e2e
+def test_rate_limiting(app):
+    """Rate limiting triggers and returns proper error"""
+    session = app.create_session(user_id="test_user")
+    responses = [session.ask(f"Query {i}") for i in range(100)]
+    rate_limited = [r for r in responses if r.get('status') == 429]
+    assert len(rate_limited) > 0</pre>
+  </div>
+
+  <h2>API E2E with httpx</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_api_e2e.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import httpx
+
+BASE_URL = "http://localhost:8000"
+
+@pytest.mark.e2e
+def test_health_endpoint():
+    """Health check returns 200"""
+    r = httpx.get(f"{BASE_URL}/health")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
+
+@pytest.mark.e2e
+def test_query_endpoint():
+    """Query endpoint returns structured response"""
+    payload = {"query": "What is RAG?", "user_id": "test"}
+    r = httpx.post(f"{BASE_URL}/query", json=payload, timeout=10)
+    assert r.status_code == 200
+    data = r.json()
+    assert "answer" in data
+    assert "sources" in data
+
+@pytest.mark.e2e
+def test_invalid_query_returns_422():
+    """Missing required fields → validation error"""
+    r = httpx.post(f"{BASE_URL}/query", json={})
+    assert r.status_code == 422</pre>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(4)">← Model Testing</button>
+    <button class="btn btn-primary" onclick="goto(6)">Next: Performance Testing →</button>
+  </div>
+</div>
+
+<!-- LESSON 6: PERFORMANCE TESTING -->
+<div class="lesson" id="lesson-6">
+  <div class="lesson-tag">Chapter 07 — Performance Testing</div>
+  <h1>Phase 6: Performance Testing</h1>
+  <p class="lesson-subtitle">Measure latency, throughput, and cost.</p>
+
+  <h2>Key Metrics</h2>
+  <div class="card-grid-3">
+    <div class="concept-card">
+      <h4>Latency</h4>
+      <p>P50, P95, P99 response times. Time-to-first-token (TTFT) for streaming responses.</p>
+    </div>
+    <div class="concept-card">
+      <h4>Throughput</h4>
+      <p>Requests per second under load. Token generation speed (tokens/sec).</p>
+    </div>
+    <div class="concept-card">
+      <h4>Cost</h4>
+      <p>API token usage and estimated USD cost per query. Memory footprint during inference.</p>
+    </div>
+  </div>
+
+  <h2>Latency Benchmarking</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — tests/test_performance.py</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import pytest
+import time
+import statistics
+from src.llm.client import LLMClient
+
+@pytest.fixture
+def llm_client():
+    return LLMClient(provider="openai", model="gpt-4")
+
+@pytest.mark.slow
+def test_latency_p95(llm_client):
+    """P95 latency under 3 seconds"""
+    latencies = []
+    prompt = "Summarize AI in one sentence."
+    for _ in range(20):
+        start = time.perf_counter()
+        llm_client.generate(prompt)
+        latencies.append(time.perf_counter() - start)
+
+    latencies.sort()
+    p95 = latencies[int(len(latencies) * 0.95)]
+    print(f"\nP50: {statistics.median(latencies):.2f}s")
+    print(f"P95: {p95:.2f}s")
+    assert p95 < 3.0, f"P95 latency {p95:.2f}s exceeds 3s threshold"
+
+@pytest.mark.slow
+def test_throughput_under_load(llm_client):
+    """At least 5 req/s under concurrent load"""
+    import concurrent.futures
+
+    def single_request():
+        start = time.perf_counter()
+        llm_client.generate("What is 2+2?")
+        return time.perf_counter() - start
+
+    n = 20
+    start = time.perf_counter()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+        list(ex.map(lambda _: single_request(), range(n)))
+    elapsed = time.perf_counter() - start
+    rps = n / elapsed
+    print(f"\nThroughput: {rps:.1f} req/s")
+    assert rps >= 5, f"Throughput {rps:.1f} req/s below 5 req/s threshold"
+
+@pytest.mark.slow
+def test_token_cost_tracking(llm_client):
+    """Track token usage and estimated cost"""
+    response = llm_client.generate_with_usage("Explain embeddings briefly.")
+    usage = response['usage']
+    cost = (usage['prompt_tokens'] * 0.00003 +
+            usage['completion_tokens'] * 0.00006)
+    print(f"\nTokens: {usage['total_tokens']}, Cost: ${cost:.6f}")
+    assert cost < 0.01, "Single query cost exceeds $0.01"</pre>
+  </div>
+
+  <h2>Memory Profiling</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>import tracemalloc
+from src.models.embedder import EmbeddingModel
+
+def test_embedding_memory_usage():
+    """Embedding model stays under 500MB"""
+    tracemalloc.start()
+    model = EmbeddingModel()
+    texts = ["sample text"] * 1000
+    model.embed_batch(texts)
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    peak_mb = peak / 1024 / 1024
+    print(f"\nPeak memory: {peak_mb:.1f} MB")
+    assert peak_mb < 500, f"Memory usage {peak_mb:.1f}MB exceeds 500MB"</pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Performance Thresholds (recommended baseline)</strong>
+    P95 latency &lt; 3s · P99 latency &lt; 5s · Throughput ≥ 5 req/s · Memory &lt; 500MB · Cost &lt; $0.01/query
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(5)">← End-to-End Testing</button>
+    <button class="btn btn-primary" onclick="goto(7)">Next: Debugging →</button>
+  </div>
+</div>
+
+<!-- LESSON 7: DEBUGGING -->
+<div class="lesson" id="lesson-7">
+  <div class="lesson-tag">Chapter 08 — Debugging & Breakpoints</div>
+  <h1>Debugging & Breakpoints</h1>
+  <p class="lesson-subtitle">Using breakpoints for exploration, converting insights to tests.</p>
+
+  <h2>Breakpoint Workflow</h2>
+  <ul class="step-list">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Exploration</h4>
+        <p>Set breakpoints to inspect state during development. Check variable values, data shapes, intermediate outputs.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Insight</h4>
+        <p>Identify what's wrong or unexpected. Document the issue with concrete values and conditions.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Test</h4>
+        <p>Convert your insight into a pytest test that would have caught this. Add to your test suite.</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Fix</h4>
+        <p>Implement the fix. Run the new test to confirm it passes. Run full suite to check for regressions.</p>
+      </div>
+    </li>
+  </ul>
+
+  <h2>Setting Breakpoints</h2>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(event,'dbg-basic','dbg')">Built-in pdb</button>
+    <button class="tab-btn" onclick="switchTab(event,'dbg-pytest','dbg')">Pytest Debugging</button>
+    <button class="tab-btn" onclick="switchTab(event,'dbg-logging','dbg')">Structured Logging</button>
+  </div>
+  <div id="dbg-basic" class="tab-pane active">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>def preprocess_text(text: str) -> str:
+    breakpoint()  # drops into interactive pdb debugger
+    text = text.lower()
+    tokens = text.split()
+    return " ".join(tokens)
+
+# pdb commands:
+# n  → next line
+# s  → step into function
+# c  → continue to next breakpoint
+# p variable  → print value
+# pp variable → pretty-print value
+# l  → list surrounding code
+# q  → quit debugger</pre>
+    </div>
+  </div>
+  <div id="dbg-pytest" class="tab-pane">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre># Drop into pdb on any failure
+pytest --pdb
+
+# Drop into pdb at the first failure only
+pytest --pdb -x
+
+# Show local variable values in tracebacks
+pytest --tb=long -v
+
+# Run only the failing test, drop into pdb
+pytest tests/test_data_loader.py::test_load_csv_success --pdb</pre>
+    </div>
+  </div>
+  <div id="dbg-logging" class="tab-pane">
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+def embed_documents(docs: list[str]) -> list:
+    logger.debug(f"Embedding {len(docs)} documents")
+    embeddings = model.encode(docs)
+    logger.debug(f"Embedding shape: {embeddings.shape}")
+    if embeddings.isnan().any():
+        logger.error("NaN detected in embeddings!")
+    return embeddings
+
+# pytest.ini — capture logs during tests
+# [pytest]
+# log_cli = true
+# log_cli_level = DEBUG</pre>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>Breakpoints vs Tests</strong>
+    Breakpoints are for <em>exploration</em> — remove them before committing. Every insight from a debugging session should be encoded as a permanent pytest test. If you found a bug with a breakpoint, write a test that would have caught it first.
+  </div>
+
+  <h2>Common Debugging Patterns for AI</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Python — Common Inspection Snippets</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre># Check embedding shape and quality
+print(f"Shape: {embeddings.shape}, NaN: {np.isnan(embeddings).sum()}, Norm: {np.linalg.norm(embeddings, axis=1).mean():.3f}")
+
+# Inspect retrieval scores
+for i, (doc, score) in enumerate(zip(results, scores)):
+    print(f"[{i}] score={score:.4f} | {doc['content'][:80]}")
+
+# Check prompt token count
+import tiktoken
+enc = tiktoken.encoding_for_model("gpt-4")
+tokens = enc.encode(prompt)
+print(f"Prompt tokens: {len(tokens)}")
+
+# Inspect dataframe at a stage
+print(df.describe())
+print(df.dtypes)
+print(df.isnull().sum())</pre>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(6)">← Performance Testing</button>
+    <button class="btn btn-primary" onclick="goto(8)">Next: Checklist →</button>
+  </div>
+</div>
+
+<!-- LESSON 8: CHECKLIST -->
+<div class="lesson" id="lesson-8">
+  <div class="lesson-tag">Chapter 09 — Testing Checklist</div>
+  <h1>Complete Testing Checklist</h1>
+  <p class="lesson-subtitle">Use this before going to production.</p>
+
+  <h2>Data Validation Phase</h2>
+  <div class="checklist">
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Schema validated (columns, types, order)</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Null values handled in critical columns</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Duplicates removed or flagged</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Outliers detected and handled</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Class balance checked (for classification)</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Format validation (dates, emails, etc.)</label></div>
+  </div>
+
+  <h2>Unit Testing Phase</h2>
+  <div class="checklist">
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Data loaders tested with fixtures</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Preprocessing functions covered</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Prompt templates tested with edge cases</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Error cases tested (FileNotFoundError, ValueError, etc.)</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Parameterized tests for varied inputs</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Coverage &gt; 80% for core modules</label></div>
+  </div>
+
+  <h2>Integration Testing Phase</h2>
+  <div class="checklist">
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>RAG pipeline end-to-end tested</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Database insert / retrieve / search tested</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Async operations verified concurrently</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Error handling across components verified</label></div>
+  </div>
+
+  <h2>Model Testing Phase</h2>
+  <div class="checklist">
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>LLM output format (JSON, schema) validated</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Response consistency tested (same prompt → similar output)</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>RAGAS metrics: faithfulness &gt; 0.7</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>RAGAS metrics: answer relevancy &gt; 0.7</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Embedding dimensions and norms verified</label></div>
+  </div>
+
+  <h2>End-to-End & Performance Phase</h2>
+  <div class="checklist">
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Full user workflow passes E2E test</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Multi-turn conversation context maintained</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>P95 latency &lt; 3 seconds</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Throughput ≥ 5 req/s under load</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Cost per query &lt; $0.01</label></div>
+    <div class="checklist-item" onclick="toggle(this)"><input type="checkbox"><label>Memory usage &lt; 500MB at peak</label></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(7)">← Debugging</button>
+    <button class="btn btn-primary" onclick="goto(9)">Next: Tools →</button>
+  </div>
+</div>
+
+<!-- LESSON 9: TOOLS -->
+<div class="lesson" id="lesson-9">
+  <div class="lesson-tag">Chapter 10 — Tools & Resources</div>
+  <h1>Tools & Resources</h1>
+  <p class="lesson-subtitle">Essential testing libraries for AI projects.</p>
+
+  <h2>Core Libraries</h2>
+  <table>
+    <tr><th>Tool</th><th>Purpose</th><th>Install</th></tr>
+    <tr><td><strong>pytest</strong></td><td>Testing framework</td><td><code>pip install pytest</code></td></tr>
+    <tr><td><strong>pytest-cov</strong></td><td>Coverage reporting</td><td><code>pip install pytest-cov</code></td></tr>
+    <tr><td><strong>pytest-asyncio</strong></td><td>Async test support</td><td><code>pip install pytest-asyncio</code></td></tr>
+    <tr><td><strong>RAGAS</strong></td><td>RAG quality evaluation</td><td><code>pip install ragas</code></td></tr>
+    <tr><td><strong>LangSmith</strong></td><td>LLM tracing & observability</td><td><code>pip install langsmith</code></td></tr>
+    <tr><td><strong>deepeval</strong></td><td>LLM evaluation framework</td><td><code>pip install deepeval</code></td></tr>
+    <tr><td><strong>httpx</strong></td><td>API E2E testing</td><td><code>pip install httpx</code></td></tr>
+    <tr><td><strong>faker</strong></td><td>Generate test data</td><td><code>pip install faker</code></td></tr>
+  </table>
+
+  <h2>Requirements Files</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Text — requirements-dev.txt</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre># Testing
+pytest>=7.0
+pytest-cov>=4.0
+pytest-asyncio>=0.21
+pytest-mock>=3.10
+
+# AI Evaluation
+ragas>=0.1
+deepeval>=0.20
+
+# API Testing
+httpx>=0.25
+
+# Data Generation
+faker>=19.0
+
+# Profiling
+memory-profiler>=0.61
+py-spy>=0.3</pre>
+  </div>
+
+  <h2>CI/CD Integration</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">YAML — .github/workflows/test.yml</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>name: AI Project Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run unit tests
+        run: pytest -m "not integration and not slow" -v --cov=src
+
+      - name: Run integration tests
+        run: pytest -m integration -v
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4</pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>Testing Strategy Summary</strong>
+    Run unit tests on every commit (fast, no external deps). Run integration tests on PRs (need API keys). Run performance and E2E tests before releases. Gate production deploys on RAGAS score thresholds.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(8)">← Checklist</button>
+    <button class="btn btn-primary" onclick="goto(0)">Back to Overview ↑</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  const lessons = document.querySelectorAll('.lesson');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function goto(idx) {
+    lessons.forEach(l => l.classList.remove('active'));
+    navItems.forEach(n => n.classList.remove('active'));
+    document.getElementById('lesson-' + idx).classList.add('active');
+    navItems[idx].classList.add('active');
+    document.getElementById('mainContent').scrollTop = 0;
+  }
+
+  function switchTab(event, tabId, group) {
+    const card = event.target.closest('aside') || event.target.parentElement.parentElement;
+    // find panes and buttons belonging to this group
+    document.querySelectorAll(`#${tabId}`).forEach(el => {
+      const container = el.closest('.lesson');
+      container.querySelectorAll('.tab-pane').forEach(p => {
+        if (p.id.startsWith(group + '-')) p.classList.remove('active');
+      });
+      container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    });
+    event.target.classList.add('active');
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = '✓ copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function toggle(item) {
+    const cb = item.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  }
+</script>
+</body>
+</html>
