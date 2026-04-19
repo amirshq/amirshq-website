@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete MCP (Model Context Protocol) Learning Guide · LearnAIbyAmir</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0F172A;
+            --secondary: #1E293B;
+            --accent: #3B82F6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text-light: #F1F5F9;
+            --text-dim: #CBD5E1;
+            --border: #334155;
+            --code-bg: #0F172A;
+            --highlight: #4F46E5;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #1a2332 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+            border-left-color: var(--accent);
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            margin-left: 280px;
+            padding: 3rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADERS */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #60A5FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.75rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        /* CODE BLOCKS */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'DM Mono', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .code-block code {
+            color: #A0AEC0;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #2563EB;
+        }
+
+        /* BOXES */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1.25rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1.25rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+        }
+
+        /* LISTS */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-dim);
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            line-height: 1.8;
+        }
+
+        /* COMPONENTS CHECKLIST */
+        .checklist {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item input {
+            margin-right: 1rem;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            flex: 1;
+            color: var(--text-dim);
+        }
+
+        .checklist-item input:checked + label {
+            color: var(--success);
+            text-decoration: line-through;
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 1rem;
+            text-align: left;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* PROGRESS */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* STEP CARDS */
+        .step-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                transition: left 0.3s ease;
+                width: 280px;
+                height: 100vh;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .highlight-yellow {
+            background: rgba(245, 158, 11, 0.2);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .keyword {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: rgba(59, 130, 246, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <a class="back-pill-link" href="../../index.html" style="position:fixed;z-index:9999;top:12px;left:12px;padding:6px 12px;border-radius:999px;background:rgba(15,23,42,0.96);border:1px solid var(--border);color:var(--text-dim);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(14px);text-decoration:none;">
+      <span style="font-size:14px;">←</span> Back to topics
+    </a>
+
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">📚 MCP Guide</div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Foundations</div>
+                <a class="nav-link active" onclick="showSection('intro')">What is MCP?</a>
+                <a class="nav-link" onclick="showSection('problem')">The Problem MCP Solves</a>
+                <a class="nav-link" onclick="showSection('architecture')">Architecture</a>
+                <a class="nav-link" onclick="showSection('concepts')">Key Concepts</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Building</div>
+                <a class="nav-link" onclick="showSection('setup')">Setup & Installation</a>
+                <a class="nav-link" onclick="showSection('boilerplate')">Boilerplate Code</a>
+                <a class="nav-link" onclick="showSection('example')">First MCP (Step-by-Step)</a>
+                <a class="nav-link" onclick="showSection('tools')">Creating Tools</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Integration</div>
+                <a class="nav-link" onclick="showSection('claude')">Using with Claude</a>
+                <a class="nav-link" onclick="showSection('agents')">Using with Agents</a>
+                <a class="nav-link" onclick="showSection('multiple')">Multiple MCPs</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Production</div>
+                <a class="nav-link" onclick="showSection('checklist')">Components Checklist</a>
+                <a class="nav-link" onclick="showSection('deploy')">Deployment</a>
+                <a class="nav-link" onclick="showSection('best')">Best Practices</a>
+                <a class="nav-link" onclick="showSection('troubleshoot')">Troubleshooting</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+            <!-- SECTION: INTRO -->
+            <section id="intro" class="section active">
+                <h1>What is MCP?</h1>
+                <p style="font-size: 1.1rem; color: var(--text-light);">Model Context Protocol (MCP) is a <span class="keyword">universal connector</span> that lets AI assistants talk to tools, databases, and services.</p>
+
+                <h2>Simple Analogy</h2>
+                <p>Think of MCP as a <span class="highlight-yellow">USB-C port for AI</span>.</p>
+
+                <div class="info-box">
+                    <strong>Without USB-C:</strong> Every device needs a different cable. Connect a phone, then a laptop, then a camera—different plugs for each.<br><br>
+                    <strong>With USB-C:</strong> One cable works for everything. Plug it in, and it automatically works.<br><br>
+                    <strong>MCP is the same:</strong> Claude doesn't need custom code for Qdrant, PostgreSQL, APIs, etc. One MCP system connects to anything.
+                </div>
+
+                <h2>Real-World Examples</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>✅ Database Access</h3>
+                        <p>MCP → PostgreSQL → Get customer data</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔍 Vector Search</h3>
+                        <p>MCP → Qdrant → Semantic search documents</p>
+                    </div>
+                    <div class="card">
+                        <h3>🖼️ Image Analysis</h3>
+                        <p>MCP → Computer Vision → Analyze images</p>
+                    </div>
+                    <div class="card">
+                        <h3>🌐 API Calls</h3>
+                        <p>MCP → REST API → Fetch data</p>
+                    </div>
+                </div>
+
+                <h2>What You Get with MCP</h2>
+                <ul>
+                    <li><span class="keyword">Universal interface</span> - Same format for all tools</li>
+                    <li><span class="keyword">No vendor lock-in</span> - Works with Claude, ChatGPT, Gemini</li>
+                    <li><span class="keyword">Framework agnostic</span> - LangGraph, AutoGen, CrewAI all supported</li>
+                    <li><span class="keyword">Easy to maintain</span> - One MCP = multiple applications</li>
+                    <li><span class="keyword">Scalable</span> - Add tools without rewriting code</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>Key Insight:</strong> MCP is about <span class="keyword">standardization</span>. Instead of writing custom code for each tool, you write one MCP that works everywhere.
+                </div>
+            </section>
+
+            <!-- SECTION: PROBLEM -->
+            <section id="problem" class="section">
+                <h1>The Problem MCP Solves</h1>
+
+                <h2>Before MCP: The Mess</h2>
+                <p>Imagine you're building an AI app that needs to talk to 5 different systems:</p>
+
+                <div class="code-block">
+                    <div class="code-label">Without MCP</div>
+                    <pre><code>Your App
+    ├─ Custom code for PostgreSQL (50 lines)
+    ├─ Custom code for Qdrant (50 lines)
+    ├─ Custom code for Pinecone (50 lines)
+    ├─ Custom code for REST API (50 lines)
+    └─ Custom code for Redis (50 lines)
+
+Total: 250 lines of custom integration code
+
+Add a 6th tool? Write 50 more lines.
+Change tools? Rewrite everything.
+Use with LangGraph? Add 50 more lines.
+Use with AutoGen? Add 50 more lines.
+Use with CrewAI? Add 50 more lines.
+
+Result: 350+ lines of custom code just to connect tools.</code></pre>
+                </div>
+
+                <h2>After MCP: The Solution</h2>
+
+                <div class="code-block">
+                    <div class="code-label">With MCP</div>
+                    <pre><code>Your App
+    ├─ PostgreSQL MCP (100 lines, write once)
+    ├─ Qdrant MCP (100 lines, write once)
+    ├─ Pinecone MCP (100 lines, write once)
+    ├─ REST API MCP (100 lines, write once)
+    └─ Redis MCP (100 lines, write once)
+
+Total: 500 lines of MCP servers (write once, use everywhere)
+
+Add a 6th tool? Write 100 lines for new MCP.
+Change tools? Just swap MCPs, no app code changes.
+Use with LangGraph? Works automatically.
+Use with AutoGen? Works automatically.
+Use with CrewAI? Works automatically.
+
+Result: 100 lines per tool + MCP, then it works everywhere.</code></pre>
+                </div>
+
+                <h2>The Key Difference</h2>
+
+                <table>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Without MCP</th>
+                        <th>With MCP</th>
+                    </tr>
+                    <tr>
+                        <td>Code per tool</td>
+                        <td>Custom for each framework</td>
+                        <td>Write once, use everywhere</td>
+                    </tr>
+                    <tr>
+                        <td>Framework changes</td>
+                        <td>Rewrite all integrations</td>
+                        <td>No changes needed</td>
+                    </tr>
+                    <tr>
+                        <td>Adding tools</td>
+                        <td>Custom code per framework</td>
+                        <td>Just add MCP</td>
+                    </tr>
+                    <tr>
+                        <td>Testing</td>
+                        <td>Test per framework</td>
+                        <td>Test once</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td>High (multiple copies)</td>
+                        <td>Low (single source)</td>
+                    </tr>
+                </table>
+
+                <h2>The Problem in One Sentence</h2>
+                <div class="warning-box">
+                    <strong>Without MCP:</strong> You write custom code for every tool × every framework = exponential complexity.<br><br>
+                    <strong>With MCP:</strong> You write one MCP per tool, and it works with every framework.
+                </div>
+            </section>
+
+            <!-- SECTION: ARCHITECTURE -->
+            <section id="architecture" class="section">
+                <h1>MCP Architecture</h1>
+
+                <h2>How MCP Works (3 Parts)</h2>
+
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <div class="step-title">MCP Client</div>
+                    <p>The part that <span class="keyword">asks for help</span>. Usually your Claude Desktop, Claude API, or AI agent (LangGraph, AutoGen).</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <div class="step-title">MCP Server</div>
+                    <p>The part that <span class="keyword">does the work</span>. You build this. It connects to your database, API, or service.</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <div class="step-title">Connection</div>
+                    <p>The <span class="keyword">protocol</span> that connects client to server. Usually JSON-RPC over stdio or HTTP.</p>
+                </div>
+
+                <h2>The Flow</h2>
+
+                <div class="code-block">
+                    <div class="code-label">MCP Request/Response</div>
+                    <pre><code>User: "Find customers named John"
+    ↓
+Claude (Client): "I need to call search_database tool"
+    ↓
+MCP Client → MCP Server (JSON-RPC request)
+    {
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+            "name": "search_database",
+            "arguments": {"name": "John"}
+        }
+    }
+    ↓
+MCP Server: Connects to PostgreSQL
+    ↓
+PostgreSQL: Returns [John Doe, john@example.com, ...]
+    ↓
+MCP Server → MCP Client (JSON response)
+    {
+        "result": {
+            "content": [{
+                "type": "text",
+                "text": "Found: John Doe, john@example.com"
+            }]
+        }
+    }
+    ↓
+Claude: "I got the results. Here's the answer..."</code></pre>
+                </div>
+
+                <h2>Server vs Client</h2>
+
+                <div class="info-box">
+                    <strong>You Build (MCP Server):</strong><br>
+                    • Python/JavaScript application<br>
+                    • Listens for requests<br>
+                    • Calls your database/API<br>
+                    • Returns results<br><br>
+
+                    <strong>Claude Provides (MCP Client):</strong><br>
+                    • Claude Desktop app<br>
+                    • Claude API<br>
+                    • LangGraph/AutoGen integrations<br>
+                    • Automatically sends requests
+                </div>
+
+                <h2>Communication Protocol</h2>
+
+                <ul>
+                    <li><span class="keyword">Transport:</span> Stdio (process pipes) or HTTP/WebSocket</li>
+                    <li><span class="keyword">Format:</span> JSON-RPC 2.0 (standardized)</li>
+                    <li><span class="keyword">Tools:</span> Functions your server exposes</li>
+                    <li><span class="keyword">Resources:</span> Data your server provides</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>Why JSON-RPC?</strong> It's language-independent, standardized, and every tool understands it. Write your MCP in Python, use it with JavaScript—doesn't matter.
+                </div>
+            </section>
+
+            <!-- SECTION: CONCEPTS -->
+            <section id="concepts" class="section">
+                <h1>Key Concepts</h1>
+
+                <h2>1. Tools</h2>
+                <p>Functions that your MCP server exposes. Claude can call them.</p>
+
+                <div class="code-block">
+                    <div class="code-label">What is a Tool?</div>
+                    <pre><code>Tool: query_database
+Description: "Search the database for customers"
+Parameters:
+  - name: "John" (required)
+  - limit: 10 (optional)
+
+Result: List of customers matching "John"</code></pre>
+                </div>
+
+                <div class="info-box">
+                    Think of tools as <span class="keyword">methods</span> your server offers. Claude asks "Can I call query_database?" and your server says "Yes, here's what it does and what parameters it needs."
+                </div>
+
+                <h2>2. Resources</h2>
+                <p>Static data your server provides (files, documents, knowledge bases).</p>
+
+                <ul>
+                    <li>URI-based identifiers (like file paths)</li>
+                    <li>Claude can read them without calling functions</li>
+                    <li>Useful for context, documents, static information</li>
+                </ul>
+
+                <h2>3. Server Discovery</h2>
+                <p>When Claude connects to your MCP server, it asks: "What tools and resources do you have?"</p>
+
+                <div class="code-block">
+                    <div class="code-label">Server Lists What It Can Do</div>
+                    <pre><code>Claude: "What can you do?"
+
+MCP Server responds:
+{
+    "tools": [
+        {"name": "query_database", "description": "..."},
+        {"name": "insert_record", "description": "..."},
+        {"name": "delete_record", "description": "..."}
+    ],
+    "resources": [
+        {"uri": "file:///data/customers.csv", "description": "..."}
+    ]
+}
+
+Claude: "Great! I can call these 3 tools and access this file."</code></pre>
+                </div>
+
+                <h2>4. Tool Calling Flow</h2>
+
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <div class="step-title">Discovery</div>
+                    <p>Claude asks MCP server: "What tools do you have?"</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <div class="step-title">Request</div>
+                    <p>Claude decides to call a tool with parameters</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <div class="step-title">Execution</div>
+                    <p>MCP server executes the tool (calls database, API, etc.)</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <div class="step-title">Response</div>
+                    <p>MCP server returns results to Claude</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">5</span>
+                    <div class="step-title">Reasoning</div>
+                    <p>Claude uses results to answer the user's question</p>
+                </div>
+
+                <h2>5. Input Validation</h2>
+                <p>Each tool declares what parameters it accepts (schema).</p>
+
+                <div class="code-block">
+                    <div class="code-label">Tool Schema</div>
+                    <pre><code>Tool: search_database
+
+Input Schema:
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Customer name to search for"
+        },
+        "limit": {
+            "type": "integer",
+            "description": "Max results (default: 10)"
+        }
+    },
+    "required": ["name"]
+}
+
+Valid call: search_database(name="John", limit=5) ✓
+Invalid call: search_database() ✗ (missing required 'name')</code></pre>
+                </div>
+
+                <h2>6. Error Handling</h2>
+                <p>Tools return either results or errors.</p>
+
+                <div class="code-block">
+                    <div class="code-label">Tool Results</div>
+                    <pre><code>Success:
+{
+    "content": [{
+        "type": "text",
+        "text": "Found 3 customers named John"
+    }],
+    "isError": false
+}
+
+Error:
+{
+    "content": [{
+        "type": "text",
+        "text": "Database connection failed"
+    }],
+    "isError": true
+}</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>Key Point:</strong> Every tool response has 2 fields: content (what happened) and isError (success or failure). Claude handles both cases.
+                </div>
+            </section>
+
+            <!-- SECTION: SETUP -->
+            <section id="setup" class="section">
+                <h1>Setup & Installation</h1>
+
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li><span class="keyword">Python 3.8+</span> (for Python MCPs)</li>
+                    <li><span class="keyword">pip</span> or <span class="keyword">npm</span> (package manager)</li>
+                    <li><span class="keyword">Claude Desktop</span> (optional, for testing) or <span class="keyword">Claude API</span></li>
+                    <li><span class="keyword">Basic programming knowledge</span></li>
+                </ul>
+
+                <h2>Step 1: Install MCP SDK</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python</div>
+                    <pre><code>pip install mcp</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">JavaScript/TypeScript</div>
+                    <pre><code>npm install @modelcontextprotocol/sdk</code></pre>
+                </div>
+
+                <h2>Step 2: Create Project Structure</h2>
+
+                <div class="code-block">
+                    <div class="code-label">File Structure</div>
+                    <pre><code>my-mcp-project/
+├── my_mcp_server.py        (your MCP server)
+├── requirements.txt         (dependencies)
+├── config.json             (Claude Desktop config)
+└── README.md               (documentation)</code></pre>
+                </div>
+
+                <h2>Step 3: Install Dependencies</h2>
+
+                <div class="code-block">
+                    <div class="code-label">requirements.txt</div>
+                    <pre><code>mcp>=0.1.0
+asyncio
+json</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Install</div>
+                    <pre><code>pip install -r requirements.txt</code></pre>
+                </div>
+
+                <h2>Step 4: Configure Claude Desktop (Optional)</h2>
+
+                <p>If you want to test with Claude Desktop, update its config file.</p>
+
+                <div class="code-block">
+                    <div class="code-label">~/.claude_desktop_config.json</div>
+                    <pre><code>{
+  "mcpServers": {
+    "my-database": {
+      "command": "python",
+      "args": ["/path/to/my_mcp_server.py"]
+    }
+  }
+}</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>Where is this file?</strong><br>
+                    • <span class="keyword">Windows:</span> %APPDATA%\Claude\claude_desktop_config.json<br>
+                    • <span class="keyword">Mac:</span> ~/Library/Application Support/Claude/claude_desktop_config.json<br>
+                    • <span class="keyword">Linux:</span> ~/.config/Claude/claude_desktop_config.json
+                </div>
+
+                <h2>Verification</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Test Your Setup</div>
+                    <pre><code>$ python my_mcp_server.py
+Starting MCP server...
+Listening on stdio
+Ready for connections ✓</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>You're ready!</strong> Now you can build your first MCP.
+                </div>
+            </section>
+
+            <!-- SECTION: BOILERPLATE -->
+            <section id="boilerplate" class="section">
+                <h1>Complete Boilerplate Code</h1>
+
+                <p>Here's a ready-to-use template for building MCPs. Customize it for your needs.</p>
+
+                <h2>Python MCP Boilerplate</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python - Full Template</div>
+                    <pre><code>"""
+MCP Server Template
+A minimal MCP server with tools and error handling.
+"""
+
+import asyncio
+import json
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ToolResult
+
+# ============================================================================
+# 1. CREATE THE SERVER
+# ============================================================================
+
+server = Server("my-server")  # Replace with your server name
+
+# ============================================================================
+# 2. DEFINE YOUR TOOLS
+# ============================================================================
+
+@server.tool()
+async def my_first_tool(param1: str, param2: int = 10) -> ToolResult:
+    """
+    This is what your tool does.
+    
+    Args:
+        param1: A required string parameter
+        param2: An optional integer (default: 10)
+    
+    Returns:
+        A ToolResult with content
+    """
+    try:
+        # Your business logic here
+        result = f"Processed: {param1} with {param2}"
+        
+        return ToolResult(
+            content=[TextContent(text=result)],
+            is_error=False
+        )
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )
+
+@server.tool()
+async def my_second_tool(data: str) -> ToolResult:
+    """Another tool example"""
+    try:
+        # Process the data
+        processed = data.upper()
+        return ToolResult(content=[TextContent(text=processed)])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )
+
+# ============================================================================
+# 3. REGISTER TOOLS WITH MCP
+# ============================================================================
+
+server.register_tool(
+    Tool(
+        name="my_first_tool",
+        description="Describe what this tool does here",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "param1": {
+                    "type": "string",
+                    "description": "What is param1?"
+                },
+                "param2": {
+                    "type": "integer",
+                    "description": "What is param2?",
+                    "default": 10
+                }
+            },
+            "required": ["param1"]
+        }
+    )
+)
+
+server.register_tool(
+    Tool(
+        name="my_second_tool",
+        description="Describe what this tool does here",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "description": "The data to process"
+                }
+            },
+            "required": ["data"]
+        }
+    )
+)
+
+# ============================================================================
+# 4. START THE SERVER
+# ============================================================================
+
+if __name__ == "__main__":
+    async def main():
+        async with server:
+            print("MCP Server is running...")
+            await asyncio.sleep(float('inf'))
+    
+    asyncio.run(main())</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+
+                <h2>With Database Connection (PostgreSQL)</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python - Database MCP</div>
+                    <pre><code>"""
+MCP Server with Database Connection
+Connects to PostgreSQL and exposes database operations as tools.
+"""
+
+import asyncio
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ToolResult
+
+server = Server("database-mcp")
+
+# ============================================================================
+# DATABASE CONNECTION POOL
+# ============================================================================
+
+def get_db_connection():
+    """Get connection to PostgreSQL"""
+    try:
+        conn = psycopg2.connect(
+            host="localhost",
+            database="mydb",
+            user="postgres",
+            password="password"
+        )
+        return conn
+    except Exception as e:
+        raise Exception(f"Database connection failed: {str(e)}")
+
+# ============================================================================
+# DATABASE TOOLS
+# ============================================================================
+
+@server.tool()
+async def query_database(sql: str, limit: int = 10) -> ToolResult:
+    """Execute a SELECT query on the database"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Limit the query to prevent abuse
+        safe_sql = f"{sql} LIMIT {limit}"
+        cursor.execute(safe_sql)
+        
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        # Format as readable text
+        if not rows:
+            return ToolResult(content=[TextContent(text="No results found")])
+        
+        result_text = "\n".join([str(dict(row)) for row in rows])
+        return ToolResult(content=[TextContent(text=result_text)])
+    
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Query failed: {str(e)}")],
+            is_error=True
+        )
+
+@server.tool()
+async def insert_record(table: str, data: dict) -> ToolResult:
+    """Insert a record into the database"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        columns = ", ".join(data.keys())
+        placeholders = ", ".join(["%s"] * len(data))
+        values = list(data.values())
+        
+        sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+        cursor.execute(sql, values)
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return ToolResult(
+            content=[TextContent(text=f"Record inserted into {table}")]
+        )
+    
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Insert failed: {str(e)}")],
+            is_error=True
+        )
+
+# ============================================================================
+# REGISTER TOOLS
+# ============================================================================
+
+server.register_tool(
+    Tool(
+        name="query_database",
+        description="Execute a SELECT query on PostgreSQL",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "sql": {
+                    "type": "string",
+                    "description": "SQL SELECT query"
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum rows to return (default: 10)"
+                }
+            },
+            "required": ["sql"]
+        }
+    )
+)
+
+server.register_tool(
+    Tool(
+        name="insert_record",
+        description="Insert a new record into the database",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "table": {
+                    "type": "string",
+                    "description": "Table name"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "Column-value pairs to insert"
+                }
+            },
+            "required": ["table", "data"]
+        }
+    )
+)
+
+# ============================================================================
+# START SERVER
+# ============================================================================
+
+if __name__ == "__main__":
+    async def main():
+        async with server:
+            print("Database MCP Server running...")
+            await asyncio.sleep(float('inf'))
+    
+    asyncio.run(main())</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+
+                <h2>With REST API Integration</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python - API MCP</div>
+                    <pre><code>"""
+MCP Server with REST API Integration
+Connects to external APIs and exposes them as tools.
+"""
+
+import asyncio
+import httpx
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ToolResult
+
+server = Server("api-mcp")
+
+# ============================================================================
+# API TOOLS
+# ============================================================================
+
+@server.tool()
+async def call_external_api(endpoint: str, method: str = "GET", 
+                            data: dict = None) -> ToolResult:
+    """Call an external REST API"""
+    try:
+        async with httpx.AsyncClient() as client:
+            url = f"https://api.example.com/{endpoint}"
+            
+            if method == "GET":
+                response = await client.get(url)
+            elif method == "POST":
+                response = await client.post(url, json=data)
+            else:
+                return ToolResult(
+                    content=[TextContent(text=f"Unsupported method: {method}")],
+                    is_error=True
+                )
+            
+            result = response.json()
+            return ToolResult(content=[TextContent(text=str(result))])
+    
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"API call failed: {str(e)}")],
+            is_error=True
+        )
+
+@server.tool()
+async def get_weather(city: str) -> ToolResult:
+    """Get weather for a city (example API integration)"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"https://api.openweathermap.org/data/2.5/weather",
+                params={"q": city, "appid": "YOUR_API_KEY"}
+            )
+            data = response.json()
+            
+            result = f"Weather in {city}: {data['weather'][0]['main']}, {data['main']['temp']}K"
+            return ToolResult(content=[TextContent(text=result)])
+    
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Weather fetch failed: {str(e)}")],
+            is_error=True
+        )
+
+# ============================================================================
+# REGISTER TOOLS
+# ============================================================================
+
+server.register_tool(
+    Tool(
+        name="call_external_api",
+        description="Call an external REST API",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "endpoint": {
+                    "type": "string",
+                    "description": "API endpoint path"
+                },
+                "method": {
+                    "type": "string",
+                    "enum": ["GET", "POST"],
+                    "description": "HTTP method"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "Data for POST request"
+                }
+            },
+            "required": ["endpoint"]
+        }
+    )
+)
+
+server.register_tool(
+    Tool(
+        name="get_weather",
+        description="Get current weather for a city",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "description": "City name"
+                }
+            },
+            "required": ["city"]
+        }
+    )
+)
+
+# ============================================================================
+# START SERVER
+# ============================================================================
+
+if __name__ == "__main__":
+    async def main():
+        async with server:
+            print("API MCP Server running...")
+            await asyncio.sleep(float('inf'))
+    
+    asyncio.run(main())</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+
+                <div class="success-box">
+                    <strong>Pro Tip:</strong> Start with the basic boilerplate, then add your specific tools. Follow the same pattern for each tool you add.
+                </div>
+            </section>
+
+            <!-- SECTION: EXAMPLE -->
+            <section id="example" class="section">
+                <h1>First MCP: Step-by-Step</h1>
+
+                <p>Let's build a complete MCP together. We'll create a temperature sensor MCP.</p>
+
+                <h2>Requirements</h2>
+                <ul>
+                    <li>Python 3.8+</li>
+                    <li>MCP SDK installed (pip install mcp)</li>
+                    <li>A text editor</li>
+                </ul>
+
+                <h2>What We're Building</h2>
+                <p>An MCP that reads temperature from a sensor and lets Claude analyze it.</p>
+
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <div class="step-title">Create the File</div>
+                    <p>Create <code>temperature_mcp.py</code></p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">temperature_mcp.py</div>
+                    <pre><code>import asyncio
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ToolResult
+import random  # Simulating sensor data
+
+server = Server("temperature-sensor")</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <div class="step-title">Simulate a Sensor</div>
+                    <p>Add a function that pretends to read from a sensor</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Add to temperature_mcp.py</div>
+                    <pre><code># Simulate a temperature sensor
+def read_temperature():
+    """Simulates reading from a real sensor"""
+    # In reality, this would connect to COM3, GPIO pin, etc.
+    # For now, we simulate random temperature
+    return round(random.uniform(15, 35), 1)
+
+def read_humidity():
+    """Simulates reading humidity"""
+    return round(random.uniform(30, 80), 1)</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <div class="step-title">Create Tool 1: Read Temperature</div>
+                    <p>Add the tool that Claude can call</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Add to temperature_mcp.py</div>
+                    <pre><code>@server.tool()
+async def get_temperature() -> ToolResult:
+    """
+    Read the current temperature from the sensor.
+    Returns temperature in Celsius.
+    """
+    try:
+        temp = read_temperature()
+        return ToolResult(
+            content=[TextContent(
+                text=f"Current temperature: {temp}°C"
+            )]
+        )
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error reading sensor: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">4</span>
+                    <div class="step-title">Create Tool 2: Alert If Too High</div>
+                    <p>Add a more complex tool</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Add to temperature_mcp.py</div>
+                    <pre><code>@server.tool()
+async def check_temperature_alert(threshold: float = 30.0) -> ToolResult:
+    """
+    Check if temperature exceeds a threshold.
+    
+    Args:
+        threshold: Temperature threshold in Celsius (default: 30)
+    
+    Returns:
+        Alert status
+    """
+    try:
+        temp = read_temperature()
+        humidity = read_humidity()
+        
+        if temp > threshold:
+            message = f"🔴 ALERT! Temperature {temp}°C exceeds {threshold}°C threshold"
+        else:
+            message = f"✓ OK. Temperature {temp}°C is below {threshold}°C threshold"
+        
+        message += f"\nHumidity: {humidity}%"
+        
+        return ToolResult(content=[TextContent(text=message)])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">5</span>
+                    <div class="step-title">Register Tools</div>
+                    <p>Tell MCP what tools exist</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Add to temperature_mcp.py</div>
+                    <pre><code># Register Tool 1
+server.register_tool(
+    Tool(
+        name="get_temperature",
+        description="Read current temperature from the sensor",
+        inputSchema={
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    )
+)
+
+# Register Tool 2
+server.register_tool(
+    Tool(
+        name="check_temperature_alert",
+        description="Check if temperature exceeds a threshold",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "threshold": {
+                    "type": "number",
+                    "description": "Temperature threshold in Celsius (default: 30)"
+                }
+            },
+            "required": []
+        }
+    )
+)</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">6</span>
+                    <div class="step-title">Start the Server</div>
+                    <p>Add the main function</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Add to temperature_mcp.py</div>
+                    <pre><code>if __name__ == "__main__":
+    async def main():
+        async with server:
+            print("✓ Temperature Sensor MCP is running...")
+            print("Waiting for connections...")
+            await asyncio.sleep(float('inf'))
+    
+    asyncio.run(main())</code></pre>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">7</span>
+                    <div class="step-title">Test It</div>
+                    <p>Run the server</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Terminal</div>
+                    <pre><code>$ python temperature_mcp.py
+✓ Temperature Sensor MCP is running...
+Waiting for connections...</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>Success!</strong> Your first MCP is running. Now configure Claude Desktop to use it (see Setup section).
+                </div>
+
+                <h2>Complete Code</h2>
+
+                <div class="code-block">
+                    <div class="code-label">temperature_mcp.py (Full)</div>
+                    <pre><code>"""
+Temperature Sensor MCP
+A simple MCP that reads from a temperature sensor.
+"""
+
+import asyncio
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ToolResult
+import random
+
+server = Server("temperature-sensor")
+
+# ============================================================================
+# SENSOR SIMULATION
+# ============================================================================
+
+def read_temperature():
+    """Simulates reading from a real temperature sensor"""
+    return round(random.uniform(15, 35), 1)
+
+def read_humidity():
+    """Simulates reading humidity"""
+    return round(random.uniform(30, 80), 1)
+
+# ============================================================================
+# TOOLS
+# ============================================================================
+
+@server.tool()
+async def get_temperature() -> ToolResult:
+    """Read the current temperature from the sensor"""
+    try:
+        temp = read_temperature()
+        return ToolResult(content=[
+            TextContent(text=f"Current temperature: {temp}°C")
+        ])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )
+
+@server.tool()
+async def check_temperature_alert(threshold: float = 30.0) -> ToolResult:
+    """Check if temperature exceeds a threshold"""
+    try:
+        temp = read_temperature()
+        humidity = read_humidity()
+        
+        if temp > threshold:
+            message = f"🔴 ALERT! {temp}°C exceeds {threshold}°C"
+        else:
+            message = f"✓ OK. {temp}°C is below {threshold}°C"
+        
+        message += f"\nHumidity: {humidity}%"
+        
+        return ToolResult(content=[TextContent(text=message)])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )
+
+# ============================================================================
+# REGISTER TOOLS
+# ============================================================================
+
+server.register_tool(
+    Tool(
+        name="get_temperature",
+        description="Read current temperature from sensor",
+        inputSchema={"type": "object", "properties": {}, "required": []}
+    )
+)
+
+server.register_tool(
+    Tool(
+        name="check_temperature_alert",
+        description="Check if temperature exceeds threshold",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "threshold": {
+                    "type": "number",
+                    "description": "Temperature threshold in Celsius"
+                }
+            },
+            "required": []
+        }
+    )
+)
+
+# ============================================================================
+# START SERVER
+# ============================================================================
+
+if __name__ == "__main__":
+    async def main():
+        async with server:
+            print("✓ Temperature Sensor MCP running...")
+            await asyncio.sleep(float('inf'))
+    
+    asyncio.run(main())</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+
+                <h2>Test with Claude</h2>
+
+                <div class="info-box">
+                    <strong>Configure Claude Desktop:</strong><br>
+                    Edit ~/.claude_desktop_config.json and add:<br><br>
+                    <code style="font-family: monospace;">
+                        "temperature": {<br>
+                        &nbsp;&nbsp;"command": "python",<br>
+                        &nbsp;&nbsp;"args": ["/path/to/temperature_mcp.py"]<br>
+                        }
+                    </code><br><br>
+                    Then restart Claude Desktop. You can now ask:<br>
+                    "What's the current temperature?" or "Alert me if temp exceeds 25°C"
+                </div>
+            </section>
+
+            <!-- SECTION: TOOLS -->
+            <section id="tools" class="section">
+                <h1>Creating Tools</h1>
+
+                <h2>Tool Structure</h2>
+
+                <p>Every tool has 3 parts:</p>
+
+                <div class="step-card">
+                    <span class="step-number">1</span>
+                    <div class="step-title">Function Definition</div>
+                    <p>The actual code that does the work</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">2</span>
+                    <div class="step-title">Description</div>
+                    <p>What the tool does (for Claude to understand)</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">3</span>
+                    <div class="step-title">Input Schema</div>
+                    <p>What parameters the tool accepts</p>
+                </div>
+
+                <h2>Simple Tool Template</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Pattern</div>
+                    <pre><code>@server.tool()
+async def my_tool(param1: str, param2: int = 10) -> ToolResult:
+    """
+    One-line description of what this tool does.
+    
+    Args:
+        param1: Description of param1
+        param2: Description of param2 (with default)
+    """
+    try:
+        # Your code here
+        result = do_something(param1, param2)
+        
+        return ToolResult(
+            content=[TextContent(text=str(result))],
+            is_error=False
+        )
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )
+
+# Register it
+server.register_tool(
+    Tool(
+        name="my_tool",  # Tool ID (what Claude calls)
+        description="What this tool does",  # For Claude
+        inputSchema={  # Parameters
+            "type": "object",
+            "properties": {
+                "param1": {
+                    "type": "string",
+                    "description": "Description for Claude"
+                },
+                "param2": {
+                    "type": "integer",
+                    "description": "Optional parameter"
+                }
+            },
+            "required": ["param1"]  # param2 is optional
+        }
+    )
+)</code></pre>
+                </div>
+
+                <h2>Input Schema Reference</h2>
+
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>JSON Schema</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>String</td>
+                        <td>"type": "string"</td>
+                        <td>name, email, description</td>
+                    </tr>
+                    <tr>
+                        <td>Number</td>
+                        <td>"type": "number"</td>
+                        <td>age, price, temperature</td>
+                    </tr>
+                    <tr>
+                        <td>Integer</td>
+                        <td>"type": "integer"</td>
+                        <td>count, limit, id</td>
+                    </tr>
+                    <tr>
+                        <td>Boolean</td>
+                        <td>"type": "boolean"</td>
+                        <td>active, verified</td>
+                    </tr>
+                    <tr>
+                        <td>Array</td>
+                        <td>"type": "array", "items": {...}</td>
+                        <td>tags, emails, files</td>
+                    </tr>
+                </table>
+
+                <h2>Common Tool Patterns</h2>
+
+                <h3>Database Query</h3>
+
+                <div class="code-block">
+                    <div class="code-label">Database Tool</div>
+                    <pre><code>@server.tool()
+async def query_database(query: str) -> ToolResult:
+    """Execute a database query"""
+    try:
+        conn = get_db_connection()
+        results = conn.execute(query).fetchall()
+        conn.close()
+        return ToolResult(content=[TextContent(text=str(results))])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <h3>API Call</h3>
+
+                <div class="code-block">
+                    <div class="code-label">API Tool</div>
+                    <pre><code>@server.tool()
+async def fetch_api(url: str, method: str = "GET") -> ToolResult:
+    """Call an external API"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.request(method, url)
+            return ToolResult(content=[
+                TextContent(text=response.json())
+            ])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <h3>File Operation</h3>
+
+                <div class="code-block">
+                    <div class="code-label">File Tool</div>
+                    <pre><code>@server.tool()
+async def read_file(path: str) -> ToolResult:
+    """Read a file"""
+    try:
+        with open(path, 'r') as f:
+            content = f.read()
+        return ToolResult(content=[TextContent(text=content)])
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <h2>Best Practices</h2>
+
+                <ul>
+                    <li><span class="keyword">Always</span> wrap in try/except</li>
+                    <li><span class="keyword">Always</span> return ToolResult</li>
+                    <li><span class="keyword">Always</span> provide clear description</li>
+                    <li><span class="keyword">Always</span> validate input</li>
+                    <li><span class="keyword">Always</span> set is_error correctly</li>
+                    <li><span class="keyword">Never</span> expose sensitive data in errors</li>
+                    <li><span class="keyword">Never</span> make tools do too much</li>
+                </ul>
+
+                <div class="warning-box">
+                    <strong>Tool Design Rule:</strong> One tool = one function. Don't make mega-tools that do multiple things. Keep them focused.
+                </div>
+            </section>
+
+            <!-- SECTION: CLAUDE -->
+            <section id="claude" class="section">
+                <h1>Using MCPs with Claude</h1>
+
+                <h2>Claude Desktop (Local)</h2>
+
+                <h3>Step 1: Configure</h3>
+
+                <p>Edit your Claude Desktop config file:</p>
+
+                <div class="code-block">
+                    <div class="code-label">~/.claude_desktop_config.json</div>
+                    <pre><code>{
+  "mcpServers": {
+    "my-database": {
+      "command": "python",
+      "args": ["/full/path/to/my_mcp_server.py"]
+    },
+    "my-api": {
+      "command": "python",
+      "args": ["/full/path/to/api_mcp.py"]
+    }
+  }
+}</code></pre>
+                </div>
+
+                <h3>Step 2: Restart Claude Desktop</h3>
+
+                <p>Close and reopen Claude Desktop for changes to take effect.</p>
+
+                <h3>Step 3: Use In Chat</h3>
+
+                <p>Just ask normally. Claude will automatically use the tools.</p>
+
+                <div class="info-box">
+                    <strong>Example:</strong><br>
+                    "Find all customers named John in the database"<br><br>
+                    Claude will:<br>
+                    1. Recognize it needs to query the database<br>
+                    2. Call your MCP's query_database tool<br>
+                    3. Get results<br>
+                    4. Provide answer
+                </div>
+
+                <h2>Claude API (Programmatic)</h2>
+
+                <p>Use MCPs in your Python/JavaScript code.</p>
+
+                <div class="code-block">
+                    <div class="code-label">Python - Claude API with MCP</div>
+                    <pre><code>from anthropic import Anthropic
+
+client = Anthropic()
+
+# Note: For Claude API, you need to configure MCP servers
+# on your infrastructure or use Claude for Work
+
+conversation_history = []
+
+def chat_with_mcp(user_message):
+    """Chat with Claude, using MCP tools"""
+    
+    conversation_history.append({
+        "role": "user",
+        "content": user_message
+    })
+    
+    # Claude will automatically use available MCP tools
+    response = client.messages.create(
+        model="claude-opus-4-6",
+        max_tokens=2048,
+        messages=conversation_history
+    )
+    
+    assistant_message = response.content[0].text
+    conversation_history.append({
+        "role": "assistant",
+        "content": assistant_message
+    })
+    
+    return assistant_message
+
+# Example usage
+result = chat_with_mcp("Find customers in the database")
+print(result)</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <strong>Note:</strong> For Claude API with MCPs, you typically deploy MCPs on your infrastructure and configure them server-side. Local MCPs work with Claude Desktop.
+                </div>
+
+                <h2>Verify Connection</h2>
+
+                <p>Check if Claude can see your MCP tools:</p>
+
+                <div class="info-box">
+                    <strong>In Claude Desktop:</strong><br>
+                    Type: "What tools are available?"<br><br>
+                    Claude should list your MCP tools. If they're missing, check your config file and restart.
+                </div>
+            </section>
+
+            <!-- SECTION: AGENTS -->
+            <section id="agents" class="section">
+                <h1>Using MCPs with AI Agents</h1>
+
+                <h2>LangGraph Integration</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python - LangGraph + MCP</div>
+                    <pre><code>from langgraph.graph import StateGraph, START, END
+from langchain_anthropic import ChatAnthropic
+from langchain_core.tools import tool
+from langchain_core.messages import HumanMessage
+import subprocess
+import json
+
+# ============================================================================
+# WRAPPER TOOL: Calls your MCP
+# ============================================================================
+
+@tool
+def database_tool(query: str) -> str:
+    """Search the database using MCP"""
+    
+    # Call your MCP server
+    request = {
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+            "name": "query_database",
+            "arguments": {"query": query}
+        }
+    }
+    
+    result = subprocess.run(
+        ["python", "my_mcp_server.py"],
+        input=json.dumps(request),
+        capture_output=True,
+        text=True
+    )
+    
+    return result.stdout
+
+# ============================================================================
+# CREATE AGENT
+# ============================================================================
+
+class AgentState:
+    messages: list
+
+llm = ChatAnthropic(model="claude-opus-4-6")
+tools = [database_tool]
+llm_with_tools = llm.bind_tools(tools)
+
+# ============================================================================
+# AGENT LOGIC
+# ============================================================================
+
+def agent_step(state):
+    """Agent reasoning step"""
+    response = llm_with_tools.invoke(state["messages"])
+    return {"messages": state["messages"] + [response]}
+
+# ============================================================================
+# BUILD GRAPH
+# ============================================================================
+
+graph = StateGraph(AgentState)
+graph.add_node("agent", agent_step)
+graph.add_edge(START, "agent")
+graph.add_edge("agent", END)
+
+agent = graph.compile()
+
+# ============================================================================
+# RUN AGENT
+# ============================================================================
+
+result = agent.invoke({
+    "messages": [HumanMessage(content="Find customers named John")]
+})
+
+print(result)</code></pre>
+                </div>
+
+                <h2>AutoGen Integration</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Python - AutoGen + MCP</div>
+                    <pre><code>from autogen import AssistantAgent, UserProxyAgent
+import subprocess
+import json
+
+# ============================================================================
+# MCP WRAPPER FUNCTIONS
+# ============================================================================
+
+def query_database(query: str) -> str:
+    """Call MCP database tool"""
+    request = {
+        "jsonrpc": "2.0",
+        "method": "tools/call",
+        "params": {
+            "name": "query_database",
+            "arguments": {"query": query}
+        }
+    }
+    
+    result = subprocess.run(
+        ["python", "my_mcp_server.py"],
+        input=json.dumps(request),
+        capture_output=True,
+        text=True
+    )
+    
+    return result.stdout
+
+# ============================================================================
+# CREATE AGENTS
+# ============================================================================
+
+assistant = AssistantAgent(
+    name="Database Assistant",
+    system_message="You are a helpful assistant with access to the database.",
+    llm_config={"config_list": [{"model": "gpt-4", "api_key": "YOUR_KEY"}]}
+)
+
+user_proxy = UserProxyAgent(
+    name="User",
+    human_input_mode="ALWAYS"
+)
+
+# Register the MCP tool
+assistant.register_function(
+    function_map={"query_database": query_database}
+)
+
+# ============================================================================
+# RUN CONVERSATION
+# ============================================================================
+
+user_proxy.initiate_chat(
+    assistant,
+    message="Find all customers named John in the database"
+)</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>Key Pattern:</strong> Wrap MCP calls in @tool functions, then bind to agent. Agent automatically calls tools when needed.
+                </div>
+            </section>
+
+            <!-- SECTION: MULTIPLE -->
+            <section id="multiple" class="section">
+                <h1>Using Multiple MCPs</h1>
+
+                <h2>Configure Multiple MCPs</h2>
+
+                <div class="code-block">
+                    <div class="code-label">~/.claude_desktop_config.json</div>
+                    <pre><code>{
+  "mcpServers": {
+    "database": {
+      "command": "python",
+      "args": ["/path/to/database_mcp.py"]
+    },
+    "vectordb": {
+      "command": "python",
+      "args": ["/path/to/vector_mcp.py"]
+    },
+    "api": {
+      "command": "python",
+      "args": ["/path/to/api_mcp.py"]
+    },
+    "files": {
+      "command": "python",
+      "args": ["/path/to/files_mcp.py"]
+    }
+  }
+}</code></pre>
+                </div>
+
+                <h2>Claude Automatically Discovers All Tools</h2>
+
+                <p>Once configured, Claude sees all tools from all MCPs and uses them appropriately.</p>
+
+                <div class="info-box">
+                    <strong>Example Multi-MCP Workflow:</strong><br><br>
+                    User: "Find documents about cloud computing and list customers interested in that topic"<br><br>
+                    Claude uses:<br>
+                    1. Vector DB MCP → Search for documents<br>
+                    2. Database MCP → Find customers<br>
+                    3. API MCP → Get real-time data<br>
+                    4. Files MCP → Read policy documents
+                </div>
+
+                <h2>Tool Naming Convention</h2>
+
+                <p>Use prefixes to organize tools from different MCPs:</p>
+
+                <div class="code-block">
+                    <div class="code-label">Naming Pattern</div>
+                    <pre><code># Database MCPs
+db_query()
+db_insert()
+db_update()
+
+# Vector DB MCPs
+vector_search()
+vector_embed()
+
+# API MCPs
+api_fetch()
+api_post()
+
+# File MCPs
+file_read()
+file_write()
+
+Result: Claude easily knows which MCP to call</code></pre>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Avoid naming conflicts:</strong> Make sure tool names are unique across all MCPs. If two MCPs have a tool named "search", Claude won't know which one to use.
+                </div>
+            </section>
+
+            <!-- SECTION: CHECKLIST -->
+            <section id="checklist" class="section">
+                <h1>Components Checklist</h1>
+
+                <p>Before deploying an MCP, ensure you have all these components.</p>
+
+                <h2>Development Components</h2>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp1">
+                        <label for="comp1"><span class="keyword">MCP Server Code</span> - Your Python/JavaScript server implementing tools</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp2">
+                        <label for="comp2"><span class="keyword">Tool Functions</span> - Each tool properly implemented with try/except</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp3">
+                        <label for="comp3"><span class="keyword">Tool Descriptions</span> - Clear descriptions for Claude to understand</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp4">
+                        <label for="comp4"><span class="keyword">Input Schemas</span> - JSON schemas for all tool parameters</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp5">
+                        <label for="comp5"><span class="keyword">Error Handling</span> - Proper error messages for failures</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp6">
+                        <label for="comp6"><span class="keyword">Requirements.txt</span> - Dependencies listed</label>
+                    </div>
+                </div>
+
+                <h2>Integration Components</h2>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp7">
+                        <label for="comp7"><span class="keyword">Claude Desktop Config</span> - MCP registered in config file</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp8">
+                        <label for="comp8"><span class="keyword">Agent Framework Setup</span> - LangGraph/AutoGen configured (if using)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp9">
+                        <label for="comp9"><span class="keyword">Tool Wrappers</span> - @tool decorated functions (if using agents)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp10">
+                        <label for="comp10"><span class="keyword">Environment Variables</span> - API keys, credentials stored securely</label>
+                    </div>
+                </div>
+
+                <h2>Testing & Verification</h2>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp11">
+                        <label for="comp11"><span class="keyword">Unit Tests</span> - Test each tool independently</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp12">
+                        <label for="comp12"><span class="keyword">Integration Tests</span> - Test MCP + Claude together</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp13">
+                        <label for="comp13"><span class="keyword">Error Cases</span> - Test what happens when tools fail</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp14">
+                        <label for="comp14"><span class="keyword">Manual Testing</span> - Actually use tools with Claude</label>
+                    </div>
+                </div>
+
+                <h2>Documentation & Deployment</h2>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp15">
+                        <label for="comp15"><span class="keyword">README.md</span> - How to install and use your MCP</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp16">
+                        <label for="comp16"><span class="keyword">Code Comments</span> - Explain complex logic</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp17">
+                        <label for="comp17"><span class="keyword">Deployment Script</span> - How to deploy/run in production</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp18">
+                        <label for="comp18"><span class="keyword">Monitoring Setup</span> - Logging, error tracking</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp19">
+                        <label for="comp19"><span class="keyword">Versioning</span> - Version your MCP (semantic versioning)</label>
+                    </div>
+                </div>
+
+                <h2>Security & Best Practices</h2>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp20">
+                        <label for="comp20"><span class="keyword">Input Validation</span> - Validate all parameters</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp21">
+                        <label for="comp21"><span class="keyword">Rate Limiting</span> - Limit tool calls to prevent abuse</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp22">
+                        <label for="comp22"><span class="keyword">Authentication</span> - Secure access to your MCP (if needed)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp23">
+                        <label for="comp23"><span class="keyword">Logging</span> - Log all tool calls for debugging</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp24">
+                        <label for="comp24"><span class="keyword">Error Messages</span> - Don't expose sensitive info in errors</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="comp25">
+                        <label for="comp25"><span class="keyword">Timeout Handling</span> - Tools shouldn't hang forever</label>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>Before going to production:</strong> Check off at least 20 of these 25 items. The remaining 5 are for advanced use cases.
+                </div>
+            </section>
+
+            <!-- SECTION: DEPLOY -->
+            <section id="deploy" class="section">
+                <h1>Deployment</h1>
+
+                <h2>Local Deployment (Claude Desktop)</h2>
+
+                <h3>Option 1: Direct Python</h3>
+
+                <div class="code-block">
+                    <div class="code-label">~/.claude_desktop_config.json</div>
+                    <pre><code>{
+  "mcpServers": {
+    "my-mcp": {
+      "command": "python",
+      "args": ["/path/to/my_mcp_server.py"]
+    }
+  }
+}</code></pre>
+                </div>
+
+                <h3>Option 2: Using Virtual Environment</h3>
+
+                <div class="code-block">
+                    <div class="code-label">Setup</div>
+                    <pre><code># Create virtual environment
+python -m venv venv
+
+# Activate it
+source venv/bin/activate  # macOS/Linux
+# or
+venv\Scripts\activate  # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create a script to run it
+cat > run_mcp.sh << 'EOF'
+#!/bin/bash
+source /path/to/venv/bin/activate
+python /path/to/my_mcp_server.py
+EOF
+
+chmod +x run_mcp.sh
+
+# Configure Claude Desktop
+{
+  "mcpServers": {
+    "my-mcp": {
+      "command": "/path/to/run_mcp.sh"
+    }
+  }
+}</code></pre>
+                </div>
+
+                <h2>Server Deployment (Production)</h2>
+
+                <h3>Option 1: Docker</h3>
+
+                <div class="code-block">
+                    <div class="code-label">Dockerfile</div>
+                    <pre><code>FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy files
+COPY my_mcp_server.py .
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Run server
+CMD ["python", "my_mcp_server.py"]</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Build & Run</div>
+                    <pre><code>docker build -t my-mcp:latest .
+docker run -p 8000:8000 my-mcp:latest</code></pre>
+                </div>
+
+                <h3>Option 2: Systemd Service (Linux)</h3>
+
+                <div class="code-block">
+                    <div class="code-label">/etc/systemd/system/my-mcp.service</div>
+                    <pre><code>[Unit]
+Description=My MCP Server
+After=network.target
+
+[Service]
+Type=simple
+User=mcpuser
+WorkingDirectory=/opt/my-mcp
+ExecStart=/usr/bin/python3 /opt/my-mcp/my_mcp_server.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Enable Service</div>
+                    <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable my-mcp
+sudo systemctl start my-mcp</code></pre>
+                </div>
+
+                <h3>Option 3: Cloud Deployment</h3>
+
+                <p>Deploy to Railway, Heroku, AWS, or your preferred platform:</p>
+
+                <ul>
+                    <li><span class="keyword">Railway:</span> Push your code, it auto-deploys</li>
+                    <li><span class="keyword">Heroku:</span> git push heroku main</li>
+                    <li><span class="keyword">AWS Lambda:</span> Wrap MCP in HTTP handler</li>
+                    <li><span class="keyword">Azure:</span> Container Apps or Functions</li>
+                </ul>
+
+                <h2>Configuration Management</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Use Environment Variables</div>
+                    <pre><code>import os
+
+# Get config from environment
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "mydb")
+API_KEY = os.getenv("API_KEY")
+
+if not API_KEY:
+    raise ValueError("API_KEY environment variable not set")</code></pre>
+                </div>
+
+                <h2>Health Checks</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Add Health Check Tool</div>
+                    <pre><code>@server.tool()
+async def health_check() -> ToolResult:
+    """Check if MCP server is healthy"""
+    try:
+        # Test database connection
+        conn = get_db_connection()
+        conn.close()
+        
+        return ToolResult(
+            content=[TextContent(text="✓ Server healthy")]
+        )
+    except Exception as e:
+        return ToolResult(
+            content=[TextContent(text=f"✗ Server error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <h2>Monitoring</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Add Logging</div>
+                    <pre><code>import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@server.tool()
+async def my_tool(param: str) -> ToolResult:
+    """Tool with logging"""
+    logger.info(f"Tool called with param: {param}")
+    
+    try:
+        result = do_work(param)
+        logger.info(f"Tool succeeded: {result}")
+        return ToolResult(content=[TextContent(text=result)])
+    except Exception as e:
+        logger.error(f"Tool failed: {str(e)}", exc_info=True)
+        return ToolResult(
+            content=[TextContent(text=f"Error: {str(e)}")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>Production Checklist:</strong><br>
+                    ✓ Logging configured<br>
+                    ✓ Health checks working<br>
+                    ✓ Environment variables set<br>
+                    ✓ Error handling tested<br>
+                    ✓ Rate limiting enabled<br>
+                    ✓ Monitored and alerting set up
+                </div>
+            </section>
+
+            <!-- SECTION: BEST PRACTICES -->
+            <section id="best" class="section">
+                <h1>Best Practices</h1>
+
+                <h2>1. Tool Design</h2>
+
+                <div class="info-box">
+                    <strong>✓ Do:</strong><br>
+                    • One tool = one function<br>
+                    • Clear, descriptive names<br>
+                    • Validate all inputs<br>
+                    • Return meaningful results<br><br>
+
+                    <strong>✗ Don't:</strong><br>
+                    • Make mega-tools that do everything<br>
+                    • Use cryptic abbreviations<br>
+                    • Skip input validation<br>
+                    • Return raw error messages
+                </div>
+
+                <h2>2. Error Handling</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Always Handle Errors</div>
+                    <pre><code>@server.tool()
+async def my_tool(param: str) -> ToolResult:
+    """Tool with proper error handling"""
+    try:
+        # Your code
+        if not param:
+            # Validate input
+            return ToolResult(
+                content=[TextContent(text="Parameter cannot be empty")],
+                is_error=True
+            )
+        
+        result = do_work(param)
+        return ToolResult(content=[TextContent(text=result)])
+    
+    except ValueError as e:
+        # Specific error
+        logger.error(f"Invalid value: {str(e)}")
+        return ToolResult(
+            content=[TextContent(text=f"Invalid input: {str(e)}")],
+            is_error=True
+        )
+    
+    except DatabaseError as e:
+        # Database error
+        logger.error(f"Database error: {str(e)}")
+        return ToolResult(
+            content=[TextContent(text="Database operation failed")],
+            is_error=True
+        )
+    
+    except Exception as e:
+        # Generic fallback
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+        return ToolResult(
+            content=[TextContent(text="An error occurred")],
+            is_error=True
+        )</code></pre>
+                </div>
+
+                <h2>3. Performance</h2>
+
+                <ul>
+                    <li><span class="keyword">Cache results</span> - Avoid repeated database queries</li>
+                    <li><span class="keyword">Add timeouts</span> - Tools shouldn't hang</li>
+                    <li><span class="keyword">Paginate results</span> - Don't return millions of rows</li>
+                    <li><span class="keyword">Use indexes</span> - Database queries should be fast</li>
+                    <li><span class="keyword">Monitor latency</span> - Track tool execution time</li>
+                </ul>
+
+                <h2>4. Security</h2>
+
+                <ul>
+                    <li><span class="keyword">Validate inputs</span> - Check types, ranges, formats</li>
+                    <li><span class="keyword">Use SQL parameterization</span> - Prevent SQL injection</li>
+                    <li><span class="keyword">Don't log secrets</span> - Never log API keys or passwords</li>
+                    <li><span class="keyword">Rate limit</span> - Prevent abuse of tools</li>
+                    <li><span class="keyword">Use HTTPS</span> - For remote MCPs</li>
+                    <li><span class="keyword">Authenticate</span> - Verify tool callers if needed</li>
+                </ul>
+
+                <h2>5. Documentation</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Document Your Tools</div>
+                    <pre><code>@server.tool()
+async def query_database(
+    sql: str,
+    limit: int = 100
+) -> ToolResult:
+    """
+    Execute a SELECT query on the database.
+    
+    This tool allows Claude to query customer, order, and 
+    product data. Use it when you need to retrieve information
+    from the database.
+    
+    Args:
+        sql: SQL SELECT query (required). Only SELECT queries
+             are allowed for security reasons.
+        limit: Maximum rows to return (default: 100).
+               Prevents returning too much data.
+    
+    Returns:
+        List of matching rows as text, or error message.
+    
+    Raises:
+        ValueError: If SQL is not a SELECT statement
+        DatabaseError: If connection fails
+    
+    Examples:
+        - "Get all customers": SELECT * FROM customers
+        - "Find orders > $100": SELECT * FROM orders WHERE amount > 100
+    """
+    # Implementation here
+    pass</code></pre>
+                </div>
+
+                <h2>6. Testing</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Test Your Tools</div>
+                    <pre><code>import pytest
+
+@pytest.mark.asyncio
+async def test_query_database_success():
+    """Test successful database query"""
+    result = await query_database("SELECT * FROM customers")
+    assert not result.is_error
+    assert "customer" in result.content[0].text
+
+@pytest.mark.asyncio
+async def test_query_database_invalid_sql():
+    """Test with invalid SQL"""
+    result = await query_database("DROP TABLE customers")
+    assert result.is_error
+
+@pytest.mark.asyncio
+async def test_query_database_timeout():
+    """Test with slow query"""
+    result = await query_database("SELECT * FROM huge_table")
+    # Should timeout gracefully
+    assert "timeout" not in result.content[0].text.lower()</code></pre>
+                </div>
+
+                <h2>7. Versioning</h2>
+
+                <p>Use semantic versioning (MAJOR.MINOR.PATCH):</p>
+
+                <ul>
+                    <li><span class="keyword">1.0.0</span> - Initial release</li>
+                    <li><span class="keyword">1.1.0</span> - New tool added (backward compatible)</li>
+                    <li><span class="keyword">1.1.1</span> - Bug fix</li>
+                    <li><span class="keyword">2.0.0</span> - Breaking changes (tool removed)</li>
+                </ul>
+
+                <h2>8. Compatibility</h2>
+
+                <ul>
+                    <li><span class="keyword">Python version</span> - Support 3.8+ minimum</li>
+                    <li><span class="keyword">Dependencies</span> - Pin versions in requirements.txt</li>
+                    <li><span class="keyword">MCP protocol</span> - Follow latest spec</li>
+                    <li><span class="keyword">Framework</span> - Test with Claude Desktop, API, and agents</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>Golden Rules:</strong><br>
+                    1. Keep tools focused and simple<br>
+                    2. Always handle errors gracefully<br>
+                    3. Document what you're doing<br>
+                    4. Test thoroughly<br>
+                    5. Monitor in production<br>
+                    6. Version your MCP<br>
+                    7. Never expose secrets
+                </div>
+            </section>
+
+            <!-- SECTION: TROUBLESHOOTING -->
+            <section id="troubleshoot" class="section">
+                <h1>Troubleshooting</h1>
+
+                <h2>Common Issues & Solutions</h2>
+
+                <h3>Issue: MCP not showing in Claude Desktop</h3>
+
+                <div class="warning-box">
+                    <strong>Problem:</strong> Tools aren't available in Claude<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Check config file syntax (valid JSON?)<br>
+                    2. Verify file path is absolute, not relative<br>
+                    3. Restart Claude Desktop completely<br>
+                    4. Check server is actually running (try running manually)<br>
+                    5. Look at Claude logs for errors
+                </div>
+
+                <h3>Issue: Tool call fails silently</h3>
+
+                <div class="warning-box">
+                    <strong>Problem:</strong> Tool returns empty result<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Add logging to see what's happening<br>
+                    2. Test tool directly: python my_mcp_server.py<br>
+                    3. Check database/API connection<br>
+                    4. Verify parameters are being passed correctly<br>
+                    5. Add print() statements for debugging
+                </div>
+
+                <h3>Issue: "Tool not found" error</h3>
+
+                <div class="warning-box">
+                    <strong>Problem:</strong> Claude says tool doesn't exist<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Check tool name matches exactly (case-sensitive)<br>
+                    2. Verify tool is registered: server.register_tool()<br>
+                    3. Make sure @server.tool() decorator is present<br>
+                    4. Check input schema is valid JSON
+                </div>
+
+                <h3>Issue: Database connection fails</h3>
+
+                <div class="warning-box">
+                    <strong>Problem:</strong> "Could not connect to database"<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Is database actually running?<br>
+                    2. Verify credentials (host, user, password)<br>
+                    3. Check firewall allows connection<br>
+                    4. Try connecting directly with psql/mysql<br>
+                    5. Check environment variables are set
+                </div>
+
+                <h3>Issue: Performance is slow</h3>
+
+                <div class="warning-box">
+                    <strong>Problem:</strong> Tool takes too long to respond<br><br>
+                    <strong>Solutions:</strong><br>
+                    1. Add database indexes<br>
+                    2. Implement result caching<br>
+                    3. Limit result set size (use LIMIT in SQL)<br>
+                    4. Profile tool execution time<br>
+                    5. Consider async processing
+                </div>
+
+                <h2>Debug Checklist</h2>
+
+                <ul>
+                    <li>✓ Is the MCP server running? (check terminal)</li>
+                    <li>✓ Is Claude Desktop restarted? (fully exit and reopen)</li>
+                    <li>✓ Is the config file valid JSON? (use JSONValidator)</li>
+                    <li>✓ Is the file path absolute? (not ~/path)</li>
+                    <li>✓ Is the server actually listening? (check logs)</li>
+                    <li>✓ Are tool names registered correctly?</li>
+                    <li>✓ Do input schemas match what Claude sends?</li>
+                    <li>✓ Are try/except blocks catching errors?</li>
+                    <li>✓ Is logging enabled for debugging?</li>
+                    <li>✓ Can you test the tool directly?</li>
+                </ul>
+
+                <h2>Debug MCP Directly</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Test Script</div>
+                    <pre><code">#!/usr/bin/env python3
+"""
+Debug MCP by calling tools directly
+"""
+
+import asyncio
+import json
+from my_mcp_server import server
+
+async def test_tool():
+    """Test a tool directly"""
+    
+    # Simulate a tool call
+    result = await query_database(
+        sql="SELECT * FROM customers LIMIT 1"
+    )
+    
+    print("Tool executed:")
+    print(f"  Is error: {result.is_error}")
+    print(f"  Content: {result.content[0].text}")
+
+if __name__ == "__main__":
+    asyncio.run(test_tool())</code></pre>
+                </div>
+
+                <h2>Enable Verbose Logging</h2>
+
+                <div class="code-block">
+                    <div class="code-label">Add to your MCP server</div>
+                    <pre><code>import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('mcp.log'),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+# Now all your log statements go to mcp.log</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <strong>Pro Debugging Tip:</strong> Run your MCP in a terminal and watch the logs in real-time as you use tools in Claude.
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <div class="footer">
+                <p>LearnAIbyAmir · Complete MCP (Model Context Protocol) Guide</p>
+                <p>Last updated: 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Scroll to top
+            document.querySelector('.main').scrollTop = 0;
+        }
+
+        // Copy code blocks
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const code = codeBlock.innerText;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerText;
+                button.innerText = 'Copied!';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 2000);
+            });
+        }
+
+        // Mobile menu toggle
+        function toggleMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
