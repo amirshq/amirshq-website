@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowflake · Complete Guide · LearnAIbyAmir</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --bg2: #ffffff;
+    --bg3: #f0f2f5;
+    --bg4: #eaeef2;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: rgba(31, 35, 40, 0.12);
+    --border2: rgba(13, 148, 136, 0.28);
+    --snow: #0d9488;
+    --snow2: #0f766e;
+    --snow3: #115e59;
+    --accent: #0d9488;
+    --accent2: #0f766e;
+    --gold: #b45309;
+    --gold2: #92400e;
+    --green: #059669;
+    --red: #dc2626;
+    --purple: #7c3aed;
+    --orange: #ea580c;
+    --text: #1f2328;
+    --text2: #636c76;
+    --text3: #8c959f;
+    --code-bg: #eaeef2;
+    --code-border: rgba(31, 35, 40, 0.14);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --cs-bg: #f6f8fa;
+    --cs-bg2: #ffffff;
+    --cs-bg3: #f0f2f5;
+    --cs-bg4: #eaeef2;
+    --cs-accent: #0284c7;
+    --cs-accent2: #0d9488;
+    --cs-accent3: #d97706;
+    --cs-accent4: #dc2626;
+    --cs-accent5: #7c3aed;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; min-height: 100vh; }
+
+  /* ── GLOBAL TAB BAR ── */
+  .global-tabbar {
+    position: fixed;
+    top: 0; left: 280px; right: 0;
+    height: 48px;
+    background: rgba(255,255,255,0.97);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .global-tabbar::-webkit-scrollbar { display: none; }
+  .gtab {
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    user-select: none;
+    text-transform: uppercase;
+    border: none;
+    background: none;
+  }
+  .gtab:hover { color: var(--text2); background: rgba(13,148,136,0.06); }
+  .gtab.active { color: var(--accent); border-bottom: 2px solid var(--snow); background: rgba(13,148,136,0.05); }
+  .gtab-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 280px; height: 100vh;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 300; overflow: hidden;
+  }
+  .sidebar-header { padding: 24px 20px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .sidebar-logo svg { flex-shrink: 0; }
+  .sidebar-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--accent2); line-height: 1.2; }
+  .sidebar-subtitle { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+  .progress-bar { background: var(--bg4); border-radius: 4px; height: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--snow), var(--accent)); border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+  .progress-text { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 0; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+  .nav-section { margin-bottom: 4px; }
+  .nav-section-header { display: flex; align-items: center; gap: 8px; padding: 8px 20px 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); cursor: pointer; user-select: none; transition: color 0.2s; }
+  .nav-section-header:hover { color: var(--text2); }
+  .nav-section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .nav-items { display: block; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 20px 7px 36px; font-size: 12.5px; color: var(--text3); cursor: pointer; text-decoration: none; transition: all 0.15s; border-left: 2px solid transparent; line-height: 1.3; }
+  .nav-item:hover { color: var(--text); background: var(--bg3); border-left-color: var(--border2); }
+  .nav-item.active { color: var(--accent); background: rgba(13,148,136,0.08); border-left-color: var(--snow); }
+  .nav-item-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); flex-shrink: 0; min-width: 18px; }
+  .nav-item.active .nav-item-num { color: var(--snow2); }
+
+  /* ── MAIN ── */
+  .main { margin-left: 280px; padding-top: 48px; min-height: 100vh; }
+
+  /* ── HERO ── */
+  .hero { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 56px 64px 48px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(13,148,136,0.07) 0%, transparent 70%); pointer-events: none; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(13,148,136,0.1); border: 1px solid rgba(13,148,136,0.25); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 44px; color: var(--text); line-height: 1.15; margin-bottom: 14px; }
+  .hero h1 span { color: var(--accent); }
+  .hero-desc { font-size: 15px; color: var(--text2); max-width: 600px; margin-bottom: 32px; }
+  .hero-stats { display: flex; gap: 32px; }
+  .stat { display: flex; flex-direction: column; gap: 3px; }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700; color: var(--snow); line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 40px 64px 80px; max-width: 1100px; }
+  .module { margin-bottom: 64px; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .module-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+  .module-badge { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .module-header-text { flex: 1; }
+  .module-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); line-height: 1.2; margin-bottom: 6px; }
+  .module-meta { display: flex; align-items: center; gap: 12px; }
+  .module-tag { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+  .module-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 28px; padding: 16px 20px; background: var(--bg3); border-left: 3px solid var(--snow3); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+  /* ── LESSON ── */
+  .lesson { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; transition: border-color 0.2s; }
+  .lesson:hover { border-color: var(--border2); }
+  .lesson-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .lesson-header:hover { background: var(--bg3); }
+  .lesson-header-left { display: flex; align-items: center; gap: 12px; }
+  .lesson-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); background: var(--bg4); padding: 3px 8px; border-radius: 6px; }
+  .lesson-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .lesson-chevron { color: var(--text3); transition: transform 0.25s; flex-shrink: 0; }
+  .lesson-chevron.open { transform: rotate(180deg); }
+  .lesson-body { display: none; border-top: 1px solid var(--border); }
+  .lesson-body.open { display: block; }
+  .lesson-explain { padding: 16px 20px; background: var(--bg3); border-bottom: 1px solid var(--border); }
+  .lesson-explain p { font-size: 13.5px; color: var(--text2); line-height: 1.7; margin-bottom: 8px; }
+  .lesson-explain p:last-child { margin-bottom: 0; }
+  .lesson-explain strong { color: var(--accent2); }
+  .lesson-explain .tip { display: flex; gap: 8px; padding: 10px 14px; background: rgba(240,192,96,0.06); border: 1px solid rgba(240,192,96,0.15); border-radius: var(--radius-sm); font-size: 12.5px; color: var(--gold); margin-top: 10px; }
+  .lesson-explain .tip-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── CODE BLOCK ── */
+  .code-block { position: relative; background: var(--code-bg); border-bottom: 1px solid var(--code-border); }
+  .code-block:last-child { border-bottom: none; }
+  .code-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 8px; border-bottom: 1px solid var(--code-border); background: var(--surface2); }
+  .code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+  .code-file-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--snow3); }
+  .copy-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text3); font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+  .copy-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .copy-btn.copied { background: rgba(78,203,113,0.12); border-color: rgba(78,203,113,0.3); color: var(--green); }
+  pre { padding: 16px 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.65; color: #1f2328; tab-size: 2; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+  .kw { color: #0550ae; font-weight: 500; }
+  .fn { color: #953800; }
+  .str { color: #0a3069; }
+  .num { color: #116329; }
+  .cmt { color: #6e7781; font-style: italic; }
+  .obj { color: #116329; }
+  .op { color: #59636e; }
+  .var { color: #0550ae; }
+  .punct { color: #59636e; }
+
+  /* ── CALLOUT ── */
+  .callout { display: flex; gap: 12px; padding: 14px 18px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; margin: 16px 20px; color: var(--text2); }
+  .callout-icon { flex-shrink: 0; margin-top: 1px; font-size: 16px; }
+  .callout.info { background: rgba(13,148,136,0.07); border: 1px solid rgba(13,148,136,0.2); }
+  .callout.info .callout-icon { color: var(--snow); }
+  .callout.warn { background: rgba(240,192,96,0.07); border: 1px solid rgba(240,192,96,0.2); }
+  .callout.warn .callout-icon { color: var(--gold); }
+  .callout.success { background: rgba(78,203,113,0.07); border: 1px solid rgba(78,203,113,0.2); }
+  .callout.success .callout-icon { color: var(--green); }
+
+  /* ── CONCEPT TAGS ── */
+  .concepts { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 20px; border-top: 1px solid var(--code-border); background: var(--code-bg); }
+  .concept-pill { font-size: 11px; font-family: 'JetBrains Mono', monospace; padding: 3px 8px; border-radius: 4px; background: rgba(86,200,245,0.08); border: 1px solid rgba(86,200,245,0.15); color: var(--accent); }
+  .module-divider { height: 1px; background: linear-gradient(90deg, var(--border), transparent); margin: 48px 0; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── SEARCH ── */
+  .search-wrap { padding: 0 16px 12px; border-bottom: 1px solid var(--border); }
+  .search-input { width: 100%; background: var(--bg4); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px 7px 32px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text); outline: none; transition: border-color 0.15s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236a7fa8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 10px center; }
+  .search-input:focus { border-color: var(--snow3); }
+  .search-input::placeholder { color: var(--text3); }
+
+  /* ── TOP BAR (inside learning guide tab) ── */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 64px; height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 48px; z-index: 50; }
+  .breadcrumb { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+  .breadcrumb-cur { color: var(--text2); }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .expand-all-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 12px; padding: 6px 14px; border-radius: var(--radius-sm); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+  .expand-all-btn:hover { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+  /* ── PRIVILEGES WIDGET (tab 2) ── */
+  .priv-search-wrap { margin-bottom: 16px; }
+  .priv-search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px 9px 36px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.15s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236a7fa8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
+  .priv-search-input:focus { border-color: var(--snow); }
+  .priv-search-input::placeholder { color: var(--text3); }
+  .priv-group { margin-bottom: 20px; }
+  .priv-group-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; padding-left: 2px; }
+  .priv-row { display: grid; grid-template-columns: 200px 140px 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; overflow: hidden; transition: border-color 0.15s; }
+  .priv-row:hover { border-color: var(--border2); }
+  .priv-row.priv-hidden { display: none; }
+  .priv-kw { padding: 11px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; background: var(--code-bg); color: var(--accent2); border-right: 1px solid var(--border); display: flex; align-items: center; }
+  .priv-scope { padding: 11px 10px; border-right: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 4px; background: var(--bg4); }
+  .priv-desc { padding: 11px 14px; font-size: 12.5px; color: var(--text2); line-height: 1.6; display: flex; align-items: center; }
+  .priv-desc strong { color: var(--text); }
+  .ptag { font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+  .t-db  { background: rgba(13,148,136,0.12); color: #14b8a6; border: 1px solid rgba(13,148,136,0.2); }
+  .t-sc  { background: rgba(165,128,255,0.12); color: #a580ff; border: 1px solid rgba(165,128,255,0.2); }
+  .t-tb  { background: rgba(78,203,113,0.12); color: #4ecb71; border: 1px solid rgba(78,203,113,0.2); }
+  .t-col { background: rgba(240,192,96,0.12); color: #f0c060; border: 1px solid rgba(240,192,96,0.2); }
+  .t-acc { background: rgba(240,96,96,0.12); color: #f06060; border: 1px solid rgba(240,96,96,0.2); }
+  .t-wh  { background: rgba(255,140,66,0.12); color: #ff8c42; border: 1px solid rgba(255,140,66,0.2); }
+
+  /* ── TAB 2: Privileges page layout ── */
+  .priv-tab-layout { padding: 40px 64px 80px; max-width: 1100px; }
+  .priv-tab-header { margin-bottom: 32px; }
+  .priv-tab-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--text); margin-bottom: 8px; }
+  .priv-tab-header p { color: var(--text2); font-size: 14px; }
+
+  /* ── TAB 3: Cheat Sheet ── */
+  .cs-nav { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; padding: 0 64px; background: rgba(246,248,250,0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 48px; z-index: 50; }
+  .cs-nav::-webkit-scrollbar { display: none; }
+  .cs-nav-btn { padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--text3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color .2s, border-color .2s; letter-spacing: .04em; }
+  .cs-nav-btn:hover, .cs-nav-btn.cs-active { color: var(--accent); border-bottom-color: var(--snow); }
+
+
+  .cs-content { padding: 32px 64px 60px; }
+  .cs-section { display: none; }
+  .cs-section.cs-active { display: block; }
+  .cs-sec-head { margin-bottom: 24px; }
+  .cs-sec-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: .1em; margin-bottom: 4px; }
+  .cs-sec-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+  .cs-sec-desc { font-size: 12px; color: var(--text2); margin-top: 6px; }
+  .cs-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .cs-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .cs-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 16px; }
+  .cs-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; transition: border-color .2s; }
+  .cs-card:hover { border-color: var(--border2); }
+  .cs-card-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .cs-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .cs-ct-blue { color: #29a8ff; } .cs-cd-blue { background: #29a8ff; }
+  .cs-ct-green { color: #00d4aa; } .cs-cd-green { background: #00d4aa; }
+  .cs-ct-amber { color: #f5a623; } .cs-cd-amber { background: #f5a623; }
+  .cs-ct-pink { color: #e85d75; } .cs-cd-pink { background: #e85d75; }
+  .cs-ct-purple { color: #a78bfa; } .cs-cd-purple { background: #a78bfa; }
+  .cs-ct-white { color: var(--text); }
+  .cs-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(31,35,40,0.08); gap: 12px; }
+  .cs-row:last-child { border-bottom: none; }
+  .cs-row-label { color: #94a3b8; font-size: 12px; flex-shrink: 0; }
+  .cs-row-val { color: var(--text); font-size: 12px; text-align: right; }
+  .cs-row-val.cs-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #00d4aa; }
+  .cs-row-val.cs-blue { color: #29a8ff; }
+  .cs-row-val.cs-amber { color: #f5a623; }
+  .cs-row-val.cs-pink { color: #e85d75; }
+  .cs-tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', monospace; letter-spacing: .03em; margin: 2px 2px 2px 0; }
+  .cs-tg-blue { background: rgba(41,168,255,0.15); color: #29a8ff; }
+  .cs-tg-green { background: rgba(0,212,170,0.15); color: #00d4aa; }
+  .cs-tg-amber { background: rgba(245,166,35,0.15); color: #f5a623; }
+  .cs-tg-pink { background: rgba(232,93,117,0.15); color: #e85d75; }
+  .cs-tg-purple { background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .cs-code { background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 8px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); margin: 8px 0; overflow-x: auto; line-height: 1.7; white-space: pre; }
+  .cs-kw { color: #29a8ff; font-weight: 600; }
+  .cs-kw2 { color: #a78bfa; }
+  .cs-str { color: #00d4aa; }
+  .cs-cmt { color: #64748b; }
+  .cs-nm { color: #f5a623; }
+  .cs-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  .cs-tbl th { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; padding: 7px 10px; border-bottom: 1px solid rgba(99,179,255,0.22); text-align: left; }
+  .cs-tbl td { padding: 6px 10px; border-bottom: 1px solid rgba(31,35,40,0.08); color: var(--text2); vertical-align: top; }
+  .cs-tbl tr:hover td { background: rgba(13,148,136,0.04); }
+  .cs-tbl td:first-child { color: var(--text); font-weight: 500; }
+  .cs-arch { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .cs-arch-layer { border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; }
+  .cs-al-services { background: rgba(41,168,255,0.08); border: 1px solid rgba(41,168,255,0.2); }
+  .cs-al-compute  { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); }
+  .cs-al-storage  { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2); }
+  .cs-al-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .cs-al-services .cs-al-label { color: #29a8ff; }
+  .cs-al-compute  .cs-al-label { color: #00d4aa; }
+  .cs-al-storage  .cs-al-label { color: #f5a623; }
+  .cs-al-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cs-al-item { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .cs-al-services .cs-al-item { background: rgba(41,168,255,0.1); color: #29a8ff; }
+  .cs-al-compute  .cs-al-item { background: rgba(0,212,170,0.1); color: #00d4aa; }
+  .cs-al-storage  .cs-al-item { background: rgba(245,166,35,0.1); color: #f5a623; }
+  .cs-arch-arrow { text-align: center; color: var(--text3); font-size: 16px; margin: 2px 0; }
+  .cs-role-node { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px; margin-bottom: 4px; font-size: 12px; }
+  .cs-rn-blue   { background: rgba(41,168,255,0.1); border-left: 3px solid #29a8ff; }
+  .cs-rn-purple { background: rgba(167,139,250,0.1); border-left: 3px solid #a78bfa; }
+  .cs-rn-green  { background: rgba(0,212,170,0.1); border-left: 3px solid #00d4aa; }
+  .cs-rn-amber  { background: rgba(245,166,35,0.1); border-left: 3px solid #f5a623; }
+  .cs-rn-gray   { background: rgba(148,163,184,0.08); border-left: 3px solid #64748b; }
+  .cs-rn-i1 { margin-left: 20px; }
+  .cs-rn-i2 { margin-left: 40px; }
+  .cs-rn-i3 { margin-left: 60px; }
+  .cs-rn-i4 { margin-left: 80px; }
+  .cs-rn-name { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 11px; flex: 1; }
+  .cs-rn-desc { font-size: 11px; color: var(--text2); }
+  .cs-checklist { list-style: none; }
+  .cs-checklist li { padding: 5px 0; font-size: 12px; color: var(--text2); border-bottom: 1px solid rgba(31,35,40,0.08); display: flex; gap: 8px; align-items: flex-start; }
+  .cs-checklist li:last-child { border-bottom: none; }
+  .cs-checklist li::before { content: '›'; color: #29a8ff; font-weight: 700; flex-shrink: 0; }
+  .cs-checklist li b { color: var(--text); }
+  .cs-warn { border-radius: 8px; padding: 10px 14px; font-size: 12px; margin: 8px 0; display: flex; gap: 8px; align-items: flex-start; }
+  .cs-warn-icon { flex-shrink: 0; font-size: 14px; }
+  .cs-warn-blue  { background: rgba(41,168,255,0.08); border: 1px solid rgba(41,168,255,0.2); color: #29a8ff; }
+  .cs-warn-amber { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2); color: #f5a623; }
+  .cs-warn-green { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); color: #00d4aa; }
+  .cs-warn-pink  { background: rgba(232,93,117,0.08); border: 1px solid rgba(232,93,117,0.2); color: #e85d75; }
+  .cs-bi-e  { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; font-family: 'JetBrains Mono', monospace; vertical-align: middle; margin-left: 4px; background: rgba(245,166,35,0.2); color: #f5a623; }
+  .cs-bi-bc { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; font-family: 'JetBrains Mono', monospace; vertical-align: middle; margin-left: 4px; background: rgba(232,93,117,0.2); color: #e85d75; }
+  .cs-bi-vps { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; font-family: 'JetBrains Mono', monospace; vertical-align: middle; margin-left: 4px; background: rgba(0,212,170,0.2); color: #00d4aa; }
+
+  /* ── TAB 4: Best Practices ── */
+  .bp-content { padding: 40px 64px 80px; max-width: 1100px; }
+  .bp-hero { margin-bottom: 48px; }
+  .bp-hero-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .bp-hero h2 { font-family: 'Playfair Display', serif; font-size: 36px; color: var(--text); line-height: 1.2; margin-bottom: 12px; }
+  .bp-hero h2 span { color: var(--accent); }
+  .bp-hero-desc { font-size: 14px; color: var(--text2); max-width: 680px; line-height: 1.7; }
+  .bp-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
+  .bp-layer { border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden; }
+  .bp-layer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .bp-layer-1 { background: rgba(13,148,136,0.06); border: 1px solid rgba(13,148,136,0.2); }
+  .bp-layer-1::before { background: var(--snow); }
+  .bp-layer-2 { background: rgba(78,203,113,0.06); border: 1px solid rgba(78,203,113,0.2); }
+  .bp-layer-2::before { background: var(--green); }
+  .bp-layer-3 { background: rgba(240,192,96,0.06); border: 1px solid rgba(240,192,96,0.2); }
+  .bp-layer-3::before { background: var(--gold); }
+  .bp-layer-4 { background: rgba(165,128,255,0.06); border: 1px solid rgba(165,128,255,0.2); }
+  .bp-layer-4::before { background: var(--purple); }
+  .bp-layer-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .bp-layer-1 .bp-layer-num { color: var(--snow); }
+  .bp-layer-2 .bp-layer-num { color: var(--green); }
+  .bp-layer-3 .bp-layer-num { color: var(--gold); }
+  .bp-layer-4 .bp-layer-num { color: var(--purple); }
+  .bp-layer-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .bp-layer-when { font-size: 11px; color: var(--text3); font-style: italic; }
+  .bp-section { margin-bottom: 40px; }
+  .bp-section-title { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .bp-section-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+  .bp-s1 .bp-section-num { background: rgba(13,148,136,0.15); color: var(--snow); }
+  .bp-s2 .bp-section-num { background: rgba(78,203,113,0.15); color: var(--green); }
+  .bp-s3 .bp-section-num { background: rgba(240,192,96,0.15); color: var(--gold); }
+  .bp-s4 .bp-section-num { background: rgba(165,128,255,0.15); color: var(--purple); }
+  .bp-s5 .bp-section-num { background: rgba(240,96,96,0.15); color: var(--red); }
+  .bp-section-title h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); }
+  .bp-section-desc { font-size: 13px; color: var(--text2); margin-bottom: 16px; line-height: 1.7; }
+  .bp-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+  .bp-card-header { padding: 14px 18px; background: var(--bg3); border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .bp-card-header-icon { font-size: 16px; }
+  .bp-card-body { padding: 16px 18px; }
+  .bp-rule { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(31,35,40,0.08); align-items: flex-start; }
+  .bp-rule:last-child { border-bottom: none; }
+  .bp-rule-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .bp-rule-content { flex: 1; }
+  .bp-rule-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .bp-rule-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .bp-exec-order { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+  .bp-exec-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace; margin-bottom: 16px; }
+  .bp-exec-steps { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+  .bp-exec-step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bp-exec-step-box { background: var(--bg4); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .bp-exec-step-num { font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .bp-exec-arrow { color: var(--text3); font-size: 18px; padding: 0 4px; margin-top: -12px; }
+  .bp-codeblock { background: var(--code-bg); border: 1px solid var(--code-border); border-radius: var(--radius-sm); padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; color: #1f2328; margin: 12px 0; overflow-x: auto; white-space: pre; }
+  .bp-checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bp-check-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .bp-check-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--snow); flex-shrink: 0; background: rgba(13,148,136,0.1); padding: 2px 7px; border-radius: 4px; }
+  .bp-check-text { font-size: 12.5px; color: var(--text2); line-height: 1.5; }
+  .bp-check-text strong { color: var(--text); }
+  .bp-thumb { background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(78,203,113,0.08)); border: 1px solid rgba(13,148,136,0.2); border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 24px; }
+  .bp-thumb-quote { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); line-height: 1.5; margin-bottom: 12px; }
+  .bp-thumb-quote em { color: var(--accent); font-style: normal; }
+  .bp-thumb-sub { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .global-tabbar { left: 0; }
+    .back-pill { left: 12px; top: 58px; }
+    .hero, .content, .topbar { padding-left: 24px; padding-right: 24px; }
+    .hero h1 { font-size: 28px; }
+    .hero-stats { gap: 20px; }
+    .priv-row { grid-template-columns: 1fr; }
+    .priv-kw, .priv-scope { border-right: none; border-bottom: 1px solid var(--border); }
+    .cs-grid-2, .cs-grid-3, .cs-grid-4 { grid-template-columns: 1fr; }
+    .cs-content, .bp-content, .priv-tab-layout { padding-left: 24px; padding-right: 24px; }
+    .cs-nav { padding: 0 24px; }
+    .bp-layers { grid-template-columns: 1fr 1fr; }
+    .bp-checklist { grid-template-columns: 1fr; }
+  }
+
+  .back-pill {
+    position: fixed; z-index: 400; top: 58px; left: 300px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(255,255,255,0.96); border: 1px solid rgba(31,35,40,0.14);
+    color: #1f2328; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    backdrop-filter: blur(14px); text-decoration: none; font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 1px 3px rgba(31,35,40,0.08);
+  }
+  .back-pill:hover { border-color: rgba(13,148,136,0.35); color: var(--accent); }
+  .back-pill span { font-size: 14px; line-height: 1; }
+
+</style>
+</head>
+<body>
+
+<a class="back-pill" href="../index.html"><span>←</span> Topics</a>
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+        <polygon points="14,7 21,11 21,19 14,23 7,19 7,11" fill="rgba(13,148,136,0.15)" stroke="#14b8a6" stroke-width="1"/>
+        <circle cx="14" cy="14" r="3" fill="#0d9488"/>
+      </svg>
+      <div>
+        <div class="sidebar-title">Snowflake</div>
+        <div class="sidebar-subtitle">Complete Guide</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 23 lessons viewed</div>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="Search lessons..." id="searchInput" oninput="filterNav(this.value)">
+  </div>
+  <div class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#f0c060"></div>D1 · Security &amp; Access</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d1-1" onclick="markViewed('d1-1');switchTab('tab-guide')"><span class="nav-item-num">1.1</span>Access Control (RBAC &amp; DAC)</a>
+        <a class="nav-item" href="#d1-2" onclick="markViewed('d1-2');switchTab('tab-guide')"><span class="nav-item-num">1.2</span>Column &amp; Row Level Security</a>
+        <a class="nav-item" href="#d1-3" onclick="markViewed('d1-3');switchTab('tab-guide')"><span class="nav-item-num">1.3</span>Object Tagging</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#0d9488"></div>D2 · Virtual Warehouses</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d2-1" onclick="markViewed('d2-1');switchTab('tab-guide')"><span class="nav-item-num">2.1</span>Warehouse Introduction</a>
+        <a class="nav-item" href="#d2-2" onclick="markViewed('d2-2');switchTab('tab-guide')"><span class="nav-item-num">2.2</span>Resource Monitors</a>
+        <a class="nav-item" href="#d2-3" onclick="markViewed('d2-3');switchTab('tab-guide')"><span class="nav-item-num">2.3</span>Multi-cluster Warehouse</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#a580ff"></div>D3 · Data Loading</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d3-1" onclick="markViewed('d3-1');switchTab('tab-guide')"><span class="nav-item-num">3.1</span>INSERT &amp; UI Upload</a>
+        <a class="nav-item" href="#d3-2" onclick="markViewed('d3-2');switchTab('tab-guide')"><span class="nav-item-num">3.2</span>Stage Types</a>
+        <a class="nav-item" href="#d3-3" onclick="markViewed('d3-3');switchTab('tab-guide')"><span class="nav-item-num">3.3</span>COPY INTO Table</a>
+        <a class="nav-item" href="#d3-4" onclick="markViewed('d3-4');switchTab('tab-guide')"><span class="nav-item-num">3.4</span>Semi-structured Data (JSON)</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#4ecb71"></div>D4 · Performance</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d4-1" onclick="markViewed('d4-1');switchTab('tab-guide')"><span class="nav-item-num">4.1</span>Query History &amp; Profile</a>
+        <a class="nav-item" href="#d4-2" onclick="markViewed('d4-2');switchTab('tab-guide')"><span class="nav-item-num">4.2</span>Caching Layers</a>
+        <a class="nav-item" href="#d4-3" onclick="markViewed('d4-3');switchTab('tab-guide')"><span class="nav-item-num">4.3</span>Clustering &amp; Micro-partitions</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#ff8c42"></div>D5 · Advanced Features</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d5-1" onclick="markViewed('d5-1');switchTab('tab-guide')"><span class="nav-item-num">5.1</span>Databases, Schemas, Tables &amp; Views</a>
+        <a class="nav-item" href="#d5-2" onclick="markViewed('d5-2');switchTab('tab-guide')"><span class="nav-item-num">5.2</span>UDFs, Ext Functions &amp; Procs</a>
+        <a class="nav-item" href="#d5-3" onclick="markViewed('d5-3');switchTab('tab-guide')"><span class="nav-item-num">5.3</span>SnowSQL CLI</a>
+        <a class="nav-item" href="#d5-4" onclick="markViewed('d5-4');switchTab('tab-guide')"><span class="nav-item-num">5.4</span>Secure Data Sharing</a>
+        <a class="nav-item" href="#d5-5" onclick="markViewed('d5-5');switchTab('tab-guide')"><span class="nav-item-num">5.5</span>Data Marketplace</a>
+        <a class="nav-item" href="#d5-dt" onclick="markViewed('d5-dt');switchTab('tab-guide')"><span class="nav-item-num">5.6</span>Dynamic Tables</a>
+        <a class="nav-item" href="#d5-p" onclick="markViewed('d5-p');switchTab('tab-guide')"><span class="nav-item-num">5.7</span>Parameters</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#14b8a6"></div>D6 · Data Resilience</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#d6-1" onclick="markViewed('d6-1');switchTab('tab-guide')"><span class="nav-item-num">6.1</span>Time Travel</a>
+        <a class="nav-item" href="#d6-2" onclick="markViewed('d6-2');switchTab('tab-guide')"><span class="nav-item-num">6.2</span>Cloning</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-header"><div class="nav-section-dot" style="background:#f06060"></div>Quick Access</div>
+      <div class="nav-items">
+        <a class="nav-item" href="#" onclick="switchTab('tab-privileges');return false;"><span class="nav-item-num">🔑</span>Privileges Reference</a>
+        <a class="nav-item" href="#" onclick="switchTab('tab-cheatsheet');return false;"><span class="nav-item-num">📋</span>Cheat Sheet</a>
+        <a class="nav-item" href="#" onclick="switchTab('tab-bestpractices');return false;"><span class="nav-item-num">⚡</span>SQL Best Practices</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── GLOBAL TAB BAR ── -->
+<div class="global-tabbar">
+  <button class="gtab active" id="btn-tab-guide" onclick="switchTab('tab-guide')">
+    <span class="gtab-dot" style="background:#0d9488"></span>Learning Guide
+  </button>
+  <button class="gtab" id="btn-tab-privileges" onclick="switchTab('tab-privileges')">
+    <span class="gtab-dot" style="background:#f06060"></span>Privileges Ref
+  </button>
+  <button class="gtab" id="btn-tab-cheatsheet" onclick="switchTab('tab-cheatsheet')">
+    <span class="gtab-dot" style="background:#f5a623"></span>Cheat Sheet
+  </button>
+  <button class="gtab" id="btn-tab-bestpractices" onclick="switchTab('tab-bestpractices')">
+    <span class="gtab-dot" style="background:#4ecb71"></span>SQL Best Practices
+  </button>
+</div>
+
+<!-- ── MAIN WRAPPER ── -->
+<main class="main">
+
+<!-- ══════════ TAB 1: LEARNING GUIDE ══════════ -->
+<div class="tab-panel active" id="tab-guide">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">
+      <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="currentColor"/></svg>
+      Beginner to Intermediate
+    </div>
+    <h1>Snowflake<br><span>SQL Learning Guide</span></h1>
+    <p class="hero-desc">A complete hands-on reference covering Security, Warehouses, Data Loading, Performance, Advanced Features, and Data Resilience — with annotated code examples and a searchable Privileges reference.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Modules</div></div>
+      <div class="stat"><div class="stat-num">23</div><div class="stat-label">Lessons</div></div>
+      <div class="stat"><div class="stat-num">100+</div><div class="stat-label">Code Blocks</div></div>
+    </div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="breadcrumb">
+      <span>Snowflake Guide</span>
+      <span>›</span>
+      <span class="breadcrumb-cur" id="breadcrumbCur">Overview</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="expand-all-btn" onclick="expandAll()">Expand All</button>
+      <button class="expand-all-btn" onclick="collapseAll()">Collapse All</button>
+    </div>
+  </div>
+
+  <!-- Content (all the learning guide modules go here) -->
+  <div class="content">
+    <!-- ════════════════ MODULE D1 ════════════════ -->
+    <div class="module" id="module-d1">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(240,192,96,0.12);color:#f0c060;border:1px solid rgba(240,192,96,0.25)">D1</div>
+        <div class="module-header-text">
+          <div class="module-title">Security &amp; Access Control</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(240,192,96,0.1);color:#f0c060;border:1px solid rgba(240,192,96,0.2)">Security</span>
+            <span style="font-size:12px;color:var(--text3)">3 lessons · RBAC, Masking, Row Policies, Tags</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc">
+        Snowflake uses a layered security model. <strong>Role-Based Access Control (RBAC)</strong> governs who can access what, while <strong>Discretionary Access Control (DAC)</strong> lets object owners grant privileges. On top of that, Column Masking and Row Access Policies let you hide sensitive data from certain roles without changing the underlying table.
+      </div>
+
+      <!-- 1.1 -->
+      <div class="lesson" id="d1-1">
+        <div class="lesson-header" onclick="toggleLesson('d1-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">1.1</span><span class="lesson-title">Access Control — RBAC, DAC, Roles &amp; Privileges</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d1-1-body">
+          <div class="lesson-explain">
+            <p>Snowflake has a hierarchy of <strong>system roles</strong>: ACCOUNTADMIN → SECURITYADMIN → SYSADMIN → PUBLIC. You should create custom roles (like ANALYST) and grant them the minimum privileges needed — principle of least privilege.</p>
+            <p><strong>RBAC</strong>: privileges are granted to roles, roles are granted to users or other roles. <strong>DAC</strong>: every object has an owner who can grant access to others.</p>
+            <div class="tip"><span class="tip-icon">💡</span>Custom roles should always be assigned to SYSADMIN (or higher) so that SYSADMIN can manage all objects owned by custom roles.</div>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Setup Context &amp; Roles</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">USE ROLE</span> <span class="obj">ACCOUNTADMIN</span>;
+<span class="kw">SHOW ROLES</span>;
+<span class="kw">SHOW GRANTS TO ROLE</span> <span class="obj">SECURITYADMIN</span>;</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Database, Schema &amp; Table as SYSADMIN</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">USE ROLE</span> <span class="obj">SYSADMIN</span>;
+<span class="kw">CREATE DATABASE</span> <span class="obj">FILMS_DB</span>;
+<span class="kw">CREATE SCHEMA</span> <span class="obj">FILMS_SCHEMA</span>;
+<span class="kw">CREATE TABLE</span> <span class="obj">FILMS_SYSADMIN</span> (
+  <span class="var">ID</span>           <span class="kw">STRING</span>,
+  <span class="var">TITLE</span>        <span class="kw">STRING</span>,
+  <span class="var">RELEASE_DATE</span> <span class="kw">DATE</span>,
+  <span class="var">RATING</span>       <span class="kw">INT</span>
+);</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Custom Role &amp; Grant Privileges</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">USE ROLE</span> <span class="obj">SECURITYADMIN</span>;
+<span class="kw">CREATE ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE ON DATABASE</span> <span class="obj">FILMS_DB</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE, CREATE TABLE ON SCHEMA</span> <span class="obj">FILMS_DB.FILMS_SCHEMA</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE ON WAREHOUSE</span> <span class="obj">COMPUTE_WH</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT ROLE</span> <span class="obj">ANALYST</span> <span class="kw">TO ROLE</span> <span class="obj">SYSADMIN</span>;
+<span class="kw">GRANT ROLE</span> <span class="obj">ANALYST</span> <span class="kw">TO USER</span> <span class="obj">ADMIN</span>;</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Future Grants &amp; Create User</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">GRANT USAGE ON FUTURE SCHEMAS IN DATABASE</span> <span class="obj">FILMS_DB</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">USE ROLE</span> <span class="obj">SYSADMIN</span>;
+<span class="kw">CREATE SCHEMA</span> <span class="obj">MUSIC_SCHEMA</span>;
+<span class="kw">CREATE SCHEMA</span> <span class="obj">BOOKS_SCHEMA</span>;
+<span class="kw">USE ROLE</span> <span class="obj">USERADMIN</span>;
+<span class="kw">CREATE USER</span> <span class="obj">Rajesh</span>
+  <span class="var">PASSWORD</span>=<span class="str">'temp'</span>
+  <span class="var">DEFAULT_ROLE</span> = analyst
+  <span class="var">DEFAULT_WAREHOUSE</span>=<span class="str">'COMPUTE_WH'</span>
+  <span class="var">MUST_CHANGE_PASSWORD</span>=<span class="kw">TRUE</span>;
+<span class="kw">USE ROLE</span> <span class="obj">SECURITYADMIN</span>;
+<span class="kw">GRANT ROLE</span> <span class="obj">analyst</span> <span class="kw">TO USER</span> <span class="obj">Rajesh</span>;
+<span class="kw">USE ROLE</span> <span class="obj">SYSADMIN</span>;
+<span class="kw">DROP DATABASE</span> <span class="obj">FILMS_DB</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">RBAC</span><span class="concept-pill">GRANT</span><span class="concept-pill">CREATE ROLE</span><span class="concept-pill">FUTURE GRANTS</span><span class="concept-pill">CREATE USER</span><span class="concept-pill">Privilege Inheritance</span></div>
+        </div>
+      </div>
+
+      <!-- 1.2 -->
+      <div class="lesson" id="d1-2">
+        <div class="lesson-header" onclick="toggleLesson('d1-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">1.2</span><span class="lesson-title">Column &amp; Row Level Security — Masking &amp; Row Access Policies</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d1-2-body">
+          <div class="lesson-explain">
+            <p><strong>Column Masking Policies</strong> let you show different versions of a column to different roles. <strong>Row Access Policies</strong> filter which rows a role can see. Both are managed by a dedicated <strong>MASKING_ADMIN</strong> role.</p>
+            <div class="tip"><span class="tip-icon">💡</span>A table can have only ONE row access policy, but the policy can use a mapping table for complex multi-role logic.</div>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Column Masking Policy</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">USE ROLE</span> <span class="obj">MASKING_ADMIN</span>;
+<span class="kw">CREATE OR REPLACE MASKING POLICY</span> <span class="obj">EMAIL_MASK</span>
+  <span class="kw">AS</span> (<span class="var">VAL</span> <span class="kw">STRING</span>) <span class="kw">RETURNS STRING</span> ->
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> <span class="fn">CURRENT_ROLE</span>() <span class="kw">IN</span> (<span class="str">'ANALYST'</span>) <span class="kw">THEN</span> <span class="var">VAL</span>
+    <span class="kw">ELSE</span> <span class="fn">REGEXP_REPLACE</span>(<span class="var">VAL</span>, <span class="str">'.+\@'</span>, <span class="str">'******@'</span>)
+  <span class="kw">END</span>;
+<span class="kw">ALTER TABLE</span> <span class="obj">CUSTOMERS</span> <span class="kw">MODIFY COLUMN</span> <span class="var">EMAIL</span>
+  <span class="kw">SET MASKING POLICY</span> <span class="obj">EMAIL_MASK</span>;</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Row Access Policy — Dynamic Country-Based Filtering</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE ROW ACCESS POLICY</span> <span class="obj">CUSTOMER_POLICY</span>
+  <span class="kw">AS</span> (<span class="var">COUNTRY_CODE</span> <span class="kw">VARCHAR</span>) <span class="kw">RETURNS BOOLEAN</span> ->
+  <span class="str">'SYSADMIN'</span> = <span class="fn">CURRENT_ROLE</span>()
+    <span class="kw">OR EXISTS</span> (
+      <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="obj">TITLE_COUNTRY_MAPPING</span>
+        <span class="kw">WHERE</span> <span class="var">TITLE</span> = <span class="fn">CURRENT_ROLE</span>()
+          <span class="kw">AND</span> <span class="var">COUNTRY_ISO_CODE</span> = <span class="var">COUNTRY_CODE</span>
+    );
+<span class="kw">ALTER TABLE</span> <span class="obj">CUSTOMERS</span> <span class="kw">DROP ALL ROW ACCESS POLICIES</span>;
+<span class="kw">ALTER TABLE</span> <span class="obj">CUSTOMERS</span> <span class="kw">ADD ROW ACCESS POLICY</span> <span class="obj">CUSTOMER_POLICY</span> <span class="kw">ON</span> (<span class="var">COUNTRY_CODE</span>);</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">MASKING POLICY</span><span class="concept-pill">ROW ACCESS POLICY</span><span class="concept-pill">CURRENT_ROLE()</span><span class="concept-pill">Column Security</span></div>
+        </div>
+      </div>
+
+      <!-- 1.3 -->
+      <div class="lesson" id="d1-3">
+        <div class="lesson-header" onclick="toggleLesson('d1-3-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">1.3</span><span class="lesson-title">Object Tagging — Classification &amp; Governance</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d1-3-body">
+          <div class="lesson-explain">
+            <p><strong>Tags</strong> are key-value labels you attach to Snowflake objects. They enable data governance — e.g., tracking which columns hold PII. Use <code>ALLOWED_VALUES</code> to restrict valid tag values.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Tags with Allowed Values</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE TAG</span> <span class="obj">business_unit</span>
+  <span class="kw">ALLOWED_VALUES</span> <span class="str">'sales'</span>, <span class="str">'HR'</span>, <span class="str">'operations'</span>;
+<span class="kw">ALTER WAREHOUSE</span> <span class="obj">compute_wh</span>
+  <span class="kw">SET TAG</span> <span class="obj">business_unit</span> = <span class="str">'sales'</span>;
+<span class="kw">CREATE DATABASE</span> <span class="obj">operations_db</span> <span class="kw">TAG</span> (<span class="obj">business_unit</span> = <span class="str">'operations'</span>);
+<span class="kw">ALTER TABLE</span> <span class="obj">customer</span>
+  <span class="kw">ALTER COLUMN</span> <span class="var">NAME</span>
+  <span class="kw">SET TAG</span> <span class="obj">security_objects_db.security_objects_schema.protected_data</span> = <span class="str">'PII'</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">CREATE TAG</span><span class="concept-pill">ALLOWED_VALUES</span><span class="concept-pill">Tag Inheritance</span><span class="concept-pill">PII Classification</span></div>
+        </div>
+      </div>
+    </div><!-- end module d1 -->
+
+    <div class="module-divider"></div>
+
+    <!-- ════════════════ MODULE D2 ════════════════ -->
+    <div class="module" id="module-d2">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(13,148,136,0.12);color:#0d9488;border:1px solid rgba(13,148,136,0.25)">D2</div>
+        <div class="module-header-text">
+          <div class="module-title">Virtual Warehouses &amp; Compute</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(13,148,136,0.1);color:#0d9488;border:1px solid rgba(13,148,136,0.2)">Compute</span>
+            <span style="font-size:12px;color:var(--text3)">3 lessons · Warehouses, Resource Monitors, Multi-cluster</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc">A <strong>Virtual Warehouse</strong> is a cluster of compute resources that executes queries — completely separate from storage. <strong>Resource Monitors</strong> set spending caps to prevent runaway costs.</div>
+
+      <div class="lesson" id="d2-1">
+        <div class="lesson-header" onclick="toggleLesson('d2-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">2.1</span><span class="lesson-title">Virtual Warehouse — Creation, Sizing &amp; State Management</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d2-1-body">
+          <div class="lesson-explain">
+            <p>Warehouses range from X-Small to 6X-Large. Doubling size doubles performance and credit consumption. <strong>AUTO_SUSPEND</strong> and <strong>AUTO_RESUME</strong> control billing behavior.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create &amp; Manage a Virtual Warehouse</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE WAREHOUSE</span> <span class="obj">DATA_ANALYSIS_WAREHOUSE</span>
+  <span class="var">WAREHOUSE_SIZE</span> = <span class="str">'SMALL'</span>
+  <span class="var">AUTO_SUSPEND</span>   = <span class="num">600</span>
+  <span class="var">AUTO_RESUME</span>    = <span class="kw">TRUE</span>
+  <span class="var">INITIALLY_SUSPENDED</span> = <span class="kw">TRUE</span>;
+<span class="kw">ALTER WAREHOUSE</span> <span class="obj">DATA_ANALYSIS_WAREHOUSE</span> <span class="kw">RESUME</span>;
+<span class="kw">ALTER WAREHOUSE</span> <span class="obj">DATA_ANALYSIS_WAREHOUSE</span> <span class="kw">SET</span> <span class="var">WAREHOUSE_SIZE</span> = <span class="kw">LARGE</span>;
+<span class="kw">SHOW WAREHOUSES LIKE</span> <span class="str">'DATA_ANALYSIS_WAREHOUSE'</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">CREATE WAREHOUSE</span><span class="concept-pill">AUTO_SUSPEND</span><span class="concept-pill">AUTO_RESUME</span><span class="concept-pill">WAREHOUSE_SIZE</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d2-2">
+        <div class="lesson-header" onclick="toggleLesson('d2-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">2.2</span><span class="lesson-title">Resource Monitors &amp; Warehouse Cost Monitoring</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d2-2-body">
+          <div class="lesson-explain">
+            <p>A <strong>Resource Monitor</strong> tracks credit usage and fires triggers at thresholds. <code>WAREHOUSE_METERING_HISTORY</code> shows exact credit consumption per warehouse per hour.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Resource Monitor</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE RESOURCE MONITOR</span> <span class="obj">MY_MONITOR</span>
+  <span class="kw">WITH CREDIT_QUOTA</span> = <span class="num">100</span>
+  <span class="kw">TRIGGERS</span>
+    <span class="kw">ON</span> <span class="num">50</span>  <span class="kw">PERCENT DO NOTIFY</span>
+    <span class="kw">ON</span> <span class="num">90</span>  <span class="kw">PERCENT DO SUSPEND</span>
+    <span class="kw">ON</span> <span class="num">100</span> <span class="kw">PERCENT DO SUSPEND_IMMEDIATE</span>;
+<span class="kw">ALTER WAREHOUSE</span> <span class="obj">COMPUTE_WH</span>
+  <span class="kw">SET RESOURCE_MONITOR</span> = <span class="str">"MY_MONITOR"</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">RESOURCE MONITOR</span><span class="concept-pill">CREDIT_QUOTA</span><span class="concept-pill">SUSPEND_IMMEDIATE</span><span class="concept-pill">WAREHOUSE_METERING_HISTORY</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d2-3">
+        <div class="lesson-header" onclick="toggleLesson('d2-3-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">2.3</span><span class="lesson-title">Multi-cluster Warehouses — Handling Concurrency</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d2-3-body">
+          <div class="lesson-explain">
+            <p>A <strong>Multi-cluster Warehouse</strong> automatically adds extra clusters to serve concurrent users. <strong>STANDARD</strong>: adds at first queue. <strong>ECONOMY</strong>: waits for sustained load.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Multi-cluster Warehouse</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE WAREHOUSE</span> <span class="obj">MULTI_CLUSTER_WH</span>
+  <span class="var">WAREHOUSE_SIZE</span>    = <span class="str">'XSMALL'</span>
+  <span class="var">AUTO_SUSPEND</span>      = <span class="num">600</span>
+  <span class="var">AUTO_RESUME</span>       = <span class="kw">TRUE</span>
+  <span class="var">MIN_CLUSTER_COUNT</span> = <span class="num">1</span>
+  <span class="var">MAX_CLUSTER_COUNT</span> = <span class="num">3</span>
+  <span class="var">SCALING_POLICY</span>    = <span class="str">'STANDARD'</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">MIN_CLUSTER_COUNT</span><span class="concept-pill">MAX_CLUSTER_COUNT</span><span class="concept-pill">SCALING_POLICY</span><span class="concept-pill">Concurrency</span></div>
+        </div>
+      </div>
+    </div><!-- end module d2 -->
+
+    <div class="module-divider"></div>
+
+    <!-- ════════════════ MODULE D3 ════════════════ -->
+    <div class="module" id="module-d3">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(165,128,255,0.12);color:#a580ff;border:1px solid rgba(165,128,255,0.25)">D3</div>
+        <div class="module-header-text">
+          <div class="module-title">Data Loading &amp; Ingestion</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(165,128,255,0.1);color:#a580ff;border:1px solid rgba(165,128,255,0.2)">Ingestion</span>
+            <span style="font-size:12px;color:var(--text3)">4 lessons · INSERT, Stages, COPY INTO, Semi-structured</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc">Data enters Snowflake through: <strong>INSERT statements</strong> for small data, <strong>Stages</strong> as landing zones, <strong>COPY INTO</strong> for bulk loads, and <strong>VARIANT</strong> columns for semi-structured JSON.</div>
+
+      <div class="lesson" id="d3-1">
+        <div class="lesson-header" onclick="toggleLesson('d3-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">3.1</span><span class="lesson-title">INSERT Statement Variations</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d3-1-body">
+          <div class="lesson-explain"><p><strong>INSERT OVERWRITE</strong> atomically truncates and inserts in one statement — useful for full daily refreshes without duplication risk.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>INSERT Variations</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">INSERT INTO</span> <span class="obj">FILMS</span> <span class="kw">VALUES</span> (<span class="str">'fi3p9f8hu8'</span>, <span class="str">'Parasite'</span>, <span class="fn">DATE</span>(<span class="str">'2019-05-30'</span>));
+<span class="kw">INSERT INTO</span> <span class="obj">FILMS</span> <span class="kw">VALUES</span>
+  (<span class="str">'9x3wnr0zit'</span>, <span class="str">'Citizen Kane'</span>,  <span class="fn">DATE</span>(<span class="str">'1942-01-24'</span>)),
+  (<span class="str">'2wyaojnzfq'</span>, <span class="str">'Old Boy'</span>,        <span class="fn">DATE</span>(<span class="str">'2004-10-15'</span>));
+<span class="kw">INSERT INTO</span> <span class="obj">FILMS_2000</span> <span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">FILMS</span>
+  <span class="kw">WHERE</span> <span class="var">RELEASE_DATE</span> > <span class="fn">DATE</span>(<span class="str">'2000-01-01'</span>);
+<span class="kw">INSERT OVERWRITE INTO</span> <span class="obj">FILMS_2000</span> <span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">FILMS</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">INSERT VALUES</span><span class="concept-pill">INSERT SELECT</span><span class="concept-pill">INSERT OVERWRITE</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d3-2">
+        <div class="lesson-header" onclick="toggleLesson('d3-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">3.2</span><span class="lesson-title">Stage Types — User, Table &amp; Named Stages</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d3-2-body">
+          <div class="lesson-explain"><p>Three internal stage types: <strong>User stage</strong> (@~), <strong>Table stage</strong> (@%TABLE), <strong>Named stage</strong> (@MY_STAGE — recommended for production).</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Stage Types &amp; Querying Staged Files</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">LIST</span> <span class="obj">@~</span>;
+<span class="kw">LS</span> <span class="obj">@%FILMS</span>;
+<span class="kw">CREATE STAGE</span> <span class="obj">FILMS_STAGE</span>;
+<span class="kw">CREATE FILE FORMAT</span> <span class="obj">CSV_FILE_FORMAT</span>
+  <span class="var">TYPE</span> = <span class="kw">CSV</span>
+  <span class="var">SKIP_HEADER</span> = <span class="num">1</span>;
+<span class="kw">SELECT</span> <span class="var">$1</span>, <span class="var">$2</span>, <span class="var">$3</span> <span class="kw">FROM</span> <span class="obj">@~/films.csv</span>;</pre>
+          </div>
+          <div class="callout warn"><span class="callout-icon">⚠️</span><div>The <code>PUT</code> command (upload local files) only works from <strong>SnowSQL CLI</strong> — not from Snowsight.</div></div>
+          <div class="concepts"><span class="concept-pill">@~ User Stage</span><span class="concept-pill">@%TABLE Stage</span><span class="concept-pill">Named Stage</span><span class="concept-pill">FILE FORMAT</span><span class="concept-pill">PUT Command</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d3-3">
+        <div class="lesson-header" onclick="toggleLesson('d3-3-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">3.3</span><span class="lesson-title">COPY INTO Table — Bulk Loading &amp; Transformations</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d3-3-body">
+          <div class="lesson-explain"><p><strong>COPY INTO</strong> is the primary bulk-load command. It tracks loaded files (preventing double-loading by default). Use <strong>VALIDATION_MODE</strong> to test without loading.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>COPY INTO — Basics &amp; Options</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">COPY INTO</span> <span class="obj">FILMS</span>
+<span class="kw">FROM</span> <span class="obj">@FILMS_STAGE/films.csv</span>
+<span class="kw">FILE_FORMAT</span> = (<span class="var">TYPE</span>=<span class="str">'CSV'</span> <span class="var">SKIP_HEADER</span>=<span class="num">1</span>);
+
+<span class="cmt">-- Transformations during load</span>
+<span class="kw">COPY INTO</span> <span class="obj">FILMS</span> <span class="kw">FROM</span>
+( <span class="kw">SELECT</span> <span class="var">$1</span>, <span class="var">$2</span>, <span class="fn">to_date</span>(<span class="var">$3</span>)
+  <span class="kw">FROM</span> <span class="obj">@%FILMS/films.csv</span>)
+<span class="kw">FILE_FORMAT</span> = <span class="obj">CSV_FILE_FORMAT</span>
+<span class="kw">FORCE</span> = <span class="kw">TRUE</span>;
+
+<span class="cmt">-- VALIDATION_MODE: preview rows without inserting</span>
+<span class="kw">COPY INTO</span> <span class="obj">FILMS</span>
+<span class="kw">FROM</span> <span class="obj">@FILMS_STAGE/films.csv</span>
+<span class="kw">VALIDATION_MODE</span> = <span class="str">'RETURN_ROWS'</span>;
+
+<span class="kw">COPY INTO</span> <span class="obj">FILMS</span>
+<span class="kw">FROM</span> <span class="obj">@FILMS_STAGE</span>
+<span class="kw">FILE_FORMAT</span> = <span class="obj">CSV_FILE_FORMAT</span>
+<span class="kw">PATTERN</span> = <span class="str">'.*[.]csv'</span>
+<span class="kw">ON_ERROR</span>=<span class="kw">CONTINUE</span>
+<span class="kw">FORCE</span>=<span class="kw">true</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">COPY INTO</span><span class="concept-pill">FORCE</span><span class="concept-pill">PATTERN</span><span class="concept-pill">VALIDATION_MODE</span><span class="concept-pill">ON_ERROR</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d3-4">
+        <div class="lesson-header" onclick="toggleLesson('d3-4-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">3.4</span><span class="lesson-title">Semi-structured Data — JSON, VARIANT &amp; FLATTEN</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d3-4-body">
+          <div class="lesson-explain"><p>Snowflake stores JSON natively in a <strong>VARIANT</strong> column. Navigate paths with dot notation (<code>col:key</code>). <strong>LATERAL FLATTEN</strong> turns JSON arrays into rows.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>ELT — Load Raw JSON &amp; Query</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE TABLE</span> <span class="obj">FILMS_ELT</span> (<span class="var">JSON_VARIANT</span> <span class="kw">VARIANT</span>);
+<span class="kw">SELECT</span>
+  <span class="var">json_variant</span>:<span class="obj">id</span>                      <span class="kw">AS</span> id,
+  <span class="var">json_variant</span>:<span class="obj">title</span>                   <span class="kw">AS</span> title,
+  <span class="var">json_variant</span>:<span class="obj">release_date</span>::<span class="kw">date</span>     <span class="kw">AS</span> release_date,
+  <span class="var">json_variant</span>:<span class="obj">actors</span>[<span class="num">0</span>]                <span class="kw">AS</span> first_actor,
+  <span class="var">json_variant</span>:<span class="obj">ratings</span>.<span class="obj">imdb_rating</span>      <span class="kw">AS</span> imdb_rating
+<span class="kw">FROM</span> <span class="obj">FILMS_ELT</span>;
+
+<span class="cmt">-- FLATTEN arrays to rows</span>
+<span class="kw">SELECT</span>
+  <span class="var">json_variant</span>:<span class="obj">title</span>,
+  <span class="var">L</span>.<span class="var">value</span>
+<span class="kw">FROM</span> <span class="obj">FILMS_ELT</span> F,
+<span class="kw">LATERAL FLATTEN</span>(<span class="var">INPUT</span> => F.<span class="var">json_variant</span>:<span class="obj">ratings</span>) L;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">VARIANT</span><span class="concept-pill">JSON Dot Notation</span><span class="concept-pill">FLATTEN</span><span class="concept-pill">LATERAL FLATTEN</span><span class="concept-pill">MATCH_BY_COLUMN_NAME</span></div>
+        </div>
+      </div>
+    </div><!-- end module d3 -->
+
+    <div class="module-divider"></div>
+
+    <!-- ════════════════ MODULE D4 ════════════════ -->
+    <div class="module" id="module-d4">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(78,203,113,0.12);color:#4ecb71;border:1px solid rgba(78,203,113,0.25)">D4</div>
+        <div class="module-header-text">
+          <div class="module-title">Query Performance &amp; Optimization</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(78,203,113,0.1);color:#4ecb71;border:1px solid rgba(78,203,113,0.2)">Performance</span>
+            <span style="font-size:12px;color:var(--text3)">3 lessons · Query History, Caching, Clustering</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc">Snowflake has <strong>three caching layers</strong>: Metadata, Results (24h), and Local Disk. <strong>Micro-partitions</strong> (~50–500MB) store min/max metadata for pruning. <strong>Clustering keys</strong> improve partition skipping.</div>
+
+      <div class="lesson" id="d4-1">
+        <div class="lesson-header" onclick="toggleLesson('d4-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">4.1</span><span class="lesson-title">Query History &amp; Query Profile</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d4-1-body">
+          <div class="lesson-explain"><p><code>ACCOUNT_USAGE.QUERY_HISTORY</code>: 365 days, ~45 min latency. <code>INFORMATION_SCHEMA.QUERY_HISTORY()</code>: real-time, last 7 days only.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Query History Views</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">SELECT</span>
+  <span class="var">QUERY_ID</span>, <span class="var">QUERY_TEXT</span>, <span class="var">USER_NAME</span>,
+  <span class="fn">ROUND</span>(<span class="var">TOTAL_ELAPSED_TIME</span> / <span class="num">1000</span>, <span class="num">2</span>) <span class="kw">AS</span> <span class="var">ELAPSED_SEC</span>
+<span class="kw">FROM</span> <span class="obj">SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY</span>
+<span class="kw">WHERE</span> <span class="var">ELAPSED_SEC</span> > <span class="num">3</span>
+<span class="kw">ORDER BY</span> <span class="var">ELAPSED_SEC</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">QUERY_HISTORY</span><span class="concept-pill">ACCOUNT_USAGE</span><span class="concept-pill">INFORMATION_SCHEMA</span><span class="concept-pill">Query Profile</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d4-2">
+        <div class="lesson-header" onclick="toggleLesson('d4-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">4.2</span><span class="lesson-title">Caching — Metadata, Results Cache &amp; Local Storage</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d4-2-body">
+          <div class="lesson-explain">
+            <p><strong>1. Metadata Cache</strong>: COUNT(*), SHOW, DESCRIBE — free. <strong>2. Results Cache</strong>: exact same query, 24h TTL, shared across all users, no warehouse needed. <strong>3. Local Disk Cache</strong>: warehouse SSD caches scanned data.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Demonstrating Cache Layers</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="cmt">-- ① Metadata cache — no warehouse needed</span>
+<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> <span class="obj">CUSTOMER</span>;
+
+<span class="cmt">-- ② Results cache — run same query twice</span>
+<span class="kw">SELECT</span> <span class="var">C_CUSTKEY</span>, <span class="var">C_NAME</span> <span class="kw">FROM</span> <span class="obj">CUSTOMER</span> <span class="kw">LIMIT</span> <span class="num">1000000</span>;
+<span class="kw">SELECT</span> <span class="var">C_CUSTKEY</span>, <span class="var">C_NAME</span> <span class="kw">FROM</span> <span class="obj">CUSTOMER</span> <span class="kw">LIMIT</span> <span class="num">1000000</span>;
+
+<span class="cmt">-- Cache MISS — CURRENT_TIMESTAMP() busts cache</span>
+<span class="kw">SELECT</span> <span class="var">C_CUSTKEY</span>, <span class="fn">CURRENT_TIMESTAMP</span>() <span class="kw">FROM</span> <span class="obj">CUSTOMER</span> <span class="kw">LIMIT</span> <span class="num">1000000</span>;
+
+<span class="cmt">-- Disable/re-enable result caching</span>
+<span class="kw">ALTER ACCOUNT SET</span> <span class="var">USE_CACHED_RESULT</span> = <span class="kw">FALSE</span>;
+<span class="kw">ALTER ACCOUNT SET</span> <span class="var">USE_CACHED_RESULT</span> = <span class="kw">TRUE</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">Metadata Cache</span><span class="concept-pill">Results Cache</span><span class="concept-pill">Local Disk Cache</span><span class="concept-pill">USE_CACHED_RESULT</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d4-3">
+        <div class="lesson-header" onclick="toggleLesson('d4-3-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">4.3</span><span class="lesson-title">Clustering &amp; Micro-partition Pruning</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d4-3-body">
+          <div class="lesson-explain"><p>A <strong>Clustering Key</strong> re-sorts data to make pruning more effective. Use on large tables queried frequently on a date or ID column. Lower <code>average_overlaps</code> = better clustering health.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Clustering</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">ALTER TABLE</span> <span class="obj">MY_TABLE</span> <span class="kw">CLUSTER BY</span> (<span class="var">sale_date</span>);
+<span class="kw">SELECT</span> <span class="fn">SYSTEM$CLUSTERING_INFORMATION</span>(<span class="str">'MY_TABLE'</span>, <span class="str">'(sale_date)'</span>);
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">SNOWFLAKE.ACCOUNT_USAGE.AUTOMATIC_CLUSTERING_HISTORY</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">Micro-partitions</span><span class="concept-pill">CLUSTER BY</span><span class="concept-pill">SYSTEM$CLUSTERING_INFORMATION</span><span class="concept-pill">Partition Pruning</span></div>
+        </div>
+      </div>
+    </div><!-- end module d4 -->
+
+    <div class="module-divider"></div>
+
+    <!-- ════════════════ MODULE D5 ════════════════ -->
+    <div class="module" id="module-d5">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(255,140,66,0.12);color:#ff8c42;border:1px solid rgba(255,140,66,0.25)">D5</div>
+        <div class="module-header-text">
+          <div class="module-title">Advanced Features</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(255,140,66,0.1);color:#ff8c42;border:1px solid rgba(255,140,66,0.2)">Advanced</span>
+            <span style="font-size:12px;color:var(--text3)">7 lessons · Objects, UDFs, SnowSQL, Sharing, Dynamic Tables, Parameters</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc">Full breadth of Snowflake: object types, <strong>UDFs and Stored Procedures</strong>, <strong>SnowSQL</strong>, <strong>Secure Data Sharing</strong>, the <strong>Data Marketplace</strong>, <strong>Dynamic Tables</strong>, and <strong>Parameters</strong>.</div>
+
+      <div class="lesson" id="d5-1">
+        <div class="lesson-header" onclick="toggleLesson('d5-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.1</span><span class="lesson-title">Databases, Schemas, Tables &amp; Views</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-1-body">
+          <div class="lesson-explain"><p><strong>Table types</strong>: Permanent (full time-travel + fail-safe), Temporary (session-scoped), Transient (limited time-travel, no fail-safe). <strong>View types</strong>: Standard, Secure, Materialized.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Table &amp; View Types</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE TABLE</span> <span class="obj">PERMANENT_TABLE</span> (<span class="var">NAME</span> <span class="kw">STRING</span>, <span class="var">AGE</span> <span class="kw">INT</span>);
+<span class="kw">CREATE TEMPORARY TABLE</span> <span class="obj">TEMP_TABLE</span> (<span class="var">NAME</span> <span class="kw">STRING</span>, <span class="var">AGE</span> <span class="kw">INT</span>);
+<span class="kw">CREATE TRANSIENT TABLE</span> <span class="obj">TRANSIENT_TABLE</span> (<span class="var">NAME</span> <span class="kw">STRING</span>, <span class="var">AGE</span> <span class="kw">INT</span>);
+<span class="kw">ALTER TABLE</span> <span class="obj">PERMANENT_TABLE</span> <span class="kw">SET</span> <span class="var">DATA_RETENTION_TIME_IN_DAYS</span> = <span class="num">90</span>;
+<span class="kw">CREATE SECURE VIEW</span> <span class="obj">SECURE_VIEW</span> <span class="kw">AS SELECT</span> * <span class="kw">FROM</span> <span class="obj">PERMANENT_TABLE</span>;
+<span class="kw">CREATE MATERIALIZED VIEW</span> <span class="obj">MAT_VIEW</span> <span class="kw">AS SELECT</span> * <span class="kw">FROM</span> <span class="obj">PERMANENT_TABLE</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">PERMANENT TABLE</span><span class="concept-pill">TEMPORARY TABLE</span><span class="concept-pill">TRANSIENT TABLE</span><span class="concept-pill">SECURE VIEW</span><span class="concept-pill">MATERIALIZED VIEW</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-2">
+        <div class="lesson-header" onclick="toggleLesson('d5-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.2</span><span class="lesson-title">UDFs, External Functions &amp; Stored Procedures</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-2-body">
+          <div class="lesson-explain"><p><strong>UDFs</strong> extend SQL with custom logic — usable inline in SELECT. <strong>Stored Procedures</strong> run procedural logic but must be called with CALL, not used inline.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>SQL UDF &amp; Stored Procedure</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">DAY_NAME_ON</span>(<span class="var">num_of_days</span> <span class="kw">int</span>)
+<span class="kw">RETURNS STRING AS</span>
+$$
+  <span class="kw">SELECT</span> <span class="str">'In '</span> || <span class="fn">CAST</span>(<span class="var">num_of_days</span> <span class="kw">AS STRING</span>) || <span class="str">' days it will be a '</span>
+    || <span class="fn">dayname</span>(<span class="fn">dateadd</span>(<span class="kw">day</span>, <span class="var">num_of_days</span>, <span class="fn">current_date</span>()))
+$$;
+
+<span class="kw">CREATE OR REPLACE PROCEDURE</span> <span class="fn">TRUNCATE_TABLES</span>(<span class="var">DB</span> <span class="kw">STRING</span>, <span class="var">SCH</span> <span class="kw">STRING</span>)
+<span class="kw">RETURNS STRING
+LANGUAGE JAVASCRIPT
+EXECUTE AS OWNER AS</span>
+$$
+  var rs = snowflake.execute({sqlText: 'SHOW TABLES IN ' + DB + '.' + SCH});
+  while (rs.next()){ snowflake.execute({sqlText: 'TRUNCATE TABLE ' + rs.getColumnValue(2)}); }
+  return 'Done';
+$$;
+<span class="kw">CALL</span> <span class="fn">TRUNCATE_TABLES</span>(<span class="str">'MY_DB'</span>, <span class="str">'MY_SCHEMA'</span>);</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">CREATE FUNCTION</span><span class="concept-pill">UDF Overloading</span><span class="concept-pill">STORED PROCEDURE</span><span class="concept-pill">CALL</span><span class="concept-pill">snowflake.execute()</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-3">
+        <div class="lesson-header" onclick="toggleLesson('d5-3-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.3</span><span class="lesson-title">SnowSQL CLI</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-3-body">
+          <div class="lesson-explain"><p><strong>SnowSQL</strong> is the command-line client. Required for <code>PUT</code> and <code>GET</code> commands. Run queries with <code>-q</code>, execute files with <code>-f</code>.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>SnowSQL Usage</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre>snowsql -a &lt;account&gt; -u &lt;user&gt; -d MY_DB -s MY_SCHEMA -r SYSADMIN -w COMPUTE_WH
+snowsql ... -q 'SELECT * FROM CUSTOMER LIMIT 5'
+snowsql ... -f /path/to/script.sql
+
+<span class="cmt">-- Inside interactive mode:</span>
+!set variable_substitution=true
+!define table_name=customer
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> &amp;table_name <span class="kw">LIMIT</span> <span class="num">10</span>;
+<span class="kw">PUT</span> file:///local/data.csv @MY_STAGE;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">SnowSQL</span><span class="concept-pill">PUT Command</span><span class="concept-pill">-q Flag</span><span class="concept-pill">Variable Substitution</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-4">
+        <div class="lesson-header" onclick="toggleLesson('d5-4-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.4</span><span class="lesson-title">Secure Data Sharing</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-4-body">
+          <div class="lesson-explain"><p>Share <strong>live data</strong> across Snowflake accounts — zero-copy, no ETL. Consumers query your data directly via a read-only database.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Create Share (Provider Side)</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE SHARE</span> <span class="obj">DEMO_SHARE</span>;
+<span class="kw">GRANT USAGE ON DATABASE</span> <span class="obj">DEMO_DB</span> <span class="kw">TO SHARE</span> <span class="obj">DEMO_SHARE</span>;
+<span class="kw">GRANT USAGE ON SCHEMA</span> <span class="obj">DEMO_DB.DEMO_SCHEMA</span> <span class="kw">TO SHARE</span> <span class="obj">DEMO_SHARE</span>;
+<span class="kw">GRANT SELECT ON TABLE</span> <span class="obj">DEMO_DB.DEMO_SCHEMA.DEMO_TABLE</span> <span class="kw">TO SHARE</span> <span class="obj">DEMO_SHARE</span>;
+<span class="kw">ALTER SHARE</span> <span class="obj">DEMO_SHARE</span> <span class="kw">ADD ACCOUNTS</span> = &lt;consumer_account&gt;;
+
+<span class="cmt">-- Consumer side</span>
+<span class="kw">CREATE DATABASE</span> <span class="obj">SHARED_DATA</span> <span class="kw">FROM SHARE</span> provider_acct.DEMO_SHARE;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">CREATE SHARE</span><span class="concept-pill">GRANT TO SHARE</span><span class="concept-pill">Zero-copy Sharing</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-5">
+        <div class="lesson-header" onclick="toggleLesson('d5-5-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.5</span><span class="lesson-title">Data Marketplace</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-5-body">
+          <div class="lesson-explain"><p>Import third-party live datasets from the Snowflake Marketplace — query them like any other table. Data always reflects the provider's latest version. No ETL pipeline needed.</p></div>
+          <div class="callout success"><span class="callout-icon">✅</span><div>Marketplace data uses the same zero-copy sharing mechanism as D5.4 — you're directly querying the provider's Snowflake account.</div></div>
+          <div class="concepts"><span class="concept-pill">Data Marketplace</span><span class="concept-pill">Live Dataset</span><span class="concept-pill">Zero-copy</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-dt">
+        <div class="lesson-header" onclick="toggleLesson('d5-dt-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.6</span><span class="lesson-title">Dynamic Tables — Declarative Data Pipelines</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-dt-body">
+          <div class="lesson-explain"><p><strong>Dynamic Tables</strong> replace Streams + Tasks. Define a SQL query, set a <strong>TARGET_LAG</strong>, and Snowflake auto-refreshes. Chain them to build declarative pipelines.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Dynamic Table Pipeline</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE OR REPLACE DYNAMIC TABLE</span> <span class="obj">cleaned_transactions</span>
+  <span class="var">TARGET_LAG</span>   = <span class="str">'1 minute'</span>
+  <span class="var">WAREHOUSE</span>    = compute_wh
+  <span class="var">REFRESH_MODE</span> = <span class="kw">AUTO</span>
+  <span class="var">INITIALIZE</span>   = <span class="kw">ON_CREATE</span>
+<span class="kw">AS</span>
+  <span class="kw">SELECT</span> transaction_id, customer_id, amount,
+    transaction_date::<span class="kw">DATE</span> <span class="kw">AS</span> transaction_date
+  <span class="kw">FROM</span> <span class="obj">raw_transactions</span>
+  <span class="kw">WHERE</span> status = <span class="str">'completed'</span>;
+
+<span class="kw">ALTER DYNAMIC TABLE</span> <span class="obj">cleaned_transactions</span> <span class="kw">REFRESH</span>;
+<span class="kw">ALTER DYNAMIC TABLE</span> <span class="obj">cleaned_transactions</span> <span class="kw">SUSPEND</span>;
+<span class="kw">ALTER DYNAMIC TABLE</span> <span class="obj">cleaned_transactions</span> <span class="kw">RESUME</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">DYNAMIC TABLE</span><span class="concept-pill">TARGET_LAG</span><span class="concept-pill">REFRESH_MODE</span><span class="concept-pill">INITIALIZE ON_CREATE</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d5-p">
+        <div class="lesson-header" onclick="toggleLesson('d5-p-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">5.7</span><span class="lesson-title">Parameters — Precedence Hierarchy</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d5-p-body">
+          <div class="lesson-explain"><p>Parameter precedence (highest to lowest): <strong>Session → User → Account</strong>. Object parameters: <strong>Table overrides Schema overrides Database overrides Account</strong>.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Parameter Precedence Demo</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">ALTER ACCOUNT SET</span>  <span class="var">DATE_OUTPUT_FORMAT</span> = <span class="str">'YYYY/MM/DD'</span>;
+<span class="kw">ALTER USER</span> <span class="obj">admin</span> <span class="kw">SET</span> <span class="var">DATE_OUTPUT_FORMAT</span> = <span class="str">'DD-MM-YYYY'</span>;
+<span class="kw">ALTER SESSION SET</span> <span class="var">DATE_OUTPUT_FORMAT</span> = <span class="str">'MM, DD, YYYY'</span>; <span class="cmt">-- wins</span>
+<span class="kw">SHOW PARAMETERS LIKE</span> <span class="str">'DATE_OUTPUT_FORMAT'</span>;
+<span class="kw">ALTER TABLE</span>  <span class="obj">MY_TABLE</span>  <span class="kw">SET</span> <span class="var">DATA_RETENTION_TIME_IN_DAYS</span> = <span class="num">5</span>;
+<span class="kw">ALTER SCHEMA</span> <span class="obj">MY_SCHEMA</span> <span class="kw">SET</span> <span class="var">DATA_RETENTION_TIME_IN_DAYS</span> = <span class="num">10</span>;</pre>
+          </div>
+          <div class="concepts"><span class="concept-pill">ALTER SESSION SET</span><span class="concept-pill">SHOW PARAMETERS</span><span class="concept-pill">DATA_RETENTION_TIME</span><span class="concept-pill">Parameter Precedence</span></div>
+        </div>
+      </div>
+    </div><!-- end module d5 -->
+
+    <div class="module-divider"></div>
+
+    <!-- ════════════════ MODULE D6 ════════════════ -->
+    <div class="module" id="module-d6">
+      <div class="module-header">
+        <div class="module-badge" style="background:rgba(86,200,245,0.12);color:#14b8a6;border:1px solid rgba(86,200,245,0.25)">D6</div>
+        <div class="module-header-text">
+          <div class="module-title">Data Resilience — Time Travel &amp; Cloning</div>
+          <div class="module-meta">
+            <span class="module-tag" style="background:rgba(86,200,245,0.1);color:#14b8a6;border:1px solid rgba(86,200,245,0.2)">Resilience</span>
+            <span style="font-size:12px;color:var(--text3)">2 lessons · Time Travel, UNDROP, Zero-copy Cloning</span>
+          </div>
+        </div>
+      </div>
+      <div class="module-desc"><strong>Time Travel</strong> queries data as it existed up to 90 days in the past. <strong>Cloning</strong> is metadata-only (zero-copy) — a clone shares micro-partitions until either side writes new data.</div>
+
+      <div class="lesson" id="d6-1">
+        <div class="lesson-header" onclick="toggleLesson('d6-1-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">6.1</span><span class="lesson-title">Time Travel — Query the Past &amp; Recover Objects</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d6-1-body">
+          <div class="lesson-explain">
+            <p>Three Time Travel SQL extensions: <strong>AT(OFFSET)</strong> — relative in seconds. <strong>AT(TIMESTAMP)</strong> — absolute point. <strong>BEFORE(STATEMENT)</strong> — just before a specific query ran.</p>
+            <div class="tip"><span class="tip-icon">💡</span>Get a query ID from Snowsight UI or with LAST_QUERY_ID() immediately after the statement.</div>
+          </div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Time Travel SQL Extensions</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">MY_TABLE</span>
+<span class="kw">AT</span>(<span class="var">OFFSET</span> => -<span class="num">60</span>*<span class="num">5</span>);  <span class="cmt">-- 5 minutes ago</span>
+
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">MY_TABLE</span>
+<span class="kw">AT</span>(<span class="var">TIMESTAMP</span> => <span class="fn">DATEADD</span>(<span class="kw">minute</span>, -<span class="num">15</span>, <span class="fn">current_timestamp</span>()));
+
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">MY_TABLE</span>
+<span class="kw">BEFORE</span>(<span class="var">STATEMENT</span> => <span class="str">'&lt;query_id&gt;'</span>);
+
+<span class="kw">UNDROP TABLE</span> <span class="obj">MY_TABLE</span>;
+<span class="kw">UNDROP SCHEMA</span> <span class="obj">MY_SCHEMA</span>;
+<span class="kw">UNDROP DATABASE</span> <span class="obj">MY_DB</span>;
+
+<span class="cmt">-- Recover: create table from historical state</span>
+<span class="kw">CREATE TABLE</span> <span class="obj">MY_TABLE_RESTORED</span> <span class="kw">AS</span>
+  <span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">MY_TABLE</span>
+  <span class="kw">BEFORE</span>(<span class="var">STATEMENT</span> => <span class="str">'&lt;truncate_query_id&gt;'</span>);</pre>
+          </div>
+          <div class="callout warn"><span class="callout-icon">⚠️</span><div>Time Travel storage costs money. Use the lowest retention that meets your recovery requirements.</div></div>
+          <div class="concepts"><span class="concept-pill">AT(OFFSET)</span><span class="concept-pill">AT(TIMESTAMP)</span><span class="concept-pill">BEFORE(STATEMENT)</span><span class="concept-pill">UNDROP</span><span class="concept-pill">DATA_RETENTION_TIME_IN_DAYS</span></div>
+        </div>
+      </div>
+
+      <div class="lesson" id="d6-2">
+        <div class="lesson-header" onclick="toggleLesson('d6-2-body', this)">
+          <div class="lesson-header-left"><span class="lesson-num">6.2</span><span class="lesson-title">Cloning — Zero-copy Instant Copies</span></div>
+          <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="lesson-body" id="d6-2-body">
+          <div class="lesson-explain"><p>Cloning is metadata-only — no data files are copied. The clone shares micro-partitions until either side writes. Recursive for databases: cloning a database clones all schemas and tables inside.</p></div>
+          <div class="code-block">
+            <div class="code-toolbar"><div class="code-file"><div class="code-file-dot"></div>Cloning</div><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+<pre><span class="kw">CREATE TABLE</span> <span class="obj">MY_TABLE_CLONE</span> <span class="kw">CLONE</span> <span class="obj">MY_TABLE</span>;
+<span class="kw">CREATE DATABASE</span> <span class="obj">MY_DB_CLONE</span> <span class="kw">CLONE</span> <span class="obj">MY_DB</span>;
+
+<span class="cmt">-- Clone to a point in the past (combine with Time Travel)</span>
+<span class="kw">CREATE OR REPLACE TABLE</span> <span class="obj">MY_TABLE_SNAPSHOT</span>
+  <span class="kw">CLONE</span> <span class="obj">MY_TABLE</span>
+  <span class="kw">AT</span>(<span class="var">OFFSET</span> => -<span class="num">60</span>*<span class="num">2</span>);</pre>
+          </div>
+          <div class="callout info"><span class="callout-icon">ℹ️</span><div>Clones do NOT inherit grants from the source. Re-apply privileges after cloning if needed.</div></div>
+          <div class="concepts"><span class="concept-pill">CLONE</span><span class="concept-pill">Zero-copy</span><span class="concept-pill">Copy-on-write</span><span class="concept-pill">Recursive Clone</span><span class="concept-pill">Time Travel Clone</span></div>
+        </div>
+      </div>
+    </div><!-- end module d6 -->
+
+  </div><!-- end .content -->
+</div><!-- end #tab-guide -->
+
+
+<!-- ══════════ TAB 2: PRIVILEGES REFERENCE ══════════ -->
+<div class="tab-panel" id="tab-privileges">
+  <div class="priv-tab-layout">
+    <div class="priv-tab-header">
+      <h2>Snowflake Privileges Reference</h2>
+      <p>Every privilege Snowflake supports — what it does, which object type it applies to, and how to use GRANT. Search by privilege name, object type, or keyword.</p>
+    </div>
+
+    <!-- GRANT Explainer -->
+    <div class="lesson" style="margin-bottom:24px">
+      <div class="lesson-header" onclick="toggleLesson('priv-grant-body', this)">
+        <div class="lesson-header-left">
+          <span class="lesson-num">★</span>
+          <span class="lesson-title">GRANT — The Command Behind Every Privilege</span>
+        </div>
+        <svg class="lesson-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="lesson-body" id="priv-grant-body">
+        <div class="lesson-explain">
+          <p><strong>GRANT is a SQL command, not a privilege itself</strong> — but it's the mechanism behind every privilege in Snowflake. The pattern is always the same: <em>what privilege</em>, <em>on what object</em>, <em>to whom</em>.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-toolbar">
+            <div class="code-file"><div class="code-file-dot"></div>GRANT syntax — the universal pattern</div>
+            <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          </div>
+<pre><span class="cmt">-- The universal GRANT pattern:</span>
+<span class="kw">GRANT</span> &lt;privilege&gt; <span class="kw">ON</span> &lt;object_type&gt; &lt;object_name&gt; <span class="kw">TO ROLE</span> &lt;role_name&gt;;
+
+<span class="cmt">-- Real examples:</span>
+<span class="kw">GRANT SELECT ON TABLE</span> <span class="obj">CUSTOMERS</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE ON DATABASE</span> <span class="obj">SALES_DB</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE ON SCHEMA</span> <span class="obj">SALES_DB.SALES</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT USAGE ON WAREHOUSE</span> <span class="obj">COMPUTE_WH</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">GRANT INSERT, UPDATE ON TABLE</span> <span class="obj">ORDERS</span> <span class="kw">TO ROLE</span> <span class="obj">ANALYST</span>;
+
+<span class="cmt">-- GRANT ROLE (different — no ON clause)</span>
+<span class="kw">GRANT ROLE</span> <span class="obj">ANALYST</span> <span class="kw">TO USER</span> <span class="obj">Rajesh</span>;
+<span class="kw">GRANT ROLE</span> <span class="obj">ANALYST</span> <span class="kw">TO ROLE</span> <span class="obj">SYSADMIN</span>;
+
+<span class="cmt">-- See what a role has</span>
+<span class="kw">SHOW GRANTS TO ROLE</span> <span class="obj">ANALYST</span>;
+<span class="kw">SHOW GRANTS OF ROLE</span> <span class="obj">ANALYST</span>;</pre>
+        </div>
+        <div class="concepts"><span class="concept-pill">GRANT</span><span class="concept-pill">REVOKE</span><span class="concept-pill">GRANT ROLE</span><span class="concept-pill">SHOW GRANTS</span></div>
+      </div>
+    </div>
+
+    <!-- Searchable Privileges Table -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+      <div style="padding: 20px 20px 0;">
+        <div class="priv-search-wrap">
+          <input type="text" class="priv-search-input" id="privSearch2" placeholder="Search privileges… e.g. SELECT, APPLY, WAREHOUSE" oninput="filterPrivs2(this.value)">
+        </div>
+      </div>
+      <div id="privList2" style="padding: 0 20px 20px;">
+        <div class="priv-group">
+          <div class="priv-group-label">Navigation — "can you see / enter this object?"</div>
+          <div class="priv-row" data-ptags="usage database schema warehouse">
+            <div class="priv-kw">USAGE</div>
+            <div class="priv-scope"><span class="ptag t-db">DATABASE</span><span class="ptag t-sc">SCHEMA</span><span class="ptag t-wh">WAREHOUSE</span></div>
+            <div class="priv-desc">Read-only navigation access. Lets a role see that the object exists and enter it — but grants zero ability to read data inside. On a warehouse it also means the role can run queries. <strong>You always need USAGE before any other privilege on an object.</strong></div>
+          </div>
+          <div class="priv-row" data-ptags="reference schema">
+            <div class="priv-kw">REFERENCE</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Like USAGE but read-only navigation without allowing object creation. Mostly relevant in share contexts.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Data Reading</div>
+          <div class="priv-row" data-ptags="select table view read query">
+            <div class="priv-kw">SELECT</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span><span class="ptag t-tb">VIEW</span></div>
+            <div class="priv-desc">Allows running SELECT queries on a table or view. Requires USAGE on the parent database and schema first. Without SELECT, the role can enter the schema but gets "Insufficient privileges" on any query.</div>
+          </div>
+          <div class="priv-row" data-ptags="references table foreign key metadata">
+            <div class="priv-kw">REFERENCES</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span></div>
+            <div class="priv-desc">Allows a role to reference this table in foreign key constraints and view its column metadata — without being able to read actual row data.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Data Writing</div>
+          <div class="priv-row" data-ptags="insert table write add rows">
+            <div class="priv-kw">INSERT</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span></div>
+            <div class="priv-desc">Allows adding new rows to a table via INSERT statements.</div>
+          </div>
+          <div class="priv-row" data-ptags="update table modify rows">
+            <div class="priv-kw">UPDATE</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span></div>
+            <div class="priv-desc">Allows modifying existing row values. Does not allow adding or deleting rows.</div>
+          </div>
+          <div class="priv-row" data-ptags="delete table remove rows">
+            <div class="priv-kw">DELETE</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span></div>
+            <div class="priv-desc">Allows removing specific rows from a table. Does not allow dropping the table itself.</div>
+          </div>
+          <div class="priv-row" data-ptags="truncate table clear wipe">
+            <div class="priv-kw">TRUNCATE</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span></div>
+            <div class="priv-desc">Allows deleting ALL rows at once with TRUNCATE TABLE. Faster than DELETE but cannot be filtered — it wipes everything.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Schema-level DDL — Creating Objects</div>
+          <div class="priv-row" data-ptags="create table schema ddl">
+            <div class="priv-kw">CREATE TABLE</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Allows creating new tables inside a schema. Granted ON SCHEMA (not ON TABLE) because the table doesn't exist yet when you grant it.</div>
+          </div>
+          <div class="priv-row" data-ptags="create view schema ddl">
+            <div class="priv-kw">CREATE VIEW</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Allows creating views inside a schema.</div>
+          </div>
+          <div class="priv-row" data-ptags="create masking policy schema security">
+            <div class="priv-kw">CREATE MASKING POLICY</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Allows defining new masking policies. Does <strong>not</strong> allow attaching them to columns — that requires APPLY MASKING POLICY separately.</div>
+          </div>
+          <div class="priv-row" data-ptags="create row access policy schema security">
+            <div class="priv-kw">CREATE ROW ACCESS POLICY</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Allows defining new row access policies. Defining and applying are always two separate privileges in Snowflake.</div>
+          </div>
+          <div class="priv-row" data-ptags="create stage schema loading">
+            <div class="priv-kw">CREATE STAGE</div>
+            <div class="priv-scope"><span class="ptag t-sc">SCHEMA</span></div>
+            <div class="priv-desc">Allows creating internal or external stages for loading/unloading data files.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Policy Application — Attaching Policies to Objects</div>
+          <div class="priv-row" data-ptags="apply masking policy account column security">
+            <div class="priv-kw">APPLY MASKING POLICY</div>
+            <div class="priv-scope"><span class="ptag t-acc">ACCOUNT</span></div>
+            <div class="priv-desc">Allows attaching (and detaching) a masking policy to a column anywhere in the account. Without this, a role can CREATE the policy but cannot activate it on any column.</div>
+          </div>
+          <div class="priv-row" data-ptags="apply row access policy account table security">
+            <div class="priv-kw">APPLY ROW ACCESS POLICY</div>
+            <div class="priv-scope"><span class="ptag t-acc">ACCOUNT</span></div>
+            <div class="priv-desc">Allows attaching (and detaching) a row access policy to a table anywhere in the account. Same pattern as masking — CREATE and APPLY are always separate privileges.</div>
+          </div>
+          <div class="priv-row" data-ptags="apply tag account column governance">
+            <div class="priv-kw">APPLY TAG</div>
+            <div class="priv-scope"><span class="ptag t-acc">ACCOUNT</span></div>
+            <div class="priv-desc">Allows assigning classification tags to objects (columns, tables, warehouses). Used in data classification and governance workflows.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Ownership &amp; Admin</div>
+          <div class="priv-row" data-ptags="ownership table schema database admin">
+            <div class="priv-kw">OWNERSHIP</div>
+            <div class="priv-scope"><span class="ptag t-tb">TABLE</span><span class="ptag t-sc">SCHEMA</span><span class="ptag t-db">DATABASE</span></div>
+            <div class="priv-desc">The highest privilege on an object. The owner can do anything to it — drop it, grant privileges on it to others, and transfer ownership. Every object has exactly one owner role.</div>
+          </div>
+          <div class="priv-row" data-ptags="manage grants account admin securityadmin">
+            <div class="priv-kw">MANAGE GRANTS</div>
+            <div class="priv-scope"><span class="ptag t-acc">ACCOUNT</span></div>
+            <div class="priv-desc">Allows granting any privilege to any role — even privileges the grantor doesn't personally hold. Extremely powerful; typically reserved for SECURITYADMIN.</div>
+          </div>
+          <div class="priv-row" data-ptags="monitor warehouse database usage credits">
+            <div class="priv-kw">MONITOR</div>
+            <div class="priv-scope"><span class="ptag t-wh">WAREHOUSE</span><span class="ptag t-db">DATABASE</span></div>
+            <div class="priv-desc">Allows viewing query history, credit usage, and execution metrics — without being able to run queries or read data.</div>
+          </div>
+          <div class="priv-row" data-ptags="operate warehouse start stop suspend resume">
+            <div class="priv-kw">OPERATE</div>
+            <div class="priv-scope"><span class="ptag t-wh">WAREHOUSE</span></div>
+            <div class="priv-desc">Allows starting, stopping, suspending, and resizing a warehouse. Does not allow modifying warehouse config (that needs MODIFY).</div>
+          </div>
+          <div class="priv-row" data-ptags="modify warehouse config size alter">
+            <div class="priv-kw">MODIFY</div>
+            <div class="priv-scope"><span class="ptag t-wh">WAREHOUSE</span></div>
+            <div class="priv-desc">Allows changing warehouse properties like size, auto-suspend settings, and max cluster count.</div>
+          </div>
+        </div>
+        <div class="priv-group">
+          <div class="priv-group-label">Column-level Security</div>
+          <div class="priv-row" data-ptags="select column masking granular">
+            <div class="priv-kw">SELECT (column)</div>
+            <div class="priv-scope"><span class="ptag t-col">COLUMN</span></div>
+            <div class="priv-desc">In column-level security, you can GRANT SELECT on specific columns only. The role can query those columns but gets NULL for any ungranted column. More granular than table-level SELECT.</div>
+          </div>
+        </div>
+      </div>
+      <p id="privEmpty2" style="display:none; font-size:12px; color:var(--text3); padding:8px 20px 20px;">No matching privileges found.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 3: CHEAT SHEET ══════════ -->
+<div class="tab-panel" id="tab-cheatsheet">
+
+  <!-- Cheat Sheet Sub-navigation -->
+  <div class="cs-nav">
+    <button class="cs-nav-btn cs-active" onclick="csShow('cs-s1',this)">§1 Architecture</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s2',this)">§2 Security</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s3',this)">§3 Warehouses</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s4',this)">§4 Query Opt.</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s5',this)">§5 Data Loading</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s6',this)">§6 Transformations</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s7',this)">§7 Storage &amp; Sharing</button>
+    <button class="cs-nav-btn" onclick="csShow('cs-s8',this)">§8 Snowpark</button>
+  </div>
+
+  <div class="cs-content">
+
+    <!-- §1 Architecture -->
+    <div class="cs-section cs-active" id="cs-s1">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 01</div>
+        <div class="cs-sec-title">Architecture, Features &amp; Object Model</div>
+        <div class="cs-sec-desc">Multi-cluster shared data · Layers · Editions · Object model · Billing · AI Data Cloud</div>
+      </div>
+      <div class="cs-arch">
+        <div class="cs-card-title cs-ct-white" style="margin-bottom:16px"><span class="cs-dot cs-cd-blue"></span>Multi-Cluster Shared Data Architecture</div>
+        <div class="cs-arch-layer cs-al-services">
+          <div class="cs-al-label">☁ Cloud Services Layer (brain)</div>
+          <div class="cs-al-items"><span class="cs-al-item">Query Parser</span><span class="cs-al-item">Optimizer</span><span class="cs-al-item">Metadata Mgr</span><span class="cs-al-item">Auth &amp; Access Control</span><span class="cs-al-item">Transaction Mgr</span><span class="cs-al-item">Security</span></div>
+        </div>
+        <div class="cs-arch-arrow">↕ decoupled</div>
+        <div class="cs-arch-layer cs-al-compute">
+          <div class="cs-al-label">⚡ Query Processing Layer — Virtual Warehouses</div>
+          <div class="cs-al-items"><span class="cs-al-item">WH-1 (XS)</span><span class="cs-al-item">WH-2 (M)</span><span class="cs-al-item">WH-3 (XL)</span><span class="cs-al-item">Independent clusters</span><span class="cs-al-item">MPP execution</span></div>
+        </div>
+        <div class="cs-arch-arrow">↕ decoupled</div>
+        <div class="cs-arch-layer cs-al-storage">
+          <div class="cs-al-label">🗄 Storage Layer — Centralized, Columnar, Compressed</div>
+          <div class="cs-al-items"><span class="cs-al-item">Micro-partitions</span><span class="cs-al-item">Columnar format</span><span class="cs-al-item">AES-256 encrypted</span><span class="cs-al-item">Cloud object store (S3/Azure/GCS)</span></div>
+        </div>
+        <div class="cs-warn cs-warn-blue" style="margin-top:12px"><span class="cs-warn-icon">ℹ</span><span>Storage, compute, and services are <b>fully decoupled</b>. Multiple warehouses read the same data with zero contention. You pay for each independently.</span></div>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-amber"><span class="cs-dot cs-cd-amber"></span>Storage — Micro-Partitions</div>
+          <div class="cs-row"><span class="cs-row-label">Default size</span><span class="cs-row-val cs-mono">50–500 MB (compressed)</span></div>
+          <div class="cs-row"><span class="cs-row-label">Format</span><span class="cs-row-val">Columnar, compressed, immutable</span></div>
+          <div class="cs-row"><span class="cs-row-label">Metadata stored</span><span class="cs-row-val">MIN/MAX per col, distinct count, NULL count</span></div>
+          <div class="cs-row"><span class="cs-row-label">Pruning</span><span class="cs-row-val">Automatic via metadata — no indexes needed</span></div>
+          <div class="cs-row"><span class="cs-row-label">Overlap %</span><span class="cs-row-val">Lower = better clustering health</span></div>
+          <div class="cs-row"><span class="cs-row-label">DML effect</span><span class="cs-row-val">Creates new partitions (old retired via Time Travel)</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Cloud Services Layer</div>
+          <div class="cs-row"><span class="cs-row-label">Billing threshold</span><span class="cs-row-val cs-amber">10% of daily compute credits FREE</span></div>
+          <div class="cs-row"><span class="cs-row-label">Charged for</span><span class="cs-row-val">DDL, SHOW, DESCRIBE, metadata queries</span></div>
+          <div class="cs-row"><span class="cs-row-label">Result cache TTL</span><span class="cs-row-val">24 hours, shared across all users/warehouses</span></div>
+          <div class="cs-row"><span class="cs-row-label">Result cache invalidated</span><span class="cs-row-val">On any DML to underlying table</span></div>
+          <div class="cs-row"><span class="cs-row-label">Transaction mgmt</span><span class="cs-row-val">ACID-compliant, MVCC-based</span></div>
+        </div>
+      </div>
+      <div class="cs-card" style="margin-bottom:16px">
+        <div class="cs-card-title cs-ct-purple"><span class="cs-dot cs-cd-purple"></span>Snowflake Editions</div>
+        <table class="cs-tbl">
+          <thead><tr><th>Edition</th><th>Key Features</th><th>Multi-cluster</th><th>Time Travel</th><th>HIPAA</th></tr></thead>
+          <tbody>
+            <tr><td>Standard</td><td>Core SQL, basic security</td><td>✗</td><td>0–1 day</td><td>✗</td></tr>
+            <tr><td>Enterprise <span class="cs-bi-e">E</span></td><td>Multi-cluster WH, materialized views, column masking</td><td>✓</td><td>0–90 days</td><td>✗</td></tr>
+            <tr><td>Business Critical <span class="cs-bi-bc">BC</span></td><td>All Enterprise + HIPAA, PCI, private link</td><td>✓</td><td>0–90 days</td><td>✓</td></tr>
+            <tr><td>VPS <span class="cs-bi-vps">VPS</span></td><td>Dedicated environment, highest isolation</td><td>✓</td><td>0–90 days</td><td>✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Object Hierarchy</div>
+          <div class="cs-role-node cs-rn-blue"><span class="cs-rn-name">ORGANIZATION</span><span class="cs-rn-desc">Multiple accounts, ORGADMIN</span></div>
+          <div class="cs-role-node cs-rn-blue cs-rn-i1"><span class="cs-rn-name">ACCOUNT</span><span class="cs-rn-desc">Single cloud region</span></div>
+          <div class="cs-role-node cs-rn-green cs-rn-i2"><span class="cs-rn-name">DATABASE</span><span class="cs-rn-desc">Logical namespace</span></div>
+          <div class="cs-role-node cs-rn-amber cs-rn-i3"><span class="cs-rn-name">SCHEMA</span><span class="cs-rn-desc">Container for objects</span></div>
+          <div class="cs-role-node cs-rn-gray cs-rn-i4"><span class="cs-rn-name">TABLE / VIEW / STAGE / PIPE / STREAM / TASK / SP / UDF / FILE FORMAT / TAG / POLICY</span></div>
+          <div class="cs-warn cs-warn-amber" style="margin-top:10px"><span class="cs-warn-icon">⚠</span><span>Always fully qualify: <b>db.schema.object</b>. USAGE on db AND schema required before touching any object inside.</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-amber"><span class="cs-dot cs-cd-amber"></span>Billing Model</div>
+          <div class="cs-row"><span class="cs-row-label">Compute (WH)</span><span class="cs-row-val">Credits/second, 60s minimum per start</span></div>
+          <div class="cs-row"><span class="cs-row-label">Cloud Services</span><span class="cs-row-val">First 10% of daily compute is FREE</span></div>
+          <div class="cs-row"><span class="cs-row-label">Storage</span><span class="cs-row-val">$/TB/month (compressed). Includes TT + Fail-Safe.</span></div>
+          <div class="cs-row"><span class="cs-row-label">Data Transfer</span><span class="cs-row-val">Same-region same-cloud = free. Cross = charged.</span></div>
+          <div class="cs-row"><span class="cs-row-label">Snowpipe</span><span class="cs-row-val">Serverless credits for file processing</span></div>
+          <div class="cs-row"><span class="cs-row-label">Materialized Views</span><span class="cs-row-val">Credits for background refresh (serverless)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- §2 Security -->
+    <div class="cs-section" id="cs-s2">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 02</div>
+        <div class="cs-sec-title">Account Access &amp; Security</div>
+        <div class="cs-sec-desc">RBAC · Authentication · Network Policies · Encryption · Column/Row Security · Secure Views</div>
+      </div>
+      <div class="cs-card" style="margin-bottom:16px">
+        <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>System-Defined Roles — Hierarchy</div>
+        <div class="cs-role-node cs-rn-purple"><span class="cs-rn-name">ORGADMIN</span><span class="cs-rn-desc">Org-level: create/manage accounts</span></div>
+        <div class="cs-role-node cs-rn-blue cs-rn-i1"><span class="cs-rn-name">ACCOUNTADMIN</span><span class="cs-rn-desc">Top account role — encapsulates SYSADMIN + SECURITYADMIN</span></div>
+        <div class="cs-role-node cs-rn-purple cs-rn-i2"><span class="cs-rn-name">SECURITYADMIN</span><span class="cs-rn-desc">MANAGE GRANTS globally. Create/manage users &amp; roles.</span></div>
+        <div class="cs-role-node cs-rn-green cs-rn-i3"><span class="cs-rn-name">USERADMIN</span><span class="cs-rn-desc">CREATE USER + CREATE ROLE only.</span></div>
+        <div class="cs-role-node cs-rn-amber cs-rn-i2"><span class="cs-rn-name">SYSADMIN</span><span class="cs-rn-desc">CREATE WAREHOUSE, DATABASE, SCHEMA, TABLE. Recommended owner of all data objects.</span></div>
+        <div class="cs-role-node cs-rn-gray cs-rn-i3"><span class="cs-rn-name">PUBLIC</span><span class="cs-rn-desc">Auto-granted to every user/role. No default data access.</span></div>
+        <div class="cs-warn cs-warn-amber" style="margin-top:10px"><span class="cs-warn-icon">⚠</span><span><b>Exam critical:</b> ACCOUNTADMIN is NOT a superuser. Masking policies apply to ALL roles including ACCOUNTADMIN unless explicitly named in the WHEN clause.</span></div>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-pink"><span class="cs-dot cs-cd-pink"></span>Column Masking</div>
+          <div class="cs-code"><span class="cs-kw">CREATE OR REPLACE MASKING POLICY</span> email_mask
+  <span class="cs-kw">AS</span> (val <span class="cs-kw2">STRING</span>) <span class="cs-kw">RETURNS STRING</span> ->
+  <span class="cs-kw">CASE</span>
+    <span class="cs-kw">WHEN</span> <span class="cs-nm">CURRENT_ROLE</span>() <span class="cs-kw">IN</span> (<span class="cs-str">'ANALYST'</span>) <span class="cs-kw">THEN</span> val
+    <span class="cs-kw">ELSE</span> <span class="cs-nm">SHA2</span>(val)
+  <span class="cs-kw">END</span>;
+<span class="cs-kw">ALTER TABLE</span> users <span class="cs-kw">MODIFY COLUMN</span> email
+  <span class="cs-kw">SET MASKING POLICY</span> email_mask;</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li><b>Runtime evaluation</b> — evaluated at query time via CURRENT_ROLE()</li>
+            <li><b>One policy per column</b></li>
+            <li>ACCOUNTADMIN is NOT exempt unless named in WHEN</li>
+          </ul>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-purple"><span class="cs-dot cs-cd-purple"></span>Row Access Policy</div>
+          <div class="cs-code"><span class="cs-kw">CREATE OR REPLACE ROW ACCESS POLICY</span> rap
+  <span class="cs-kw">AS</span> (region <span class="cs-kw2">STRING</span>) <span class="cs-kw">RETURNS BOOLEAN</span> ->
+    <span class="cs-nm">CURRENT_ROLE</span>() = <span class="cs-str">'ACCOUNTADMIN'</span>
+    <span class="cs-kw">OR EXISTS</span> (
+      <span class="cs-kw">SELECT</span> <span class="cs-nm">1</span> <span class="cs-kw">FROM</span> user_region_map m
+      <span class="cs-kw">WHERE</span> m.region = region
+      <span class="cs-kw">AND</span> m.username = <span class="cs-nm">CURRENT_USER</span>()
+    );
+<span class="cs-kw">ALTER TABLE</span> sales <span class="cs-kw">ADD ROW ACCESS POLICY</span> rap <span class="cs-kw">ON</span> (region);</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li><b>One RAP per table</b></li>
+            <li>Returns TRUE = row visible, FALSE = filtered</li>
+            <li>User doesn't know rows are hidden</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-grid-3">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Authentication</div>
+          <div class="cs-row"><span class="cs-row-label">Password</span><span class="cs-row-val">Default, min 8 chars</span></div>
+          <div class="cs-row"><span class="cs-row-label">MFA</span><span class="cs-row-val">Duo-based, TOTP</span></div>
+          <div class="cs-row"><span class="cs-row-label">Key Pair</span><span class="cs-row-val">RSA 2048/4096, service accounts</span></div>
+          <div class="cs-row"><span class="cs-row-label">OAuth</span><span class="cs-row-val">External / Snowflake OAuth</span></div>
+          <div class="cs-row"><span class="cs-row-label">SSO / SAML</span><span class="cs-row-val">Okta, Azure AD, ADFS</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Encryption</div>
+          <div class="cs-row"><span class="cs-row-label">At rest</span><span class="cs-row-val">AES-256 (always on)</span></div>
+          <div class="cs-row"><span class="cs-row-label">In transit</span><span class="cs-row-val">TLS 1.2+</span></div>
+          <div class="cs-row"><span class="cs-row-label">Tri-Secret Secure</span><span class="cs-row-val"><span class="cs-bi-bc">BC</span> Customer + Snowflake + Cloud key</span></div>
+          <div class="cs-row"><span class="cs-row-label">BYOK</span><span class="cs-row-val">Customer managed via KMS</span></div>
+          <div class="cs-row"><span class="cs-row-label">Key rotation</span><span class="cs-row-val">Automatic (30 days) or manual</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-amber"><span class="cs-dot cs-cd-amber"></span>Network Policies</div>
+          <div class="cs-row"><span class="cs-row-label">Level</span><span class="cs-row-val">Account-level or User-level</span></div>
+          <div class="cs-row"><span class="cs-row-label">User-level</span><span class="cs-row-val cs-blue">Overrides account-level</span></div>
+          <div class="cs-row"><span class="cs-row-label">Allowed list</span><span class="cs-row-val">IP CIDRs that CAN connect</span></div>
+          <div class="cs-row"><span class="cs-row-label">Blocked list</span><span class="cs-row-val">IPs explicitly denied</span></div>
+          <div class="cs-row"><span class="cs-row-label">Apply</span><span class="cs-row-val cs-mono">ALTER ACCOUNT SET NETWORK_POLICY=p;</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- §3 Warehouses -->
+    <div class="cs-section" id="cs-s3">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 03</div>
+        <div class="cs-sec-title">Performance: Virtual Warehouses</div>
+        <div class="cs-sec-desc">Sizes · Caching · Multi-cluster · Scaling policies · Resource monitors</div>
+      </div>
+      <div class="cs-grid-3">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Warehouse Sizes &amp; Credits</div>
+          <div class="cs-row"><span class="cs-row-label">X-Small</span><span class="cs-row-val cs-mono">1 credit/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">Small</span><span class="cs-row-val cs-mono">2 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">Medium</span><span class="cs-row-val cs-mono">4 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">Large</span><span class="cs-row-val cs-mono">8 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">X-Large</span><span class="cs-row-val cs-mono">16 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">2X-Large</span><span class="cs-row-val cs-mono">32 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">3X-Large</span><span class="cs-row-val cs-mono">64 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">4X-Large</span><span class="cs-row-val cs-mono">128 credits/hr</span></div>
+          <div class="cs-row"><span class="cs-row-label">Billing</span><span class="cs-row-val cs-blue">Per-second, 60s minimum</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Three Cache Layers</div>
+          <div class="cs-row"><span class="cs-row-label">1. Metadata cache</span><span class="cs-row-val">Cloud Services. FREE. COUNT(*), SHOW.</span></div>
+          <div class="cs-row"><span class="cs-row-label">2. Result cache</span><span class="cs-row-val">24h TTL. Shared. No warehouse needed.</span></div>
+          <div class="cs-row"><span class="cs-row-label">Result invalidated</span><span class="cs-row-val">Any DML on underlying table</span></div>
+          <div class="cs-row"><span class="cs-row-label">3. Local disk cache</span><span class="cs-row-val">Per-warehouse SSD. Stores column data.</span></div>
+          <div class="cs-row"><span class="cs-row-label">Local cache tip</span><span class="cs-row-val cs-amber">Don't suspend between similar queries</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-purple"><span class="cs-dot cs-cd-purple"></span>Multi-Cluster <span class="cs-bi-e">E+</span></div>
+          <div class="cs-row"><span class="cs-row-label">Solves</span><span class="cs-row-val">Concurrency. NOT slow queries.</span></div>
+          <div class="cs-row"><span class="cs-row-label">Scale UP</span><span class="cs-row-val">Resize → faster single queries</span></div>
+          <div class="cs-row"><span class="cs-row-label">Scale OUT</span><span class="cs-row-val">Add clusters → more concurrent users</span></div>
+          <div class="cs-row"><span class="cs-row-label">STANDARD policy</span><span class="cs-row-val cs-blue">Scale after ~20s queue</span></div>
+          <div class="cs-row"><span class="cs-row-label">ECONOMY policy</span><span class="cs-row-val">Scale after 6+ min sustained load</span></div>
+          <div class="cs-row"><span class="cs-row-label">Maximized mode</span><span class="cs-row-val">MIN = MAX (all always running)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- §4 Query Optimization -->
+    <div class="cs-section" id="cs-s4">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 04</div>
+        <div class="cs-sec-title">Performance: Query Optimization</div>
+        <div class="cs-sec-desc">Clustering · Search optimization · Materialized views · Query profile · Best practices</div>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Clustering Keys</div>
+          <div class="cs-code"><span class="cs-kw">ALTER TABLE</span> sales <span class="cs-kw">CLUSTER BY</span> (sale_date);
+<span class="cs-kw">SELECT</span> <span class="cs-nm">SYSTEM$CLUSTERING_INFORMATION</span>(<span class="cs-str">'sales'</span>, <span class="cs-str">'(sale_date)'</span>);
+<span class="cs-cmt">-- average_overlaps → 0 = perfectly clustered</span></div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li><b>Good candidate:</b> large tables, frequent WHERE/JOIN on same col</li>
+            <li><b>Max 4 columns</b> in a clustering key</li>
+            <li>Automatic reclustering runs in background</li>
+          </ul>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Search Optimization</div>
+          <div class="cs-code"><span class="cs-kw">ALTER TABLE</span> customers <span class="cs-kw">ADD SEARCH OPTIMIZATION ON</span>
+  EQUALITY(email, phone);
+<span class="cs-kw">SELECT</span> <span class="cs-nm">SYSTEM$ESTIMATE_SEARCH_OPTIMIZATION_COSTS</span>(<span class="cs-str">'db.sch.t'</span>);</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li><b>Best for:</b> equality / IN predicates on high-cardinality cols</li>
+            <li>NOT good for range scans (use clustering for that)</li>
+            <li>Works on strings, numbers, VARIANT, geo</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-card" style="margin-bottom:16px">
+        <div class="cs-card-title cs-ct-pink"><span class="cs-dot cs-cd-pink"></span>Query Optimization Checklist</div>
+        <div class="cs-grid-2" style="margin-top:4px">
+          <ul class="cs-checklist">
+            <li>Avoid <b>SELECT *</b> — columnar: pay per column scanned</li>
+            <li>Filter early — WHERE before GROUP BY</li>
+            <li>Avoid functions on filter cols: use ranges not YEAR(date_col)=2024</li>
+            <li>Use <b>LIMIT</b> during development to avoid full scans</li>
+          </ul>
+          <ul class="cs-checklist">
+            <li>Check <b>Query Profile</b> — look for disk spills, Cartesian products</li>
+            <li>Use <b>QUALIFY</b> instead of subquery for window function filtering</li>
+            <li>Use <b>SAMPLE (10)</b> for exploration</li>
+            <li>Result cache: avoid CURRENT_TIMESTAMP() if you want cache hits</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- §5 Data Loading -->
+    <div class="cs-section" id="cs-s5">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 05</div>
+        <div class="cs-sec-title">Data Loading &amp; Unloading</div>
+        <div class="cs-sec-desc">Stages · COPY INTO · Snowpipe · File formats · GET/PUT · Unloading</div>
+      </div>
+      <div class="cs-grid-3">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Stage Types</div>
+          <div class="cs-row"><span class="cs-row-label">User stage</span><span class="cs-row-val cs-mono">@~</span></div>
+          <div class="cs-row"><span class="cs-row-label">Table stage</span><span class="cs-row-val cs-mono">@%table_name</span></div>
+          <div class="cs-row"><span class="cs-row-label">Named internal</span><span class="cs-row-val cs-mono">@my_stage</span></div>
+          <div class="cs-row"><span class="cs-row-label">Named external</span><span class="cs-row-val">S3 / Azure Blob / GCS</span></div>
+          <div class="cs-row"><span class="cs-row-label">List</span><span class="cs-row-val cs-mono">LIST @my_stage;</span></div>
+          <div class="cs-row"><span class="cs-row-label">Remove</span><span class="cs-row-val cs-mono">REMOVE @my_stage/f.csv;</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>COPY INTO Options</div>
+          <div class="cs-row"><span class="cs-row-label">Deduplication</span><span class="cs-row-val">Tracks loaded files for 64 days</span></div>
+          <div class="cs-row"><span class="cs-row-label">FORCE=TRUE</span><span class="cs-row-val">Bypass dedup, reload files</span></div>
+          <div class="cs-row"><span class="cs-row-label">ON_ERROR</span><span class="cs-row-val">CONTINUE / SKIP_FILE / ABORT</span></div>
+          <div class="cs-row"><span class="cs-row-label">VALIDATION_MODE</span><span class="cs-row-val">Test without loading</span></div>
+          <div class="cs-row"><span class="cs-row-label">Optimal file size</span><span class="cs-row-val">100MB–250MB compressed</span></div>
+          <div class="cs-row"><span class="cs-row-label">Parallelism</span><span class="cs-row-val">One file per thread — more files = faster</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-purple"><span class="cs-dot cs-cd-purple"></span>Snowpipe</div>
+          <div class="cs-code" style="font-size:10px"><span class="cs-kw">CREATE PIPE</span> sales_pipe
+  <span class="cs-kw">AUTO_INGEST</span> = <span class="cs-kw2">TRUE</span>
+  <span class="cs-kw">AS COPY INTO</span> sales
+  <span class="cs-kw">FROM</span> @s3_stage;</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li><b>Serverless</b> — no warehouse, billed separately</li>
+            <li><b>AUTO_INGEST=TRUE</b> → S3 event trigger</li>
+            <li>Latency typically &lt; 1 minute</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- §6 Transformations -->
+    <div class="cs-section" id="cs-s6">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 06</div>
+        <div class="cs-sec-title">Data Transformations</div>
+        <div class="cs-sec-desc">Streams · Tasks · Dynamic Tables · Stored Procedures · UDFs · Semi-structured</div>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Streams — CDC</div>
+          <div class="cs-code" style="font-size:10px"><span class="cs-kw">CREATE STREAM</span> sales_stream <span class="cs-kw">ON TABLE</span> sales
+  <span class="cs-kw">APPEND_ONLY</span> = <span class="cs-kw2">FALSE</span>;
+<span class="cs-cmt">-- METADATA$ACTION: INSERT | DELETE</span>
+<span class="cs-cmt">-- METADATA$ISUPDATE: TRUE if UPDATE pair</span>
+<span class="cs-kw">SELECT</span> <span class="cs-nm">SYSTEM$STREAM_HAS_DATA</span>(<span class="cs-str">'sales_stream'</span>);</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li>Consumed atomically — reading in transaction clears it</li>
+            <li>APPEND_ONLY — only INSERTs, cheaper on large tables</li>
+            <li>Data expires with table's Time Travel window</li>
+          </ul>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Tasks</div>
+          <div class="cs-code" style="font-size:10px"><span class="cs-kw">CREATE TASK</span> my_task
+  <span class="cs-kw">WAREHOUSE</span> = etl_wh
+  <span class="cs-kw">SCHEDULE</span> = <span class="cs-str">'USING CRON 0 2 * * * UTC'</span>
+  <span class="cs-kw">WHEN SYSTEM$STREAM_HAS_DATA</span>(<span class="cs-str">'s'</span>)
+<span class="cs-kw">AS</span> <span class="cs-kw">INSERT INTO</span> tgt <span class="cs-kw">SELECT</span> * <span class="cs-kw">FROM</span> s;
+<span class="cs-kw">ALTER TASK</span> my_task <span class="cs-kw">RESUME</span>;</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li>Tasks start <b>SUSPENDED</b> — always RESUME after create</li>
+            <li>Child tasks use AFTER parent (DAG pattern)</li>
+            <li>Manual: EXECUTE TASK my_task;</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- §7 Storage & Sharing -->
+    <div class="cs-section" id="cs-s7">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 07</div>
+        <div class="cs-sec-title">Storage, Data Protection &amp; Sharing</div>
+        <div class="cs-sec-desc">Time Travel · Fail-Safe · Cloning · Data Sharing · Marketplace · External Tables</div>
+      </div>
+      <div class="cs-grid-3">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>Time Travel</div>
+          <div class="cs-row"><span class="cs-row-label">Standard</span><span class="cs-row-val">0–1 day</span></div>
+          <div class="cs-row"><span class="cs-row-label">Enterprise+</span><span class="cs-row-val">0–90 days</span></div>
+          <div class="cs-code" style="margin-top:8px; font-size:10px"><span class="cs-kw">SELECT</span> * <span class="cs-kw">FROM</span> t <span class="cs-kw">AT</span>(OFFSET => -<span class="cs-nm">3600</span>);
+<span class="cs-kw">UNDROP TABLE</span> t;
+<span class="cs-kw">UNDROP DATABASE</span> db;</div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-amber"><span class="cs-dot cs-cd-amber"></span>Fail-Safe</div>
+          <div class="cs-row"><span class="cs-row-label">Duration</span><span class="cs-row-val">7 days (all editions)</span></div>
+          <div class="cs-row"><span class="cs-row-label">Starts after</span><span class="cs-row-val">Time Travel window ends</span></div>
+          <div class="cs-row"><span class="cs-row-label">Access</span><span class="cs-row-val cs-pink">Snowflake Support ONLY</span></div>
+          <div class="cs-row"><span class="cs-row-label">Temp/Transient</span><span class="cs-row-val">NO Fail-Safe (saves cost)</span></div>
+          <div class="cs-row"><span class="cs-row-label">Total protection</span><span class="cs-row-val cs-blue">Up to 97 days total</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Zero-Copy Cloning</div>
+          <div class="cs-code" style="font-size:10px"><span class="cs-kw">CREATE TABLE</span> dev <span class="cs-kw">CLONE</span> prod;
+<span class="cs-kw">CREATE DATABASE</span> clone <span class="cs-kw">CLONE</span> prod;
+<span class="cs-kw">CREATE TABLE</span> snap <span class="cs-kw">CLONE</span> t
+  <span class="cs-kw">AT</span>(OFFSET => -<span class="cs-nm">3600</span>);</div>
+          <ul class="cs-checklist" style="margin-top:8px">
+            <li>Instant — metadata only, no data copy</li>
+            <li>Cost only for changes after cloning</li>
+            <li>Clones do NOT inherit grants</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- §8 Snowpark -->
+    <div class="cs-section" id="cs-s8">
+      <div class="cs-sec-head">
+        <div class="cs-sec-num">SECTION 08</div>
+        <div class="cs-sec-title">Snowpark</div>
+        <div class="cs-sec-desc">Python / Java / Scala · DataFrame API · UDFs · ML</div>
+      </div>
+      <div class="cs-grid-2">
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-blue"><span class="cs-dot cs-cd-blue"></span>DataFrame Basics</div>
+          <div class="cs-code" style="font-size:10px"><span class="cs-kw2">from</span> snowflake.snowpark <span class="cs-kw2">import</span> Session
+<span class="cs-kw2">import</span> snowflake.snowpark.functions <span class="cs-kw2">as</span> F
+
+session = Session.builder.configs({...}).create()
+df = session.table(<span class="cs-str">"sales"</span>)
+result = (df
+  .filter(F.col(<span class="cs-str">"region"</span>) == <span class="cs-str">"US"</span>)
+  .group_by(<span class="cs-str">"product"</span>)
+  .agg(F.sum(<span class="cs-str">"amount"</span>).alias(<span class="cs-str">"total"</span>))
+  .sort(F.col(<span class="cs-str">"total"</span>).desc())
+)
+result.show()        <span class="cs-cmt"># action — executes query</span>
+result.to_pandas()   <span class="cs-cmt"># bring to local pandas DF</span></div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-card-title cs-ct-green"><span class="cs-dot cs-cd-green"></span>Snowpark Quick Reference</div>
+          <table class="cs-tbl">
+            <thead><tr><th>Operation</th><th>Snowpark</th><th>SQL</th></tr></thead>
+            <tbody>
+              <tr><td>Read table</td><td>session.table("t")</td><td>FROM t</td></tr>
+              <tr><td>Filter</td><td>df.filter(col("x")&gt;10)</td><td>WHERE x&gt;10</td></tr>
+              <tr><td>Select</td><td>df.select("a","b")</td><td>SELECT a,b</td></tr>
+              <tr><td>Group/Agg</td><td>df.group_by("x").agg(sum("y"))</td><td>GROUP BY/SUM</td></tr>
+              <tr><td>Join</td><td>df1.join(df2,"id")</td><td>JOIN ON id</td></tr>
+              <tr><td>Write</td><td>df.write.save_as_table("t")</td><td>CTAS</td></tr>
+              <tr><td>To pandas</td><td>df.to_pandas()</td><td>— client side</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="cs-warn cs-warn-green"><span class="cs-warn-icon">💡</span><span><b>Push-down execution</b>: Snowpark code runs INSIDE Snowflake — no data moves to the client. Lazy evaluation means nothing runs until an action (collect(), show(), count()) is called.</span></div>
+    </div>
+
+  </div><!-- end cs-content -->
+</div><!-- end tab-cheatsheet -->
+
+<!-- ══════════ TAB 4: SQL BEST PRACTICES ══════════ -->
+<div class="tab-panel" id="tab-bestpractices">
+  <div class="bp-content">
+
+    <div class="bp-hero">
+      <div class="bp-hero-label">Snowflake SQL</div>
+      <h2>The <span>Golden Mental Model</span>:<br>Think in Layers</h2>
+      <p class="bp-hero-desc">Before writing any query, position yourself at the right layer. Most engineers jump straight to performance tuning when they should be at Layer 1. The layers are ordered by priority — correctness always wins.</p>
+    </div>
+
+    <!-- 4 Layer Cards -->
+    <div class="bp-layers">
+      <div class="bp-layer bp-layer-1">
+        <div class="bp-layer-num">LAYER 1</div>
+        <div class="bp-layer-title">Correctness First</div>
+        <div class="bp-layer-when">Always — no exceptions</div>
+      </div>
+      <div class="bp-layer bp-layer-2">
+        <div class="bp-layer-num">LAYER 2</div>
+        <div class="bp-layer-title">Scalability</div>
+        <div class="bp-layer-when">When data is large</div>
+      </div>
+      <div class="bp-layer bp-layer-3">
+        <div class="bp-layer-num">LAYER 3</div>
+        <div class="bp-layer-title">Cost / Performance</div>
+        <div class="bp-layer-when">When queries are slow or expensive</div>
+      </div>
+      <div class="bp-layer bp-layer-4">
+        <div class="bp-layer-num">LAYER 4</div>
+        <div class="bp-layer-title">Security</div>
+        <div class="bp-layer-when">When exposing to users/roles</div>
+      </div>
+    </div>
+
+    <!-- Rule of Thumb -->
+    <div class="bp-thumb">
+      <div class="bp-thumb-quote">"<em>Filter early</em>, aggregate late, <em>sort last</em>, select only what you need."</div>
+      <div class="bp-thumb-sub">THE UNIVERSAL RULE — solves 90% of query problems</div>
+    </div>
+
+    <!-- Layer 1: Correctness -->
+    <div class="bp-section bp-s1">
+      <div class="bp-section-title">
+        <span class="bp-section-num">LAYER 1</span>
+        <h3>Correctness — Every Single Query</h3>
+      </div>
+      <p class="bp-section-desc">These rules apply always, no exceptions. The #1 source of production bugs in SQL is misunderstanding the execution order.</p>
+
+      <!-- SQL Execution Order -->
+      <div class="bp-exec-order">
+        <div class="bp-exec-title">SQL Execution Order (Top → Bottom)</div>
+        <div class="bp-exec-steps">
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">FROM</div>
+            <div class="bp-exec-step-num">①</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">JOIN</div>
+            <div class="bp-exec-step-num">②</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">WHERE</div>
+            <div class="bp-exec-step-num">③</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">GROUP BY</div>
+            <div class="bp-exec-step-num">④</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">HAVING</div>
+            <div class="bp-exec-step-num">⑤</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">SELECT</div>
+            <div class="bp-exec-step-num">⑥</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">DISTINCT</div>
+            <div class="bp-exec-step-num">⑦</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">ORDER BY</div>
+            <div class="bp-exec-step-num">⑧</div>
+          </div>
+          <div class="bp-exec-arrow">→</div>
+          <div class="bp-exec-step">
+            <div class="bp-exec-step-box">LIMIT</div>
+            <div class="bp-exec-step-num">⑨</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">⚠️</span>Consequences of Execution Order</div>
+        <div class="bp-card-body">
+          <div class="bp-rule">
+            <div class="bp-rule-icon">❌</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">You cannot use a SELECT alias in WHERE</div>
+              <div class="bp-rule-desc">WHERE runs before SELECT — the alias doesn't exist yet. Use a CTE or subquery instead.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🔍</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">WHERE filters rows before aggregation; HAVING filters after</div>
+              <div class="bp-rule-desc">Filter individual rows in WHERE. Filter aggregated results (like SUM > 1000) in HAVING.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🔗</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">JOIN happens before WHERE</div>
+              <div class="bp-rule-desc">So filter in WHERE, not just in the ON clause, when you want to restrict the final result set.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">⚡</span>Always Filter Early</div>
+        <div class="bp-card-body">
+<div class="bp-codeblock"><span class="cmt">-- ❌ BAD: Joins everything then filters</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">orders</span> o
+<span class="kw">JOIN</span> <span class="obj">customers</span> c <span class="kw">ON</span> o.cust_id = c.id
+<span class="kw">WHERE</span> c.country = <span class="str">'CA'</span>;
+
+<span class="cmt">-- ✅ GOOD: Pre-filter in CTE, then join only CA customers</span>
+<span class="kw">WITH</span> ca_customers <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> id <span class="kw">FROM</span> <span class="obj">customers</span> <span class="kw">WHERE</span> country = <span class="str">'CA'</span>
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">orders</span> o
+<span class="kw">JOIN</span> ca_customers c <span class="kw">ON</span> o.cust_id = c.id;</div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">✅</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Be explicit with JOIN types — never assume implicit behavior</div>
+              <div class="bp-rule-desc">Always write INNER JOIN, LEFT JOIN, etc. Never rely on an implicit join that produces a Cartesian product.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer 2: Scalability -->
+    <div class="bp-section bp-s2">
+      <div class="bp-section-title">
+        <span class="bp-section-num">LAYER 2</span>
+        <h3>Scalability — When Tables &gt; A Few Million Rows</h3>
+      </div>
+      <p class="bp-section-desc">Only think about these when your data volume justifies it. Let the Query Profile guide you to the right concern.</p>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">📊</span>Scalability Concerns at a Glance</div>
+        <div class="bp-card-body">
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🗂️</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Clustering — Are you filtering on the same column repeatedly?</div>
+              <div class="bp-rule-desc">Consider adding a cluster key on that column. Snowflake will auto-maintain it in the background.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">✂️</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Partition Pruning — Does your WHERE align with how the table is clustered?</div>
+              <div class="bp-rule-desc">A WHERE on a clustered column allows Snowflake to skip entire micro-partitions. Misaligned filters scan everything.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">💾</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Spilling — The Spilling Rule</div>
+              <div class="bp-rule-desc">Only ORDER BY at the very last step, and only the columns you truly need sorted. Sorting mid-query kills performance.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🔎</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Search Optimization — Point lookups on non-clustered columns?</div>
+              <div class="bp-rule-desc">Enable Search Optimization Service (SOQ) for high-cardinality equality lookups like user ID or email.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">🚫</span>The Spilling Rule — Sort Only at the End</div>
+        <div class="bp-card-body">
+<div class="bp-codeblock"><span class="cmt">-- ❌ BAD: Sorting before aggregation (forces sort + materialize mid-query)</span>
+<span class="kw">SELECT</span> dept, <span class="fn">COUNT</span>(*) <span class="kw">FROM</span>
+  (<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">emp</span> <span class="kw">ORDER BY</span> salary)
+<span class="kw">GROUP BY</span> dept;
+
+<span class="cmt">-- ✅ GOOD: Sort only the final output, if needed at all</span>
+<span class="kw">SELECT</span> dept, <span class="fn">COUNT</span>(*) <span class="kw">FROM</span> <span class="obj">emp</span>
+<span class="kw">GROUP BY</span> dept
+<span class="kw">ORDER BY</span> <span class="fn">COUNT</span>(*) <span class="kw">DESC</span>;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer 3: Performance -->
+    <div class="bp-section bp-s3">
+      <div class="bp-section-title">
+        <span class="bp-section-num">LAYER 3</span>
+        <h3>Performance Tuning — When Queries Are Slow</h3>
+      </div>
+      <p class="bp-section-desc">Only when you have a problem to solve. Check Query Profile first — it tells you exactly which node is expensive.</p>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">🔬</span>Performance Tuning Checklist</div>
+        <div class="bp-card-body">
+          <div class="bp-rule">
+            <div class="bp-rule-icon">📈</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Check Query Profile in Snowflake UI → which node takes the most time?</div>
+              <div class="bp-rule-desc">Watch for: disk spills, inefficient joins, large scans, Cartesian products.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">💥</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Watch for Cartesian products — a JOIN with no proper key = disaster</div>
+              <div class="bp-rule-desc">A missing JOIN condition multiplies every row in table A by every row in table B. Always verify your ON clause.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🎯</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Avoid SELECT * — pull only needed columns</div>
+              <div class="bp-rule-desc">Columnar storage means you pay per column scanned. Select only what you actually use.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🧪</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Use LIMIT during dev/testing to avoid full scans</div>
+              <div class="bp-rule-desc">Add SAMPLE (10) or LIMIT 1000 during exploration. Remove before production.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">🧠</span>The Rows → Groups → Result Mental Model</div>
+        <div class="bp-card-body">
+<div class="bp-codeblock"><span class="cmt">-- Think in this order:</span>
+<span class="cmt">-- 1. Reduce ROWS first  → WHERE, JOIN filters</span>
+<span class="cmt">-- 2. Then GROUP them    → GROUP BY</span>
+<span class="cmt">-- 3. Then shape RESULT  → SELECT, ORDER BY, LIMIT</span>
+
+<span class="cmt">-- ❌ BAD: Functions on filter columns prevent pruning</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">sales</span>
+<span class="kw">WHERE</span> <span class="fn">YEAR</span>(sale_date) = <span class="num">2024</span>;  <span class="cmt">-- scans ALL partitions</span>
+
+<span class="cmt">-- ✅ GOOD: Range filter allows micro-partition pruning</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="obj">sales</span>
+<span class="kw">WHERE</span> sale_date <span class="kw">BETWEEN</span> <span class="str">'2024-01-01'</span> <span class="kw">AND</span> <span class="str">'2024-12-31'</span>;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layer 4: Security -->
+    <div class="bp-section bp-s4">
+      <div class="bp-section-title">
+        <span class="bp-section-num">LAYER 4</span>
+        <h3>Security — When Exposing Data to Users/Roles</h3>
+      </div>
+      <p class="bp-section-desc">These are infrastructure concerns — set once at the table/policy level, not per query. Never implement security logic inside application WHERE clauses.</p>
+
+      <div class="bp-card">
+        <div class="bp-card-header"><span class="bp-card-header-icon">🔐</span>Security Infrastructure Patterns</div>
+        <div class="bp-card-body">
+          <div class="bp-rule">
+            <div class="bp-rule-icon">👁️</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Use Secure Views when sharing views externally or across accounts</div>
+              <div class="bp-rule-desc">Regular views expose the query definition. SECURE VIEW hides business logic from consumers.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">📏</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Apply Row-level security via policies, not WHERE clauses in app code</div>
+              <div class="bp-rule-desc">App-level WHERE clauses can be bypassed. Row Access Policies are enforced at the engine level, transparently.</div>
+            </div>
+          </div>
+          <div class="bp-rule">
+            <div class="bp-rule-icon">🎭</div>
+            <div class="bp-rule-content">
+              <div class="bp-rule-title">Apply Column masking on PII columns at the table policy level</div>
+              <div class="bp-rule-desc">Set masking once at the column level. It applies to every query against that column, for all roles not explicitly exempted.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Universal Checklist -->
+    <div class="bp-section bp-s5">
+      <div class="bp-section-title">
+        <span class="bp-section-num">CHECKLIST</span>
+        <h3>5 Questions Before Running Any Query</h3>
+      </div>
+      <div class="bp-checklist">
+        <div class="bp-check-item">
+          <div class="bp-check-num">Q1</div>
+          <div class="bp-check-text"><strong>Do I know what JOIN type I need and why?</strong><br>INNER vs LEFT vs CROSS — be explicit, never guess.</div>
+        </div>
+        <div class="bp-check-item">
+          <div class="bp-check-num">Q2</div>
+          <div class="bp-check-text"><strong>Am I filtering as early as possible?</strong><br>WHERE before GROUP BY. CTEs to pre-filter large tables.</div>
+        </div>
+        <div class="bp-check-item">
+          <div class="bp-check-num">Q3</div>
+          <div class="bp-check-text"><strong>Am I selecting only the columns I need?</strong><br>No SELECT *. Name every column. Pay only for what you scan.</div>
+        </div>
+        <div class="bp-check-item">
+          <div class="bp-check-num">Q4</div>
+          <div class="bp-check-text"><strong>Am I ORDER BY-ing only when truly necessary?</strong><br>Sorting is expensive at scale. Skip it unless output order matters.</div>
+        </div>
+        <div class="bp-check-item">
+          <div class="bp-check-num" style="background:rgba(240,96,96,0.15);color:var(--red);">Q5</div>
+          <div class="bp-check-text"><strong>Have I checked for fan-out risk?</strong><br>1-to-many joins can silently double (or 10x) your row count. Verify cardinality before aggregating.</div>
+        </div>
+        <div class="bp-check-item" style="border-color: rgba(13,148,136,0.3); background: rgba(13,148,136,0.04);">
+          <div class="bp-check-num" style="background:rgba(13,148,136,0.15);">💡</div>
+          <div class="bp-check-text"><strong>For 90% of queries:</strong><br>Knowing SQL execution order + the 5 questions above = no bugs. Snowflake-specific tuning only when Query Profile shows a problem.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main><!-- end .main -->
+
+<script>
+  // ── Global Tab Switching ──
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.gtab').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById(tabId);
+    if (panel) panel.classList.add('active');
+    const btn = document.getElementById('btn-' + tabId);
+    if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Toggle lesson open/close ──
+  function toggleLesson(bodyId, headerEl) {
+    const body = document.getElementById(bodyId);
+    const chevron = headerEl.querySelector('.lesson-chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.classList.toggle('open', !isOpen);
+  }
+
+  // ── Expand / collapse all ──
+  function expandAll() {
+    document.querySelectorAll('#tab-guide .lesson-body').forEach(b => b.classList.add('open'));
+    document.querySelectorAll('#tab-guide .lesson-chevron').forEach(c => c.classList.add('open'));
+  }
+  function collapseAll() {
+    document.querySelectorAll('#tab-guide .lesson-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('#tab-guide .lesson-chevron').forEach(c => c.classList.remove('open'));
+  }
+
+  // ── Copy code ──
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  // ── Progress tracking ──
+  const viewed = new Set();
+  function markViewed(id) {
+    viewed.add(id);
+    updateProgress();
+    const link = document.querySelector(`a.nav-item[href="#${id}"]`);
+    if (link) link.style.color = 'var(--green)';
+  }
+  function updateProgress() {
+    const total = 23;
+    const pct = Math.round((viewed.size / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${viewed.size} / ${total} lessons viewed`;
+  }
+
+  // ── Active nav on scroll ──
+  const lessonIds = ['d1-1','d1-2','d1-3','d2-1','d2-2','d2-3','d3-1','d3-2','d3-3','d3-4','d4-1','d4-2','d4-3','d5-1','d5-2','d5-3','d5-4','d5-5','d5-dt','d5-p','d6-1','d6-2','ref-privileges'];
+  const lessonTitles = { 'd1-1':'Access Control','d1-2':'Column & Row Security','d1-3':'Object Tagging','d2-1':'Virtual Warehouses','d2-2':'Resource Monitors','d2-3':'Multi-cluster','d3-1':'INSERT & Upload','d3-2':'Stage Types','d3-3':'COPY INTO','d3-4':'Semi-structured','d4-1':'Query History','d4-2':'Caching','d4-3':'Clustering','d5-1':'Databases & Views','d5-2':'UDFs & Procedures','d5-3':'SnowSQL CLI','d5-4':'Data Sharing','d5-5':'Data Marketplace','d5-dt':'Dynamic Tables','d5-p':'Parameters','d6-1':'Time Travel','d6-2':'Cloning','ref-privileges':'Privileges Reference' };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('#tab-guide .nav-item').forEach(el => el.classList.remove('active'));
+        const link = document.querySelector(`a.nav-item[href="#${id}"]`);
+        if (link) {
+          link.classList.add('active');
+          const bc = document.getElementById('breadcrumbCur');
+          if (bc) bc.textContent = lessonTitles[id] || id;
+        }
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '-100px 0px -70% 0px' });
+  lessonIds.forEach(id => { const el = document.getElementById(id); if (el) observer.observe(el); });
+
+  // ── Nav search ──
+  function filterNav(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+    document.querySelectorAll('.nav-section').forEach(section => {
+      const visible = [...section.querySelectorAll('.nav-item')].some(i => i.style.display !== 'none');
+      section.style.display = visible ? '' : 'none';
+    });
+  }
+
+  // ── Privileges tab search ──
+  function filterPrivs2(query) {
+    const q = query.toLowerCase().trim();
+    const rows = document.querySelectorAll('#privList2 .priv-row');
+    const groups = document.querySelectorAll('#privList2 .priv-group');
+    rows.forEach(r => {
+      const text = ((r.dataset.ptags || '') + ' ' + r.textContent).toLowerCase();
+      r.classList.toggle('priv-hidden', q !== '' && !text.includes(q));
+    });
+    groups.forEach(g => {
+      const anyVisible = [...g.querySelectorAll('.priv-row')].some(r => !r.classList.contains('priv-hidden'));
+      g.style.display = anyVisible ? '' : 'none';
+    });
+    document.getElementById('privEmpty2').style.display =
+      [...rows].every(r => r.classList.contains('priv-hidden')) ? 'block' : 'none';
+  }
+
+  // ── Cheat Sheet internal nav ──
+  function csShow(id, btn) {
+    document.querySelectorAll('.cs-section').forEach(s => s.classList.remove('cs-active'));
+    document.querySelectorAll('.cs-nav-btn').forEach(b => b.classList.remove('cs-active'));
+    document.getElementById(id).classList.add('cs-active');
+    btn.classList.add('cs-active');
+  }
+</script>
+</body>
+</html>
