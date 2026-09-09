@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLAlchemy Explained — Python ORM for Databases</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: rgba(31,35,40,0.12);
+    --accent: #1d6aaa;
+    --accent2: #0d9488;
+    --accent3: #c5341b;
+    --text: #1f2328;
+    --muted: #636c76;
+    --code-bg: #eaeef2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .back-pill {
+    position: fixed; z-index: 9999; top: 12px; left: 12px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(246,248,250,0.96); border: 1px solid rgba(31,35,40,0.22);
+    color: #1f2328; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    backdrop-filter: blur(14px); text-decoration: none;
+  }
+  .back-pill span { font-size: 14px; }
+
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(246,248,250,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  .logo em { color: var(--accent2); font-style: normal; }
+
+  .container { display: flex; height: calc(100vh - 60px); }
+
+  aside {
+    width: 260px; min-width: 260px; background: var(--surface);
+    border-right: 1px solid var(--border); overflow-y: auto; padding: 1.5rem 0;
+  }
+  .section-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); padding: 0.8rem 1.5rem 0.4rem;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.15s;
+    border-left: 3px solid transparent; font-size: 0.85rem; color: var(--muted);
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); background: var(--surface2); color: var(--text); }
+  .nav-item.done .nav-dot { background: var(--accent2); }
+  .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .nav-item.active .nav-dot { background: var(--accent); }
+  .chapter-badge {
+    margin-left: auto; font-size: 0.6rem; font-family: 'DM Mono', monospace;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 3px; color: var(--muted);
+  }
+
+  main {
+    flex: 1; overflow-y: auto; padding: 3rem 4rem; max-width: 900px;
+  }
+
+  .lesson { display: none; animation: fadeIn 0.3s ease; }
+  .lesson.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+  .lesson-tag {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 0.75rem;
+  }
+  .tag-db { color: var(--accent); }
+  .tag-crud { color: var(--accent2); }
+  .tag-ref { color: var(--accent3); }
+
+  h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .lesson-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+  h2 { font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text); }
+  h3 { font-size: 1rem; font-weight: 700; margin: 1.5rem 0 0.5rem; color: var(--accent); }
+  p { color: #1f2328; line-height: 1.75; margin-bottom: 1rem; font-size: 0.95rem; }
+  ul, ol { margin: 0 0 1rem 1.25rem; }
+  li { color: #1f2328; line-height: 1.75; font-size: 0.95rem; margin-bottom: 0.35rem; }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 1.25rem 0; overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .copy-btn {
+    font-size: 0.65rem; font-family: 'DM Mono', monospace;
+    color: var(--muted); background: none; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  pre {
+    padding: 1.25rem; overflow-x: auto; font-family: 'DM Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7; color: #1f2328;
+  }
+
+  .kw { color: #c5341b; } .fn { color: #1a7f4e; } .st { color: #a56514; }
+  .cm { color: #636c76; font-style: italic; } .cl { color: #1d6aaa; }
+  .num { color: #6e40c9; } .op { color: #c5341b; }
+
+  .callout { border-left: 3px solid; padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0; font-size: 0.9rem; }
+  .callout-info { border-color: var(--accent); background: rgba(29,106,170,0.06); }
+  .callout-tip { border-color: var(--accent2); background: rgba(13,148,136,0.06); }
+  .callout-warn { border-color: var(--accent3); background: rgba(197,52,27,0.06); }
+  .callout strong { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .callout-info strong { color: var(--accent); }
+  .callout-tip strong { color: var(--accent2); }
+  .callout-warn strong { color: var(--accent3); }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .concept-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: border-color 0.2s; }
+  .concept-card:hover { border-color: var(--accent); }
+  .concept-card h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent2); }
+  .concept-card p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.6rem 1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--accent2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { padding: 0.6rem 1rem; border: 1px solid var(--border); color: #1f2328; }
+  tr:hover td { background: var(--surface2); }
+
+  .nav-btns { display: flex; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .btn { font-family: 'DM Mono', monospace; font-size: 0.8rem; padding: 0.6rem 1.5rem; border-radius: 5px; cursor: pointer; transition: all 0.2s; border: none; font-weight: 700; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #2a82ca; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; font-family: 'DM Mono', monospace; font-size: 0.75rem; line-height: 2; color: #636c76; overflow-x: auto; }
+  .diagram .node { color: var(--accent2); font-weight: 700; }
+  .diagram .arrow { color: var(--accent); }
+  .diagram .label { color: var(--muted); }
+  .diagram.tight { line-height: 1.6; }
+
+  code { font-family: 'DM Mono', monospace; font-size: 0.8em; background: rgba(175,184,193,0.2); padding: 1px 5px; border-radius: 3px; color: #0550ae; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    aside { display: none; }
+    main { padding: 2rem 1.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<a class="back-pill" href="../index.html">
+  <span>&larr;</span> Back to topics
+</a>
+
+<header>
+  <div class="logo"><span>SQL</span>Alchemy &middot; <em>Explained</em></div>
+</header>
+
+<div class="container">
+<aside>
+  <div class="section-label">Fundamentals</div>
+  <div class="nav-item active" onclick="goto(0)"><div class="nav-dot"></div>What is SQLAlchemy? <span class="chapter-badge">01</span></div>
+  <div class="nav-item" onclick="goto(1)"><div class="nav-dot"></div>How It Works <span class="chapter-badge">02</span></div>
+  <div class="nav-item" onclick="goto(2)"><div class="nav-dot"></div>Key Concepts <span class="chapter-badge">03</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Working With Data</div>
+  <div class="nav-item" onclick="goto(3)"><div class="nav-dot"></div>CRUD Operations <span class="chapter-badge">04</span></div>
+  <div class="nav-item" onclick="goto(4)"><div class="nav-dot"></div>Column Types <span class="chapter-badge">05</span></div>
+  <div class="nav-item" onclick="goto(5)"><div class="nav-dot"></div>Relationships <span class="chapter-badge">06</span></div>
+
+  <div class="section-label" style="margin-top:1rem;">Applied</div>
+  <div class="nav-item" onclick="goto(6)"><div class="nav-dot"></div>FastAPI + SQLAlchemy <span class="chapter-badge">07</span></div>
+  <div class="nav-item" onclick="goto(7)"><div class="nav-dot"></div>Real-World Example <span class="chapter-badge">08</span></div>
+  <div class="nav-item" onclick="goto(8)"><div class="nav-dot"></div>Summary &amp; Takeaways <span class="chapter-badge">09</span></div>
+</aside>
+
+<main id="mainContent">
+
+<!-- LESSON 0 -->
+<div class="lesson active" id="lesson-0">
+  <div class="lesson-tag tag-db">Chapter 01 &mdash; Overview</div>
+  <h1>&#127919; What is SQLAlchemy?</h1>
+  <p class="lesson-subtitle">A Python library for working with databases. It lets you interact with databases using Python code instead of writing SQL.</p>
+
+  <h2>Think of it as</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>Pydantic</h4>
+      <p>Define what <strong>API data</strong> looks like &mdash; validate the shape of requests and responses.</p>
+    </div>
+    <div class="concept-card">
+      <h4>SQLAlchemy</h4>
+      <p>Define what <strong>database tables</strong> look like &mdash; and interact with them from Python.</p>
+    </div>
+  </div>
+
+  <h2>&#128260; The Big Picture</h2>
+  <div class="diagram tight">
+<span class="node">Your FastAPI Application</span>
+<span class="arrow">│</span>
+<span class="arrow">├─</span> <span class="node">Pydantic</span> <span class="label">(Request/Response Data)</span>
+<span class="arrow">│  └─</span> <span class="label">Validates: {"name": "John", "email": "john@example.com"}</span>
+<span class="arrow">│</span>
+<span class="arrow">├─</span> <span class="node">SQLAlchemy</span> <span class="label">(Database)</span>
+<span class="arrow">│  └─</span> <span class="label">Stores/Retrieves: Row in users table</span>
+<span class="arrow">│</span>
+<span class="arrow">└─</span> <span class="node">Database</span> <span class="label">(PostgreSQL, MySQL, SQLite)</span>
+<span class="arrow">   └─</span> <span class="label">Actual data storage</span>
+  </div>
+
+  <h2>&#128202; Pydantic vs SQLAlchemy</h2>
+  <table>
+    <thead>
+      <tr><th>Aspect</th><th>Pydantic</th><th>SQLAlchemy</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Purpose</strong></td><td>Validate API data</td><td>Interact with databases</td></tr>
+      <tr><td><strong>What it does</strong></td><td>Checks incoming requests</td><td>Saves/retrieves data from DB</td></tr>
+      <tr><td><strong>Data location</strong></td><td>In memory (request/response)</td><td>Persistent storage (database)</td></tr>
+      <tr><td><strong>Class base</strong></td><td><code>BaseModel</code> &mdash; API schema</td><td><code>Base</code> &mdash; database model</td></tr>
+      <tr><td><strong>Used for</strong></td><td>API validation</td><td>CRUD operations</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Key Distinction</strong>
+    Pydantic guards the <em>door</em> (what comes in and goes out over HTTP). SQLAlchemy guards the <em>vault</em> (what is written to and read from the database).
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-primary" onclick="goto(1)">Next: How It Works &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 1 -->
+<div class="lesson" id="lesson-1">
+  <div class="lesson-tag tag-db">Chapter 02 &mdash; Fundamentals</div>
+  <h1>&#128736;&#65039; How SQLAlchemy Works</h1>
+  <p class="lesson-subtitle">The same job, done twice: once with raw SQL, once with the ORM.</p>
+
+  <h2>Without SQLAlchemy (Raw SQL) &#10060;</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">import</span> sqlite3
+
+<span class="cm"># Manual SQL queries &#129326;</span>
+connection = sqlite3.<span class="fn">connect</span>(<span class="st">'database.db'</span>)
+cursor = connection.<span class="fn">cursor</span>()
+
+<span class="cm"># Create table</span>
+cursor.<span class="fn">execute</span>(<span class="st">'''
+    CREATE TABLE users (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL
+    )
+'''</span>)
+
+<span class="cm"># Insert data</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">'INSERT INTO users (name, email) VALUES (?, ?)'</span>,
+    (<span class="st">'John'</span>, <span class="st">'john@example.com'</span>)
+)
+connection.<span class="fn">commit</span>()
+
+<span class="cm"># Query data</span>
+cursor.<span class="fn">execute</span>(<span class="st">'SELECT * FROM users WHERE id = 1'</span>)
+user = cursor.<span class="fn">fetchone</span>()
+<span class="fn">print</span>(user)  <span class="cm"># (1, 'John', 'john@example.com') - raw tuple</span>
+
+connection.<span class="fn">close</span>()</pre>
+  </div>
+
+  <h2>With SQLAlchemy (ORM) &#10024;</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine, <span class="cl">Column</span>, <span class="cl">Integer</span>, <span class="cl">String</span>
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> declarative_base, <span class="cl">Session</span>
+
+<span class="cl">Base</span> = <span class="fn">declarative_base</span>()
+
+<span class="cm"># Define table as Python class</span>
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'users'</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+    email = <span class="cl">Column</span>(<span class="cl">String</span>)
+
+<span class="cm"># Create engine (database connection)</span>
+engine = <span class="fn">create_engine</span>(<span class="st">'sqlite:///database.db'</span>)
+<span class="cl">Base</span>.metadata.<span class="fn">create_all</span>(engine)
+
+<span class="cm"># Insert data</span>
+session = <span class="cl">Session</span>(engine)
+new_user = <span class="cl">User</span>(name=<span class="st">'John'</span>, email=<span class="st">'john@example.com'</span>)
+session.<span class="fn">add</span>(new_user)
+session.<span class="fn">commit</span>()
+
+<span class="cm"># Query data</span>
+user = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+<span class="fn">print</span>(user.name)  <span class="cm"># 'John' - actual object property</span></pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>&#128161; The difference that matters</strong>
+    Raw SQL hands you a <em>tuple</em> you have to index by position. The ORM hands you a <em>Python object</em> with named attributes &mdash; readable, refactorable, and type-friendly.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(0)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(2)">Next: Key Concepts &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 2 -->
+<div class="lesson" id="lesson-2">
+  <div class="lesson-tag tag-db">Chapter 03 &mdash; Fundamentals</div>
+  <h1>&#127959;&#65039; SQLAlchemy Key Concepts</h1>
+  <p class="lesson-subtitle">Three pieces you need before writing a single query: the model, the engine, and the session.</p>
+
+  <h2>1. Define a Table as a Python Class</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine, <span class="cl">Column</span>, <span class="cl">Integer</span>, <span class="cl">String</span>, <span class="cl">DateTime</span>
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> declarative_base
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="cl">Base</span> = <span class="fn">declarative_base</span>()
+
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">Base</span>):  <span class="cm"># &larr; Maps to 'users' table</span>
+    __tablename__ = <span class="st">'users'</span>  <span class="cm"># &larr; Table name in database</span>
+
+    <span class="cm"># Define columns</span>
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)  <span class="cm"># Auto-increment ID</span>
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)  <span class="cm"># VARCHAR</span>
+    email = <span class="cl">Column</span>(<span class="cl">String</span>)  <span class="cm"># VARCHAR</span>
+    created_at = <span class="cl">Column</span>(<span class="cl">DateTime</span>, default=datetime.utcnow)  <span class="cm"># TIMESTAMP</span>
+
+<span class="cm"># In database, this creates:</span>
+<span class="cm"># CREATE TABLE users (</span>
+<span class="cm">#   id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+<span class="cm">#   name VARCHAR,</span>
+<span class="cm">#   email VARCHAR,</span>
+<span class="cm">#   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+<span class="cm"># )</span></pre>
+  </div>
+
+  <h2>2. Connect to the Database</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+
+<span class="cm"># Create engine (connection pool)</span>
+engine = <span class="fn">create_engine</span>(<span class="st">'sqlite:///database.db'</span>)  <span class="cm"># SQLite</span>
+<span class="cm"># engine = create_engine('postgresql://user:password@localhost/dbname')  # PostgreSQL</span>
+<span class="cm"># engine = create_engine('mysql://user:password@localhost/dbname')  # MySQL</span>
+
+<span class="cm"># Create all tables</span>
+<span class="cl">Base</span>.metadata.<span class="fn">create_all</span>(engine)</pre>
+  </div>
+
+  <h2>3. Create a Session (Active Connection)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> <span class="cl">Session</span>
+
+<span class="cm"># Create session</span>
+session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Use it</span>
+<span class="cm"># ... CRUD operations ...</span>
+
+<span class="cm"># Close</span>
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Engine vs Session</strong>
+    The <strong>engine</strong> is the connection pool &mdash; created once for the whole app. The <strong>session</strong> is one unit of work &mdash; created per request, and closed when that request is done.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(1)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(3)">Next: CRUD Operations &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 3 -->
+<div class="lesson" id="lesson-3">
+  <div class="lesson-tag tag-crud">Chapter 04 &mdash; Working With Data</div>
+  <h1>&#128295; CRUD Operations</h1>
+  <p class="lesson-subtitle">Create, Read, Update, Delete &mdash; the four operations every database app is built from.</p>
+
+  <h2>CREATE (Insert)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> <span class="cl">Session</span>
+
+session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Create new user</span>
+new_user = <span class="cl">User</span>(
+    name=<span class="st">'John Doe'</span>,
+    email=<span class="st">'john@example.com'</span>
+)
+
+<span class="cm"># Add to database</span>
+session.<span class="fn">add</span>(new_user)
+session.<span class="fn">commit</span>()  <span class="cm"># Save changes</span>
+session.<span class="fn">refresh</span>(new_user)  <span class="cm"># Get auto-generated ID</span>
+
+<span class="fn">print</span>(new_user.id)  <span class="cm"># 1 (auto-generated)</span>
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <h2>READ (Query)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Get all users</span>
+all_users = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">all</span>()
+<span class="kw">for</span> user <span class="kw">in</span> all_users:
+    <span class="fn">print</span>(user.name, user.email)
+
+<span class="cm"># Get one user</span>
+user = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+<span class="fn">print</span>(user.name)  <span class="cm"># 'John Doe'</span>
+
+<span class="cm"># Filter with conditions</span>
+users = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.email.<span class="fn">like</span>(<span class="st">'%@gmail.com'</span>)).<span class="fn">all</span>()
+
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <h2>UPDATE (Modify)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Get user</span>
+user = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+
+<span class="cm"># Modify</span>
+user.name = <span class="st">'Jane Doe'</span>
+user.email = <span class="st">'jane@example.com'</span>
+
+<span class="cm"># Save</span>
+session.<span class="fn">commit</span>()
+
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <h2>DELETE (Remove)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre>session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Get user</span>
+user = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+
+<span class="cm"># Delete</span>
+session.<span class="fn">delete</span>(user)
+
+<span class="cm"># Save</span>
+session.<span class="fn">commit</span>()
+
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>&#9888;&#65039; Nothing is saved until commit()</strong>
+    <code>add()</code>, attribute changes, and <code>delete()</code> only stage the work in the session. Without <code>session.commit()</code> the database never sees it.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(2)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(4)">Next: Column Types &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 4 -->
+<div class="lesson" id="lesson-4">
+  <div class="lesson-tag tag-crud">Chapter 05 &mdash; Working With Data</div>
+  <h1>&#128190; Column Types</h1>
+  <p class="lesson-subtitle">SQLAlchemy column types map directly onto the native types of whichever database you connect to.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> (
+    <span class="cl">Column</span>, <span class="cl">Integer</span>, <span class="cl">String</span>, <span class="cl">Float</span>, <span class="cl">Boolean</span>,
+    <span class="cl">DateTime</span>, <span class="cl">Date</span>, <span class="cl">Text</span>, <span class="cl">JSON</span>, <span class="cl">LargeBinary</span>
+)
+
+<span class="kw">class</span> <span class="cl">Product</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'products'</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">100</span>))  <span class="cm"># VARCHAR(100)</span>
+    price = <span class="cl">Column</span>(<span class="cl">Float</span>)  <span class="cm"># DECIMAL/FLOAT</span>
+    description = <span class="cl">Column</span>(<span class="cl">Text</span>)  <span class="cm"># LONGTEXT</span>
+    is_active = <span class="cl">Column</span>(<span class="cl">Boolean</span>, default=<span class="kw">True</span>)  <span class="cm"># BOOLEAN</span>
+    created_at = <span class="cl">Column</span>(<span class="cl">DateTime</span>)  <span class="cm"># TIMESTAMP</span>
+    attributes = <span class="cl">Column</span>(<span class="cl">JSON</span>)  <span class="cm"># JSON</span>
+    image = <span class="cl">Column</span>(<span class="cl">LargeBinary</span>)  <span class="cm"># BLOB</span></pre>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>&#9888;&#65039; Don't name a column <code>metadata</code></strong>
+    <code>metadata</code> is reserved by the declarative base &mdash; SQLAlchemy raises <code>InvalidRequestError</code> on that attribute name. Use a different name (like <code>attributes</code> above) or map it explicitly with <code>Column('metadata', JSON)</code>.
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>SQLAlchemy Type</th><th>SQL Type</th><th>Use For</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Integer</code></td><td>INTEGER</td><td>IDs, counts, foreign keys</td></tr>
+      <tr><td><code>String(n)</code></td><td>VARCHAR(n)</td><td>Short bounded text &mdash; names, emails</td></tr>
+      <tr><td><code>Text</code></td><td>TEXT / LONGTEXT</td><td>Long unbounded text &mdash; bodies, messages</td></tr>
+      <tr><td><code>Float</code></td><td>FLOAT / DECIMAL</td><td>Prices, scores, measurements</td></tr>
+      <tr><td><code>Boolean</code></td><td>BOOLEAN</td><td>Flags &mdash; is_active, is_deleted</td></tr>
+      <tr><td><code>DateTime</code></td><td>TIMESTAMP</td><td>created_at, updated_at</td></tr>
+      <tr><td><code>JSON</code></td><td>JSON / JSONB</td><td>Flexible nested payloads</td></tr>
+      <tr><td><code>LargeBinary</code></td><td>BLOB</td><td>Files, images, embeddings blobs</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(3)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(5)">Next: Relationships &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 5 -->
+<div class="lesson" id="lesson-5">
+  <div class="lesson-tag tag-crud">Chapter 06 &mdash; Working With Data</div>
+  <h1>&#128279; Relationships</h1>
+  <p class="lesson-subtitle">The real power of SQLAlchemy &mdash; navigate between tables as if they were plain Python objects.</p>
+
+  <h2>One-to-Many (User has Many Blogs)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> <span class="cl">ForeignKey</span>
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> relationship
+
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'users'</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+
+    <span class="cm"># Relationship: User can have many blogs</span>
+    blogs = <span class="fn">relationship</span>(<span class="st">'Blog'</span>, back_populates=<span class="st">'author'</span>)
+
+<span class="kw">class</span> <span class="cl">Blog</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'blogs'</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    title = <span class="cl">Column</span>(<span class="cl">String</span>)
+    user_id = <span class="cl">Column</span>(<span class="cl">Integer</span>, <span class="cl">ForeignKey</span>(<span class="st">'users.id'</span>))  <span class="cm"># Foreign key</span>
+
+    <span class="cm"># Relationship: Blog belongs to one User</span>
+    author = <span class="fn">relationship</span>(<span class="st">'User'</span>, back_populates=<span class="st">'blogs'</span>)
+
+<span class="cm"># Usage</span>
+session = <span class="cl">Session</span>(engine)
+
+<span class="cm"># Get user with all their blogs</span>
+user = session.<span class="fn">query</span>(<span class="cl">User</span>).<span class="fn">filter</span>(<span class="cl">User</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+<span class="fn">print</span>(user.blogs)  <span class="cm"># [Blog(...), Blog(...), ...]</span>
+
+<span class="cm"># Get blog with author info</span>
+blog = session.<span class="fn">query</span>(<span class="cl">Blog</span>).<span class="fn">filter</span>(<span class="cl">Blog</span>.id == <span class="num">1</span>).<span class="fn">first</span>()
+<span class="fn">print</span>(blog.author.name)  <span class="cm"># 'John Doe'</span>
+
+session.<span class="fn">close</span>()</pre>
+  </div>
+
+  <h2>Many-to-Many (Students have Many Courses)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> <span class="cl">Table</span>
+
+<span class="cm"># Association table</span>
+student_course = <span class="cl">Table</span>(
+    <span class="st">'student_course'</span>,
+    <span class="cl">Base</span>.metadata,
+    <span class="cl">Column</span>(<span class="st">'student_id'</span>, <span class="cl">Integer</span>, <span class="cl">ForeignKey</span>(<span class="st">'students.id'</span>)),
+    <span class="cl">Column</span>(<span class="st">'course_id'</span>, <span class="cl">Integer</span>, <span class="cl">ForeignKey</span>(<span class="st">'courses.id'</span>))
+)
+
+<span class="kw">class</span> <span class="cl">Student</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'students'</span>
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+    courses = <span class="fn">relationship</span>(<span class="st">'Course'</span>, secondary=student_course)
+
+<span class="kw">class</span> <span class="cl">Course</span>(<span class="cl">Base</span>):
+    __tablename__ = <span class="st">'courses'</span>
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+    students = <span class="fn">relationship</span>(<span class="st">'Student'</span>, secondary=student_course)</pre>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>&#128161; ForeignKey vs relationship</strong>
+    <code>ForeignKey</code> is the <em>database</em> constraint &mdash; it enforces integrity in SQL. <code>relationship()</code> is the <em>Python</em> convenience &mdash; it gives you <code>user.blogs</code> and <code>blog.author</code>. You almost always want both.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(4)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(6)">Next: FastAPI + SQLAlchemy &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 6 -->
+<div class="lesson" id="lesson-6">
+  <div class="lesson-tag tag-ref">Chapter 07 &mdash; Applied</div>
+  <h1>&#127919; FastAPI + SQLAlchemy</h1>
+  <p class="lesson-subtitle">How the two libraries sit side by side in a real blog API &mdash; Pydantic at the edge, SQLAlchemy at the database.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> fastapi <span class="kw">import</span> <span class="cl">FastAPI</span>, <span class="cl">Depends</span>
+<span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine, <span class="cl">Column</span>, <span class="cl">Integer</span>, <span class="cl">String</span>, <span class="cl">ForeignKey</span>
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> <span class="cl">Session</span>, declarative_base, relationship, sessionmaker
+<span class="kw">from</span> pydantic <span class="kw">import</span> <span class="cl">BaseModel</span>
+
+<span class="cm"># SQLAlchemy setup</span>
+SQLALCHEMY_DATABASE_URL = <span class="st">"sqlite:///./blog.db"</span>
+engine = <span class="fn">create_engine</span>(SQLALCHEMY_DATABASE_URL)
+SessionLocal = <span class="fn">sessionmaker</span>(bind=engine)
+<span class="cl">Base</span> = <span class="fn">declarative_base</span>()
+
+<span class="cm"># ========== DATABASE MODELS (SQLAlchemy) ==========</span>
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">Base</span>):  <span class="cm"># &larr; SQLAlchemy model</span>
+    __tablename__ = <span class="st">"users"</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+    email = <span class="cl">Column</span>(<span class="cl">String</span>, unique=<span class="kw">True</span>)
+    password = <span class="cl">Column</span>(<span class="cl">String</span>)  <span class="cm"># hashed</span>
+
+    blogs = <span class="fn">relationship</span>(<span class="st">"Blog"</span>, back_populates=<span class="st">"creator"</span>)
+
+<span class="kw">class</span> <span class="cl">Blog</span>(<span class="cl">Base</span>):  <span class="cm"># &larr; SQLAlchemy model</span>
+    __tablename__ = <span class="st">"blogs"</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    title = <span class="cl">Column</span>(<span class="cl">String</span>)
+    body = <span class="cl">Column</span>(<span class="cl">String</span>)
+    user_id = <span class="cl">Column</span>(<span class="cl">Integer</span>, <span class="cl">ForeignKey</span>(<span class="st">"users.id"</span>))
+
+    creator = <span class="fn">relationship</span>(<span class="st">"User"</span>, back_populates=<span class="st">"blogs"</span>)
+
+<span class="cm"># Create tables</span>
+<span class="cl">Base</span>.metadata.<span class="fn">create_all</span>(engine)
+
+<span class="cm"># ========== API MODELS (Pydantic) ==========</span>
+<span class="kw">class</span> <span class="cl">BlogCreate</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; Pydantic model (REQUEST)</span>
+    title: str
+    body: str
+
+<span class="kw">class</span> <span class="cl">UserResponse</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; Pydantic model (RESPONSE)</span>
+    id: int
+    name: str
+    email: str
+
+    <span class="kw">class</span> <span class="cl">Config</span>:
+        from_attributes = <span class="kw">True</span>
+
+<span class="kw">class</span> <span class="cl">BlogResponse</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; Pydantic model (RESPONSE)</span>
+    id: int
+    title: str
+    body: str
+    creator: <span class="cl">UserResponse</span>
+
+    <span class="kw">class</span> <span class="cl">Config</span>:
+        from_attributes = <span class="kw">True</span>  <span class="cm"># Convert SQLAlchemy to Pydantic</span>
+
+<span class="cm"># ========== DEPENDENCY ==========</span>
+<span class="kw">def</span> <span class="fn">get_db</span>():
+    db = <span class="fn">SessionLocal</span>()
+    <span class="kw">try</span>:
+        <span class="kw">yield</span> db
+    <span class="kw">finally</span>:
+        db.<span class="fn">close</span>()
+
+<span class="cm"># ========== FASTAPI ENDPOINTS ==========</span>
+app = <span class="fn">FastAPI</span>()
+
+<span class="op">@</span>app.<span class="fn">post</span>(<span class="st">"/blogs"</span>)
+<span class="kw">def</span> <span class="fn">create_blog</span>(
+    blog: <span class="cl">BlogCreate</span>,  <span class="cm"># &larr; Pydantic validation</span>
+    db: <span class="cl">Session</span> = <span class="cl">Depends</span>(get_db)  <span class="cm"># &larr; SQLAlchemy session</span>
+):
+    <span class="cm"># Create SQLAlchemy object</span>
+    db_blog = <span class="cl">Blog</span>(
+        title=blog.title,
+        body=blog.body,
+        user_id=<span class="num">1</span>
+    )
+
+    <span class="cm"># Save to database</span>
+    db.<span class="fn">add</span>(db_blog)
+    db.<span class="fn">commit</span>()
+    db.<span class="fn">refresh</span>(db_blog)
+
+    <span class="cm"># Convert to Pydantic response</span>
+    <span class="kw">return</span> db_blog
+
+<span class="op">@</span>app.<span class="fn">get</span>(<span class="st">"/blogs/{blog_id}"</span>)
+<span class="kw">def</span> <span class="fn">get_blog</span>(
+    blog_id: int,
+    db: <span class="cl">Session</span> = <span class="cl">Depends</span>(get_db)  <span class="cm"># &larr; SQLAlchemy session</span>
+):
+    <span class="cm"># Query database</span>
+    blog = db.<span class="fn">query</span>(<span class="cl">Blog</span>).<span class="fn">filter</span>(<span class="cl">Blog</span>.id == blog_id).<span class="fn">first</span>()
+
+    <span class="kw">if</span> <span class="kw">not</span> blog:
+        <span class="kw">return</span> {<span class="st">"error"</span>: <span class="st">"not found"</span>}
+
+    <span class="cm"># FastAPI automatically converts to BlogResponse (Pydantic)</span>
+    <span class="kw">return</span> blog</pre>
+  </div>
+
+  <h2>Data Flow</h2>
+  <div class="diagram tight">
+<span class="num">1.</span> <span class="label">Client sends JSON request</span>
+   <span class="arrow">&darr;</span>
+<span class="num">2.</span> <span class="node">Pydantic</span> <span class="label">validates (BlogCreate)</span>
+   <span class="arrow">&darr;</span>
+<span class="num">3.</span> <span class="label">FastAPI calls endpoint</span>
+   <span class="arrow">&darr;</span>
+<span class="num">4.</span> <span class="node">SQLAlchemy</span> <span class="label">saves to database (Blog model)</span>
+   <span class="arrow">&darr;</span>
+<span class="num">5.</span> <span class="label">Query returns SQLAlchemy object</span>
+   <span class="arrow">&darr;</span>
+<span class="num">6.</span> <span class="node">Pydantic</span> <span class="label">converts to JSON response (BlogResponse)</span>
+   <span class="arrow">&darr;</span>
+<span class="num">7.</span> <span class="label">Client receives JSON response</span>
+  </div>
+
+  <div class="callout callout-info">
+    <strong>from_attributes = True</strong>
+    This is what lets a Pydantic response model read a SQLAlchemy object directly instead of a dict. In Pydantic v1 the same setting was called <code>orm_mode = True</code>.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(5)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(7)">Next: Real-World Example &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 7 -->
+<div class="lesson" id="lesson-7">
+  <div class="lesson-tag tag-ref">Chapter 08 &mdash; Applied</div>
+  <h1>&#128269; Real-World Example: Contact Submission</h1>
+  <p class="lesson-subtitle">One contact form, traced from the browser through Pydantic and SQLAlchemy into the database.</p>
+
+  <h2>Database Model (SQLAlchemy)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> sqlalchemy <span class="kw">import</span> <span class="cl">Column</span>, <span class="cl">Integer</span>, <span class="cl">String</span>, <span class="cl">DateTime</span>, create_engine
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> declarative_base
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="cl">Base</span> = <span class="fn">declarative_base</span>()
+
+<span class="kw">class</span> <span class="cl">ContactSubmission</span>(<span class="cl">Base</span>):  <span class="cm"># &larr; SQLAlchemy</span>
+    __tablename__ = <span class="st">"contact_submissions"</span>
+
+    id = <span class="cl">Column</span>(<span class="cl">Integer</span>, primary_key=<span class="kw">True</span>)
+    name = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">100</span>), nullable=<span class="kw">False</span>)
+    email = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">100</span>), nullable=<span class="kw">False</span>)
+    message = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">5000</span>), nullable=<span class="kw">False</span>)
+    phone = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">20</span>), nullable=<span class="kw">True</span>)
+    subject = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">50</span>), nullable=<span class="kw">False</span>)
+    created_at = <span class="cl">Column</span>(<span class="cl">DateTime</span>, default=datetime.utcnow)
+    ip_address = <span class="cl">Column</span>(<span class="cl">String</span>(<span class="num">50</span>), nullable=<span class="kw">False</span>)
+
+<span class="cm"># Creates this in database:</span>
+<span class="cm"># CREATE TABLE contact_submissions (</span>
+<span class="cm">#   id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+<span class="cm">#   name VARCHAR(100) NOT NULL,</span>
+<span class="cm">#   email VARCHAR(100) NOT NULL,</span>
+<span class="cm">#   message VARCHAR(5000) NOT NULL,</span>
+<span class="cm">#   phone VARCHAR(20),</span>
+<span class="cm">#   subject VARCHAR(50) NOT NULL,</span>
+<span class="cm">#   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span>
+<span class="cm">#   ip_address VARCHAR(50) NOT NULL</span>
+<span class="cm"># )</span></pre>
+  </div>
+
+  <h2>API Model (Pydantic)</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> typing <span class="kw">import</span> <span class="cl">Optional</span>
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> pydantic <span class="kw">import</span> <span class="cl">BaseModel</span>, <span class="cl">EmailStr</span>
+
+<span class="kw">class</span> <span class="cl">ContactFormRequest</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; Pydantic (REQUEST)</span>
+    name: str
+    email: <span class="cl">EmailStr</span>
+    message: str
+    phone: <span class="cl">Optional</span>[str] = <span class="kw">None</span>
+    subject: str = <span class="st">"general"</span>
+
+<span class="kw">class</span> <span class="cl">ContactFormResponse</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; Pydantic (RESPONSE)</span>
+    id: int
+    name: str
+    email: str
+    created_at: datetime</pre>
+  </div>
+
+  <h2>FastAPI Endpoint</h2>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="kw">from</span> fastapi <span class="kw">import</span> <span class="cl">FastAPI</span>, <span class="cl">Depends</span>, <span class="cl">Request</span>
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> <span class="cl">Session</span>
+
+app = <span class="fn">FastAPI</span>()
+
+<span class="op">@</span>app.<span class="fn">post</span>(<span class="st">"/api/contact"</span>)
+<span class="kw">def</span> <span class="fn">submit_contact</span>(
+    form: <span class="cl">ContactFormRequest</span>,  <span class="cm"># &larr; Pydantic validates</span>
+    request: <span class="cl">Request</span>,
+    db: <span class="cl">Session</span> = <span class="cl">Depends</span>(get_db)  <span class="cm"># &larr; SQLAlchemy session</span>
+):
+    <span class="cm"># 1. Create SQLAlchemy object (database row)</span>
+    db_submission = <span class="cl">ContactSubmission</span>(
+        name=form.name,
+        email=form.email,
+        message=form.message,
+        phone=form.phone,
+        subject=form.subject,
+        ip_address=request.client.host
+    )
+
+    <span class="cm"># 2. Save to database</span>
+    db.<span class="fn">add</span>(db_submission)
+    db.<span class="fn">commit</span>()
+    db.<span class="fn">refresh</span>(db_submission)
+
+    <span class="cm"># 3. Send email async (don't wait)</span>
+    <span class="fn">send_email_async</span>(form.email, form.message)
+
+    <span class="cm"># 4. Return Pydantic response</span>
+    <span class="kw">return</span> {
+        <span class="st">"success"</span>: <span class="kw">True</span>,
+        <span class="st">"submission_id"</span>: db_submission.id
+    }</pre>
+  </div>
+
+  <h2>What Happens</h2>
+  <div class="diagram tight">
+<span class="num">1.</span> <span class="node">Client:</span> <span class="label">POST /api/contact</span>
+   <span class="label">{ "name": "John", "email": "john@example.com", "message": "..." }</span>
+
+<span class="num">2.</span> <span class="node">Pydantic:</span> <span class="label">Validates with ContactFormRequest</span>
+   <span class="label">&#9989; name is string, email is valid, message is long enough</span>
+
+<span class="num">3.</span> <span class="node">SQLAlchemy:</span> <span class="label">Creates database row</span>
+   <span class="label">INSERT INTO contact_submissions (name, email, message, ...)</span>
+   <span class="label">VALUES ('John', 'john@example.com', '...', ...)</span>
+
+<span class="num">4.</span> <span class="node">Response:</span> <span class="label">Returns ContactFormResponse</span>
+   <span class="label">{ "success": true, "submission_id": 1 }</span>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(6)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(8)">Next: Summary &amp; Takeaways &rarr;</button>
+  </div>
+</div>
+
+<!-- LESSON 8 -->
+<div class="lesson" id="lesson-8">
+  <div class="lesson-tag tag-ref">Chapter 09 &mdash; Applied</div>
+  <h1>&#128640; Summary &amp; Key Takeaways</h1>
+  <p class="lesson-subtitle">Everything SQLAlchemy gives you, and exactly where it sits next to Pydantic and FastAPI.</p>
+
+  <h2>&#128202; SQLAlchemy Features</h2>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Purpose</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Declarative Models</strong></td><td>Define tables as Python classes</td><td><code>class User(Base)</code></td></tr>
+      <tr><td><strong>ORM</strong></td><td>Query with Python instead of SQL</td><td><code>session.query(User).filter(...)</code></td></tr>
+      <tr><td><strong>Relationships</strong></td><td>Link tables together</td><td><code>relationship('Blog')</code></td></tr>
+      <tr><td><strong>Foreign Keys</strong></td><td>Maintain data integrity</td><td><code>ForeignKey('users.id')</code></td></tr>
+      <tr><td><strong>Constraints</strong></td><td>Validate data in database</td><td><code>unique=True</code>, <code>nullable=False</code></td></tr>
+      <tr><td><strong>Migrations</strong></td><td>Change schema over time</td><td>Use Alembic with SQLAlchemy</td></tr>
+      <tr><td><strong>Connection Pooling</strong></td><td>Reuse connections</td><td>Built-in</td></tr>
+      <tr><td><strong>Multi-DB Support</strong></td><td>PostgreSQL, MySQL, SQLite, etc.</td><td>Just change connection string</td></tr>
+    </tbody>
+  </table>
+
+  <h2>&#127891; Pydantic vs SQLAlchemy</h2>
+  <div class="card-grid">
+    <div class="concept-card">
+      <h4>Pydantic</h4>
+      <p><code>class User(BaseModel)</code> &mdash; API validation. Data is <strong>in transit</strong> (request/response). Used for validating API calls.</p>
+    </div>
+    <div class="concept-card">
+      <h4>SQLAlchemy</h4>
+      <p><code>class User(Base)</code> &mdash; database table. Data is in <strong>persistent storage</strong>. Used for saving and retrieving data.</p>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+    <pre><span class="cm"># PYDANTIC</span>
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">BaseModel</span>):  <span class="cm"># &larr; API validation</span>
+    name: str
+    email: <span class="cl">EmailStr</span>
+
+<span class="cm"># Data: In transit (request/response)</span>
+<span class="cm"># Used for: Validating API calls</span>
+
+
+<span class="cm"># SQLALCHEMY</span>
+<span class="kw">class</span> <span class="cl">User</span>(<span class="cl">Base</span>):  <span class="cm"># &larr; Database</span>
+    __tablename__ = <span class="st">'users'</span>
+    name = <span class="cl">Column</span>(<span class="cl">String</span>)
+    email = <span class="cl">Column</span>(<span class="cl">String</span>)
+
+<span class="cm"># Data: Persistent storage (database)</span>
+<span class="cm"># Used for: Saving/retrieving data</span></pre>
+  </div>
+
+  <h2>&#128260; Full Data Flow</h2>
+  <div class="diagram tight">
+<span class="label">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="label">│</span> <span class="node">CLIENT (Browser)</span>
+<span class="label">│ POST /api/contact</span>
+<span class="label">│ { "name": "John", "email": "john@...", "message": "..." }</span>
+<span class="label">└───────────────────────────┬──────────────────────────────────┘</span>
+<span class="arrow">                            &darr;</span>
+<span class="label">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="label">│</span> <span class="node">PYDANTIC (Validation)</span>
+<span class="label">│ class ContactFormRequest(BaseModel):</span>
+<span class="label">│     name: str ...</span>
+<span class="label">│ @app.post("/api/contact")</span>
+<span class="label">│ def submit_contact(form: ContactFormRequest, db: Session):</span>
+<span class="label">└───────────────────────────┬──────────────────────────────────┘</span>
+<span class="arrow">                            &darr;</span>
+<span class="label">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="label">│</span> <span class="node">SQLALCHEMY (Database Save)</span>
+<span class="label">│ class ContactSubmission(Base):</span>
+<span class="label">│     __tablename__ = "contact_submissions"</span>
+<span class="label">│     name = Column(String)</span>
+<span class="label">│     email = Column(String)</span>
+<span class="label">│     message = Column(String)</span>
+<span class="label">└───────────────────────────┬──────────────────────────────────┘</span>
+<span class="arrow">                            &darr;</span>
+<span class="label">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="label">│</span> <span class="node">DATABASE (SQLite/PostgreSQL/MySQL)</span>
+<span class="label">│ INSERT INTO contact_submissions</span>
+<span class="label">│ (name, email, message, created_at)</span>
+<span class="label">│ VALUES ('John', 'john@...', '...', NOW())</span>
+<span class="label">└───────────────────────────┬──────────────────────────────────┘</span>
+<span class="arrow">                            &darr;</span>
+<span class="label">┌──────────────────────────────────────────────────────────────┐</span>
+<span class="label">│</span> <span class="node">PYDANTIC (Response)</span>
+<span class="label">│ class ContactFormResponse(BaseModel): ...</span>
+<span class="label">│ { "success": true, "submission_id": 1 }</span>
+<span class="label">└──────────────────────────────────────────────────────────────┘</span>
+  </div>
+
+  <h2>&#128640; Key Takeaway</h2>
+  <table>
+    <thead>
+      <tr><th>Tool</th><th>Layer</th><th>What It Does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Pydantic</strong></td><td>API / Validation</td><td>Defines data shape for requests and responses</td></tr>
+      <tr><td><strong>SQLAlchemy</strong></td><td>Database / Persistence</td><td>Defines database tables and queries</td></tr>
+      <tr><td><strong>FastAPI</strong></td><td>Web Framework</td><td>Connects them together</td></tr>
+    </tbody>
+  </table>
+
+  <div class="diagram">
+<span class="node">Browser</span> <span class="arrow">&harr;</span> <span class="node">FastAPI</span> <span class="label">(Web)</span> <span class="arrow">&harr;</span> <span class="node">Pydantic</span> <span class="label">(Validation)</span> <span class="arrow">&harr;</span> <span class="node">SQLAlchemy</span> <span class="label">(Database)</span>
+  </div>
+
+  <h2>Where This Fits in the Video Course</h2>
+  <ul>
+    <li><strong>Chapter 10:</strong> Pydantic schemas &mdash; define API data</li>
+    <li><strong>Chapter 12:</strong> SQLAlchemy models &mdash; define database tables</li>
+    <li><strong>Chapters 13&ndash;16:</strong> CRUD operations &mdash; save and retrieve data</li>
+  </ul>
+
+  <div class="callout callout-tip">
+    <strong>&#127891; You've Completed the Guide</strong>
+    SQLAlchemy is what lets you <strong>persist data</strong> &mdash; keep it permanently in a database &mdash; instead of only validating it as it passes through your API.
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn btn-secondary" onclick="goto(7)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goto(0)" style="background:var(--accent2);">&#8617; Start Over</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const lessons = document.querySelectorAll('.lesson');
+const navItems = document.querySelectorAll('.nav-item');
+let completed = new Set();
+let current = 0;
+const TOTAL = 9;
+
+function goto(idx) {
+  lessons[current].classList.remove('active');
+  navItems[current].classList.remove('active');
+  completed.add(current);
+  navItems[current].classList.add('done');
+  navItems[current].querySelector('.nav-dot').style.background = 'var(--accent2)';
+
+  current = idx;
+  lessons[current].classList.add('active');
+  navItems[current].classList.add('active');
+  navItems[current].classList.remove('done');
+  navItems[current].querySelector('.nav-dot').style.background = '';
+
+  document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--accent2)';
+    setTimeout(() => { btn.textContent = 'copy'; btn.style.color = ''; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
