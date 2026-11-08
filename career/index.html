@@ -4,7 +4,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M40T258NB2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);} 
+  function gtag(){dataLayer.push(arguments);}
   gtag("js", new Date());
   gtag("config", "G-M40T258NB2");
 </script>
@@ -12,320 +12,305 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Career · Amir Sh.</title>
+  <meta name="description" content="Amir Shahcheraghian, Senior AI/ML Engineer and Data Scientist in Montreal: RAG systems, LLM orchestration, agentic AI and production ML.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Michroma&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --page-bg: #0e1117;
-      --card-bg: #161b26;
-      --card-bg-soft: #181b23;
-      --border-subtle: rgba(255,255,255,0.09);
-      --border-strong: rgba(94,234,212,0.25);
-      --text-primary: #f9fafb;
-      --text-secondary: rgba(200,215,255,0.55);
-      --text-muted: rgba(148,163,184,0.7);
-      --accent: #2dd4bf;
-      --font-display: 'Syne', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+      --bg: #05070d;
+      --bg2: #0b1424;
+      --card: #0d1829;
+      --card-hi: #12203a;
+      --glow: #2AF5C0;
+      --glow-rgb: 42,245,192;
+      --violet: #8B6FE8;
+      --violet-text: #A991F5;
+      --white: #ffffff;
+      --text: #DCE6FA;
+      --mute: #9CA8C6;
+      --line: rgba(220,230,250,.09);
+      --font-display: "Michroma", "Arial Black", system-ui, sans-serif;
+      --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --ease: cubic-bezier(.22,.7,.3,1);
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       font-family: var(--font-body);
-      background-color: var(--page-bg);
-      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
-      background-repeat: no-repeat;
-      color: var(--text-primary);
+      font-size: 16px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      font-synthesis: none;
+      -webkit-font-smoothing: antialiased;
     }
+    a { color: var(--glow); text-decoration: none; transition: color .2s var(--ease); }
+    a:hover { color: var(--white); }
+    strong { color: var(--white); font-weight: 600; }
 
-    .site-wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 28px 24px 72px;
-    }
+    .container { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
 
     /* NAV */
     .top-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      height: 76px;
     }
-    .nav-logo {
+    .brand {
       font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text-primary);
-      text-decoration: none;
+      font-size: 14px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--white);
     }
-    .nav-logo span { color: var(--accent); }
-    .nav-link-back {
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-decoration: none;
-      border-radius: 999px;
-      padding: 6px 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    .brand span { color: var(--glow); }
+    .nav-back {
+      font-size: 13px; font-weight: 500; color: var(--text);
+      border: 1px solid rgba(var(--glow-rgb), .5); border-radius: 4px;
+      padding: 8px 16px;
+      transition: background .25s var(--ease), border-color .25s var(--ease);
     }
-    .nav-link-back span {
-      font-size: 14px;
+    .nav-back:hover { background: rgba(var(--glow-rgb), .12); border-color: var(--glow); color: var(--white); }
+
+    /* HERO (faded image) */
+    .hero {
+      position: relative; isolation: isolate; overflow: hidden;
+      min-height: 72vh;
+      display: flex; flex-direction: column;
     }
-    .nav-link-back:hover {
-      border-color: var(--border-strong);
-      color: var(--accent);
-      transform: translateY(-1px);
+    .hero__bg { position: absolute; inset: 0; z-index: -2; }
+    .hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+    .hero__shade {
+      position: absolute; inset: 0; z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(5,7,13,.95) 0%, rgba(5,7,13,.84) 34%, rgba(5,7,13,.4) 62%, rgba(5,7,13,.1) 85%),
+        linear-gradient(0deg, var(--bg) 0%, rgba(5,7,13,0) 40%),
+        linear-gradient(180deg, rgba(5,7,13,.6) 0%, rgba(5,7,13,0) 25%);
+    }
+    .hero__content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 24px; padding-bottom: 64px; }
+    .hero__content > * { max-width: 40rem; }
+    .eyebrow {
+      display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem;
+      color: var(--glow); font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .18em;
+    }
+    .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--glow); }
+    .display {
+      font-family: var(--font-display); font-weight: 400; text-transform: uppercase;
+      font-size: clamp(1.5rem, .6rem + 3.6vw, 3.1rem); line-height: 1.2; letter-spacing: .03em;
+      color: var(--white); margin-bottom: 1.25rem;
+    }
+    .hero__lead { font-size: clamp(1.02rem, 1rem + .3vw, 1.2rem); color: var(--text); line-height: 1.7; }
+    .hero__meta { margin-top: 1.25rem; color: var(--mute); font-size: 13px; letter-spacing: .08em; }
+
+    /* SECTIONS */
+    section.block { padding: clamp(48px, 7vw, 88px) 0; border-top: 1px solid var(--line); }
+    .display-2 {
+      font-family: var(--font-display); font-weight: 400; text-transform: uppercase;
+      font-size: clamp(1.15rem, .9rem + 1.3vw, 1.8rem); line-height: 1.25; letter-spacing: .03em;
+      color: var(--white); margin-bottom: 1.5rem;
+    }
+    .prose { max-width: 46rem; }
+    .prose p { margin-bottom: 1.1em; color: var(--text); }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* Path / timeline */
+    .path { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-top: 2rem; }
+    .step {
+      background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+      padding: 20px 18px; position: relative;
+    }
+    .step::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, rgba(var(--glow-rgb), .8), transparent);
+    }
+    .step.now::before { background: linear-gradient(90deg, var(--violet), transparent); }
+    .step__kind { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-bottom: 10px; }
+    .step.now .step__kind { color: var(--violet-text); }
+    .step__role { font-weight: 600; color: var(--white); line-height: 1.35; margin-bottom: 4px; }
+    .step__org { font-size: 14px; color: var(--mute); }
+
+    /* Projects */
+    .projects { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .project {
+      background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+      padding: 24px 22px; display: flex; flex-direction: column; gap: 12px;
+      transition: border-color .25s var(--ease), background .25s var(--ease);
+    }
+    .project:hover { border-color: rgba(var(--glow-rgb), .35); background: var(--card-hi); }
+    .project__where { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--glow); }
+    .project h3 { font-size: 17px; font-weight: 600; color: var(--white); line-height: 1.35; }
+    .project p { font-size: 15px; color: var(--text); }
+    .project .stat {
+      border-left: 2px solid var(--violet); padding-left: 12px;
+      font-size: 14px; color: var(--mute);
+    }
+    .project--wide { grid-column: 1 / -1; }
+
+    /* Stack */
+    .stack { display: flex; flex-wrap: wrap; gap: 8px; margin-top: .5rem; }
+    .tag {
+      font-size: 13px; color: var(--text);
+      border: 1px solid var(--line); background: rgba(255,255,255,.02);
+      padding: 6px 12px; border-radius: 4px;
     }
 
-    /* HEADER CARD */
-    .intro-card {
-      background: var(--card-bg);
-      border-radius: 18px;
-      border: 1px solid var(--border-subtle);
-      padding: 24px 22px 24px;
-      box-shadow:
-        0 1px 3px rgba(0,0,0,0.4),
-        0 0 0 0.5px rgba(255,255,255,0.04) inset;
-      margin-bottom: 24px;
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 40px; color: var(--mute); font-size: 13px;
     }
-    .intro-tag {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .intro-tag::before {
-      content: '';
-      width: 18px;
-      height: 1px;
-      background: var(--accent);
-    }
-    .intro-title {
-      font-family: var(--font-display);
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 6px;
-    }
-    .intro-sub {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-    .intro-body {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.75;
-      border-left: 2px solid rgba(45,212,191,0.25);
-      padding-left: 14px;
-      max-width: 520px;
-    }
-    .intro-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 16px;
-    }
-    .pill {
-      font-size: 11px;
-      color: rgba(190,205,240,0.6);
-      background: rgba(255,255,255,0.04);
-      border: 0.5px solid rgba(255,255,255,0.08);
-      padding: 4px 11px;
-      border-radius: 100px;
-    }
-    .pill-dot {
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-      margin-right: 5px;
-      box-shadow: 0 0 4px var(--accent);
-    }
+    .site-footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .site-footer .brand { font-size: 12px; }
 
-    /* TIMELINE */
-    .timeline {
-      border-radius: 18px;
-      border: 1px solid var(--border-subtle);
-      background: var(--card-bg-soft);
-      padding: 18px 20px 20px;
-    }
-    .timeline-title {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-    }
-    .timeline-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 140px minmax(0, 1fr);
-      gap: 14px;
-      padding: 10px 0;
-      border-top: 1px solid rgba(15,23,42,0.9);
-    }
-    .timeline-item:first-child {
-      border-top: none;
-      padding-top: 0;
-    }
-    .ti-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .ti-meta strong {
-      display: block;
-      font-size: 12px;
-      color: var(--text-primary);
-    }
-    .ti-body {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-    .ti-tags {
-      margin-top: 6px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .ti-tag {
-      font-size: 10px;
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.4);
-      color: var(--text-muted);
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .hero__content { animation: fadeUp .8s var(--ease) .1s both; }
 
-    @media (max-width: 720px) {
-      .timeline-item {
-        grid-template-columns: minmax(0, 1fr);
-      }
+    @media (max-width: 860px) {
+      .path { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .projects { grid-template-columns: minmax(0,1fr); }
     }
+    @media (max-width: 560px) {
+      .path { grid-template-columns: minmax(0,1fr); }
+      .display { font-size: clamp(1.15rem, 6.2vw, 2rem); }
+      .display-2 { font-size: clamp(1rem, 5vw, 1.4rem); }
+      .hero__shade { background: linear-gradient(0deg, var(--bg) 0%, rgba(5,7,13,.86) 45%, rgba(5,7,13,.55) 100%); }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero__content { animation: none; } }
   </style>
 </head>
 <body>
-  <main class="site-wrap">
-    <header class="top-nav">
-      <a href="../index.html" class="nav-logo">Amir <span>Sh.</span></a>
-      <a href="../index.html" class="nav-link-back">
-        <span>←</span> Back to landing
-      </a>
-    </header>
 
-    <section class="intro-card">
-      <div class="intro-tag">AI Career</div>
-      <h1 class="intro-title">AI Developer and Data Scientist at NAVADA.</h1>
-      <p class="intro-sub">I help teams ship LLM systems that are reliable enough for production.</p>
-      <p class="intro-body">
-        I design and implement LLM pipelines, RAG systems, and agent workflows end to end — from
-        data ingestion and retrieval design to evaluation, deployment, and monitoring. My work
-        sits at the intersection of software engineering and machine learning, with a strong focus
-        on clear trade‑offs, observability, and keeping complexity under control.
-      </p>
-      <div class="intro-pills">
-        <span class="pill"><span class="pill-dot"></span>LangGraph · LangChain · MCP</span>
-        <span class="pill">RAG architectures &amp; vector search</span>
-        <span class="pill">Agents, tool use, integrations</span>
-        <span class="pill">Azure · OpenAI · Supabase</span>
+  <header class="hero">
+    <div class="hero__bg"><img src="../assets/hero/hero-4.jpg" alt="" fetchpriority="high"></div>
+    <div class="hero__shade" aria-hidden="true"></div>
+
+    <div class="container">
+      <nav class="top-nav">
+        <a href="../index.html" class="brand">Amir <span>Sh.</span></a>
+        <a href="../index.html" class="nav-back">← Back to home</a>
+      </nav>
+    </div>
+
+    <div class="container hero__content">
+      <p class="eyebrow">AI Career</p>
+      <h1 class="display">Senior AI/ML Engineer &amp; Data Scientist</h1>
+      <p class="hero__lead">Applied AI that goes into production: RAG systems, LLM orchestration, agentic AI, and classical ML for prediction.</p>
+      <p class="hero__meta">PhD in Engineering, ÉTS · Montréal · English &amp; French</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="block">
+      <div class="container">
+        <p class="eyebrow">About me</p>
+        <h2 class="display-2">From research to production AI</h2>
+        <div class="prose">
+          <p>I'm a Senior AI/ML Engineer and Data Scientist based in Montreal, with a PhD in Engineering from ÉTS. Most of my work is applied AI that goes into production: RAG systems, LLM orchestration, agentic AI, and classical ML for prediction. I've worked across the full ML lifecycle, from research and data exploration through deployment, monitoring, and MLOps/LLMOps. I work in English and French.</p>
+        </div>
       </div>
     </section>
 
-    <section class="timeline" aria-label="AI career timeline">
-      <div class="timeline-title">Recent work &amp; focus areas</div>
-      <div class="timeline-list">
-        <div class="timeline-item">
-          <div class="ti-meta">
-            <strong>AI Developer & Data Scientist · Navada</strong>
-            Longueuil, Canada · 3+ years
-          </div>
-          <div class="ti-body">
-            Lead and advise on AI initiatives for clients: from discovery and architecture to hands‑on
-            implementation. Typical work includes designing LLM‑powered assistants, evaluation loops,
-            and data pipelines that connect existing systems to new models.
-            <div class="ti-tags">
-              <span class="ti-tag">solution design</span>
-              <span class="ti-tag">LLM strategy</span>
-              <span class="ti-tag">stakeholder coaching</span>
-            </div>
-          </div>
+    <section class="block">
+      <div class="container">
+        <p class="eyebrow">Background</p>
+        <h2 class="display-2">How I got here</h2>
+        <div class="prose">
+          <p>I started in research. As an ML researcher at KTH Royal Institute of Technology in Sweden, I worked on machine learning for district heating and urban energy systems, and I've published in the energy and ML fields. That's where I learned to work carefully with messy real-world data and to check that a model actually holds up.</p>
+          <p>From there I moved into industry. As a Data Scientist at TELUS Digital AI Data Solutions I worked on production ML and data work. After that I was AI Engineer &amp; Data Scientist at NAVADA, and I'm now an AI Engineer at SBI Group, delivering AI projects for clients in mining and natural resources.</p>
         </div>
 
-        <div class="timeline-item">
-          <div class="ti-meta">
-            <strong>LLM &amp; RAG Systems</strong>
-            2023–today
+        <div class="path" aria-label="Career path">
+          <div class="step">
+            <div class="step__kind">Research</div>
+            <div class="step__role">ML Researcher</div>
+            <div class="step__org">KTH Royal Institute of Technology, Sweden</div>
           </div>
-          <div class="ti-body">
-            Build retrieval‑augmented generation flows that turn internal knowledge (docs, tickets,
-            code, PDFs) into useful answers. Focus on chunking strategies, evaluation datasets, and
-            guardrails so systems stay robust as data and prompts change.
-            <div class="ti-tags">
-              <span class="ti-tag">RAG</span>
-              <span class="ti-tag">vector databases</span>
-              <span class="ti-tag">observability</span>
-            </div>
+          <div class="step">
+            <div class="step__kind">Industry</div>
+            <div class="step__role">Data Scientist</div>
+            <div class="step__org">TELUS Digital AI Data Solutions</div>
           </div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="ti-meta">
-            <strong>Agents &amp; Tooling</strong>
-            AutoGen, LangGraph, MCP
+          <div class="step">
+            <div class="step__kind">Industry</div>
+            <div class="step__role">AI Engineer &amp; Data Scientist</div>
+            <div class="step__org">NAVADA</div>
           </div>
-          <div class="ti-body">
-            Experiment with multi‑agent patterns and the Model Context Protocol to connect LLMs to
-            tools safely — databases, APIs, code execution, and external services — while keeping
-            a clear map of dependencies and technical debt.
-            <div class="ti-tags">
-              <span class="ti-tag">agents</span>
-              <span class="ti-tag">MCP</span>
-              <span class="ti-tag">tool orchestration</span>
-            </div>
+          <div class="step now">
+            <div class="step__kind">Now</div>
+            <div class="step__role">AI Engineer</div>
+            <div class="step__org">SBI Group · mining &amp; natural resources</div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="timeline-item">
-          <div class="ti-meta">
-            <strong>Teaching &amp; LearnByAmir</strong>
-            Ongoing
-          </div>
-          <div class="ti-body">
-            Turn real project experience into public notebooks, architecture guides, and visual maps
-            on LearnByAmir — so other builders can move faster without getting lost in the tool
-            landscape.
-            <div class="ti-tags">
-              <span class="ti-tag">education</span>
-              <span class="ti-tag">documentation</span>
-              <span class="ti-tag">visual maps</span>
-            </div>
-          </div>
+    <section class="block">
+      <div class="container">
+        <p class="eyebrow">Key projects</p>
+        <h2 class="display-2">Work that shipped</h2>
+        <div class="projects">
+          <article class="project">
+            <div class="project__where">SBI · Dhilmar</div>
+            <h3>Agentic RAG assistant for a mining client</h3>
+            <p>I designed, built and deployed a client-facing agentic RAG system. I worked with an ML engineer, a business analyst, a project manager, and data and solution architects to deliver it.</p>
+            <p class="stat">Used by 700 engineers, each of whom used to spend one to two hours a day searching documents by hand.</p>
+          </article>
+
+          <article class="project">
+            <div class="project__where">SBI</div>
+            <h3>Process-prediction ML for a gold mine grinding circuit</h3>
+            <p>Part of a soft-sensor proof of concept to predict P80 (particle size) in Snowflake. I built the XGBoost model, with LightGBM as a baseline, worked with metallurgists on data quality issues, and helped define the target ML architecture for production.</p>
+            <p class="stat">Medallion layers, champion/challenger models, and separate DEV and PROD environments.</p>
+          </article>
+
+          <article class="project">
+            <div class="project__where">NAVADA</div>
+            <h3>Technical document assistant</h3>
+            <p>An on-premises agentic RAG assistant for HVAC energy engineers and estimators. It answers questions with source references across large sets of PDFs, Word files and scanned documents. It also includes a tool that categorizes 50,000 to 80,000 items per project and fills in missing categories by looking up part numbers in the supplier database.</p>
+            <p>To fix hallucinations, I worked through the pipeline one layer at a time: embeddings, retrieval tuning, a cross-encoder reranker with a relevance threshold, and LLM comparison. I validated it against a golden dataset that the company's engineers checked.</p>
+            <p class="stat">Before it existed, 10 to 15 engineers spent two to three weeks per project on this work.</p>
+          </article>
+
+          <article class="project">
+            <div class="project__where">Client work</div>
+            <h3>Demand forecasting</h3>
+            <p>LightGBM and XGBoost forecasting models for retail clients, including promotion detection and correcting sales when items were out of stock.</p>
+          </article>
+
+          <article class="project project--wide">
+            <div class="project__where">Side projects</div>
+            <h3>Cortex and Pulsar</h3>
+            <p><strong>Cortex</strong> is a RAG assistant with memory that I built twice, once in plain Python and once in LangGraph, to compare the two approaches (<a href="../LearnbyAmir/LLM/Langgraph%20&amp;%20Langchain/cortex-core-vs-langgraph.html">see the comparison</a>). <strong>Pulsar</strong> is a Telegram bot that sends AI news and runs on a VPS that I deployed and maintain.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <p class="eyebrow">Core stack</p>
+        <h2 class="display-2">Tools I use</h2>
+        <div class="stack">
+          <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">LangChain</span><span class="tag">LangGraph</span>
+          <span class="tag">LlamaIndex</span><span class="tag">Weaviate</span><span class="tag">Chroma</span><span class="tag">Redis</span>
+          <span class="tag">Docker</span><span class="tag">CI/CD</span><span class="tag">Azure (AI Foundry)</span><span class="tag">Snowflake</span>
+          <span class="tag">Snowflake Cortex</span><span class="tag">MLflow</span><span class="tag">RAGAS</span><span class="tag">Langfuse</span>
+          <span class="tag">Prometheus/Grafana</span><span class="tag">PyTorch</span><span class="tag">scikit-learn</span><span class="tag">XGBoost</span>
+          <span class="tag">LightGBM</span><span class="tag">SQL</span>
         </div>
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span class="brand">Amir <span>Sh.</span></span>
+      <span><a href="../contact/">Get in touch</a> · <a href="../LearnbyAmir/">LearnByAmir</a></span>
+    </div>
+  </footer>
+
 </body>
 </html>
-

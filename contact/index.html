@@ -14,22 +14,22 @@
   <title>Contact · Amir Sh.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Michroma&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --page-bg: #0e1117;
-      --card-bg: #161b26;
-      --card-bg-soft: #181b23;
-      --border-subtle: rgba(255,255,255,0.09);
-      --border-strong: rgba(94,234,212,0.25);
-      --text-primary: #f9fafb;
-      --text-secondary: rgba(200,215,255,0.55);
-      --text-muted: rgba(148,163,184,0.7);
-      --accent: #2dd4bf;
-      --font-display: 'Syne', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+      --page-bg: #05070d;
+      --card-bg: #0d1829;
+      --card-bg-soft: #0b1424;
+      --border-subtle: rgba(220,230,250,.09);
+      --border-strong: rgba(42,245,192,.35);
+      --text-primary: #ffffff;
+      --text-secondary: #DCE6FA;
+      --text-muted: #9CA8C6;
+      --accent: #2AF5C0;
+      --font-display: "Michroma", "Arial Black", system-ui, sans-serif;
+      --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -37,7 +37,7 @@
     body {
       font-family: var(--font-body);
       background-color: var(--page-bg);
-      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 20, 60, 0.4) 0%, transparent 60%);
+      background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,111,232,0.10) 0%, transparent 60%);
       background-repeat: no-repeat;
       color: var(--text-primary);
       min-height: 100vh;
@@ -60,10 +60,11 @@
     .nav-logo {
       font-family: var(--font-display);
       font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
+      font-weight: 400;
+      letter-spacing: 0.03em;
       color: var(--text-primary);
       text-decoration: none;
+      text-transform: uppercase;
     }
     .nav-logo span { color: var(--accent); }
     .nav-link-back {
@@ -118,9 +119,10 @@
     .card-title {
       font-family: var(--font-display);
       font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
+      font-weight: 400;
+      letter-spacing: 0.03em;
       margin-bottom: 10px;
+      text-transform: uppercase;
     }
     .card-body {
       font-size: 14px;
@@ -205,6 +207,8 @@
         font-size: 22px;
       }
     }
+  
+    body { font-synthesis: none; -webkit-font-smoothing: antialiased; }
   </style>
 </head>
 <body>

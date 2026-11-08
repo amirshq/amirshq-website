@@ -12,7 +12,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LearnAIbyAmir · Topics</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Michroma&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
       --page-bg: #f6f8fa;
@@ -22,14 +22,14 @@
       --border-strong: rgba(13,148,136,0.35);
       --text: #1f2328;
       --muted: #636c76;
-      --accent: #0d9488;
+      --accent: #0b9b7a;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       min-height: 100vh;
-      font-family: 'DM Sans', sans-serif;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
       background-color: var(--page-bg);
       background-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(13,148,136,0.06) 0%, transparent 60%);
       background-repeat: no-repeat;
@@ -68,10 +68,11 @@
     }
 
     .title-block h1 {
-      font-family: 'DM Sans', sans-serif;
-      font-size: clamp(26px, 3vw, 32px);
-      font-weight: 800;
+      font-family: "Michroma", "Arial Black", system-ui, sans-serif;
+      font-size: clamp(20px, 2.6vw, 28px);
+      font-weight: 400;
       letter-spacing: 0.03em;
+      text-transform: uppercase;
     }
 
     .title-block h1 span {
@@ -127,7 +128,7 @@
     }
 
     .topic-section-title {
-      font-family: 'DM Sans', sans-serif;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
       font-size: 15px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -172,7 +173,7 @@
     }
 
     .topic-title {
-      font-family: 'DM Sans', sans-serif;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
       font-size: 17px;
       font-weight: 700;
       display: flex;
@@ -386,6 +387,21 @@
               <span class="topic-chip">fastapi</span>
               <span class="topic-chip">azure</span>
               <span class="topic-chip">production</span>
+            </div>
+          </a>
+
+          <a class="topic-card" href="LLM/AgenticRAG/agentic-rag-explorer.html">
+            <div class="topic-tag">Interactive · Architecture</div>
+            <div class="topic-title">
+              <span>Agentic RAG Architecture Explorer</span>
+              <span class="topic-arrow">↗</span>
+            </div>
+            <p class="topic-desc">Interactive map of a production agentic RAG system (FastAPI + LangGraph). Play ten scenarios and watch a request move through every layer: edge security, guardrails, routing, hybrid retrieval, tools, ingestion and evaluation.</p>
+            <div class="topic-chip-row">
+              <span class="topic-chip">agentic rag</span>
+              <span class="topic-chip">langgraph</span>
+              <span class="topic-chip">fastapi</span>
+              <span class="topic-chip">interactive</span>
             </div>
           </a>
 
