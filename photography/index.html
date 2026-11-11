@@ -372,6 +372,123 @@
       cursor: pointer;
     }
 
+    /* SUB-TABS */
+    .sub-tabs {
+      display: flex;
+      gap: 4px;
+      width: fit-content;
+      max-width: 100%;
+      padding: 4px;
+      margin-bottom: 26px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(13,24,41,0.75);
+      backdrop-filter: blur(10px);
+    }
+    .sub-tab {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sub-tab:hover { color: var(--text-secondary); }
+    .sub-tab[aria-selected="true"] {
+      color: var(--accent);
+      background: rgba(42,245,192,0.10);
+      box-shadow: inset 0 0 0 1px var(--border-strong);
+    }
+    .sub-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* HONOURS */
+    .honours-intro { max-width: 680px; margin-bottom: 34px; }
+    .honours-intro .story-title { font-size: clamp(26px, 3.4vw, 34px); }
+
+    .honour-card {
+      border-radius: 22px;
+      border: 1px solid var(--border-subtle);
+      background-color: var(--card-bg);
+      padding: 26px;
+      margin-bottom: 30px;
+    }
+    .honour-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .honour-date {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .honour-org {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .honour-org::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 4px;
+      border-radius: 999px;
+      background: var(--text-muted);
+      vertical-align: middle;
+      margin-right: 14px;
+    }
+    .honour-title {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      margin-bottom: 14px;
+    }
+    .honour-title span { color: var(--accent); }
+    .honour-text {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      max-width: 760px;
+      margin-bottom: 20px;
+    }
+    .honour-gallery {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .honour-shot {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: #fff;
+    }
+    .honour-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
+    }
+    .honour-shot:hover img { transform: scale(1.015); }
+    .honour-shot figcaption {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      background: var(--card-bg-soft);
+      padding: 10px 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
     /* FOOTER */
     footer {
       margin-top: 32px;
@@ -400,6 +517,10 @@
       .story-item {
         grid-template-columns: minmax(0, 1fr);
       }
+      .honour-gallery {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .honour-card { padding: 18px; }
     }
   
     body { font-synthesis: none; -webkit-font-smoothing: antialiased; }
@@ -418,6 +539,13 @@
         <span>←</span> Back to landing page
       </a>
     </header>
+
+    <nav class="sub-tabs" role="tablist" aria-label="Photography sections">
+      <button class="sub-tab" role="tab" id="tab-stories" aria-controls="panel-stories" aria-selected="true" data-tab="stories">Stories</button>
+      <button class="sub-tab" role="tab" id="tab-honours" aria-controls="panel-honours" aria-selected="false" tabindex="-1" data-tab="honours">Honours</button>
+    </nav>
+
+    <div id="panel-stories" role="tabpanel" aria-labelledby="tab-stories">
 
     <section class="cover-hero" aria-label="Startrails over the private palace of Cyrus the Great">
       <figure class="cover-photo">
@@ -1099,6 +1227,65 @@
       </article>
     </section>
 
+    </div><!-- /panel-stories -->
+
+    <div id="panel-honours" role="tabpanel" aria-labelledby="tab-honours" hidden>
+
+      <section class="honours-intro">
+        <div class="story-eyebrow">Honours &amp; Recognition</div>
+        <h2 class="story-title">Talks &amp; <span>publications</span>.</h2>
+        <p class="story-lede">
+          Conference talks and published work on night sky photography and dark-sky
+          protection.
+        </p>
+      </section>
+
+      <div class="section-heading">
+        <div class="section-title">Conference talks</div>
+      </div>
+
+      <article class="honour-card" aria-label="DarkSky Under One Sky 2026: Hidden World talk">
+        <div class="honour-head">
+          <span class="honour-date">Nov 7 · 2026</span>
+          <span class="honour-org">DarkSky International · Under One Sky 2026</span>
+        </div>
+        <h3 class="honour-title">Hidden World: Capturing the Unseen Life <span>Beneath the Night Sky</span></h3>
+        <div class="story-meta-row">
+          <div class="story-meta-pill"><strong>Session</strong> · Regional stories: Middle East &amp; South Asia</div>
+          <div class="story-meta-pill"><strong>Co-presenter</strong> · Ali Matinfar</div>
+          <div class="story-meta-pill"><strong>Role</strong> · Presenter &amp; storyteller</div>
+        </div>
+        <p class="honour-text">
+          Together with astronomer and astrophotography educator Ali Matinfar, I presented the
+          <em>Hidden World</em> project at DarkSky International's Under One Sky 2026 conference,
+          as part of the Regional Story Sessions for the Middle East &amp; South Asia. These sessions
+          share stories from communities around the world working to protect the night, through
+          advocacy, education, research and DarkSky programs.
+        </p>
+        <div class="honour-gallery">
+          <figure class="honour-shot">
+            <a href="Conference%20%26%20Magazines/DarkSky_UnderoneSky_2026.jpg">
+              <img src="Conference%20%26%20Magazines/DarkSky_UnderoneSky_2026.jpg" alt="DarkSky Under One Sky 2026 regional session page for the Middle East and South Asia, listing Amir Shahcheraghian and Ali Matinfar presenting Hidden World" loading="lazy">
+            </a>
+            <figcaption>Regional session: Middle East &amp; South Asia · Presenters &amp; storytellers</figcaption>
+          </figure>
+          <figure class="honour-shot">
+            <a href="Conference%20%26%20Magazines/DarkSky_UnderoneSky_2026.png">
+              <img src="Conference%20%26%20Magazines/DarkSky_UnderoneSky_2026.png" alt="Presenter biographies for Ali Matinfar and Amir Shahcheraghian on the DarkSky Under One Sky 2026 website" loading="lazy">
+            </a>
+            <figcaption>Presenter biographies · Ali Matinfar &amp; Amir Shahcheraghian</figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <!--
+        MAGAZINE PUBLICATIONS: copy the honour-card above for each published photo.
+        Add a section heading first:
+        <div class="section-heading"><div class="section-title">Magazine publications</div></div>
+      -->
+
+    </div><!-- /panel-honours -->
+
     <footer>
       <span>© 2026 Amir Shah · Photography &amp; AI.</span>
       <span>Back to <a href="../index.html">amirshq-website</a></span>
@@ -1114,6 +1301,34 @@
   </div>
 
   <script>
+    // Sub-tabs: Stories / Honours (deep-linkable via #honours)
+    (function () {
+      const tabs = Array.from(document.querySelectorAll('.sub-tab'));
+      function select(name, updateHash) {
+        tabs.forEach(t => {
+          const on = t.dataset.tab === name;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+        });
+        if (updateHash) {
+          history.replaceState(null, '', name === 'stories' ? location.pathname : '#' + name);
+        }
+      }
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => select(t.dataset.tab, true));
+        t.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+          next.focus();
+          select(next.dataset.tab, true);
+        });
+      });
+      const fromHash = () => select(location.hash === '#honours' ? 'honours' : 'stories', false);
+      window.addEventListener('hashchange', fromHash);
+      fromHash();
+    })();
+
     (function () {
       const modal = document.getElementById('photo-modal');
       if (!modal) return;
@@ -1121,7 +1336,7 @@
       const modalCaption = modal.querySelector('.photo-modal-caption');
       const closeBtn = modal.querySelector('.photo-modal-close');
 
-      const links = document.querySelectorAll('.story-photo-wrap a, .cover-photo a');
+      const links = document.querySelectorAll('.story-photo-wrap a, .cover-photo a, .honour-shot a');
       links.forEach(link => {
         const img = link.querySelector('img');
         if (!img) return;
@@ -1132,7 +1347,7 @@
           modalImg.src = src;
           modalImg.alt = img.alt || '';
           const fig = link.closest('figure');
-          const label = fig ? fig.querySelector('.story-photo-label') : null;
+          const label = fig ? fig.querySelector('.story-photo-label, figcaption') : null;
           modalCaption.textContent = label ? label.textContent.trim() : (img.alt || '');
           modal.classList.add('open');
         });
