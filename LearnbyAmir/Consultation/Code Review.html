@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Code Review Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a single reading column of dense reference tables, with a sticky table of contents on wide screens. Trunk = amber, leaf = green, used consistently. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --ink: #18202b;
+  --muted: #5a6575;
+  --line: #dde2e9;
+  --accent: #2f5bd3;
+  --trunk: #b8620b;
+  --trunk-bg: #fdf1e3;
+  --leaf: #23824f;
+  --leaf-bg: #e6f4ec;
+  --risk: #b42323;
+  --risk-bg: #fbe9e9;
+  --code-bg: #f0f2f6;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151b; --surface: #181e26; --ink: #e6eaf0; --muted: #9aa5b4; --line: #2a323d;
+    --accent: #7d9cf5; --trunk: #f0a050; --trunk-bg: #2e2216; --leaf: #5cc68b; --leaf-bg: #15291f;
+    --risk: #f07a7a; --risk-bg: #2f1a1a; --code-bg: #0d1116; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151b; --surface: #181e26; --ink: #e6eaf0; --muted: #9aa5b4; --line: #2a323d;
+  --accent: #7d9cf5; --trunk: #f0a050; --trunk-bg: #2e2216; --leaf: #5cc68b; --leaf-bg: #15291f;
+  --risk: #f07a7a; --risk-bg: #2f1a1a; --code-bg: #0d1116; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--font-body); }
+a { color: var(--accent); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 40px; }
+nav.toc { position: sticky; top: 24px; align-self: start; font-size: 13.5px; }
+nav.toc ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; counter-reset: s; }
+nav.toc li { counter-increment: s; }
+nav.toc a { color: var(--muted); text-decoration: none; display: block; padding: 3px 8px; border-left: 2px solid var(--line); }
+nav.toc a::before { content: counter(s, decimal-leading-zero) "  "; font-family: var(--font-mono); font-size: 12px; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); border-left-color: var(--accent); }
+main { min-width: 0; display: grid; gap: 40px; }
+header h1 { font-family: var(--font-display); font-size: 40px; line-height: 1.1; margin: 0 0 8px; text-wrap: balance; }
+header p { color: var(--muted); margin: 0; max-width: 70ch; }
+.src { font-size: 13px; margin-top: 10px !important; }
+h2 { font-family: var(--font-display); font-size: 26px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-family: var(--font-display); font-size: 18px; margin: 18px 0 6px; }
+section > p.lede { color: var(--muted); margin: 0 0 14px; max-width: 72ch; }
+.why { border-left: 3px solid var(--accent); background: var(--surface); padding: 10px 14px; margin: 12px 0; font-size: 14px; max-width: 80ch; }
+.why b { color: var(--accent); }
+.bottom { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; }
+.bottom ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 6px; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-display); font-weight: 600; font-size: 13.5px; letter-spacing: .02em; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+.pill { display: inline-block; font: 500 12px/1.4 var(--font-mono); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.p-trunk { background: var(--trunk-bg); color: var(--trunk); }
+.p-leaf { background: var(--leaf-bg); color: var(--leaf); }
+.p-risk { background: var(--risk-bg); color: var(--risk); }
+.flow { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+.stage .n { font: 500 12px var(--font-mono); color: var(--accent); }
+.stage h3 { margin: 2px 0 6px; }
+.stage ul { margin: 0; padding-left: 18px; }
+.stage.now { border-color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+.tree { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.zone { border-radius: 8px; padding: 14px 16px; font-size: 14px; border: 1px solid var(--line); background: var(--surface); }
+.zone.trunk { border-top: 4px solid var(--trunk); }
+.zone.leaf { border-top: 4px solid var(--leaf); }
+.zone h3 { margin-top: 0; }
+.zone ul { margin: 0; padding-left: 18px; }
+/* Review-depth picker */
+.picker { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; }
+.picker fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.picker legend { font-family: var(--font-display); font-weight: 600; margin-bottom: 6px; }
+.picker label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.picker input { margin-top: 4px; accent-color: var(--accent); width: 16px; height: 16px; flex: none; }
+.verdict { border-radius: 8px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--line); }
+.verdict .lvl { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+.verdict .bar { height: 8px; border-radius: 4px; background: var(--line); margin: 8px 0 10px; overflow: hidden; }
+.verdict .bar span { display: block; height: 100%; width: 10%; background: var(--leaf); transition: width .2s, background .2s; }
+.verdict p { margin: 0; font-size: 14px; }
+.code { position: relative; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font: 13px/1.55 var(--font-mono); white-space: pre; }
+.copy { position: absolute; top: 8px; right: 8px; font: 500 12px var(--font-body); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.split { display: grid; grid-template-columns: 4fr 1fr; gap: 0; height: 30px; border-radius: 6px; overflow: hidden; font: 500 12.5px/30px var(--font-mono); text-align: center; color: #fff; margin: 6px 0 12px; }
+.split div:first-child { background: var(--accent); }
+.split div:last-child { background: var(--trunk); }
+.soundbite { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; font-size: 14.5px; max-width: 85ch; }
+.soundbite p { margin: 0 0 8px; }
+.soundbite p:last-child { margin: 0; }
+footer { color: var(--muted); font-size: 13px; }
+th.grp { background: var(--surface); color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; padding-top: 14px; }
+#terms td:first-child { width: 32%; white-space: normal; }
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: 1fr; }
+  nav.toc { position: static; }
+  nav.toc ol { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .flow { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .picker { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .flow, .tree { grid-template-columns: 1fr; }
+  td:first-child { white-space: normal; }
+  header h1 { font-size: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <ol>
+    <li><a href="#bottom-line">Bottom line</a></li>
+    <li><a href="#terms">Key terms</a></li>
+    <li><a href="#lifecycle">AI across the lifecycle</a></li>
+    <li><a href="#tree">Trunk vs leaf</a></li>
+    <li><a href="#depth">Pick review depth</a></li>
+    <li><a href="#gates">Feature gates first</a></li>
+    <li><a href="#proof">Proof in every PR</a></li>
+    <li><a href="#agents">Agent reviewers</a></li>
+    <li><a href="#prompts">Copy-paste prompts</a></li>
+    <li><a href="#launch">Merge ≠ launch</a></li>
+    <li><a href="#antipatterns">Anti-patterns</a></li>
+    <li><a href="#interview">Interview answer</a></li>
+    <li><a href="#summary">Summary</a></li>
+  </ol>
+</nav>
+
+<main>
+<header>
+  <h1>AI Code Review Playbook</h1>
+  <p>How to decide how much AI-written code to read, what proof to demand from agents, and how to ship safely when you can't read everything.</p>
+  <p class="src">Source: video transcript by John, senior staff software engineer at Meta, “Should you still read AI-generated code?” Restructured as a reference; the prompts and template are written from his points. New to a term? See <a href="#terms">Key terms</a>.</p>
+</header>
+
+<section id="bottom-line">
+  <h2>Bottom line</h2>
+  <div class="bottom">
+    <strong>Yes, still read code, but how much depends on the blast radius.</strong> Review effort is a dial, not a yes/no.
+    <ol>
+      <li><b>Trunk code</b> (shared state, infra, entry points, ungated production behavior): read it closely.</li>
+      <li><b>Leaf code</b> (isolated or fully behind a feature gate): skim it and trust the proof.</li>
+      <li><b>Make agents prove their work</b> with tests, logs, screenshots and a confidence level. More proof means less reading.</li>
+      <li><b>Review with a fresh agent</b> that never saw the build conversation. The builder agent grades its own work too kindly.</li>
+      <li><b>Lean on safety over reading</b>: feature gates, canaries and rollback let you undo bad decisions you didn't catch.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="terms">
+  <h2>Key terms</h2>
+  <p class="lede">Every technical term used on this page and in the video, in plain words.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Term</th><th>Simple meaning</th></tr></thead>
+    <tbody>
+      <tr><th colspan="2" class="grp">Risk and code structure</th></tr>
+      <tr><td>Blast radius</td><td>How much of the app could break if this change has a bug.</td></tr>
+      <tr><td>Trunk code</td><td>Core code that many parts of the app depend on.</td></tr>
+      <tr><td>Leaf code / leaf node</td><td>Separate code at the edge that almost nothing else depends on.</td></tr>
+      <tr><td>Entry point</td><td>The main file where the app starts, for example <code>App.js</code>.</td></tr>
+      <tr><td>Infrastructure (infra) code</td><td>Shared basic code like networking or image loading that the whole app uses.</td></tr>
+      <tr><td>Downstream dependencies</td><td>Other code that uses your code and could break if it changes.</td></tr>
+      <tr><td>Shared state / reducer</td><td>Data many screens read and change; a reducer is the code that updates it.</td></tr>
+      <tr><td>Side effects</td><td>Unexpected changes a piece of code causes in other places.</td></tr>
+      <tr><td>Isolated</td><td>Code that doesn't touch or change any existing code.</td></tr>
+      <tr><td>Production (prod)</td><td>The live app that real users are using.</td></tr>
+      <tr><td>Control experience</td><td>How the app works today, which must not change by accident.</td></tr>
+      <tr><td>One-way door</td><td>A decision that is hard or impossible to undo.</td></tr>
+      <tr><th colspan="2" class="grp">Feature gating and release</th></tr>
+      <tr><td>Feature gating</td><td>Putting new code behind a check so it only runs when you turn it on.</td></tr>
+      <tr><td>Feature flag / feature toggle / gate</td><td>The on/off switch used for feature gating.</td></tr>
+      <tr><td>Ungated</td><td>Code with no on/off switch: it runs for everyone as soon as it ships.</td></tr>
+      <tr><td>LaunchDarkly</td><td>A paid tool for managing feature flags.</td></tr>
+      <tr><td>Integration layer / integration points</td><td>The places where new code connects to existing code.</td></tr>
+      <tr><td>Rollback</td><td>Undoing a change, often just by turning its flag off.</td></tr>
+      <tr><td>Broad strokes</td><td>The fast first version of a feature: built, gated off, merged.</td></tr>
+      <tr><td>Merge-ready vs launch-ready</td><td>Good enough to add to the code vs good enough to show to real users.</td></tr>
+      <tr><td>Audit</td><td>A full check of the whole feature before release: bugs, speed, security.</td></tr>
+      <tr><td>A/B test (experiment)</td><td>Showing the old version to some users and the new one to others, then comparing.</td></tr>
+      <tr><td>Statistical power</td><td>Having enough users that an A/B test result can be trusted.</td></tr>
+      <tr><td>Canary deployment</td><td>Releasing to a small group of users first to catch problems early.</td></tr>
+      <tr><td>Alerts</td><td>Automatic warnings when something breaks or errors go up.</td></tr>
+      <tr><th colspan="2" class="grp">AI agents</th></tr>
+      <tr><td>Vibe coding</td><td>Letting AI write code and shipping it without really reading it.</td></tr>
+      <tr><td>AI slop</td><td>Low-quality code that AI writes and nobody checks.</td></tr>
+      <tr><td>Agent</td><td>An AI that does tasks on its own: writes code, runs tests, fixes errors.</td></tr>
+      <tr><td>Sub-agent</td><td>A second AI started by the main AI to do one task with a clean memory.</td></tr>
+      <tr><td>Builder agent</td><td>The AI that wrote the code.</td></tr>
+      <tr><td>Adversarial review agent</td><td>A separate AI whose job is to look hard for problems in the code.</td></tr>
+      <tr><td>Context / anchoring</td><td>What the AI remembers from the chat; anchoring means it sticks to that and goes easy on its own work.</td></tr>
+      <tr><td>Skill</td><td>A saved set of instructions that tells the AI how to do a task your way.</td></tr>
+      <tr><td>Agentic validation</td><td>The AI checks its own work by running tests and the app, then fixes problems.</td></tr>
+      <tr><td>Atomic change</td><td>A small change that does one thing only.</td></tr>
+      <tr><td>Spec</td><td>A written plan of what the feature should do.</td></tr>
+      <tr><td>Evaluations / validation criteria</td><td>Rules you decide early to check if the feature works.</td></tr>
+      <tr><td>Babysit a PR</td><td>Having an AI check a PR every hour and fix review comments for you.</td></tr>
+      <tr><td>Goals</td><td>A Codex feature that keeps working toward a task over time, like babysitting a PR.</td></tr>
+      <tr><td>Agentic safeguard / “agentic garden”</td><td>A safety system of tests, checks and AI reviewers around your code.</td></tr>
+      <tr><td>Claude Code <code>/code-review</code></td><td>The built-in command in Claude Code that reviews your code changes.</td></tr>
+      <tr><td>Codex reviewer</td><td>OpenAI's AI that can review PRs automatically on GitHub.</td></tr>
+      <tr><th colspan="2" class="grp">Review and testing</th></tr>
+      <tr><td>Code review</td><td>Reading a code change before it goes live to find problems.</td></tr>
+      <tr><td>PR (pull request) / diff</td><td>A proposed code change, sent to others to review before it is merged.</td></tr>
+      <tr><td>Merge / land</td><td>Adding the approved change into the main code.</td></tr>
+      <tr><td>Skim</td><td>Read quickly, looking only for obvious problems.</td></tr>
+      <tr><td>Review depth</td><td>How carefully you read a change: from a skim to every line.</td></tr>
+      <tr><td>PR template</td><td>A fixed format so every PR description has the same sections.</td></tr>
+      <tr><td>Test plan</td><td>The part of a PR explaining how the change was tested.</td></tr>
+      <tr><td>Proof / evidence</td><td>Anything that shows the change works: tests, logs, screenshots.</td></tr>
+      <tr><td>Unit test</td><td>A small automatic test that checks one function works correctly.</td></tr>
+      <tr><td>Integration test</td><td>A test that checks several parts work together correctly.</td></tr>
+      <tr><td>Component test</td><td>A test that checks one piece of the UI, like a button, works.</td></tr>
+      <tr><td>Snapshot test</td><td>A test that saves how a UI piece looks and warns you if it changes.</td></tr>
+      <tr><td>Assert</td><td>The line in a test that checks the result is what you expect.</td></tr>
+      <tr><td>Runtime evidence / logs</td><td>Messages the app prints while it runs, showing what happened.</td></tr>
+      <tr><td>Visual evidence</td><td>A screenshot or video showing the feature working.</td></tr>
+      <tr><td>Confidence level</td><td>The AI saying how sure it is that each part of its code is right.</td></tr>
+      <tr><td>Static checking</td><td>Tools that find problems by reading the code without running it.</td></tr>
+      <tr><td>Linting</td><td>A tool that flags style issues and simple mistakes.</td></tr>
+      <tr><td>Type checking</td><td>A tool that checks you're using the right kind of data, like a number vs text.</td></tr>
+      <tr><td>Nits</td><td>Very small review comments about style or personal taste.</td></tr>
+      <tr><td>Refactor</td><td>Rewriting code to make it cleaner without changing what it does.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="lifecycle">
+  <h2>AI across the whole lifecycle</h2>
+  <p class="lede">Review is one stage of four. How much review a change needs is decided mostly by what you did in planning and what you'll do at launch.</p>
+  <div class="flow">
+    <div class="stage"><div class="n">01</div><h3>Plan</h3><ul><li>Agent drafts the spec</li><li>Define validation criteria and evals up front</li><li>Plan the feature gates</li><li>Separate leaf work from integration work</li></ul></div>
+    <div class="stage"><div class="n">02</div><h3>Build</h3><ul><li>Agents make small, atomic changes</li><li>Agentic validation: the agent runs tests, reads logs, fixes itself</li></ul></div>
+    <div class="stage now"><div class="n">03</div><h3>Review</h3><ul><li>Depth set by blast radius</li><li>Proof attached to the PR</li><li>Independent reviewer agent</li><li>Lint and type checks handle nits</li></ul></div>
+    <div class="stage"><div class="n">04</div><h3>Launch</h3><ul><li>Launch-readiness audit</li><li>Gate, canary, A/B test</li><li>Watch crashes and alerts</li><li>Roll back if needed</li></ul></div>
+  </div>
+</section>
+
+<section id="tree">
+  <h2>Think of the codebase as a tree</h2>
+  <p class="lede">Different parts of the tree carry different risk. Before reviewing, place the change on the tree.</p>
+  <div class="tree">
+    <div class="zone trunk">
+      <h3><span class="pill p-trunk">TRUNK</span> Read deeply</h3>
+      <ul>
+        <li>Main entry points (e.g. <code>App.js</code> and the helpers wired into it)</li>
+        <li>Infrastructure: networking, image processing and rendering pipelines</li>
+        <li>Shared state, e.g. a reducer action that many screens depend on</li>
+        <li>Any change to existing production behavior that isn't gated</li>
+        <li>Anything with many downstream dependencies</li>
+      </ul>
+    </div>
+    <div class="zone leaf">
+      <h3><span class="pill p-leaf">LEAF</span> Skim and check the proof</h3>
+      <ul>
+        <li>One-off UI components, checked with component or snapshot tests</li>
+        <li>New logic, a new endpoint or an integration, checked with unit or integration tests</li>
+        <li>Anything fully behind a feature gate and not wired into production paths</li>
+        <li>Skim for anything obviously wrong, then move on</li>
+      </ul>
+    </div>
+  </div>
+  <div class="why"><b>Why this works:</b> a bug in a leaf hurts one feature that is already switched off. A bug in the trunk can break the whole app. Spend your attention where a mistake is expensive.</div>
+  <div class="why"><b>Know your codebase:</b> the better you know it, the faster you can tell whether a diff touches a dangerous zone or a leaf. That skill gets more valuable as you read less code.</div>
+</section>
+
+<section id="depth">
+  <h2>Pick the review depth</h2>
+  <p class="lede">These are the questions John asks himself before every review. Tick what applies to the change in front of you.</p>
+  <div class="picker">
+    <fieldset id="qs">
+      <legend>About this change</legend>
+      <label><input type="checkbox" id="q-trunk" data-w="3"> It touches trunk code: entry points, infra, shared state</label>
+      <label><input type="checkbox" id="q-deps" data-w="2"> Many other modules depend on it</label>
+      <label><input type="checkbox" id="q-prod" data-w="3"> It changes existing production behavior (the control experience)</label>
+      <label><input type="checkbox" id="q-nogate" data-w="3"> It is <em>not</em> behind a feature gate</label>
+      <label><input type="checkbox" id="q-oneway" data-w="3"> It's a one-way door (migration, data deletion, public API, security)</label>
+      <label><input type="checkbox" id="q-noproof" data-w="2"> The PR has little or no proof (tests, logs, screenshots)</label>
+      <label><input type="checkbox" id="q-bad" data-w="2"> If it goes wrong, users or data are badly hurt</label>
+    </fieldset>
+    <div class="verdict" aria-live="polite">
+      <div class="lvl" id="v-lvl">Skim</div>
+      <div class="bar"><span id="v-bar"></span></div>
+      <p id="v-txt"></p>
+    </div>
+  </div>
+  <h3>The three safety questions</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Question</th><th>What it tells you</th></tr></thead>
+    <tbody>
+      <tr><td>What is the control experience that must not change?</td><td>The baseline behavior your review protects. If the change can alter it, read more.</td></tr>
+      <tr><td>If this goes wrong, how bad is it?</td><td>The size of the blast radius.</td></tr>
+      <tr><td>Can I roll it back?</td><td>The most important one. If a gate flip undoes it, you can review much less.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="gates">
+  <h2>Build behind feature gates from day one</h2>
+  <p class="lede">Gating is what lets you read less code safely. It belongs in the plan, not added at the end.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Practice</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Start simple</td><td>A Boolean flag in config is enough to begin with. Move to a flag service (e.g. LaunchDarkly) when you need targeting and gradual rollout.</td></tr>
+      <tr><td>Gate in broad strokes</td><td>When planning the feature, gate every new path, not just the risky one.</td></tr>
+      <tr><td>Isolate the leaves</td><td>Build new parts so they don't touch existing code. These get light review.</td></tr>
+      <tr><td>Gate the integration layer</td><td>Where new code plugs into the trunk is the dangerous spot. Plan it and gate it separately.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code># Simplest possible gate: control path stays untouched
+FEATURES = {"save_card": False}   # flip per env / per user later
+
+def on_card_swipe(card, user):
+    if FEATURES["save_card"]:
+        return save_card_flow(card, user)   # new leaf code
+    return legacy_swipe(card, user)         # control experience</code></pre></div>
+</section>
+
+<section id="proof">
+  <h2>Require proof in every PR</h2>
+  <p class="lede">Push agents to show evidence that the change works. With proof up front, you read less code and believe the output more.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Proof type</th><th>What it looks like</th><th>How you review it</th></tr></thead>
+    <tbody>
+      <tr><td>Unit tests</td><td>Focused tests for the logic changed</td><td>Read test names and asserts. Watch for useless tests that assert nothing real.</td></tr>
+      <tr><td>Component / snapshot tests</td><td>Render tests for UI leaves</td><td>Check the snapshot diff matches the intent.</td></tr>
+      <tr><td>Runtime evidence</td><td>Logs from an actual run of the feature</td><td>Scan for the expected events and no errors.</td></tr>
+      <tr><td>Visual evidence</td><td>Screenshot or short video of the UI working (e.g. the new Save button saving a card)</td><td>Look at it. Fastest trust signal for UI work.</td></tr>
+      <tr><td>Confidence level</td><td>Agent rates its confidence per area: logic, gating, integration</td><td>Read the low-confidence areas closely.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="why"><b>Tip:</b> agents love to write filler tests. Write a skill or rule that tells them what a useful test is, and bake the proof requirements into your PR skill so you don't have to ask every time.</div>
+</section>
+
+<section id="agents">
+  <h2>Use agents as reviewers, the right way</h2>
+  <p class="lede">AI is already a strong reviewer, probably better than most humans. Most people get poor results because of how they run it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Do this</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Use a fresh, independent reviewer</td><td>The agent that wrote the code anchors on its own conversation and goes easy on itself. Use a new sub-agent, or a different agent entirely, with no build context: an adversarial reviewer.</td></tr>
+      <tr><td>Start from a good review skill</td><td>Built-ins are solid: <code>/code-review</code> in Claude Code, the review agent in Codex.</td></tr>
+      <tr><td>Add a reviewer on GitHub</td><td>Codex can be added as a GitHub reviewer that runs on every new PR or when tagged. It uses a model tuned for review. It costs money.</td></tr>
+      <tr><td>Let static checks own the nits</td><td>Linting, type checking and formatters, plus the review agent, handle style. Personal style debates no longer belong in code review: code changes fast and refactors are cheap once validation exists.</td></tr>
+      <tr><td>Use a PR template</td><td>Without one the agent writes a long story. A template makes every PR look the same and keeps the important parts.</td></tr>
+      <tr><td>Automate the comment loop</td><td>Set up a recurring task that checks the PR every hour, fixes reviewer comments, reruns validations, updates notes and re-pushes.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="why"><b>Pet peeve to avoid:</b> a PR whose summary and test plan are longer than the code change itself.</div>
+</section>
+
+<section id="prompts">
+  <h2>Copy-paste prompts and template</h2>
+  <h3>PR template</h3>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code>## What
+One or two sentences. What changed and why.
+
+## Where on the tree
+- [ ] Leaf (isolated / fully gated)
+- [ ] Trunk (entry point, infra, shared state, ungated prod behavior)
+Files touching trunk: &lt;list or "none"&gt;
+
+## Gating &amp; rollback
+Flag: &lt;name&gt;  Default: OFF
+Control experience unchanged when OFF: yes / no (explain)
+Rollback: flip flag / revert commit / needs migration (explain)
+
+## Proof
+- Tests: &lt;names of key tests, what they assert&gt;
+- Runtime: &lt;log excerpt or "n/a"&gt;
+- Visual: &lt;screenshot / video link or "n/a"&gt;
+
+## Confidence (high / medium / low)
+- Logic:
+- Gating:
+- Integration:
+Low-confidence areas a human should read: &lt;list&gt;
+
+## Validation run
+lint ✔  typecheck ✔  unit ✔  integration ✔</code></pre></div>
+
+  <h3>Adversarial reviewer (run in a fresh session or sub-agent)</h3>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code>You are an independent code reviewer. You did not write this code and have
+no context from the conversation that produced it. Assume it has bugs.
+
+Review the diff in &lt;PR / branch&gt;. Report only real problems, most severe first.
+
+1. Classify each changed file as TRUNK (entry points, infra, shared state,
+   ungated production behavior) or LEAF (isolated or fully feature-gated).
+2. For TRUNK files: check side effects on existing behavior, downstream
+   callers, concurrency, error handling and security.
+3. Check the feature gate: with the flag OFF, is the control experience
+   exactly unchanged? Can the change be rolled back by flipping it?
+4. Check the proof: do the tests assert real behavior, or are they filler?
+   Is anything claimed in the PR description not backed by evidence?
+5. Ignore style nits that lint or the type checker would catch.
+
+For each finding give: file:line, what breaks, a concrete failing scenario,
+and a suggested fix. End with: SAFE TO MERGE / NEEDS CHANGES / NEEDS HUMAN
+REVIEW (name the files a human must read).</code></pre></div>
+
+  <h3>PR babysitter (recurring task)</h3>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code>Babysit PR &lt;link&gt;. Every hour until it is approved or I tell you to stop:
+1. Read new review comments, including from the Codex/AI reviewer.
+2. Fix each valid request. If you disagree, reply with your reasoning
+   instead of changing code.
+3. Rerun local validation: lint, typecheck, unit and integration tests,
+   plus the agentic checks (run the feature, capture logs/screenshots).
+4. Update the PR description so the Proof and Confidence sections match.
+5. Push and re-request review. Stop and ping me if a fix touches trunk
+   code or the feature gate.</code></pre></div>
+
+  <h3>Launch-readiness audit</h3>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code>Audit the full feature &lt;name&gt; (all merged PRs behind flag &lt;flag&gt;) before launch.
+Look at it as a whole, not diff by diff. Report on:
+- Does it work to spec? List any spec item that's missing or partial.
+- Bugs and edge cases across the combined changes.
+- Performance: hot paths, extra renders, N+1 calls, payload size.
+- Security: input validation, auth checks, secrets, injection.
+- Cleanup: dead code, duplicated helpers, leftovers from fast iteration.
+Rank findings by launch risk.</code></pre></div>
+</section>
+
+<section id="launch">
+  <h2>Merge-ready is not launch-ready</h2>
+  <p class="lede">Working this way, everything gated and landed gets you about 80% of the way. The last 20% takes about as long as the first 80%, and it's where human taste matters most.</p>
+  <div class="split" aria-hidden="true"><div>80% broad strokes: agents build, gated, merged</div><div>20% polish</div></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Phase</th><th>What happens</th><th>Who leads</th></tr></thead>
+    <tbody>
+      <tr><td>Broad strokes</td><td>Agents build fast, everything gated and landed, light review on leaves</td><td><span class="pill p-leaf">agents</span></td></tr>
+      <tr><td>Launch-ready</td><td>Whole-feature audit by agents (spec, bugs, performance, security), refactoring and cleanup, details such as animations</td><td><span class="pill p-trunk">you</span></td></tr>
+      <tr><td>Canary / A/B</td><td>Route a slice of traffic through the gate. Even without enough users for a statistically valid test, you see crashes and alerts early.</td><td><span class="pill p-trunk">you</span> + monitoring</td></tr>
+      <tr><td>Rollback ready</td><td>Bad result? Flip the gate. This is the safety net that justifies reading less.</td><td><span class="pill p-risk">the gate</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="why"><b>The big idea:</b> build an “agentic garden” around your code: lots of tests, validation and reviewing agents, plus gates so you can take back bad decisions. You can't physically read everything anymore, so safety has to come from the system.</div>
+</section>
+
+<section id="antipatterns">
+  <h2>Anti-patterns</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Anti-pattern</th><th>Do this instead</th></tr></thead>
+    <tbody>
+      <tr><td>Shipping AI code with no review at all</td><td>Place it on the tree and review trunk changes closely</td></tr>
+      <tr><td>Reading every line of every PR</td><td>Skim gated leaves and lean on proof</td></tr>
+      <tr><td>Builder agent reviews its own work</td><td>Fresh-context adversarial reviewer</td></tr>
+      <tr><td>Review threads full of style nits</td><td>Lint, type checks, formatter</td></tr>
+      <tr><td>Agent-written filler tests</td><td>A skill that defines what a useful test asserts</td></tr>
+      <tr><td>Essay-length PR descriptions</td><td>A short, fixed template</td></tr>
+      <tr><td>Ungated change to existing behavior</td><td>Gate the integration layer, keep the control path intact</td></tr>
+      <tr><td>Treating “merged” as “done”</td><td>Launch audit, canary, then full rollout</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="interview">
+  <h2>Interview answer: “Do you still read AI-generated code?”</h2>
+  <div class="soundbite">
+    <p><b>Short version (~30 s):</b> “Yes, but the depth depends on blast radius. I treat the codebase like a tree. Trunk changes such as shared state, infra or ungated production behavior, I read line by line. Leaf changes that are isolated or behind a feature gate, I skim, as long as the PR carries proof: tests, runtime logs, a screenshot, and the agent's confidence per area.”</p>
+    <p><b>If they push:</b> “Reviews run with a separate agent that has no context from the build session, because the builder anchors on its own reasoning. Lint and type checks handle style. And the real safety net is at launch: everything ships behind a gate, goes out as a canary, and rolls back with a flag flip. That's what lets me read less without taking on more risk.”</p>
+  </div>
+</section>
+
+<section id="summary">
+  <h2>Summary in plain words</h2>
+  <div class="soundbite">
+    <p>When AI writes your code, you don’t have to read every line, but you can’t skip reading either. How much you read depends on how much could break. Think of your code as a tree. The trunk is the important code that the whole app depends on, so a bug there can break everything, and you read it carefully. The leaves are small, separate pieces, so a bug there only breaks one small thing, and a quick look is enough. Before you trust the AI’s code, ask it for proof that it works: tests, logs, or a screenshot. Then have a different AI check the code, because the AI that wrote it is too easy on its own work.</p>
+    <p>The other big idea is to make every change easy to undo. Put new features behind an on/off switch (a “feature gate”). When you release, turn the feature on for a few users first. If something breaks, flip the switch off and the problem is gone. Merging the code is only about 80% of the job. The last 20% is your own final check and polish before real users see it. So the simple rule is: read more where mistakes are expensive, read less where they’re cheap, and always keep a way to undo.</p>
+  </div>
+</section>
+
+<footer>Built from the video transcript. Tool names (Claude Code <code>/code-review</code>, Codex reviewer, LaunchDarkly) are as mentioned in the video; check current docs before relying on specific features.</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#qs input'));
+  var lvl = document.getElementById('v-lvl'), bar = document.getElementById('v-bar'), txt = document.getElementById('v-txt');
+  var max = boxes.reduce(function (s, b) { return s + Number(b.dataset.w); }, 0);
+  function update() {
+    var score = boxes.reduce(function (s, b) { return s + (b.checked ? Number(b.dataset.w) : 0); }, 0);
+    var oneway = document.getElementById('q-oneway').checked;
+    var level, color, msg;
+    if (oneway || score >= 9) {
+      level = 'Deep read'; color = 'var(--risk)';
+      msg = 'Read every line. Run the adversarial reviewer and fix what it finds before you open review. Ask for a second human reviewer if it is a one-way door.';
+    } else if (score >= 4) {
+      level = 'Careful review'; color = 'var(--trunk)';
+      msg = 'Read the trunk-touching files and the integration points closely. Skim the rest. Ask for proof on anything with low confidence, and gate it if it isn\'t yet.';
+    } else {
+      level = 'Skim'; color = 'var(--leaf)';
+      msg = 'Skim for anything obviously wrong. Check that the proof is real (tests assert behavior, screenshot shows the feature) and that the gate defaults to OFF.';
+    }
+    lvl.textContent = level; lvl.style.color = color;
+    bar.style.width = Math.max(10, Math.round(score / max * 100)) + '%';
+    bar.style.background = color;
+    txt.textContent = msg;
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', update); });
+  update();
+
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var code = btn.parentNode.querySelector('pre').innerText;
+      try {
+        navigator.clipboard.writeText(code).then(function () {
+          btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+        }, function () { btn.textContent = 'Select & copy manually'; });
+      } catch (e) { btn.textContent = 'Select & copy manually'; }
+    });
+  });
+})();
+</script>
+</body>
+</html>
