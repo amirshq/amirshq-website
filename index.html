@@ -244,7 +244,8 @@
     .site-nav { height: auto; padding-top: 18px; padding-bottom: 8px; flex-wrap: wrap; }
     .nav-links { order: 3; width: 100%; gap: 20px; overflow-x: auto; }
     .hero { justify-content: flex-end; }
-    .hero__content { justify-content: flex-end; padding-bottom: 88px; }
+    .hero__content { justify-content: flex-end; padding-bottom: 150px; }
+    .hero__dots { bottom: 112px; }
     .hero__shade {
       background: linear-gradient(0deg, var(--bg) 0%, rgba(5,7,13,.82) 38%, rgba(5,7,13,.3) 66%, rgba(5,7,13,.55) 100%);
     }
@@ -279,13 +280,6 @@
 
   <nav class="site-nav" aria-label="Main">
     <a href="#" class="brand">Amir <span>Sh.</span></a>
-    <ul class="nav-links">
-      <li><a href="photography/travel/">Travel</a></li>
-      <li><a href="photography/">Photography</a></li>
-      <li><a href="career/">AI Career</a></li>
-      <li><a href="LearnbyAmir/">LearnByAmir</a></li>
-    </ul>
-    <a href="contact/" class="btn-outline">Contact</a>
   </nav>
 
   <div class="hero__content">
@@ -400,5 +394,6 @@
 })();
 </script>
 
+<script src="./assets/flow-tab-bar.js" data-page="home" data-root="./" defer></script>
 </body>
 </html>
