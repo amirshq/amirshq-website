@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Software Architecture Decision Sheet</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --bg:#fafaf8; --card:#fff; --ink:#1d1d1f; --muted:#5f6368; --line:#e3e3df;
+    --accent:#2f5d8a; --good:#2e7d4f; --mid:#a3720b; --bad:#b3403a; --soft:#f1f4f8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#141517;--card:#1c1d20;--ink:#e8e8e6;--muted:#a0a3a8;--line:#2e3034;--accent:#7fb0e0;--good:#6cc290;--mid:#e0b04a;--bad:#e57a72;--soft:#22252b;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  main{max-width:1080px;margin:0 auto;padding:32px 20px 64px}
+  h1{font-size:28px;margin:0 0 4px}
+  h2{font-size:19px;margin:36px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  h3{font-size:15px;margin:18px 0 6px}
+  p.sub{color:var(--muted);margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+  .callout{background:var(--soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;margin:12px 0}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  .grid3 .card h3{margin-top:0}
+  table{width:100%;border-collapse:collapse;background:var(--card);font-size:13.5px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  th{background:var(--soft);font-weight:600}
+  td.g{color:var(--good);font-weight:600} td.m{color:var(--mid);font-weight:600} td.b{color:var(--bad);font-weight:600}
+  .wrap{overflow-x:auto}
+  code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:12.5px}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--soft);color:var(--accent);margin-right:4px}
+  .mermaid{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+  ul{margin:6px 0;padding-left:20px} li{margin:2px 0}
+  .toc a{color:var(--accent);text-decoration:none;margin-right:14px;font-size:13.5px}
+</style>
+</head>
+<body>
+<main>
+<h1>Software Architecture Decision Sheet</h1>
+<p class="sub">Pick the architecture at project start based on criteria, not trends. One page, three layers, one flowchart.</p>
+<div class="toc">
+  <a href="#layers">1. Three layers</a><a href="#styles">2. Styles compared</a><a href="#criteria">3. Criteria</a>
+  <a href="#flow">4. Flowchart</a><a href="#inside">5. Inside a service</a><a href="#principles">6. Principles</a><a href="#ai">7. AI apps</a><a href="#adr">8. Record it</a>
+</div>
+
+<h2 id="layers">1. First: these are three different decisions</h2>
+<div class="callout"><b>Common confusion:</b> SOLID is not an alternative to microservices. They live at different levels. You choose <b>one</b> deployment style, <b>one</b> internal structure, and you apply principles <b>everywhere</b>.</div>
+<div class="wrap"><table>
+<tr><th>Level</th><th>Question it answers</th><th>Options</th><th>Decided when</th><th>Cost to change later</th></tr>
+<tr><td><b>A. Architectural style</b><br>(system level)</td><td>How many deployable units? How do they talk?</td><td>Monolith · Modular monolith · Microservices · Serverless · Event-driven</td><td>Project start</td><td class="b">High</td></tr>
+<tr><td><b>B. Internal structure</b><br>(codebase level)</td><td>How is code inside one unit organized?</td><td>Layered (N-tier) · Hexagonal (ports &amp; adapters) · Clean / Onion · CQRS · Vertical slices</td><td>Project start, per service</td><td class="m">Medium</td></tr>
+<tr><td><b>C. Design principles</b><br>(class / module level)</td><td>How do I write each piece so it stays changeable?</td><td>SOLID · DRY · KISS · YAGNI · Separation of concerns · High cohesion / low coupling</td><td>Always, every PR</td><td class="g">Low (refactor)</td></tr>
+</table></div>
+
+<h2 id="styles">2. Architectural styles compared</h2>
+<div class="wrap"><table>
+<tr><th>Criterion</th><th>Monolith</th><th>Modular monolith</th><th>Microservices</th><th>Serverless (FaaS)</th><th>Event-driven</th></tr>
+<tr><td>What it is</td><td>One codebase, one deploy</td><td>One deploy, strict internal module boundaries</td><td>Many small services, each deployed and owning its data</td><td>Functions triggered by events, managed infra</td><td>Components react to events via a broker (Kafka, Service Bus)</td></tr>
+<tr><td>Time to first release</td><td class="g">Fastest</td><td class="g">Fast</td><td class="b">Slow</td><td class="g">Fast</td><td class="m">Medium</td></tr>
+<tr><td>Team size fit</td><td>1–8 devs</td><td>3–30 devs</td><td>Several teams (20+)</td><td>Any, small apps</td><td>Medium–large</td></tr>
+<tr><td>Independent deploy</td><td class="b">No</td><td class="b">No</td><td class="g">Yes</td><td class="g">Yes, per function</td><td class="g">Yes</td></tr>
+<tr><td>Independent scaling</td><td class="b">Whole app</td><td class="b">Whole app</td><td class="g">Per service</td><td class="g">Automatic</td><td class="g">Per consumer</td></tr>
+<tr><td>Ops / DevOps maturity needed</td><td class="g">Low</td><td class="g">Low</td><td class="b">High (K8s, tracing, CI/CD per service)</td><td class="m">Medium</td><td class="b">High</td></tr>
+<tr><td>Data consistency</td><td class="g">Easy (one DB, ACID)</td><td class="g">Easy</td><td class="b">Hard (sagas, eventual)</td><td class="m">Medium</td><td class="b">Eventual</td></tr>
+<tr><td>Debugging</td><td class="g">Easy</td><td class="g">Easy</td><td class="b">Hard (distributed)</td><td class="m">Medium</td><td class="b">Hard</td></tr>
+<tr><td>Latency</td><td class="g">In-process calls</td><td class="g">In-process</td><td class="m">Network hops</td><td class="m">Cold starts</td><td class="m">Async by nature</td></tr>
+<tr><td>Infra cost at small scale</td><td class="g">Low</td><td class="g">Low</td><td class="b">High</td><td class="g">Very low</td><td class="m">Medium</td></tr>
+<tr><td>Main risk</td><td>Becomes a "big ball of mud"</td><td>Boundaries erode without discipline</td><td>"Distributed monolith"</td><td>Vendor lock-in, timeouts</td><td>Hard to trace flows</td></tr>
+<tr><td>Best when</td><td>MVP, PoC, unclear domain</td><td><b>Default for most new products</b></td><td>Clear domains, many teams, different scaling needs</td><td>Spiky / low traffic, glue jobs</td><td>Async workflows, integrations, audit trails</td></tr>
+</table></div>
+<p style="color:var(--muted);font-size:13px">Styles combine: e.g. a modular monolith + a few serverless functions + an event bus is very common.</p>
+
+<h2 id="criteria">3. Decision criteria — answer these first</h2>
+<div class="wrap"><table>
+<tr><th>#</th><th>Criterion</th><th>Ask yourself</th><th>Points toward simpler (monolith)</th><th>Points toward distributed</th></tr>
+<tr><td>1</td><td>Domain clarity</td><td>Do we know the business boundaries well?</td><td>New / changing domain</td><td>Stable, well-understood domains</td></tr>
+<tr><td>2</td><td>Team structure</td><td>How many teams will work on it in parallel? (Conway's Law)</td><td>One team</td><td>Several autonomous teams</td></tr>
+<tr><td>3</td><td>Scaling profile</td><td>Do parts need very different scale / hardware (e.g. GPU)?</td><td>Uniform load</td><td>One part 100× the others</td></tr>
+<tr><td>4</td><td>Release cadence</td><td>Must parts ship independently?</td><td>Release together is fine</td><td>Different release cycles</td></tr>
+<tr><td>5</td><td>Ops maturity</td><td>Do we have CI/CD, containers, monitoring, tracing, on-call?</td><td>Limited</td><td>Strong platform team</td></tr>
+<tr><td>6</td><td>Consistency</td><td>Do transactions span many entities?</td><td>Strong ACID needed</td><td>Eventual consistency acceptable</td></tr>
+<tr><td>7</td><td>Time-to-market</td><td>How fast must v1 ship?</td><td>Weeks</td><td>Months, long-lived platform</td></tr>
+<tr><td>8</td><td>Budget</td><td>Infra + people cost limits?</td><td>Tight</td><td>Comfortable</td></tr>
+<tr><td>9</td><td>Tech diversity</td><td>Need different languages / runtimes?</td><td>One stack</td><td>Python ML + Java core + Node UI, etc.</td></tr>
+<tr><td>10</td><td>Compliance / isolation</td><td>Must some data or failures be isolated?</td><td>No</td><td>PII / payment / tenant isolation</td></tr>
+</table></div>
+<div class="callout"><b>Rule of thumb:</b> if 7+ answers are in the left column → monolith / modular monolith. Only go distributed when you can name the <i>specific</i> criteria (3, 4, 9, 10) that force it. "It's modern" is not a criterion.</div>
+
+<h2 id="flow">4. Decision flowchart</h2>
+<div class="mermaid">
+flowchart TD
+  S([Start: new project]) --> Q1{Is it a PoC / MVP<br/>or is the domain unclear?}
+  Q1 -- Yes --> M1[Monolith<br/>+ layered or hexagonal inside]
+  Q1 -- No --> Q2{More than one team<br/>working in parallel?}
+  Q2 -- No --> Q3{Do parts need very different<br/>scaling or hardware? e.g. GPU}
+  Q3 -- No --> MM[Modular monolith<br/>clear module boundaries]
+  Q3 -- Yes --> HY[Modular monolith<br/>+ extract only the hot part<br/>as a separate service]
+  Q2 -- Yes --> Q4{Strong DevOps?<br/>CI/CD, containers, tracing, on-call}
+  Q4 -- No --> MM2[Modular monolith first<br/>build platform maturity]
+  Q4 -- Yes --> Q5{Can each domain own its data<br/>and accept eventual consistency?}
+  Q5 -- No --> MM3[Modular monolith<br/>shared DB, separate schemas]
+  Q5 -- Yes --> MS[Microservices<br/>one service per bounded context]
+  M1 --> Q6{Mostly event-triggered,<br/>spiky or low traffic tasks?}
+  MM --> Q6
+  HY --> Q6
+  MS --> Q6
+  Q6 -- Yes --> SV[Add serverless functions<br/>for those tasks]
+  Q6 -- No --> Q7{Async workflows, integrations,<br/>long-running jobs?}
+  SV --> Q7
+  Q7 -- Yes --> EV[Add event bus / queue<br/>event-driven between parts]
+  Q7 -- No --> D([Pick internal structure: section 5<br/>Apply principles: section 6<br/>Write an ADR: section 8])
+  EV --> D
+  MM2 --> D
+  MM3 --> D
+</div>
+
+<h2 id="inside">5. Inside each deployable unit — internal structure</h2>
+<div class="wrap"><table>
+<tr><th>Pattern</th><th>Idea</th><th>Use when</th><th>Avoid when</th></tr>
+<tr><td><b>Layered (N-tier)</b></td><td>API → Service → Repository → DB</td><td>CRUD apps, small teams, simple logic</td><td>Complex business rules (logic leaks across layers)</td></tr>
+<tr><td><b>Hexagonal (Ports &amp; Adapters)</b></td><td>Core logic in the middle; DB, LLM, APIs plug in via interfaces</td><td>Many external integrations, need to swap providers (OpenAI ↔ Azure), testability</td><td>Tiny scripts / throwaway PoCs</td></tr>
+<tr><td><b>Clean / Onion</b></td><td>Dependencies point inward to the domain</td><td>Long-lived, rich domain logic</td><td>Short projects — more boilerplate</td></tr>
+<tr><td><b>CQRS</b></td><td>Separate read model and write model</td><td>Reads ≫ writes, different query shapes</td><td>Simple CRUD — doubles complexity</td></tr>
+<tr><td><b>Vertical slices</b></td><td>Organize by feature, not by layer</td><td>Feature teams, fast iteration</td><td>Heavy shared domain rules</td></tr>
+</table></div>
+
+<h2 id="principles">6. Design principles — apply in any architecture</h2>
+<div class="wrap"><table>
+<tr><th>Principle</th><th>Meaning (plain)</th><th>Smell when violated</th></tr>
+<tr><td><span class="tag">S</span>Single Responsibility</td><td>A module has one reason to change (one actor/owner)</td><td>One class handles parsing, DB, and email</td></tr>
+<tr><td><span class="tag">O</span>Open / Closed</td><td>Add behavior by extending, not editing existing code</td><td>Every new provider = edit a big <code>if/elif</code></td></tr>
+<tr><td><span class="tag">L</span>Liskov Substitution</td><td>A subtype must work anywhere the parent works</td><td>Subclass throws "not supported" for a parent method</td></tr>
+<tr><td><span class="tag">I</span>Interface Segregation</td><td>Small, specific interfaces over one fat one</td><td>Classes implement methods they don't use</td></tr>
+<tr><td><span class="tag">D</span>Dependency Inversion</td><td>Depend on abstractions; inject concrete ones</td><td>Business logic does <code>OpenAI()</code> directly</td></tr>
+<tr><td>Separation of concerns</td><td>Keep UI, logic, data, infra apart</td><td>SQL inside API handlers</td></tr>
+<tr><td>High cohesion / low coupling</td><td>Related things together; few links between modules</td><td>Change in one module breaks five others</td></tr>
+<tr><td>DRY</td><td>One source of truth for each piece of knowledge</td><td>Same rule copied in 4 places</td></tr>
+<tr><td>KISS / YAGNI</td><td>Simplest thing that works; don't build for imagined needs</td><td>Kafka + K8s for 50 users</td></tr>
+<tr><td>12-Factor</td><td>Config in env, stateless processes, logs as streams</td><td>Secrets in code, local file state</td></tr>
+</table></div>
+
+<h2 id="ai">7. Applied to AI / LLM projects (RAG, agents)</h2>
+<div class="grid3">
+  <div class="card"><h3>Start here</h3><ul>
+    <li>Modular monolith (FastAPI)</li>
+    <li>Hexagonal inside: ports for LLM, vector store, tools</li>
+    <li>Background worker + queue for ingestion</li></ul></div>
+  <div class="card"><h3>Split out when…</h3><ul>
+    <li>Ingestion / embedding load differs from query load</li>
+    <li>Self-hosted model needs GPU scaling</li>
+    <li>Eval pipeline runs on its own schedule</li></ul></div>
+  <div class="card"><h3>Don't</h3><ul>
+    <li>One microservice per agent "because agents"</li>
+    <li>Call the LLM SDK directly from route handlers</li>
+    <li>Share one DB across "independent" services</li></ul></div>
+</div>
+
+<h2 id="adr">8. Record the decision (ADR — 5 lines)</h2>
+<div class="card"><code>Title</code> · <code>Context</code> (criteria answers from section 3) · <code>Decision</code> (style + internal structure) · <code>Consequences</code> (what gets easier / harder) · <code>Revisit trigger</code> (e.g. "2nd team joins" or "ingestion &gt; 10× query load")</div>
+<div class="callout"><b>Bottom line:</b> start with a modular monolith with clean module boundaries and SOLID inside. It keeps you fast now, and good boundaries let you extract microservices later — when a real criterion forces it, not before.</div>
+</main>
+<script>
+  const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  try { mermaid.initialize({startOnLoad:true, theme: dark ? 'dark' : 'neutral', flowchart:{curve:'basis', htmlLabels:true}}); } catch(e){}
+</script>
+</body>
+</html>
